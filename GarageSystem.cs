@@ -44,7 +44,7 @@ namespace RPCore
             Reload();
             foreach (var g in garages)
             {
-                var b = World.CreateBlip(g.Position); b.Sprite = (BlipSprite)357; b.Name = g.Name; b.IsShortRange = true; blips.Add(b);
+                var b = MapBlips.Create(g.Position, "RPCore Garage: " + g.Name, BlipSprite.Garage, BlipColor.Blue, .8f); blips.Add(b);
             }
             pool.Add(menu); Visuals.Register(menu, "garage");
         }

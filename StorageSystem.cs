@@ -25,6 +25,7 @@ namespace RPCore
         readonly ObjectPool pool;
         readonly NativeMenu menu = new NativeMenu("Storage", "");
         readonly List<StorageLocation> locations;
+        readonly List<Blip> blips = new List<Blip>();
         Vehicle vehicle;
         string container;
         Vector3 origin;
@@ -37,6 +38,8 @@ namespace RPCore
             locations = Store.LoadDef("Storage/Locations.json", () => new List<StorageLocation> {
                 new StorageLocation { Id = "franklin_house", Name = "Strawberry stash", X = -14.1f, Y = -1440.2f, Z = 31.1f }
             });
+            foreach (var stash in locations.Where(s => s != null && !string.IsNullOrWhiteSpace(s.Id) && s.Capacity > 0))
+                blips.Add(MapBlips.Create(new Vector3(stash.X, stash.Y, stash.Z), "RPCore Storage: " + stash.Name, BlipSprite.Package, BlipColor.Blue, .7f));
         }
 
         public void OnKey(KeyEventArgs e)
@@ -100,6 +103,6 @@ namespace RPCore
         public void Tick() { if (menu.Visible && !Accessible()) menu.Visible = false; if (menu.Visible && dirty) Rebuild(); }
         public void Reload() { menu.Visible = false; vehicle = null; }
         public void Save() { }
-        public void Dispose() { menu.Visible = false; }
+        public void Dispose() { menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); blips.Clear(); }
     }
 }

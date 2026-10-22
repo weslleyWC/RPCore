@@ -24,6 +24,9 @@ namespace RPCore
         bool active, spawned;
         Vehicle ride;
         Blip blip;
+        readonly Blip startBlip;
+        // Same pizzeria point as PSRP; F6/JobKey still starts anywhere as before.
+        internal static readonly Vector3 StartLocation = new Vector3(536.945f, 100.5983f, 96.51432f);
         Vector3 dest;
         int remaining, deadline;
         float legDist;
@@ -31,6 +34,7 @@ namespace RPCore
         public PizzaJob(AchievementSystem ach)
         {
             this.ach = ach;
+            startBlip = MapBlips.Create(StartLocation, "RPCore Job: Pizza (" + Cfg.JobKey + ")", BlipSprite.LuckyWheel, BlipColor.Blue, .8f);
             stats = Store.Load("PizzaStats.json", () => new PizzaStats());
         }
 
@@ -91,6 +95,8 @@ namespace RPCore
 
             if (blip != null && blip.Exists()) blip.Delete();
             blip = World.CreateBlip(dest);
+            blip.Sprite = BlipSprite.Package;
+            blip.Scale = .8f;
             blip.Color = BlipColor.Yellow;
             blip.ShowRoute = true;
             blip.Name = "Pizza drop";
@@ -98,7 +104,17 @@ namespace RPCore
 
         public void Tick()
         {
-            if (!active) return;
+            if (!active)
+            {
+                var player = Game.Player.Character;
+                if (!InterfaceOptions.ModalOpen && !Game.IsMissionActive && !player.IsDead && player.Position.DistanceTo(StartLocation) < 30f)
+                {
+                    World.DrawMarker(MarkerType.Cylinder, StartLocation - new Vector3(0, 0, 1), Vector3.Zero, Vector3.Zero,
+                        new Vector3(1.2f, 1.2f, 1f), Color.FromArgb(110, 80, 160, 255));
+                    if (player.Position.DistanceTo(StartLocation) < 2f) Prompt.Help("Pizza delivery: " + Cfg.JobKey + " to start a shift.");
+                }
+                return;
+            }
 
             Ped p = Game.Player.Character;
             if (p.IsDead) { End("~r~You died. Shift over."); return; }
@@ -165,6 +181,7 @@ namespace RPCore
 
         public void Dispose()
         {
+            if (startBlip != null && startBlip.Exists()) startBlip.Delete();
             if (blip != null && blip.Exists()) blip.Delete();
             if (spawned && ride != null && ride.Exists()) ride.MarkAsNoLongerNeeded();
         }

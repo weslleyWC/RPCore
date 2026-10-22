@@ -1,4 +1,12 @@
-# RPCore 0.5.1 — GTA V Legacy
+# RPCore 0.6.0 — GTA V Legacy
+
+## Fase 1 — conveniências e mapa
+
+[Atualização 0.6.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.6.0.zip) · [Código-fonte 0.6.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.6.0.zip) · [Comparação RPCore × PSRP e próximas fases](docs/FASES-0.6.0.md)
+
+Pontos de compra corrigidos pelas coordenadas da PSRP.dll, incluindo LTD Davis, e catálogo ampliado para 20 conveniências. Configuração antiga padrão é corrigida em memória, sem apagar Shops.json ou saves. Posições personalizadas são preservadas. Ícones com nomes/cor/escala por categoria, depósito agora no mapa, pizzaria com ícone e GPS e entrega ativa com pacote amarelo. F6 continua iniciando/encerrando o turno. OIV e DLC já instalados continuam válidos.
+
+Build sem erros/avisos e 124 testes aprovados. A 0.5.1 foi confirmada funcionando no GTA pelo usuário; a 0.6.0 ainda precisa do teste dos novos pontos no jogo. [Teste desta fase e sequência dos jobs](docs/FASES-0.6.0.md#teste-solicitado-agora). Post OP, Uber e demais empregos continuam nas próximas fases; o comparativo distingue a lógica existente dos menus e classes vazias.
 
 ## YTD instalados — correção 0.5.1
 

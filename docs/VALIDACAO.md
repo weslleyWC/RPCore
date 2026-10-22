@@ -1,11 +1,15 @@
-# Validação — RPCore 0.5.1
+# Validação — RPCore 0.6.0
 
-Build Release net48 com SHVDN Enhanced 1.1.0.6 e LemonUI SHVDN3 2.2: zero erros, zero avisos. DLL SHA256 `cbccefe84e8ef4732f384aff8d13fea494d69174b578a806cf8760f21454f0c9`.
+Build Release net48 com SHVDN Enhanced 1.1.0.6 e LemonUI SHVDN3 2.2: zero erros, zero avisos. DLL SHA256 `8b17878f212a52fafd2f0b40da3d2b1c888e7c4e0c6152c6daa6e39008b68b89`.
 
-112 testes passam, zero falhas/ignorados. Os 16 novos casos cobrem metadados embutidos sem sidecars, merge seguro, ciclo de banners e classificação/JSON do diagnóstico. Os 96 casos anteriores continuam passando. Relatório DataTests.trx. Catalog.json e Bindings.json foram confirmados como recursos do binário Release, sem bytes YTD embutidos.
+124 testes aprovados, zero falhas/ignorados. Os 12 novos casos cobrem os três pontos públicos da referência, atualização 3→20, preservação de coordenadas/nomes personalizados, lista vazia, duplicatas, entradas nulas, idempotência, ausência de mutação da configuração e consistência JSON/defaults. Relatório DataTests.trx. Os 112 testes anteriores continuam passando.
 
-Varredura estática: 75 arquivos C# exportados da PSRP.dll, 251 construções ScaledTexture, 21 TextureAsset, 2 DRAW_SPRITE e 82 referências de fábrica de slots. Relatório PSRP-TEXTURE-AUDIT.json, hashes dos YTDs em PSRP-YTD-FILES.json, interpretação em AUDITORIA-YTD-0.5.1.md. Expressões dinâmicas/execução não são resolvidas inteiramente; a PSRP.dll não foi executada.
+Auditoria estática dos tipos de RPCore.dll 0.6.0 e PSRP.dll, com hash do RPCore.dll 0.5.1 distribuído como baseline. Índice dos 75 arquivos de referência, métodos, chamadas de Main e linhas de pagamento: PSRP-SYSTEMS-AUDIT-0.6.0.json. A DLL PSRP não foi executada, e estes índices não comprovam sucesso de gameplay. Comparação de sistemas e aceite por fase em FASES-0.6.0.md.
 
-Nenhuma mudança em saves, recursos YTD/RPF, DLC, update.rpf ou dlclist.xml. O caminho esperado foi confirmado pelo assembly.xml do OIV e pelo print do OpenIV do usuário. O novo diagnóstico nativo só pode ser executado no GTA do usuário; não se afirma que ele já retornou 679 matches ou que o visual já esteja idêntico.
+O usuário confirmou a 0.5.1 funcionando no GTA antes desta alteração. A 0.6.0 ainda não foi testada no GTA. Precisam de teste: acesso aos círculos de lojas com os interiores instalados, compra sem entrar atrás do caixa, ícones/minimapa/GPS, depósito, turno/pagamento de pizza, recarga de scripts e preservação dos saves reais.
 
-Instalador executado duas vezes com PowerShell 7/Linux sobre pasta GTA simulada com a distribuição 0.5.0: 86 arquivos existentes preservados byte a byte, incluindo catálogo parcial e Bindings.json inválido, saves, INIs, carteira e inventário. DLL anterior em backup e DLL nova idêntica ao build. Relatório installer-validation-0.5.1.json. Isto valida o instalador; não executa o GTA nem consultas nativas.
+Sem alteração em YTD/OIV/RPF, DLC, dlclist.xml, saves ou configurações locais. A compatibilidade com cada recurso instalado só pode ser confirmada no jogo do usuário.
+
+Os 20 pontos de config/Shops.json foram comparados automaticamente, em ordem, com a lista da PSRP exportada; todos coincidem (shop_reference no relatório).
+
+Instalador executado duas vezes com PowerShell 7/Linux sobre pasta GTA simulada com distribuição 0.5.1: 86 arquivos existentes preservados byte a byte, incluindo Shops.json antigo, catálogo parcial, Bindings.json inválido, saves, INIs, carteira e inventário. DLL anterior em backup e DLL nova idêntica ao build. Relatório installer-validation-0.6.0.json. Esta simulação não executa o GTA nem APIs nativas.

@@ -42,7 +42,7 @@ namespace RPCore
             gangs.AddRange(Store.LoadDef("Gangs/RPCoreCreated.json", () => new List<GangDefinition>()).Where(g => g != null && !string.IsNullOrWhiteSpace(g.Name) && !gangs.Any(old => old.Name == g.Name)));
             foreach (var gang in gangs)
             {
-                var b = World.CreateBlip(gang.Position); b.Name = gang.Name; b.IsShortRange = true;
+                var b = MapBlips.Create(gang.Position, "RPCore Gang HQ: " + gang.Name, BlipSprite.GangHighlight, BlipColor.Purple, .75f);
                 b.Color = gang.GangColor == "Purple" ? BlipColor.Purple : gang.GangColor == "Green" ? BlipColor.Green : BlipColor.Yellow;
                 blips.Add(b);
             }
@@ -58,7 +58,7 @@ namespace RPCore
             var p = Game.Player.Character.Position;
             var gang = new GangDefinition { Name = name, Description = "Gangue criada no RPCore", HQX = p.X, HQY = p.Y, HQZ = p.Z, GangColor = "Purple" };
             created.Add(gang); new JsonFiles().Write(path, created); gangs.Add(gang);
-            var b = World.CreateBlip(gang.Position); b.Name = name; b.Color = BlipColor.Purple; b.IsShortRange = true; blips.Add(b); dirty = true;
+            var b = MapBlips.Create(gang.Position, "RPCore Gang HQ: " + name, BlipSprite.GangHighlight, BlipColor.Purple, .75f); blips.Add(b); dirty = true;
             Notify.Show("Gangue cadastrada. F4: HQ e afiliacao.");
         }
 

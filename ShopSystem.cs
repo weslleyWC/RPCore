@@ -11,12 +11,6 @@ using System.Drawing;
 
 namespace RPCore
 {
-    public class ShopDef
-    {
-        public string Name;
-        public float X, Y, Z;
-    }
-
     public class ShopSystem : ISystem
     {
         public string Name { get { return "shop"; } }
@@ -29,17 +23,6 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         ShopDef current;
 
-        // Positions are from memory. Walk to the counter, hit the dump key (F9), paste into Shops.json.
-        static List<ShopDef> DefaultShops()
-        {
-            return new List<ShopDef>
-            {
-                new ShopDef { Name = "24/7 Strawberry",   X = 25.7f,    Y = -1347.3f, Z = 29.5f },
-                new ShopDef { Name = "LTD Davis",         X = -47.0f,   Y = -1758.7f, Z = 29.4f },
-                new ShopDef { Name = "LTD Mirror Park",   X = 1163.4f,  Y = -323.8f,  Z = 69.2f },
-            };
-        }
-
         static Vector3 Pos(ShopDef s) { return new Vector3(s.X, s.Y, s.Z); }
 
         public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach)
@@ -47,16 +30,12 @@ namespace RPCore
             this.pool = pool;
             this.inv = inv;
             this.ach = ach;
-            shops = Store.LoadDef("Shops.json", DefaultShops);
+            shops = ShopLocations.Resolve(Store.LoadDef("Shops.json", ShopLocations.Defaults));
             pool.Add(menu); Visuals.Register(menu, "shop");
 
             foreach (ShopDef s in shops)
             {
-                Blip b = World.CreateBlip(Pos(s));
-                b.Sprite = BlipSprite.Store;
-                b.Color = BlipColor.Green;
-                b.Name = s.Name;
-                b.IsShortRange = true;
+                Blip b = MapBlips.Create(Pos(s), "RPCore Store: " + s.Name, BlipSprite.Store, BlipColor.Green, .7f);
                 blips.Add(b);
             }
         }
@@ -104,7 +83,7 @@ namespace RPCore
             Vector3 pos = p.Position;
 
             if (menu.Visible && current != null && pos.DistanceTo(Pos(current)) > 4f) menu.Visible = false;
-            if (menu.Visible || pool.AreAnyVisible || p.IsInVehicle()) return;
+            if (menu.Visible || pool.AreAnyVisible || p.IsInVehicle() || p.IsDead || Game.IsMissionActive) return;
 
             foreach (ShopDef s in shops)
             {

@@ -45,7 +45,7 @@ namespace RPCore
             Reload();
             foreach (var s in stations)
             {
-                var b = World.CreateBlip(s.Position); b.Sprite = (BlipSprite)361; b.IsShortRange = true; b.Name = s.Name; blips.Add(b);
+                var b = MapBlips.Create(s.Position, "RPCore Fuel: " + s.Name, BlipSprite.JerryCan, BlipColor.Yellow, .65f); blips.Add(b);
             }
         }
 

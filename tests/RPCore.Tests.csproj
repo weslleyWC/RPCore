@@ -16,10 +16,12 @@
     <Compile Include="../VisualData.cs" Link="VisualData.cs" />
     <Compile Include="../NeedsData.cs" Link="NeedsData.cs" />
     <Compile Include="../InterfaceData.cs" Link="InterfaceData.cs" />
+    <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
     <EmbeddedResource Include="../config/Visuals/Catalog.json" LogicalName="RPCore.VisualDefaults.Catalog.json" />
     <EmbeddedResource Include="../config/Visuals/Bindings.json" LogicalName="RPCore.VisualDefaults.Bindings.json" />
+    <None Include="../config/Shops.json" Link="Shops.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../config/Visuals/*.json" Link="Visuals/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../assets/RPCore/SaveData/Players/*.json" Link="Fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

@@ -1,3 +1,15 @@
+# Alterações — RPCore
+
+## 0.6.0 — fase 1: conveniências e mapa
+
+- ShopData.cs/ShopSystem.cs/config/Shops.json: 20 pontos extraídos da lista de lojas da PSRP; correção dos três pontos antigos, incluindo LTD Davis. Overlay em memória apenas para padrões reconhecidos, sem escrita em configs/saves; compra anterior preservada. Bloqueio de interação quando morto/em missão.
+- MapBlips.cs, FuelSystem.cs, GarageSystem.cs, DealershipSystem.cs e GangSystem.cs: nomes RPCore, cores e escalas por categoria; HQs com sprite específico e cores existentes. Cada sistema continua dono apenas dos próprios blips.
+- StorageSystem.cs: blips para depósitos configurados válidos, removidos no Dispose. Porta-malas não recebe ícone permanente.
+- PizzaJob.cs/SettingsSystem.cs: pizzaria no ponto e ícone nativo usados pela PSRP, marcador e GPS; atalho JobKey/F6 mantém o comportamento anterior. Destinos de entrega usam pacote amarelo com rota.
+- Auditoria estática dos dois binários, incluindo o RPCore 0.5.1 distribuído como baseline; índice de 75 arquivos de referência em PSRP-SYSTEMS-AUDIT-0.6.0.json. Script reproduzível audit-psrp-systems.py, comparação e critérios por fase em FASES-0.6.0.md. Referência decompilada não foi transplantada para o projeto.
+- Versão 0.6.0 no assembly/menu/log/diagnóstico. 12 testes novos de configuração e migração; total 124 aprovados. Build zero erros/avisos. Instalador validado sobre distribuição 0.5.1 simulada, mantendo arquivos existentes.
+- Nenhuma mudança em formatos de save, áudio, YTD/OIV/RPF ou DLC. Novos empregos além da pizza básica não fazem parte desta entrega.
+
 # Análise dos arquivos e alterações — histórico 0.1, 0.2.0 e integração visual 0.3.0
 
 ## Integração visual 0.3.0

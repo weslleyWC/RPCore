@@ -141,6 +141,7 @@ namespace RPCore
             Shortcut(gps, "Garagens / GPS", () => Cfg.GarageKey, () => Cfg.EnableGarages);
             Shortcut(gps, "Concessionaria / GPS", () => Cfg.DealerKey, () => Cfg.EnableGarages);
             Shortcut(gps, "Gangues / GPS", () => Cfg.GangsKey, () => Cfg.EnableGangs);
+            Add(gps, "GPS: trabalho de pizza", "Pizzaria. Inicie/encerre o turno com " + Cfg.JobKey + ".", () => { Function.Call(Hash.SET_NEW_WAYPOINT, PizzaJob.StartLocation.X, PizzaJob.StartLocation.Y); gps.Visible = false; });
             foreach (var pin in map.ToList())
             {
                 var point = pin;

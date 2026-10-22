@@ -38,7 +38,7 @@ namespace RPCore
             this.pool = pool; this.ach = ach; data = Wallet.Transport;
             offers = Store.LoadDef("Dealership/Vehicles.json", DefaultOffers).Where(o => o != null && !string.IsNullOrWhiteSpace(o.Model) && o.Price > 0).ToList();
             garages = Store.LoadDef("Garages/Locations.json", GarageSystem.DefaultGarages).Where(GarageSystem.ValidDefinition).GroupBy(g => g.Id).Select(g => g.First()).ToList();
-            pool.Add(menu); Visuals.Register(menu, "dealership"); blip = World.CreateBlip(entrance); blip.Sprite = (BlipSprite)225; blip.Name = "RPCore Motors"; blip.IsShortRange = true;
+            pool.Add(menu); Visuals.Register(menu, "dealership"); blip = MapBlips.Create(entrance, "RPCore Motors", BlipSprite.PersonalVehicleCar, BlipColor.Blue, .8f);
         }
         public static List<VehicleOffer> DefaultOffers()
         {
