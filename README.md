@@ -1,8 +1,16 @@
-# RPCore 0.2.0 — GTA V Legacy
+# RPCore 0.3.0 — GTA V Legacy
 
 Projeto C# .NET Framework 4.8 para **ScriptHookVDotNet Enhanced 1.1.0.6** e **LemonUI SHVDN3 2.2**, as versões informadas pelo desenvolvedor. Implementação própria sobre os fontes enviados, mantendo `ISystem`, LemonUI e os formatos básicos de inventário, necessidades e pizza.
 
-A base anterior foi testada no GTA pelo usuário e ele informou que funcionou. As adições 0.2.0 abaixo foram compiladas e testadas nos dados; o teste de gameplay desta nova versão será feito pelo usuário.
+A primeira entrega (commit 6819140) foi testada no GTA pelo usuário e ele informou que funcionou. As adições 0.2.0 e a integração visual 0.3.0 foram compiladas/testadas nos dados e aguardam seus testes de gameplay.
+
+## Visuais novos — importante para a versão 0.3.0
+
+A DLL agora usa os recursos **PSRP.oiv** e **psrp_props.zip** enviados pelo usuário: HUD de anéis/ícones, painel de veículo, banners, ícones de itens, apresentação de props e telefone F1 com atalhos para os sistemas existentes. Instalar somente a DLL não registra texturas ou DLC no GTA.
+
+Baixe também **RPCore-visual-assets-0.3.0.zip**. Se já tiver esses mesmos recursos instalados, use F10 → Visual assets: diagnose antes de reinstalar. Instruções completas e checklist: [VISUAIS-0.3.0.md](docs/VISUAIS-0.3.0.md). O helper prepara o DLC sem editar update.rpf; a instalação do OIV e a entrada dlclist são feitas pelo OpenIV, preservando os outros mods.
+
+`Visuals.ini` controla a aparência, escala, props e tecla do telefone. Sem o OIV/DLC, o RPCore conserva a interface básica e as funções existentes. Os originais estão em visual-assets no repositório e no pacote visual separado; o ZIP de fontes não duplica esses binários. Os arquivos de arte não incluem toda a lógica/layout original PSRP; a composição foi implementada para o RPCore.
 
 ## Instalar no GTA
 
@@ -22,6 +30,7 @@ Configurações antigas são preservadas: se `Settings.ini` já existir, acresce
 
 | Tecla | Ação |
 |---|---|
+| F1 | Telefone PSRP: setas/Enter para atalhos, Esc/F1 para fechar (a pé) |
 | I | Inventário; selecionar um consumível para usá-lo |
 | E | Abrir uma loja quando estiver próximo ao balcão e a pé |
 | F6 | Iniciar/cancelar turno de pizza, com 5 entregas por padrão |
@@ -94,4 +103,4 @@ dotnet test tests/RPCore.Tests.csproj -c Release
 python scripts/package.py
 ```
 
-Se `.deps` existir, ela tem prioridade. Use `-p:ReferenceDir='D:\referencias'` para indicar outra pasta com as duas DLLs de referência. `python scripts/package.py` gera `dist/RPCore-update.zip` e `dist/RPCore-source.zip` após a compilação. Nenhum teste externo afirma ter executado o GTA.
+Se `.deps` existir, ela tem prioridade. Use `-p:ReferenceDir='D:\referencias'` para indicar outra pasta com as duas DLLs de referência. `python scripts/package.py` gera `dist/RPCore-update.zip` e `dist/RPCore-source.zip` após a compilação; com os originais em visual-assets também gera `dist/RPCore-visual-assets.zip`. Nenhum teste externo afirma ter executado o GTA.

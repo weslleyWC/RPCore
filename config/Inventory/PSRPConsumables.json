@@ -1,0 +1,12 @@
+[
+  { "Id": "milk", "Name": "Milk", "Desc": "Milk carton.", "Weight": 1.0, "Price": 6, "Hunger": 5, "Thirst": 25 },
+  { "Id": "fries", "Name": "Fries", "Desc": "A serving of fries.", "Weight": 0.2, "Price": 5, "Hunger": 15 },
+  { "Id": "hotdog", "Name": "Hotdog", "Desc": "A hotdog in a bun.", "Weight": 0.3, "Price": 7, "Hunger": 25 },
+  { "Id": "pepsi", "Name": "Pepsi", "Desc": "A cold soft drink.", "Weight": 0.35, "Price": 4, "Thirst": 20 },
+  { "Id": "sprite", "Name": "Sprite", "Desc": "A cold soft drink.", "Weight": 0.35, "Price": 4, "Thirst": 20 },
+  { "Id": "monster", "Name": "Monster", "Desc": "Energy drink; restores hydration only in RPCore.", "Weight": 0.5, "Price": 7, "Thirst": 25 },
+  { "Id": "redbull", "Name": "Red Bull", "Desc": "Energy drink; restores hydration only in RPCore.", "Weight": 0.25, "Price": 6, "Thirst": 20 },
+  { "Id": "chocmuffin", "Name": "Chocolate Muffin", "Desc": "A chocolate muffin.", "Weight": 0.15, "Price": 4, "Hunger": 15 },
+  { "Id": "kiwi", "Name": "Kiwi", "Desc": "Fresh fruit.", "Weight": 0.1, "Price": 2, "Hunger": 6, "Thirst": 3 },
+  { "Id": "pear", "Name": "Pear", "Desc": "Fresh fruit.", "Weight": 0.2, "Price": 3, "Hunger": 10, "Thirst": 5 }
+]

@@ -33,7 +33,7 @@ namespace RPCore
 
         public StorageSystem(ObjectPool pool, InventorySystem inventory, AchievementSystem ach)
         {
-            this.pool = pool; this.inventory = inventory; this.ach = ach; pool.Add(menu);
+            this.pool = pool; this.inventory = inventory; this.ach = ach; pool.Add(menu); Visuals.Register(menu, "storage");
             locations = Store.LoadDef("Storage/Locations.json", () => new List<StorageLocation> {
                 new StorageLocation { Id = "franklin_house", Name = "Strawberry stash", X = -14.1f, Y = -1440.2f, Z = 31.1f }
             });
@@ -67,6 +67,7 @@ namespace RPCore
         void Rebuild()
         {
             int selected = menu.SelectedIndex; menu.Clear(); menu.Name = container;
+            Visuals.ClearItems(menu);
             AddRows(inventory.Snapshot(), true);
             AddRows(new Dictionary<string, int>(inventory.Container(container)), false);
             if (menu.Items.Count == 0) menu.Add(new NativeItem("Empty", "Buy items at a store first.") { Enabled = false });
@@ -79,6 +80,7 @@ namespace RPCore
             {
                 string id = pair.Key;
                 var row = new NativeItem((deposit ? "Store: " : "Take: ") + (inventory.Defs.ContainsKey(id) ? inventory.Defs[id].Name : id), "Transfer one item. Inventory and storage are saved together.") { AltTitle = "x" + pair.Value };
+                Visuals.Badge(menu, row, id);
                 row.Activated += (s, e) => {
                     if (!Accessible()) { menu.Visible = false; return; }
                     if (!inventory.Transfer(container, id, deposit, capacity)) Notify.Show("Not enough space or item unavailable.");

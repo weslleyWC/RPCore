@@ -1,0 +1,3444 @@
+{
+  "Dictionaries": {
+    "PSRP": [
+      {
+        "Name": "HealthIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar71",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar83",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BoxMagazine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SteelBuckshotShells",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "keyhole",
+        "Width": 1200,
+        "Height": 1200
+      },
+      {
+        "Name": "char_weather",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "PassLetter",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "NightVisionScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar65",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar93",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "lockpick",
+        "Width": 292,
+        "Height": 452
+      },
+      {
+        "Name": "DragonsBreathShells",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar46",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "lock",
+        "Width": 544,
+        "Height": 456
+      },
+      {
+        "Name": "HeavyDutyMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar31",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "LightArmor",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BonnetButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarIndicatorIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar45",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar92",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenGlasses",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FlechetteShells",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SleepIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenWatchIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "GrenadeLaunche Ammo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar73",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar53",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PistolAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar30",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarSeatbeltIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar86",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BGController",
+        "Width": 512,
+        "Height": 248
+      },
+      {
+        "Name": "HazardsButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar20",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar48",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar42",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar99",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DrugRepIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar58",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Scope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HoverIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "AdvancedScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar74",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "TacticalMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar47",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar41",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar87",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "60",
+        "Width": 216,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar59",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar98",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FailPage",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "CarCruiseIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "MoneyIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarVisual",
+        "Width": 236,
+        "Height": 116
+      },
+      {
+        "Name": "OutBar32",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ImformationIcon-01",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Page2",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "MountedScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar75",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DrumMagazine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WheelWrench",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenVape",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar9",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar77",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Screwdriver",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar25",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PrecisionMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WindowButtonFR",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "LightsButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SeatbeltButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DoorButtonLeft",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar97",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FlareIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SafeUiLock",
+        "Width": 512,
+        "Height": 512
+      },
+      {
+        "Name": "OutBar16",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar10",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar100",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Page3",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "OutBar50",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "MoneyUI",
+        "Width": 384,
+        "Height": 384
+      },
+      {
+        "Name": "OutBar56",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar78",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar35",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "JerryCanIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarHeadLightIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DeerAntlers",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar96",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar15",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar49",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenEarBuds",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenRing",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "RawMeetSmall",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ArmorPiercingRounds",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar12",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "WarningIcon-01",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "FatEndMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DrinkVisual",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DefaultShells",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar63",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Grip",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar79",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "50",
+        "Width": 216,
+        "Height": 256
+      },
+      {
+        "Name": "CarJack",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StolenGiftCard",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "70",
+        "Width": 216,
+        "Height": 256
+      },
+      {
+        "Name": "Compensator",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar6",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ExtendedMagazine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar85",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ButtonLightInterior",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar11",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ShotgunAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BankUI",
+        "Width": 384,
+        "Height": 384
+      },
+      {
+        "Name": "OutBar54",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarSystem",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "GoodPelt",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "MediumScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar36",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar72",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SocketSet",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SlantedMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Level3NitrousKit",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "TireIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar84",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SpliffIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ZoomScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SucsessIcon-01",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar55",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SmokeGrenadeIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DefaultBarrel",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CarElectricIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar21",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BorderInventory",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "40",
+        "Width": 216,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar5",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar61",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar19",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FeathersBlack",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CircleWhite",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar38",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "LBlinker",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar8",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Level1NitrousKit",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar28",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar40",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OilCanIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DrugPackage",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar91",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar37",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar62",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarFuelIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar7",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "EngineButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "HolographicSight",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RawMeetMedium",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FoodIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PhoneImage",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar27",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarLines",
+        "Width": 56,
+        "Height": 100
+      },
+      {
+        "Name": "SquaredMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar34",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PoliceScanner",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "RawMeetBig",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar68",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar51",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar89",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SMGAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "TracerRounds",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar14",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar90",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "HandbrakeButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar80",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar60",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar39",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar33",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "LargeScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar1",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "IncendiaryRounds",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DrinkIcon",
+        "Width": 100,
+        "Height": 100
+      },
+      {
+        "Name": "OutBar76",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar88",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "MGAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar2",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StandardMagazine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Suppressor",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar52",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PoorPelt",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PassPage",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "SniperAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FlatMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar26",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar13",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "LungIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar69",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar0",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FeathersWhite",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "GunFlashlight",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar82",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ExplosiveSlugsShells",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Rblinker",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SmallScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RifleAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SplitEndMuzzleBrake",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar24",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ArmorIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "BootButton",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DoorButtonRight",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar66",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Level2NitrousKit",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SpeedoLine",
+        "Width": 256,
+        "Height": 16
+      },
+      {
+        "Name": "MinigunAmmo",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "CarOilIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "FullMetalJacketRounds",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DealingOverlay",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar4",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar81",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Page1",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "RectangleIcon",
+        "Width": 512,
+        "Height": 248
+      },
+      {
+        "Name": "PerfectPelt",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar57",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "Page4",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "FillSmall",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "HollowPointRounds",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar44",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar18",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar67",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar95",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar23",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar70",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar3",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar17",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "JMCLogo",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "WindowButtonFL",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "WantedIcon",
+        "Width": 272,
+        "Height": 88
+      },
+      {
+        "Name": "GPS",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ThermalScope",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutBar43",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "ErrorIcon-01",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Page5",
+        "Width": 2048,
+        "Height": 1024
+      },
+      {
+        "Name": "OutBar29",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar22",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "HeavyBarrel",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "FlatTireIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar64",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "DirtyMoney",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "SafeUiPointer",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "OutBar94",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "RectangleBorder",
+        "Width": 512,
+        "Height": 248
+      }
+    ],
+    "PSRP_Banners": [
+      {
+        "Name": "ClothingBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "LSCUSTOMBANNER",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "HotdogBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "ArmsDealerBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "GunShop",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "ShopBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "BurgerBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "BankBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PlaceholderBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PizzaBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "JumpScareOne",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "WeaponLicenseBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "ButcherBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "SmokeShopBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapCentreBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PSRPBANNER1",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PlayerLicenseBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "FruitStandBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PSRPBANNER2",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "StashBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "SettingsBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "CarBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "BoltBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "Valet",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PSRPBANNER3",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PostOpBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "DragBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "BarberMenu",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "PoliceBanner",
+        "Width": 752,
+        "Height": 228
+      },
+      {
+        "Name": "DrugDealingBanner",
+        "Width": 512,
+        "Height": 128
+      },
+      {
+        "Name": "InsuranceBanner",
+        "Width": 512,
+        "Height": 128
+      }
+    ],
+    "PSRP_Inventory": [
+      {
+        "Name": "fuelcan",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ceramicpistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "crowfeather",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "c4",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "shaker",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "chocmuffin",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "nightstick",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DrugPackageIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapBottle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "marlboro",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "specialcarbine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "assaultsmg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cocaine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bullpupshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pear",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "FoodIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CourtIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "machete",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenCheapWatch",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "UnderglowRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pistol50",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "grenadelauncher",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DeleteIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InventoryHelpTextKeyboard",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "oilcan",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "milk",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "BlinkerRightRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu4",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "HomeIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenSmartWatch",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "minismg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu7",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "scales",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "vodka",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "combatshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "marksmanpistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "smokingicon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenWatch",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coke",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "grinder",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bat",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PedInterIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pumpshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WeaponIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "tacticalsmg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "carbinerifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coffee",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "weedbagged",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InventoryIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "babyruth",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bongdirty",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "winered",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "firstaid",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenBusTicket",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CarInterIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "snspistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "galaxybar",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "twix",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pistolammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "kiwi",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu5",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "rabbitpeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pepsi",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "glammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu6",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "InteractionIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rawmeatsmall",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "heavyrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "navyrevolver",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "syrup",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "MaskIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "dagger",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "whiskey",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "dirtysprite",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ShopControlController",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "drugbags",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenPhone",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DoorIconLeftRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Passport",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "SaveIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HoodRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "deerpeltbad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapCopper",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "snickers",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMiddle",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "cigar",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "drivinglicense",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "proximitymine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DrunkIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "flaregunammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "advancedrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ClothingItemRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "assaultrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "sawnoffshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "battlerifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "jobsystemhome",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "deerpeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WeightIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SettingsIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "deerpeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Top",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "ScrapOldPhone",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InventoryHelpTextController",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "screwdriver",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "phone",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "crowbar",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StorageHelpKeyboard",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "FruitIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rpg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "doublebarrelshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "heavypistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cowpeltbad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu8",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "rawmeatmedium",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rum",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "GpsIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "GlassesIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ToolIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ButcherIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapRubber",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CarHeadLightIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "StorageHelpController",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "DeerAntlers",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "heavysniper",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "marsbar",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cowpeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu1",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "CarLightsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coyotepeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapBattery",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "chicksalad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "minigun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "mtdew",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "blt",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "boarpeltpoor",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenRing",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "reeses",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HazardRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "boarpeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coyotepeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rawmeatlarge",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "battleaxe",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapMobo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "tequila",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StorageHelpKeyboardSide",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "lime",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pigskin",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "milkyway",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "emptybottle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SellingHelpTextKeyboard",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "mdma",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HotdogIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "EyeIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PassportIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coyotetooth",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "shotgunammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "armormedium",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenChain",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "BurgerIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "armorheavy",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "mtlionpeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "jobbackingpage",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "ScrapPhone",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coughmedicine",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "stungun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "apple",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bagel",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "orange",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InteriorLightIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "crackbagged",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "smokegrenade",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DocumentsIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "sniperrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "sprite",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "weedgummies",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "hershey",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "boarpeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DoorIconRightRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cowpeltgood",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cocainebagged",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "BoarTusk",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HandbrakeRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bankcard",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bakingsoda",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CarIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "compactrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "donut",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "proteinpowder",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WindowRightRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "combatpdw",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "heavyshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "microsmg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "hotdog",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "mtlionpeltbad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "machinepistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "umbrella",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "eggmayo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "flare",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rocketammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "policescanner",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "assaultshotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "EngineIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "BlinkerLeftRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DeleteOutfitRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CruiseIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "flaregun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "smgammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "grenade",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bong",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "combatpistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "knife",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rabbitfoot",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StolenEarphones",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HealthIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "OutfitIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SellingHelpTextController",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "corona",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "mgammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "precisionrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ShopControlKeyboard",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "hominglauncher",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "GangIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "sniperammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "crack",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "sweepershotgun",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "erroricon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "huntinglicence",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "NextPageIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SmokingIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "switchblade",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "winewhite",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "SeatbeltIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapVape",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "chickenhawkfeather",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "water",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rabbitpeltbad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CarSettingRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InventoryBoxNoti",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "lighter",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "monster",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "spliff",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "doubleaction",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "knuckleduster",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "appistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "papers",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rifleammo",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "marksmanrifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "gamebait",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "armorlight",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PDMrad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "coyotepeltbad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "pbjelly",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "weed",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "rabbitpeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapPowerBank",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "revolver",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HatIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RGBIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ATMIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "smg",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bzgas",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "mtlionpeltperfect",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "cormorantfeather",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "FuelIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WindowLeftRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "hatchet",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "MechanicIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "BarberIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "redbull",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "predatorbait",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu2",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "HackingTablet",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "DrinkIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "jobsystemhighlight",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "pipebomb",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PreviousPageIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "vintagepistol",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "henfeather",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ScrapMetal",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ShopIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "InventoryBox",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WeedIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "bullpuprifle",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HighIcon",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "fries",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "shakerdirty",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "licenseplate",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "RadMenu3",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "BootIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "molotov",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "EmoteIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "HeadlightIconRad",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Background",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "hersheycookie",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StorageHelpControllerSide",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "EngineRad",
+        "Width": 128,
+        "Height": 128
+      }
+    ],
+    "PSRP_Jobs": [
+      {
+        "Name": "workborder",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "pdmshowcase",
+        "Width": 315,
+        "Height": 220
+      },
+      {
+        "Name": "pdmcollect",
+        "Width": 315,
+        "Height": 220
+      },
+      {
+        "Name": "jobsystemhome",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "overviewpage",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "pdmcards",
+        "Width": 315,
+        "Height": 220
+      },
+      {
+        "Name": "pdmdeliver",
+        "Width": 315,
+        "Height": 220
+      },
+      {
+        "Name": "jobbackingpage",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "jobsystemhighlight",
+        "Width": 1920,
+        "Height": 1080
+      }
+    ],
+    "PSRP_PHONE": [
+      {
+        "Name": "IconBarrier",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "IconCamera",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "JobsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneWallpaper10",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconCallout",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "MessagePreview",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "ActiveCallOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "PoliceIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconPed",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "NotificationPreview",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "ArrowUp",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconsLSPD",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "SoundOffIcon",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "HoverIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneWallpaper2",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "GangsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "MessagesIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneWallpaper8",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconActions",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "ClockIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconID",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "PhoneWallpaper5",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconSpikes",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "PhoneWallpaper7",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "NotesOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconHandcuffs",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "ContactIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ContactIcon2",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "NotesIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconSettings",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "IconContraband",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "PhoneWallpaper1",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconArrest",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "ContactIcon3",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneBackPlain",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "PhoneWallpaper4",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconMoney",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "UberIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ContactIcon4",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "PhoneTexture",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconClock",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "CircleRound",
+        "Width": 114,
+        "Height": 114
+      },
+      {
+        "Name": "StockIconPhone",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "LSPDPage",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "MapsOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "ContactIcon5",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "Bodycam",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "UnreadMarker",
+        "Width": 256,
+        "Height": 256
+      },
+      {
+        "Name": "PhoneWallpaper6",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconCone",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "SettingsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconStar",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "TimerIcon",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "PhoneWallpaper3",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "FitnessOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "WeatherIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CalcHover",
+        "Width": 64,
+        "Height": 64
+      },
+      {
+        "Name": "PhoneOptionsBG",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "CalculatorPage",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "IconSearch",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "SoundOnIcon",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "WeatherOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "TwitchOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "FitnessIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "ContactIcon0",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CalculatorIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "NotificationsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "StopWatchIcon",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "TwitchIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconCar",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "ContactIcon1",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "MusicIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "CallingOverlay",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "PhoneWallpaper9",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "MapsIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconFrisk",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "ArrowDown",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "WalletIcon",
+        "Width": 128,
+        "Height": 128
+      },
+      {
+        "Name": "IconBackup",
+        "Width": 48,
+        "Height": 48
+      },
+      {
+        "Name": "IconHome",
+        "Width": 64,
+        "Height": 64
+      }
+    ],
+    "PSRP_RADICAL": [
+      {
+        "Name": "RadMenu4",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu7",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu5",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu6",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu1",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "radicalMenuBorder",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu7 2",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu2",
+        "Width": 1920,
+        "Height": 1080
+      },
+      {
+        "Name": "RadMenu3",
+        "Width": 1920,
+        "Height": 1080
+      }
+    ],
+    "char_jmc": [
+      {
+        "Name": "char_jmc",
+        "Width": 64,
+        "Height": 64
+      }
+    ],
+    "char_music": [
+      {
+        "Name": "char_music",
+        "Width": 64,
+        "Height": 64
+      }
+    ]
+  },
+  "Models": [
+    "baitgame",
+    "baitpredator",
+    "brolly_jmc",
+    "coke",
+    "fedex_box",
+    "fries",
+    "hotdog",
+    "kiwi",
+    "lean",
+    "lime",
+    "milk",
+    "monster",
+    "mtdew",
+    "muffin",
+    "pdm_glass",
+    "pear",
+    "pepsi",
+    "phonesmart",
+    "prime_box",
+    "redbull",
+    "seabream",
+    "shaker",
+    "sprite",
+    "ups_box",
+    "usps_box",
+    "vodka",
+    "weedgummies"
+  ]
+}

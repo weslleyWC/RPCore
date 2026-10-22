@@ -1,0 +1,9 @@
+{
+  "Runtime": "PowerShell 7.6.7/Linux with temporary GTA directory; no OpenIV/GTA execution",
+  "Runs": 2,
+  "ExtractedRpfBytes": 127979008,
+  "ExtractedRpfSHA256": "2ada13065946fce703b3abce0b813d01c270d953cb085832d659f8686d100701",
+  "OriginalGameArchiveUnmodified": true,
+  "DifferentExistingDlcProtected": true,
+  "CorruptPackageRejected": true
+}

@@ -1,0 +1,8 @@
+{
+  "Runtime": "PowerShell 7.6.7/Linux; temporary previous-0.2.0-payload fixture; no Windows/GTA execution",
+  "Runs": 2,
+  "PreviousFilesPreserved": 79,
+  "VehicleSavePreservedByteForByte": true,
+  "NewVisualConfigFilesInstalled": true,
+  "PreviousDllBackedUp": true
+}

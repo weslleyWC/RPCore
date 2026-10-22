@@ -109,8 +109,9 @@ namespace RPCore
             World.DrawMarker(MarkerType.Cylinder, dest, Vector3.Zero, Vector3.Zero,
                 new Vector3(4f, 4f, 2.5f), Color.FromArgb(110, 255, 200, 0));
 
-            new TextElement(
-                string.Format("PIZZA   {0} left   {1}{2}s", remaining, left < 0 ? "-" : "", Math.Abs(left) / 1000),
+            string status = string.Format("PIZZA   {0} left   {1}{2}s", remaining, left < 0 ? "-" : "", Math.Abs(left) / 1000);
+            if (!Visuals.TryPizzaHeader(status, left < 0 ? Color.OrangeRed : Color.White)) new TextElement(
+                status,
                 new PointF(GTA.UI.Screen.ScaledWidth / 2f, 14f), 0.45f,
                 left < 0 ? Color.OrangeRed : Color.White,
                 GTA.UI.Font.ChaletLondon, Alignment.Center).Draw();

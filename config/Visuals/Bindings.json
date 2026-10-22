@@ -1,0 +1,122 @@
+{
+  "Banners": {
+    "core": "SettingsBanner",
+    "inventory": "ShopBanner",
+    "shop": "ShopBanner",
+    "storage": "StashBanner",
+    "achievements": "PSRPBANNER1",
+    "vehicle": "CarBanner",
+    "garage": "CarBanner",
+    "dealership": "PSRPBANNER2",
+    "gangs": "PSRPBANNER3",
+    "radio": "PSRPBANNER1",
+    "stocks": "BankBanner",
+    "pizza": "PizzaBanner"
+  },
+  "ItemIcons": {
+    "water": "water",
+    "soda": "pepsi",
+    "burger": "BurgerIcon",
+    "sandwich": "blt",
+    "chips": "fries",
+    "bandage": "firstaid",
+    "first_aid": "firstaid",
+    "coffee": "coffee",
+    "apple": "apple",
+    "milk": "milk",
+    "fries": "fries",
+    "hotdog": "hotdog",
+    "pepsi": "pepsi",
+    "sprite": "sprite",
+    "monster": "monster",
+    "redbull": "redbull",
+    "chocmuffin": "chocmuffin",
+    "kiwi": "kiwi",
+    "pear": "pear"
+  },
+  "ItemProps": {
+    "water": {
+      "Model": "prop_ld_flow_bottle",
+      "Drink": true
+    },
+    "soda": {
+      "Model": "pepsi",
+      "Fallback": "prop_ecola_can",
+      "Drink": true
+    },
+    "burger": {
+      "Model": "prop_cs_burger_01",
+      "Drink": false
+    },
+    "sandwich": {
+      "Model": "prop_sandwich_01",
+      "Drink": false
+    },
+    "chips": {
+      "Model": "fries",
+      "Fallback": "prop_food_bs_chips",
+      "Drink": false
+    },
+    "coffee": {
+      "Model": "p_amb_coffeecup_01",
+      "Drink": true
+    },
+    "milk": {
+      "Model": "milk",
+      "Fallback": "prop_ld_flow_bottle",
+      "Drink": true
+    },
+    "fries": {
+      "Model": "fries",
+      "Fallback": "prop_food_bs_chips",
+      "Drink": false
+    },
+    "hotdog": {
+      "Model": "hotdog",
+      "Fallback": "prop_cs_hotdog_01",
+      "Drink": false
+    },
+    "pepsi": {
+      "Model": "pepsi",
+      "Fallback": "prop_ecola_can",
+      "Drink": true
+    },
+    "sprite": {
+      "Model": "sprite",
+      "Fallback": "prop_ecola_can",
+      "Drink": true
+    },
+    "monster": {
+      "Model": "monster",
+      "Fallback": "prop_ecola_can",
+      "Drink": true
+    },
+    "redbull": {
+      "Model": "redbull",
+      "Fallback": "prop_ecola_can",
+      "Drink": true
+    },
+    "chocmuffin": {
+      "Model": "muffin",
+      "Drink": false
+    },
+    "kiwi": {
+      "Model": "kiwi",
+      "Drink": false
+    },
+    "pear": {
+      "Model": "pear",
+      "Drink": false
+    },
+    "_phone": {
+      "Model": "phonesmart",
+      "Fallback": "prop_npc_phone_02",
+      "X": 0.01,
+      "Y": 0.01,
+      "Z": 0,
+      "RX": 0,
+      "RY": 0,
+      "RZ": 180
+    }
+  }
+}

@@ -1,4 +1,27 @@
-# Análise dos arquivos e alterações — histórico 0.1 + atualização 0.2.0
+# Análise dos arquivos e alterações — histórico 0.1, 0.2.0 e integração visual 0.3.0
+
+## Integração visual 0.3.0
+
+Entradas adicionais analisadas antes das alterações: PSRP.oiv (8.495.302 bytes) e psrp_props.zip (26.257.461 bytes), preservadas byte a byte. OIV: oito YTDs e 679 texturas; DLC RPF7 OPEN: XMLs, RPF interno, 27 modelos e um YTYP. Todos os 28 recursos RSC7 de props foram descomprimidos para inspeção e tiveram os tamanhos de páginas conferidos. Pré-visualizações foram extraídas para conferir formas, proporções e alpha. A tela preta da moldura PhoneTexture é opaca, portanto o código a desenha antes do wallpaper e dos aplicativos.
+
+Alterações:
+
+- `VisualData.cs`: catálogo, vínculos, porcentagens/escala/safe zone e navegação de grade testáveis sem GTA.
+- `Visuals.cs`: streaming de dicionários existentes, desenho por sprite, layout proporcional, anéis de necessidades, banners/ícones LemonUI, opções e restauração/fallback.
+- `VisualSystem.cs`: HUD de carteira e veículo com estados reais e diagnóstico de oito dicionários/27 nomes de modelo. CarOilIcon é alerta de saúde do motor, não uma nova simulação de óleo.
+- `PropPresentation.cs`: props/animações cosméticos de comida/bebida/telefone com carregamento assíncrono, fallback por modelo e limpeza limitada ao que o sistema iniciou. Consumo não depende do sucesso visual.
+- `PhoneSystem.cs`: telefone F1 com frame/wallpaper/ícones originais e atalhos de sistemas reais, seleção por teclado/controle e fechamento em transições. Não implementa chamadas, SMS ou todos os aplicativos desenhados no atlas.
+- `Main.cs`, `Cfg.cs`, `CoreMenu.cs`, `AssemblyInfo.cs`: versão 0.3.0.0, registro dos três sistemas visuais (18 no total com features habilitadas), roteamento de teclado do telefone e diagnóstico/releitura da configuração.
+- `NeedsSystem.cs`, `FuelSystem.cs`, `VehicleControlSystem.cs`, `SeatbeltSystem.cs`: dados reais ligados ao HUD, fallback da versão anterior e estado de cinto/cruise exposto. Não houve substituição de seus saves.
+- Menus de inventário, loja, armazenamento, conquistas, veículo, garagem, concessionária, gangues, rádio, bolsa e configurações registrados para banners. Inventário/loja/armazenamento vinculam ícones por item.
+- `PizzaJob.cs`: banner PizzaBanner no cabeçalho, preservando o texto anterior como fallback.
+- `InventorySystem.cs`: evento de consumo após aplicar o efeito, usado pelo apresentador cosmético; armazenamento/peso/formato de save mantidos.
+- `config/Visuals.ini` e `config/Visuals/*.json`: flags, escala, tecla, catálogo real e vínculos. `Inventory/PSRPConsumables.json`: dez alimentos/bebidas com efeitos e preços próprios.
+- `scripts/Prepare-VisualAssets.ps1`: verifica hashes, prepara somente o DLC de props no diretório mods e recusa substituição de pacote diferente; nunca edita update.rpf/dlclist.
+- `scripts/package.py`: pacote visual separado, sem duplicar binários visuais no ZIP de fontes; originais disponíveis em `visual-assets` no repositório.
+- `tests/VisualDataTests.cs`: 13 casos adicionais, além dos 50 existentes. Evidência: `visual-inspection.json`, `visual-installer-validation.json`, previews e relatório do runner.
+
+A instalação pelo OpenIV, o desenho/animações e o registro real dos modelos ainda exigem seu teste no GTA/Windows. Cinco nomes de recursos não tiveram hash localizado no YTYP e não foram ativados por novas ações. Os recursos restantes do PSRP continuam preservados, sem afirmar que todas as funcionalidades existentes nas imagens já foram implementadas. Detalhes e passos: `VISUAIS-0.3.0.md`.
 
 ## Atualização 0.2.0 (após confirmação de teste da base pelo usuário)
 

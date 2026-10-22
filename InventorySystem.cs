@@ -39,6 +39,7 @@ namespace RPCore
         readonly NativeMenu menu = new NativeMenu("Inventory", "");
         InvData d;
         bool dirty;
+        public event Action<ItemDef> Used;
 
         static List<ItemDef> DefaultItems()
         {
@@ -67,7 +68,7 @@ namespace RPCore
                 catch (Exception ex) { Log.Error("item pack " + Path.GetFileName(pack), ex); }
             }
             Defs = items.Where(i => i != null && !string.IsNullOrEmpty(i.Id) && i.Weight >= 0 && !float.IsNaN(i.Weight) && !float.IsInfinity(i.Weight)).GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.Last());
-            pool.Add(menu);
+            pool.Add(menu); Visuals.Register(menu, "inventory");
             Reload();
         }
 
@@ -123,12 +124,14 @@ namespace RPCore
             Notify.Show("Used " + def.Name);
             ach.Bump("items_used");
             if (def.Health > 0) ach.Bump("first_aid");
+            Used?.Invoke(def);
         }
 
         void Rebuild()
         {
             int idx = menu.SelectedIndex;
             menu.Clear();
+            Visuals.ClearItems(menu);
             menu.Name = string.Format("{0:0.0} / {1:0} kg", Weight, Cfg.MaxWeight);
 
             if (d.Items.Count == 0)
@@ -146,6 +149,7 @@ namespace RPCore
                     continue;
                 }
                 var item = new NativeItem(def.Name, def.Desc) { AltTitle = "x" + kv.Value };
+                Visuals.Badge(menu, item, def.Id);
                 item.Activated += (s, e) => { Use(def); };
                 menu.Add(item);
             }

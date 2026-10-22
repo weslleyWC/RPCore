@@ -95,6 +95,12 @@ namespace RPCore
             string key = Key(v); FuelTank fuel;
             return key == null || !data.Tanks.TryGetValue(key, out fuel) || fuel.Liters > .001f;
         }
+        public FuelTank ViewTank(Vehicle v)
+        {
+            FuelTank value;
+            string key = Supported(v) ? Key(v) : null;
+            return Cfg.EnableFuel && key != null && data.Tanks.TryGetValue(key, out value) ? value : null;
+        }
 
         public void Tick()
         {
@@ -153,6 +159,11 @@ namespace RPCore
         void Draw()
         {
             if (tank == null) return;
+            if (Visuals.VehicleReady)
+            {
+                if (pumping) Visuals.Text("Refueling: " + Cfg.FuelKey + " to stop", Visuals.Width - Visuals.InsetX - 360 * Visuals.Scale, 1080 - Visuals.InsetY - 260 * Visuals.Scale, .28f, Color.White);
+                return;
+            }
             string label = string.Format("FUEL {0:0.0}/{1:0} L  |  {2:0.0} km{3}", tank.Liters, tank.Capacity, tank.DistanceKm, pumping ? "  [" + Cfg.FuelKey + ": stop]" : "");
             new GTA.UI.TextElement(label, new PointF(GTA.UI.Screen.ScaledWidth - 390, GTA.UI.Screen.Height - 125), .32f, tank.Liters / tank.Capacity < .1f ? Color.OrangeRed : Color.White).Draw();
         }

@@ -1,0 +1,426 @@
+{
+  "Inputs": {
+    "PSRP.oiv": {
+      "Bytes": 8495302,
+      "SHA256": "5435e920c9bfa84c15b53a8d9206cf8a31c993b5f22d85fae895b71611053990"
+    },
+    "psrp_props.zip": {
+      "Bytes": 26257461,
+      "SHA256": "e781c8a9039b2289635808f7dc080d3ef189f3dafe2fbd9042453ece817ebf1f"
+    }
+  },
+  "TextureCount": 679,
+  "Dictionaries": [
+    "PSRP",
+    "PSRP_Banners",
+    "PSRP_Inventory",
+    "PSRP_Jobs",
+    "PSRP_PHONE",
+    "PSRP_RADICAL",
+    "char_jmc",
+    "char_music"
+  ],
+  "RpfEntries": [
+    {
+      "type": "directory",
+      "index": 1,
+      "count": 3,
+      "name": "",
+      "path": "psrp_props/dlc.rpf"
+    },
+    {
+      "type": "binary",
+      "bytes": 1262,
+      "sha256": "13025909a7cecd0ca8ee2c74b1ead5be28183940578fc89ea8e3beab64331a54",
+      "name": "content.xml",
+      "path": "psrp_props/dlc.rpf/content.xml"
+    },
+    {
+      "type": "binary",
+      "bytes": 96637952,
+      "sha256": "66f3db63a3c6a6116c00d684654e909e49c4b92d3c82b586d726dbd8282ba152",
+      "name": "props.rpf",
+      "path": "psrp_props/dlc.rpf/props.rpf"
+    },
+    {
+      "type": "directory",
+      "index": 1,
+      "count": 28,
+      "name": "",
+      "path": "psrp_props/dlc.rpf/props.rpf"
+    },
+    {
+      "type": "resource",
+      "bytes": 101713,
+      "sha256": "4c4958396f55dfe362d6d65c04e92128cd79523a00e79d8b2b50d37a27ee3244",
+      "name": "baitgame.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/baitgame.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 101501,
+      "sha256": "fac62696ceb23df51a9e9d9bc4195fa1365968c3cb57d9c51c45b4ac732a48cf",
+      "name": "baitpredator.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/baitpredator.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 65675,
+      "sha256": "37ad6718ba3ed25f4f23846cee3a64e933f39f096d1b73d27ee42aaeae0b6e03",
+      "name": "brolly_jmc.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/brolly_jmc.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 97415,
+      "sha256": "a33aa51dc5fc303b331df33a0598bf8f02a763fcd2615644cf330d25871d9ae1",
+      "name": "coke.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/coke.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 1704,
+      "sha256": "de2ca7e62d0de835c700204f046d842e2567c443be3d6e9e79f17f723f7f4621",
+      "name": "def_props.ytyp",
+      "path": "psrp_props/dlc.rpf/props.rpf/def_props.ytyp"
+    },
+    {
+      "type": "resource",
+      "bytes": 218111,
+      "sha256": "09a395031906c7ef75941dec590e7ca472e57794ff9387cd91a3c245e8a4bf29",
+      "name": "fedex_box.yft",
+      "path": "psrp_props/dlc.rpf/props.rpf/fedex_box.yft"
+    },
+    {
+      "type": "resource",
+      "bytes": 79528,
+      "sha256": "1b9738ddc1c07287d52df1545b0cb5894f5d0f0614c8d77ddbac62150010d913",
+      "name": "fries.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/fries.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 161515,
+      "sha256": "8a212cbc20e53271f34f474929a1a7b9df93a8f08105f8b0bec0934d2e6b4040",
+      "name": "hotdog.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/hotdog.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 24847,
+      "sha256": "c0d7d3c8139686fb8fec51a11f88cf51a0c1448a0b059a5a836dcc32cb1b3a08",
+      "name": "kiwi.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/kiwi.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 136678,
+      "sha256": "6bb7a254d5d99b695cdadb19df63210ebb6befb3e698946271a818c3f5e193ba",
+      "name": "lean.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/lean.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 79381,
+      "sha256": "1ae69f033e4ea670f3271487b87e870ce747eaff6bdacd5fc9486a7081a704a9",
+      "name": "lime.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/lime.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 122541,
+      "sha256": "1d342c8ef56c3be2fd15168f2852a3a94970c0a6aab3d26ebe6661c83e845d89",
+      "name": "milk.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/milk.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 90207,
+      "sha256": "c9b54569b5ccae77b7bca4b878347cd0cd2dcaae8949c9748dd4afddfe3ba878",
+      "name": "monster.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/monster.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 136922,
+      "sha256": "19de9ef110df4186baa0474cff1b2be49cd6865e37f5aba9beb8d8ec8b40c50e",
+      "name": "mtdew.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/mtdew.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 19506,
+      "sha256": "dd1869f9e0acab9817909121dea1fa85daa3459b60fff08a0f68d4fb194a1b5b",
+      "name": "muffin.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/muffin.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 261353,
+      "sha256": "f323e5ff63df984ee9d51d68ae6d1ad7d99210ba64bad5f890b7e0055897ad15",
+      "name": "pdm_glass.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/pdm_glass.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 75880,
+      "sha256": "1ebf8cf4a30bdc4c6890d060b878e2e12d4ed17cdd2f61f7e211fcab7ac51549",
+      "name": "pear.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/pear.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 111692,
+      "sha256": "3ac3a1da62449a71cedd8ab92b6c42cc68ce84da5dc66c752aafcbe9f114247e",
+      "name": "pepsi.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/pepsi.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 85953,
+      "sha256": "670121aa2004f4893580f3708e079aa4f66575b330720d414def9413110cb8c0",
+      "name": "phonesmart.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/phonesmart.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 291073,
+      "sha256": "b5dd84dac7c172956101b8b71a71a0e36b7d6d5b3d97b36861c49d16fd40d1f5",
+      "name": "prime_box.yft",
+      "path": "psrp_props/dlc.rpf/props.rpf/prime_box.yft"
+    },
+    {
+      "type": "resource",
+      "bytes": 70598,
+      "sha256": "44e3a24bd6c7748f823bab11d13943cfdf3da40268c09b6175bc82a7e958e8ad",
+      "name": "redbull.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/redbull.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 181708,
+      "sha256": "f2a5acb558043272743a146137434baba04180357391af6cf5b2de2e4c50607c",
+      "name": "seabream.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/seabream.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 126199,
+      "sha256": "e63d1747a90c94786dc650f276bf7be677eb08efd8c619b8a11a743550d24977",
+      "name": "shaker.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/shaker.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 121695,
+      "sha256": "ea94e5c60b3f5cd0b70696aa7bf4415ead5b094453da632c65103dfe76a36334",
+      "name": "sprite.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/sprite.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 206837,
+      "sha256": "c4736a75f849cb7dbe9008161451d0d9e8a8d2f036e22ee54dc32ea3de57f906",
+      "name": "ups_box.yft",
+      "path": "psrp_props/dlc.rpf/props.rpf/ups_box.yft"
+    },
+    {
+      "type": "resource",
+      "bytes": 220177,
+      "sha256": "440a1f9ccc31003bee4dbc4df86f298bc4ed3906910875ab3e668b7e491a84fd",
+      "name": "usps_box.yft",
+      "path": "psrp_props/dlc.rpf/props.rpf/usps_box.yft"
+    },
+    {
+      "type": "resource",
+      "bytes": 60829,
+      "sha256": "945c66f60090bac9f0f4b70dbe027448027fcf0b2d1db03dca21e9ff0b2ae7a6",
+      "name": "vodka.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/vodka.ydr"
+    },
+    {
+      "type": "resource",
+      "bytes": 62594,
+      "sha256": "965f7a6a794b5e1142ad958fa44f62cf982f895c20dd032981ec3bac76bbb0b6",
+      "name": "weedgummies.ydr",
+      "path": "psrp_props/dlc.rpf/props.rpf/weedgummies.ydr"
+    },
+    {
+      "type": "binary",
+      "bytes": 750,
+      "sha256": "2ccfffd3449b8c4b52fd5c86c0a6821dd362cc20460730b8644c2a587500ecd6",
+      "name": "setup2.xml",
+      "path": "psrp_props/dlc.rpf/setup2.xml"
+    }
+  ],
+  "DlcXml": {
+    "psrp_props/dlc.rpf/content.xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<CDataFileMgr__ContentsOfDataFileXml>\r\n\r\n  <disabledFiles />\r\n  <includedXmlFiles />\r\n  <includedDataFiles />\r\n\r\n  <dataFiles>\r\n\r\n    <Item>\r\n      <filename>dlc_psrp_props:/props.rpf</filename>\r\n      <fileType>RPF_FILE</fileType>\r\n      <overlay value=\"false\" />\r\n      <disabled value=\"true\" />\r\n      <persistent value=\"true\" />\r\n    </Item>\r\n\r\n    <Item>\r\n      <filename>dlc_psrp_props:/def_props.ityp</filename>\r\n      <fileType>DLC_ITYP_REQUEST</fileType>\r\n      <overlay value=\"false\" />\r\n      <disabled value=\"true\" />\r\n      <persistent value=\"true\" />\r\n      <contents>CONTENTS_PROPS</contents>\r\n    </Item>\r\n\r\n  </dataFiles>\r\n\r\n  <contentChangeSets>\r\n    <Item>\r\n      <changeSetName>PSRP_PROPS_AUTOGEN</changeSetName>\r\n\r\n      <mapChangeSetData />\r\n      <filesToInvalidate />\r\n      <filesToDisable />\r\n\r\n      <filesToEnable>\r\n        <Item>dlc_psrp_props:/props.rpf</Item>\r\n        <Item>dlc_psrp_props:/def_props.ityp</Item>\r\n      </filesToEnable>\r\n\r\n      <txdToLoad />\r\n      <txdToUnload />\r\n      <residentResources />\r\n      <unregisterResources />\r\n      <requiresLoadingScreen value=\"false\" />\r\n    </Item>\r\n  </contentChangeSets>\r\n\r\n  <patchFiles />\r\n\r\n</CDataFileMgr__ContentsOfDataFileXml>",
+    "psrp_props/dlc.rpf/setup2.xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<SSetupData>\r\n  <deviceName>dlc_psrp_props</deviceName>\r\n  <datFile>content.xml</datFile>\r\n  <timeStamp>04/07/2016 17:26:39</timeStamp>\r\n\r\n  <nameHash>psrp_props</nameHash>\r\n\r\n  <contentChangeSets />\r\n\r\n  <contentChangeSetGroups>\r\n    <Item>\r\n      <NameHash>GROUP_STARTUP</NameHash>\r\n      <ContentChangeSets>\r\n        <Item>PSRP_PROPS_AUTOGEN</Item>\r\n      </ContentChangeSets>\r\n    </Item>\r\n  </contentChangeSetGroups>\r\n\r\n  <startupScript />\r\n  <scriptCallstackSize value=\"0\" />\r\n\r\n  <type>EXTRACONTENT_COMPAT_PACK</type>\r\n\r\n  <order value=\"25\" />\r\n  <minorOrder value=\"0\" />\r\n  <isLevelPack value=\"false\" />\r\n\r\n  <dependencyPackHash />\r\n  <requiredVersion />\r\n  <subPackCount value=\"0\" />\r\n</SSetupData>"
+  },
+  "Models": [
+    {
+      "name": "baitgame",
+      "hash": 3677130258,
+      "resource": "psrp_props/dlc.rpf/props.rpf/baitgame.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "baitpredator",
+      "hash": 704369070,
+      "resource": "psrp_props/dlc.rpf/props.rpf/baitpredator.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "brolly_jmc",
+      "hash": 3393946737,
+      "resource": "psrp_props/dlc.rpf/props.rpf/brolly_jmc.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "coke",
+      "hash": 483940780,
+      "resource": "psrp_props/dlc.rpf/props.rpf/coke.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "fedex_box",
+      "hash": 44112126,
+      "resource": "psrp_props/dlc.rpf/props.rpf/fedex_box.yft",
+      "hashFoundInYtyp": false
+    },
+    {
+      "name": "fries",
+      "hash": 4118712762,
+      "resource": "psrp_props/dlc.rpf/props.rpf/fries.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "hotdog",
+      "hash": 2894795232,
+      "resource": "psrp_props/dlc.rpf/props.rpf/hotdog.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "kiwi",
+      "hash": 638017300,
+      "resource": "psrp_props/dlc.rpf/props.rpf/kiwi.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "lean",
+      "hash": 876860614,
+      "resource": "psrp_props/dlc.rpf/props.rpf/lean.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "lime",
+      "hash": 1973511823,
+      "resource": "psrp_props/dlc.rpf/props.rpf/lime.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "milk",
+      "hash": 351617415,
+      "resource": "psrp_props/dlc.rpf/props.rpf/milk.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "monster",
+      "hash": 3449006043,
+      "resource": "psrp_props/dlc.rpf/props.rpf/monster.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "mtdew",
+      "hash": 1788387873,
+      "resource": "psrp_props/dlc.rpf/props.rpf/mtdew.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "muffin",
+      "hash": 2425521401,
+      "resource": "psrp_props/dlc.rpf/props.rpf/muffin.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "pdm_glass",
+      "hash": 2705999048,
+      "resource": "psrp_props/dlc.rpf/props.rpf/pdm_glass.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "pear",
+      "hash": 185983287,
+      "resource": "psrp_props/dlc.rpf/props.rpf/pear.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "pepsi",
+      "hash": 686064493,
+      "resource": "psrp_props/dlc.rpf/props.rpf/pepsi.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "phonesmart",
+      "hash": 97227667,
+      "resource": "psrp_props/dlc.rpf/props.rpf/phonesmart.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "prime_box",
+      "hash": 208773518,
+      "resource": "psrp_props/dlc.rpf/props.rpf/prime_box.yft",
+      "hashFoundInYtyp": false
+    },
+    {
+      "name": "redbull",
+      "hash": 3942318406,
+      "resource": "psrp_props/dlc.rpf/props.rpf/redbull.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "seabream",
+      "hash": 3636822696,
+      "resource": "psrp_props/dlc.rpf/props.rpf/seabream.ydr",
+      "hashFoundInYtyp": false
+    },
+    {
+      "name": "shaker",
+      "hash": 52250801,
+      "resource": "psrp_props/dlc.rpf/props.rpf/shaker.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "sprite",
+      "hash": 2514701235,
+      "resource": "psrp_props/dlc.rpf/props.rpf/sprite.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "ups_box",
+      "hash": 2221306994,
+      "resource": "psrp_props/dlc.rpf/props.rpf/ups_box.yft",
+      "hashFoundInYtyp": false
+    },
+    {
+      "name": "usps_box",
+      "hash": 3363244256,
+      "resource": "psrp_props/dlc.rpf/props.rpf/usps_box.yft",
+      "hashFoundInYtyp": false
+    },
+    {
+      "name": "vodka",
+      "hash": 434006286,
+      "resource": "psrp_props/dlc.rpf/props.rpf/vodka.ydr",
+      "hashFoundInYtyp": true
+    },
+    {
+      "name": "weedgummies",
+      "hash": 2515867216,
+      "resource": "psrp_props/dlc.rpf/props.rpf/weedgummies.ydr",
+      "hashFoundInYtyp": true
+    }
+  ],
+  "ResourceValidation": "All 28 RSC7 prop resources raw-deflate decoded; system/graphics page lengths matched.",
+  "OivAssembly": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package version=\"2.0\" id=\"{25DED339-1ED6-4AA9-8129-640C3AEF9A77}\" target=\"Five\">\n\n    <metadata>\n        <name>PSRP</name>\n\n        <version>\n            <major>1</major>\n            <minor>0</minor>\n            <tag>Beta</tag>\n        </version>\n\n        <author>\n            <displayName>JMC MODS</displayName>\n            <web>https://discord.gg/V7hHKEZyWm</web>\n            <youtube>https://www.youtube.com/@JMCMod</youtube>\n        </author>\n\n        <description footerLink=\"\" footerLinkTitle=\"\">\n            <![CDATA[\n            Project Santos Revamped OIV\n            ]]>\n        </description>\n\n        <largeDescription displayName=\"\" footerLink=\"\" footerLinkTitle=\"\">\n            <![CDATA[\n            PSRP TEST VERSION (CUCUMBER EDITION)\n            ]]>\n        </largeDescription>\n    </metadata>\n\n    <colors>\n        <headerBackground useBlackTextColor=\"False\">$FF000000</headerBackground>\n        <iconBackground>$FFC0504D</iconBackground>\n    </colors>\n\n    <content>\n\n        <archive path=\"update\\update.rpf\" createIfNotExist=\"False\" type=\"RPF7\">\n            <archive path=\"x64\\data\\cdimages\\scaleform_generic.rpf\" createIfNotExist=\"False\" type=\"RPF7\">\n\n                <add source=\"rpf\\update\\update.rpf\\char_jmc.ytd\">char_jmc.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\char_music.ytd\">char_music.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\PSRP_Inventory.ytd\">PSRP_Inventory.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\PSRP_Jobs.ytd\">PSRP_Jobs.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\PSRP_PHONE.ytd\">PSRP_PHONE.ytd</add>               \n\t\t\t    <add source=\"rpf\\update\\update.rpf\\PSRP.ytd\">PSRP.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\PSRP_Banners.ytd\">PSRP_Banners.ytd</add>\n                <add source=\"rpf\\update\\update.rpf\\PSRP_RADICAL.ytd\">PSRP_RADICAL.ytd</add>\n\n            </archive>\n        </archive>\n\n    </content>\n\n</package>"
+}

@@ -15,10 +15,11 @@ namespace RPCore
         readonly ObjectPool pool;
         readonly AchievementSystem ach;
         readonly Action save;
+        readonly Action diagnose;
         readonly NativeMenu menu = new NativeMenu("RPCore", "");
         public string RequestedProfile;
         bool dirty;
-        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save) { this.pool = pool; this.ach = ach; this.save = save; pool.Add(menu); }
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null) { this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
 
         void Add(string title, string description, Action action)
         {
@@ -27,7 +28,8 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.2.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.3.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            if (diagnose != null) Add("Visual assets: diagnose", "Checks installed PSRP texture dictionaries and prop registrations; reports in RPCore.log.", diagnose);
             Add("Save now", "Writes the active profile; keeps previous versions as .bak.", () => { save(); Notify.Show("Save requested. Check RPCore.log for any write errors."); });
             Add("Bank: deposit $100", "RPCore bank balance is separate from other mods.", () => { if (Wallet.Deposit(100)) BankUsed(); else Notify.Show("Insufficient cash or balance limit."); });
             Add("Bank: withdraw $100", "Withdraw to the active character wallet.", () => { if (Wallet.Withdraw(100)) BankUsed(); else Notify.Show("Insufficient bank balance or cash limit."); });

@@ -120,6 +120,7 @@ namespace RPCore
             PizzaShiftBonus = System.Math.Max(0, PizzaShiftBonus);
             PizzaPerMeter = Positive(PizzaPerMeter, 0.08f);
             if (create) s.Save();
+            Visuals.Load();
         }
 
         static float Positive(float v, float fallback) { return float.IsNaN(v) || float.IsInfinity(v) || v < 0 ? fallback : v; }

@@ -37,7 +37,7 @@ namespace RPCore
 
         public GangSystem(ObjectPool pool, AchievementSystem ach)
         {
-            this.pool = pool; this.ach = ach; pool.Add(menu);
+            this.pool = pool; this.ach = ach; pool.Add(menu); Visuals.Register(menu, "gangs");
             gangs = Store.LoadDef("Gangs/CustomGangs.json", () => new List<GangDefinition>()).Where(g => g != null && !string.IsNullOrWhiteSpace(g.Name)).GroupBy(g => g.Name).Select(g => g.First()).ToList();
             foreach (var gang in gangs)
             {

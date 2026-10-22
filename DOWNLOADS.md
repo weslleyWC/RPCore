@@ -1,15 +1,18 @@
-# RPCore 0.2.0 — downloads
+# RPCore 0.3.0 — downloads
 
-- [Baixar atualização 0.2.0 com DLL compilada e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.2.0.zip)
-- [Baixar fontes completos 0.2.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.2.0.zip)
+- [Atualização 0.3.0 — DLL compilada, configuração e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.3.0.zip)
+- [Recursos visuais — OIV e DLC de props originais](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-visual-assets-0.3.0.zip)
+- [Código-fonte 0.3.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.3.0.zip)
 
-Os nomes sem versão também apontam para esta atualização. Se abrir a página do arquivo, use **Download raw**. Repositório privado exige login no GitHub.
+Os nomes de atualização/fontes sem versão também apontam para a versão atual. Se abrir a página do arquivo, use **Download raw**; entre na conta GitHub se o repositório for privado.
 
-Novidades: motor/cruise/setas, combustível com 26 postos, compra de três garagens, persistência de veículos/personalização/danos, reparo/lavagem e compra pessoal de veículos no PDM. F10 identifica 0.2.0. A base anterior foi testada no GTA pelo usuário; os sistemas novos aguardam o teste de gameplay do usuário. Checklist: [docs/TESTES-0.2.0.md](../docs/TESTES-0.2.0.md).
+Novidades: HUD com ícones/anéis PSRP, painel de veículo, banners de menus/pizza, ícones dos itens, props de consumo e telefone F1 com atalhos reais. Os sistemas anteriores permanecem. [Instalação do OIV/DLC e checklist](../docs/VISUAIS-0.3.0.md). Se esses mesmos recursos já estiverem instalados, atualize a DLL e use F10 → Visual assets: diagnose antes de reinstalar.
 
-A base anterior continua disponível para retorno:
+Validação: 63 testes de dados; build net48 sem erros/avisos; helpers testados em pastas temporárias com PowerShell/Linux. Gameplay, desenho/animações, OpenIV e registro real do DLC precisam do teste do usuário no GTA/Windows.
 
-- [Atualização anterior testada](https://github.com/weslleyWC/RPCore/raw/68191401248ec0282dd0d6c50ad96c07625f8790/downloads/RPCore-update.zip)
-- [Fontes anteriores](https://github.com/weslleyWC/RPCore/raw/68191401248ec0282dd0d6c50ad96c07625f8790/downloads/RPCore-source.zip)
+Versões anteriores para retorno:
 
-Esta versão ainda não conclui os sistemas amplos restantes do PSRP. Veja README.md e docs/ALTERACOES.md. O instalador faz backup e preserva configurações/saves existentes; todos os recursos e saves PSRP originais permanecem nos pacotes.
+- [Atualização 0.2.0](https://github.com/weslleyWC/RPCore/raw/ccc5637fb9b1deb62824ef2dd8c3d825dc0b2115/downloads/RPCore-update-0.2.0.zip)
+- [Primeira entrega testada pelo usuário](https://github.com/weslleyWC/RPCore/raw/68191401248ec0282dd0d6c50ad96c07625f8790/downloads/RPCore-update.zip)
+
+Os originais visuais estão também em visual-assets. O RPF de 128 MB fica dentro do ZIP original, preservado sem regravação. A arte declara autoria JMC MODS no OIV; o código de integração RPCore é próprio. As funcionalidades amplas restantes do PSRP não foram apresentadas como concluídas. Veja docs/ALTERACOES.md.

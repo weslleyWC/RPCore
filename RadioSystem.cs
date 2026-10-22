@@ -21,7 +21,7 @@ namespace RPCore
         dynamic player;
         bool waiting;
         int started;
-        public RadioSystem(ObjectPool pool, AchievementSystem ach) { this.pool = pool; this.ach = ach; pool.Add(menu); Reload(); }
+        public RadioSystem(ObjectPool pool, AchievementSystem ach) { this.pool = pool; this.ach = ach; pool.Add(menu); Visuals.Register(menu, "radio"); Reload(); }
 
         public static List<RadioStation> ReadStations(string path)
         {

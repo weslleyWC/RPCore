@@ -18,10 +18,11 @@ namespace RPCore
         bool engineOff, cruise, left, right, indicatorsChanged;
         int originalIndicators;
         float cruiseSpeed;
+        public bool IsCruising { get { return cruise; } }
 
         public VehicleControlSystem(ObjectPool pool, Func<Vehicle, bool> hasFuel)
         {
-            this.pool = pool; this.hasFuel = hasFuel; pool.Add(menu);
+            this.pool = pool; this.hasFuel = hasFuel; pool.Add(menu); Visuals.Register(menu, "vehicle");
             Add("Engine on/off", ToggleEngine); Add("Cruise control on/off", ToggleCruise);
             Add("Left indicator", () => Signal(true)); Add("Right indicator", () => Signal(false));
             Add("Hazard lights", Hazards);
@@ -93,7 +94,7 @@ namespace RPCore
             { CancelCruise(); return; }
             float throttle = Math.Max(0, Math.Min(1, .2f + (cruiseSpeed - controlled.Speed) * .18f));
             Game.SetControlValueNormalized(GTA.Control.VehicleAccelerate, throttle);
-            new GTA.UI.TextElement("CRUISE " + (cruiseSpeed * 3.6f).ToString("0") + " km/h", new PointF(GTA.UI.Screen.ScaledWidth - 300, GTA.UI.Screen.Height - 150), .32f, Color.LightGreen).Draw();
+            if (!Visuals.VehicleReady) new GTA.UI.TextElement("CRUISE " + (cruiseSpeed * 3.6f).ToString("0") + " km/h", new PointF(GTA.UI.Screen.ScaledWidth - 300, GTA.UI.Screen.Height - 150), .32f, Color.LightGreen).Draw();
         }
         public void OnKey(KeyEventArgs e)
         {

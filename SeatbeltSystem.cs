@@ -12,6 +12,7 @@ namespace RPCore
 
         readonly AchievementSystem ach;
         bool belted, originalFlag;
+        public bool IsBelted { get { return belted; } }
         Ped owner;
         Vehicle vehicle;
 

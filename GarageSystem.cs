@@ -46,7 +46,7 @@ namespace RPCore
             {
                 var b = World.CreateBlip(g.Position); b.Sprite = (BlipSprite)357; b.Name = g.Name; b.IsShortRange = true; blips.Add(b);
             }
-            pool.Add(menu);
+            pool.Add(menu); Visuals.Register(menu, "garage");
         }
         public static List<GarageDefinition> DefaultGarages()
         {

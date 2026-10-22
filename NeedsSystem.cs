@@ -74,7 +74,9 @@ namespace RPCore
 
         void DrawHud()
         {
-            if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE) || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) return;
+            if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE) || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || Function.Call<bool>(Hash.IS_HUD_HIDDEN)) return;
+            var p = Game.Player.Character;
+            if (Visuals.TryNeeds(d.Hunger, d.Thirst, p.MaxHealth > 0 ? p.Health * 100f / p.MaxHealth : 0)) return;
             Bar(Cfg.HudX, Cfg.HudY, "FOOD", d.Hunger);
             Bar(Cfg.HudX, Cfg.HudY + 22f, "WATER", d.Thirst);
         }

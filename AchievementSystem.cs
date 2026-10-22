@@ -70,7 +70,7 @@ namespace RPCore
                 }
                 catch (Exception ex) { Log.Error("legacy achievement definitions", ex); }
             }
-            pool.Add(menu);
+            pool.Add(menu); Visuals.Register(menu, "achievements");
             Reload();
         }
 

@@ -28,7 +28,7 @@ namespace RPCore
         bool dirty;
         string PathName { get { return Path.Combine(Cfg.Dir, "StockMarket", Profile.SafeId(Profile.Id) + ".portfolio.json"); } }
 
-        public StockMarketSystem(ObjectPool pool) { this.pool = pool; pool.Add(menu); Reload(); }
+        public StockMarketSystem(ObjectPool pool) { this.pool = pool; pool.Add(menu); Visuals.Register(menu, "stocks"); Reload(); }
         public void Reload()
         {
             menu.Visible = false;

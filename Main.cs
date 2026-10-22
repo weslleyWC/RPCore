@@ -26,6 +26,7 @@ namespace RPCore
         int nextSave;
         readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
         readonly CoreMenu core;
+        readonly PhoneSystem phone;
 
         public Main()
         {
@@ -43,17 +44,22 @@ namespace RPCore
             systems.Add(inv);
             systems.Add(new ShopSystem(pool, inv, ach));
             systems.Add(new PizzaJob(ach));
-            systems.Add(new SeatbeltSystem(ach));
+            var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
             FuelSystem fuel = null;
             if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach); return fuel; });
-            if (Cfg.EnableVehicleControls) AddOptional(() => new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)));
+            VehicleControlSystem controls = null;
+            if (Cfg.EnableVehicleControls) AddOptional(() => { controls = new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)); return controls; });
             if (Cfg.EnableGarages) AddOptional(() => new GarageSystem(pool, ach));
             if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
             if (Cfg.EnableGangs) AddOptional(() => new GangSystem(pool, ach));
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
-            core = new CoreMenu(pool, ach, SaveAll); systems.Add(core);
+            var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
+            var props = new PropPresentation(inv); systems.Add(props);
+            phone = new PhoneSystem(pool, DispatchSystemKey, props); systems.Add(phone);
+            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose); systems.Add(core);
+            systems.Add(visual);
             ach.Bump("started");
 
             Tick += OnTick;
@@ -61,7 +67,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.2.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.3.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -123,6 +129,15 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if (phone.Visible || (Visuals.Enabled && Visuals.PhoneEnabled && e.KeyCode == Visuals.PhoneKey))
+            {
+                if (!faulted.Contains(phone))
+                {
+                    try { phone.OnKey(e); }
+                    catch (Exception ex) { faulted.Add(phone); Log.Error("phone.key", ex); try { phone.Dispose(); } catch { } }
+                }
+                return;
+            }
             if (e.KeyCode == Cfg.DumpKey)
             {
                 var p = Game.Player.Character;
@@ -133,6 +148,12 @@ namespace RPCore
                 return;
             }
 
+            DispatchSystemKey(e.KeyCode);
+        }
+
+        void DispatchSystemKey(Keys key)
+        {
+            var e = new KeyEventArgs(key);
             foreach (ISystem s in systems)
             {
                 if (faulted.Contains(s)) continue;

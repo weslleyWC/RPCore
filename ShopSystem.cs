@@ -48,7 +48,7 @@ namespace RPCore
             this.inv = inv;
             this.ach = ach;
             shops = Store.LoadDef("Shops.json", DefaultShops);
-            pool.Add(menu);
+            pool.Add(menu); Visuals.Register(menu, "shop");
 
             foreach (ShopDef s in shops)
             {
@@ -72,12 +72,14 @@ namespace RPCore
         {
             int idx = menu.SelectedIndex;
             menu.Clear();
+            Visuals.ClearItems(menu);
             menu.Name = current.Name + "   $" + Wallet.Cash;
 
             foreach (ItemDef def in inv.Defs.Values.Where(i => i.Price > 0))
             {
                 ItemDef item = def;
                 var row = new NativeItem(item.Name, item.Desc) { AltTitle = "$" + item.Price };
+                Visuals.Badge(menu, row, item.Id);
                 row.Activated += (sender, e) => Buy(item);
                 menu.Add(row);
             }
