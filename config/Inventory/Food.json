@@ -1,0 +1,5 @@
+[
+  { "Id": "apple", "Name": "Apple", "Desc": "Fresh fruit.", "Weight": 0.2, "Price": 3, "Hunger": 10, "Thirst": 3 },
+  { "Id": "coffee", "Name": "Coffee", "Desc": "A hot drink.", "Weight": 0.25, "Price": 5, "Thirst": 15 },
+  { "Id": "first_aid", "Name": "First Aid Kit", "Desc": "Restores health up to the current maximum.", "Weight": 0.8, "Price": 60, "Health": 80 }
+]

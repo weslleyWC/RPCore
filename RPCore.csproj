@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>RPCore</AssemblyName>
+    <RootNamespace>RPCore</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>bin\scripts\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ReferenceDir Condition="'$(ReferenceDir)'=='' And Exists('$(MSBuildProjectDirectory)/.deps/ScriptHookVDotNet3.dll')">$(MSBuildProjectDirectory)/.deps</ReferenceDir>
+    <DefaultItemExcludes>$(DefaultItemExcludes);tests/**;assets/**;dist/**</DefaultItemExcludes>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- FILL: your GTA V root, or pass /p:GTAV="D:\Games\GTAV" -->
+    <GTAV Condition="'$(GTAV)'==''">C:\Program Files\Rockstar Games\Grand Theft Auto V</GTAV>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ScriptHookVDotNet3">
+      <HintPath Condition="'$(ReferenceDir)'!=''">$(ReferenceDir)/ScriptHookVDotNet3.dll</HintPath>
+      <HintPath Condition="'$(ReferenceDir)'==''">$(GTAV)\ScriptHookVDotNet3.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="LemonUI.SHVDN3">
+      <HintPath Condition="'$(ReferenceDir)'!=''">$(ReferenceDir)/LemonUI.SHVDN3.dll</HintPath>
+      <HintPath Condition="'$(ReferenceDir)'==''">$(GTAV)\scripts\LemonUI.SHVDN3.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+</Project>

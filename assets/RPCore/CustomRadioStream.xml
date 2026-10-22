@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioSettings>
+  <Stations>
+    <!-- Default public domain station -->
+    <!-- Add your own stations below like i do below. -->
+ <Station name="Public Domain Classical">http://online-radio.eu/radio/20974-public-domain-classical</Station>
+
+  </Stations>
+</RadioSettings>
+
+<!-- 
+ Instructions:
+- Stations must be in MP3 format. Other formats (AAC, Ogg, etc.) may crash the game.
+- Recommended search for streams: https://streamurl.link
+- To add a station, paste a new <Station> entry inside the <Stations> block. 
+- To open the custom radio in game on controller hold Left Dpad and press RB/R1,
+- To open the custom radio in game on keyboard hold Q and press Left Mouse Click
+ -->

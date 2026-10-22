@@ -1,0 +1,939 @@
+[
+  {
+    "Name": "Eastside Kings",
+    "Description": "A rival street gang operating in Los Santos. Known for there ruthlessness",
+    "HQX": -1115.332,
+    "HQY": 488.1832,
+    "HQZ": 82.17677,
+    "GangColor": "Purple",
+    "PedModels": [
+      "a_m_y_eastsa_01",
+      "a_m_y_eastsa_02",
+      "a_m_m_eastsa_01"
+    ],
+    "LeaderModel": "s_m_m_bouncer_01",
+    "CoLeaderModel": "g_m_m_oggoon_01",
+    "DogModel": "",
+    "LeaderSpawnPostion": {
+      "X": -1122.841,
+      "Y": 485.7759,
+      "Z": 82.16071,
+      "Normalized": {
+        "X": -0.9157279,
+        "Y": 0.396172374,
+        "Z": 0.0670058057,
+        "Normalized": {
+          "X": -0.915728033,
+          "Y": 0.396172434,
+          "Z": 0.06700581
+        }
+      }
+    },
+    "LeaderSpawnHeading": 162.4185,
+    "PedSpawnSpots": [
+      {
+        "X": -1106.06,
+        "Y": 479.1552,
+        "Z": 82.16072,
+        "Heading": 264.7877
+      },
+      {
+        "X": -1120.247,
+        "Y": 473.5729,
+        "Z": 82.16653,
+        "Heading": 78.05912
+      },
+      {
+        "X": -1122.949,
+        "Y": 474.6177,
+        "Z": 82.1703,
+        "Heading": 243.0111
+      },
+      {
+        "X": -1132.401,
+        "Y": 481.013,
+        "Z": 82.16071,
+        "Heading": 158.3268
+      },
+      {
+        "X": -1127.89,
+        "Y": 487.5798,
+        "Z": 82.16071,
+        "Heading": 90.11172
+      },
+      {
+        "X": -1129.455,
+        "Y": 487.6901,
+        "Z": 82.16071,
+        "Heading": 271.4561
+      },
+      {
+        "X": -1128.321,
+        "Y": 485.6187,
+        "Z": 82.16071,
+        "Heading": 345.5457
+      },
+      {
+        "X": -1119.861,
+        "Y": 478.68,
+        "Z": 82.16073,
+        "Heading": 161.8169
+      },
+      {
+        "X": -1114.357,
+        "Y": 494.6761,
+        "Z": 82.19395,
+        "Heading": 261.9629
+      },
+      {
+        "X": -1106.269,
+        "Y": 492.8933,
+        "Z": 82.19395,
+        "Heading": 78.53638
+      }
+    ],
+    "VehicleSpawnSpots": [
+      {
+        "X": -1113.735,
+        "Y": 490.4973,
+        "Z": 81.5838,
+        "Heading": 167.4987
+      },
+      {
+        "X": -1108.741,
+        "Y": 489.1633,
+        "Z": 81.58459,
+        "Heading": 167.8096
+      },
+      {
+        "X": -1115.704,
+        "Y": 480.9298,
+        "Z": 81.55395,
+        "Heading": 169.2273
+      }
+    ],
+    "Vehicles": [
+      {
+        "ModelHash": 1348744438,
+        "Plate": "49WJI141",
+        "PlateStyle": 1,
+        "PrimaryColor": 145,
+        "SecondaryColor": 145,
+        "PearlescentColor": 74,
+        "WheelColor": 156,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 1,
+        "WheelType": 0,
+        "Extras": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 43
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 15,
+        "NeonColorG": 3,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      },
+      {
+        "ModelHash": 3505073125,
+        "Plate": "44YEV817",
+        "PlateStyle": 1,
+        "PrimaryColor": 145,
+        "SecondaryColor": 4,
+        "PearlescentColor": 74,
+        "WheelColor": 156,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 1,
+        "WheelType": 3,
+        "Extras": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 32
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 255,
+        "NeonColorG": 0,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      }
+    ],
+    "AllowedWeapons": [
+      "Pistol",
+      "Assault Rifle",
+      "Micro SMG",
+      "Bat"
+    ],
+    "Relationships": {},
+    "InitiationType": 1,
+    "Records": {
+      "TurfsCaptured": 1,
+      "TurfsLost": 0,
+      "JobsComplete": 0,
+      "JobsFailed": 0,
+      "SuccessfulDefenses": 0,
+      "FailedDefenses": 0
+    }
+  },
+  {
+    "Name": "3rd Avenue Hustlas",
+    "Description": "The 3rd Avenue Hustlers are a feared Los Santos street gang known for their loyalty, street hustles, and violent territorial rivalries.",
+    "HQX": -329.4717,
+    "HQY": 93.90202,
+    "HQZ": 66.381,
+    "GangColor": "Blue",
+    "PedModels": [
+      "a_m_m_soucent_01",
+      "a_m_m_soucent_03",
+      "a_m_m_soucent_04"
+    ],
+    "LeaderModel": "a_m_m_og_boss_01",
+    "CoLeaderModel": "g_m_m_oggoon_01",
+    "DogModel": "",
+    "LeaderSpawnPostion": {
+      "X": -327.0049,
+      "Y": 82.50594,
+      "Z": 67.16203,
+      "Normalized": {
+        "X": -0.950940549,
+        "Y": 0.239929885,
+        "Z": 0.195309311
+      }
+    },
+    "LeaderSpawnHeading": 15.5,
+    "PedSpawnSpots": [
+      {
+        "X": -334.2638,
+        "Y": 109.6549,
+        "Z": 67.04201,
+        "Heading": 0.300058
+      },
+      {
+        "X": -332.8279,
+        "Y": 100.5623,
+        "Z": 66.93964,
+        "Heading": 213.8477
+      },
+      {
+        "X": -332.9,
+        "Y": 98.26929,
+        "Z": 66.93732,
+        "Heading": 349.7893
+      },
+      {
+        "X": -331.0242,
+        "Y": 79.31123,
+        "Z": 66.99994,
+        "Heading": 357.6923
+      },
+      {
+        "X": -330.9296,
+        "Y": 81.2229,
+        "Z": 67.0028,
+        "Heading": 178.1157
+      },
+      {
+        "X": -335.164,
+        "Y": 78.97186,
+        "Z": 66.90352,
+        "Heading": 178.5389
+      },
+      {
+        "X": -322.8348,
+        "Y": 80.11221,
+        "Z": 67.30736,
+        "Heading": 270.3188
+      },
+      {
+        "X": -320.5051,
+        "Y": 80.05305,
+        "Z": 67.38375,
+        "Heading": 90.39838
+      },
+      {
+        "X": -324.8902,
+        "Y": 83.11148,
+        "Z": 71.66306,
+        "Heading": 90.50813
+      },
+      {
+        "X": -326.7812,
+        "Y": 96.62449,
+        "Z": 67.17274,
+        "Heading": 82.90117
+      }
+    ],
+    "VehicleSpawnSpots": [
+      {
+        "X": -328.1237,
+        "Y": 105.6301,
+        "Z": 66.46969,
+        "Heading": 359.9512
+      },
+      {
+        "X": -327.6383,
+        "Y": 90.57959,
+        "Z": 66.45837,
+        "Heading": 1.713329
+      },
+      {
+        "X": -345.2304,
+        "Y": 106.5926,
+        "Z": 65.9986,
+        "Heading": 1.0
+      },
+      {
+        "X": -348.4824,
+        "Y": 106.0473,
+        "Z": 65.88808,
+        "Heading": 1.0
+      }
+    ],
+    "Vehicles": [
+      {
+        "ModelHash": 3728579874,
+        "Plate": "02TFH622",
+        "PlateStyle": 1,
+        "PrimaryColor": 64,
+        "SecondaryColor": 64,
+        "PearlescentColor": 68,
+        "WheelColor": 156,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 2,
+        "WheelType": 0,
+        "Extras": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 0,
+            "ModIndex": 1
+          },
+          {
+            "ModType": 1,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 2,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 3,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 4,
+            "ModIndex": 1
+          },
+          {
+            "ModType": 6,
+            "ModIndex": 1
+          },
+          {
+            "ModType": 7,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 7
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 3,
+        "NeonColorG": 83,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      },
+      {
+        "ModelHash": 970598228,
+        "Plate": "82CSN579",
+        "PlateStyle": 1,
+        "PrimaryColor": 64,
+        "SecondaryColor": 147,
+        "PearlescentColor": 68,
+        "WheelColor": 0,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 1,
+        "WheelType": 0,
+        "Extras": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          true,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 0,
+            "ModIndex": 1
+          },
+          {
+            "ModType": 1,
+            "ModIndex": 1
+          },
+          {
+            "ModType": 2,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 3,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 4,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 7,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 10,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 41
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 3,
+        "NeonColorG": 83,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      }
+    ],
+    "AllowedWeapons": [
+      "Pistol",
+      "Micro SMG",
+      "Assault Rifle",
+      "Bat"
+    ],
+    "Relationships": {},
+    "InitiationType": 0,
+    "Records": {
+      "TurfsCaptured": 0,
+      "TurfsLost": 0,
+      "JobsComplete": 0,
+      "JobsFailed": 0,
+      "SuccessfulDefenses": 0,
+      "FailedDefenses": 0
+    }
+  },
+  {
+    "Name": "Blacktop Locos",
+    "Description": "The Blacktop Locos are a feared Los Santos street gang known for drug trafficking, brutal turf wars, and fierce loyalty to their own.",
+    "HQX": 1348.372,
+    "HQY": -596.0014,
+    "HQZ": 74.48785,
+    "GangColor": "Black",
+    "PedModels": [
+      "a_m_m_socenlat_01",
+      "a_m_y_stbla_02"
+    ],
+    "LeaderModel": "a_m_m_beach_01",
+    "CoLeaderModel": "g_m_m_oggoon_01",
+    "DogModel": "a_c_rottweiler_02",
+    "LeaderSpawnPostion": {
+      "X": 1346.27,
+      "Y": -597.7939,
+      "Z": 74.34222,
+      "Normalized": {
+        "X": 0.9127879,
+        "Y": -0.405311733,
+        "Z": 0.05040495
+      }
+    },
+    "LeaderSpawnHeading": 319.2928,
+    "PedSpawnSpots": [
+      {
+        "X": 1338.337,
+        "Y": -589.5471,
+        "Z": 74.32484,
+        "Heading": 294.7868
+      },
+      {
+        "X": 1340.354,
+        "Y": -588.0413,
+        "Z": 74.3909,
+        "Heading": 121.9289
+      },
+      {
+        "X": 1344.826,
+        "Y": -606.0522,
+        "Z": 74.34662,
+        "Heading": 225.9814
+      },
+      {
+        "X": 1343.897,
+        "Y": -606.9597,
+        "Z": 74.34544,
+        "Heading": 239.168
+      },
+      {
+        "X": 1354.138,
+        "Y": -605.8182,
+        "Z": 74.48822,
+        "Heading": 159.6494
+      },
+      {
+        "X": 1351.79,
+        "Y": -608.366,
+        "Z": 74.49297,
+        "Heading": 307.796
+      },
+      {
+        "X": 1354.524,
+        "Y": -609.9869,
+        "Z": 74.44991,
+        "Heading": 18.41509
+      }
+    ],
+    "VehicleSpawnSpots": [
+      {
+        "X": 1345.937,
+        "Y": -607.2959,
+        "Z": 73.94318,
+        "Heading": 325.4879
+      },
+      {
+        "X": 1349.341,
+        "Y": -601.858,
+        "Z": 73.94401,
+        "Heading": 343.0528
+      },
+      {
+        "X": 1355.786,
+        "Y": -584.3378,
+        "Z": 73.79836,
+        "Heading": 219.8273
+      }
+    ],
+    "Vehicles": [
+      {
+        "ModelHash": 2016857647,
+        "Plate": "63DUX722",
+        "PlateStyle": 1,
+        "PrimaryColor": 147,
+        "SecondaryColor": 0,
+        "PearlescentColor": 4,
+        "WheelColor": 0,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 1,
+        "WheelType": 0,
+        "Extras": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 0,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 1,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 2,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 3,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 4,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 5,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 10
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 255,
+        "NeonColorG": 0,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      },
+      {
+        "ModelHash": 1830407356,
+        "Plate": "25DPU492",
+        "PlateStyle": 1,
+        "PrimaryColor": 0,
+        "SecondaryColor": 0,
+        "PearlescentColor": 0,
+        "WheelColor": 0,
+        "DashboardColor": 0,
+        "InteriorColor": 0,
+        "Livery": -1,
+        "WindowTint": 1,
+        "WheelType": 2,
+        "Extras": [
+          true,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "Mods": [
+          {
+            "ModType": 2,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 4,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 5,
+            "ModIndex": 0
+          },
+          {
+            "ModType": 6,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 11,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 12,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 13,
+            "ModIndex": 2
+          },
+          {
+            "ModType": 14,
+            "ModIndex": 57
+          },
+          {
+            "ModType": 15,
+            "ModIndex": 3
+          },
+          {
+            "ModType": 16,
+            "ModIndex": 4
+          },
+          {
+            "ModType": 23,
+            "ModIndex": 4
+          }
+        ],
+        "ToggleModsOn": [
+          18,
+          20,
+          22
+        ],
+        "NeonColorR": 255,
+        "NeonColorG": 0,
+        "NeonColorB": 255,
+        "NeonsOn": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "TireSmokeR": 255,
+        "TireSmokeG": 255,
+        "TireSmokeB": 255
+      }
+    ],
+    "AllowedWeapons": [
+      "Pistol",
+      "Micro SMG",
+      "Assault Rifle",
+      "Bat"
+    ],
+    "Relationships": {},
+    "InitiationType": 2,
+    "Records": {
+      "TurfsCaptured": 0,
+      "TurfsLost": 1,
+      "JobsComplete": 0,
+      "JobsFailed": 0,
+      "SuccessfulDefenses": 0,
+      "FailedDefenses": 1
+    }
+  }
+]

@@ -1,0 +1,7 @@
+.deps/
+bin/
+obj/
+dist/
+tests/**/bin/
+tests/**/obj/
+*.user

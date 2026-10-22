@@ -1,0 +1,128 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using System;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using GTA.UI;
+using LemonUI;
+using LemonUI.Menus;
+
+namespace RPCore
+{
+    public class AchDef
+    {
+        public string Id;
+        public string Name;
+        public string Desc;
+        public string Stat;   // counter this achievement watches
+        public int Target;
+    }
+
+    public class AchData : ExtensibleData
+    {
+        public Dictionary<string, int> Stats = new Dictionary<string, int>();
+        public List<string> Unlocked = new List<string>();
+    }
+
+    public class AchievementSystem : ISystem
+    {
+        public string Name { get { return "achievements"; } }
+
+        readonly ObjectPool pool;
+        readonly NativeMenu menu = new NativeMenu("Achievements", "");
+        readonly List<AchDef> defs;
+        AchData d;
+        public event Action<string, int> Progress;
+
+        static List<AchDef> DefaultDefs()
+        {
+            return new List<AchDef>
+            {
+                new AchDef { Id = "first_drop",  Name = "First Delivery",   Desc = "Drop off your first pizza.",        Stat = "pizza_drops",  Target = 1 },
+                new AchDef { Id = "courier",     Name = "Courier",          Desc = "Make 25 pizza drops.",              Stat = "pizza_drops",  Target = 25 },
+                new AchDef { Id = "shift",       Name = "Clocked Out",      Desc = "Finish 5 full shifts.",             Stat = "shifts_done",  Target = 5 },
+                new AchDef { Id = "pocket",      Name = "Pocket Money",     Desc = "Earn $5,000 from jobs.",            Stat = "cash_earned",  Target = 5000 },
+                new AchDef { Id = "regular",     Name = "Regular",          Desc = "Buy 20 items from stores.",         Stat = "items_bought", Target = 20 },
+                new AchDef { Id = "spender",     Name = "Big Spender",      Desc = "Spend $2,000 in stores.",           Stat = "cash_spent",   Target = 2000 },
+                new AchDef { Id = "habit",       Name = "Creature of Habit",Desc = "Use 30 items.",                     Stat = "items_used",   Target = 30 },
+                new AchDef { Id = "safety",      Name = "Safety First",     Desc = "Buckle up 10 times.",               Stat = "belts_on",     Target = 10 },
+            };
+        }
+
+        public AchievementSystem(ObjectPool pool)
+        {
+            this.pool = pool;
+            defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            string legacy = Path.Combine(Cfg.Dir, "Achievements.json");
+            if (File.Exists(legacy))
+            {
+                try
+                {
+                    var entries = JObject.Parse(File.ReadAllText(legacy));
+                    var stats = new Dictionary<string, string> { { "0", "started" }, { "1", "bank_used" }, { "3", "bank_million" }, { "5", "pizza_drops" }, { "12", "items_bought" }, { "13", "first_aid" }, { "16", "storage_used" }, { "19", "belts_on" }, { "20", "radio_started" } };
+                    foreach (var entry in entries.Properties())
+                    {
+                        if (!(entry.Value is JObject)) continue;
+                        string stat; stats.TryGetValue(entry.Name, out stat);
+                        defs.Add(new AchDef { Id = "psrp_" + entry.Name, Name = (string)entry.Value["Name"] ?? entry.Name, Desc = (string)entry.Value["Description"] ?? "", Stat = stat, Target = 1 });
+                    }
+                }
+                catch (Exception ex) { Log.Error("legacy achievement definitions", ex); }
+            }
+            pool.Add(menu);
+            Reload();
+        }
+
+        public void Reload()
+        {
+            d = Store.Load("Achievements.json", () => new AchData());
+            if (d.Stats == null) d.Stats = new Dictionary<string, int>();
+            if (d.Unlocked == null) d.Unlocked = new List<string>();
+            menu.Visible = false;
+        }
+
+        int Get(string stat) { int v; return d.Stats.TryGetValue(stat, out v) ? v : 0; }
+
+        public void Bump(string stat, int n = 1)
+        {
+            if (n <= 0) return;
+            d.Stats[stat] = (int)System.Math.Min(int.MaxValue, (long)Get(stat) + n);
+            foreach (AchDef a in defs.Where(x => x.Stat == stat && !d.Unlocked.Contains(x.Id) && Get(stat) >= x.Target))
+            {
+                d.Unlocked.Add(a.Id);
+                Notify.Show("~y~Achievement:~s~ " + a.Name);
+                Sfx.Play("achievement");
+            }
+            Progress?.Invoke(stat, n);
+        }
+
+        void Rebuild()
+        {
+            menu.Clear();
+            menu.Name = d.Unlocked.Count + " / " + defs.Count + " unlocked";
+            foreach (AchDef a in defs)
+            {
+                bool done = d.Unlocked.Contains(a.Id);
+                var item = new NativeItem(a.Name, a.Desc)
+                {
+                    AltTitle = done ? "~g~Done" : string.IsNullOrEmpty(a.Stat) ? "PSRP: not implemented" : System.Math.Min(Get(a.Stat), a.Target) + "/" + a.Target
+                };
+                menu.Add(item);
+            }
+        }
+
+        public void OnKey(KeyEventArgs e)
+        {
+            if (e.KeyCode != Cfg.AchKey) return;
+            if (menu.Visible) { menu.Visible = false; return; }
+            if (pool.AreAnyVisible) return;
+            Rebuild();
+            menu.Visible = true;
+        }
+
+        public void Tick() { }
+        public void Save() { Store.Write("Achievements.json", d); }
+        public void Dispose() { }
+    }
+}

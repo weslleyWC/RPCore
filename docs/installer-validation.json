@@ -1,0 +1,7 @@
+{
+  "runtime": "PowerShell 7.6.7 on Linux, temporary game-directory fixture, no GTA execution",
+  "runs": 2,
+  "existingFilesPreserved": 6,
+  "oldBinaryAndDataBackedUp": true,
+  "duplicateCopyRejectedBeforeChanges": true
+}

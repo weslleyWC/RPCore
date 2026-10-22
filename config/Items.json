@@ -1,0 +1,8 @@
+[
+  { "Id": "water", "Name": "Water Bottle", "Desc": "Cold and wet.", "Weight": 0.5, "Price": 3, "Thirst": 35 },
+  { "Id": "soda", "Name": "Soda", "Desc": "Sugar and bubbles.", "Weight": 0.4, "Price": 4, "Thirst": 20, "Hunger": 4 },
+  { "Id": "burger", "Name": "Burger", "Desc": "Questionable, filling.", "Weight": 0.4, "Price": 8, "Hunger": 35 },
+  { "Id": "sandwich", "Name": "Sandwich", "Desc": "Gas station classic.", "Weight": 0.3, "Price": 6, "Hunger": 25 },
+  { "Id": "chips", "Name": "Chips", "Desc": "Crunchy.", "Weight": 0.2, "Price": 3, "Hunger": 12 },
+  { "Id": "bandage", "Name": "Bandage", "Desc": "Patches you up a bit.", "Weight": 0.1, "Price": 15, "Health": 40 }
+]

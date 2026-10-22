@@ -1,0 +1,212 @@
+{
+  "0": {
+    "Id": "0",
+    "Name": "First Moves",
+    "Description": "Played PSRP for the first time",
+    "Unlocked": true
+  },
+  "1": {
+    "Id": "1",
+    "Name": "Cha-Ching Rookie",
+    "Description": "Use a bank account for the first time.",
+    "Unlocked": false
+  },
+  "2": {
+    "Id": "2",
+    "Name": "Taxi Hero",
+    "Description": "Take a taxi ride.",
+    "Unlocked": false
+  },
+  "3": {
+    "Id": "3",
+    "Name": "Moneybags",
+    "Description": "Reach $1,000,000 in your bank account.",
+    "Unlocked": false
+  },
+  "4": {
+    "Id": "4",
+    "Name": "Uber Noob",
+    "Description": "Complete your first Uber fare.",
+    "Unlocked": false
+  },
+  "5": {
+    "Id": "5",
+    "Name": "Pizza Runner",
+    "Description": "Deliver your first pizza.",
+    "Unlocked": false
+  },
+  "6": {
+    "Id": "6",
+    "Name": "Parcel Panic",
+    "Description": "Complete your first parcel delivery.",
+    "Unlocked": false
+  },
+  "7": {
+    "Id": "7",
+    "Name": "Vroom Vroom",
+    "Description": "Buy your first car.",
+    "Unlocked": false
+  },
+  "8": {
+    "Id": "8",
+    "Name": "PDM Big Shot",
+    "Description": "Purchase PDM dealership.",
+    "Unlocked": false
+  },
+  "9": {
+    "Id": "9",
+    "Name": "Garage Starter Pack",
+    "Description": "Buy your first garage.",
+    "Unlocked": false
+  },
+  "10": {
+    "Id": "10",
+    "Name": "Home Sweet Home",
+    "Description": "Buy your first house.",
+    "Unlocked": false
+  },
+  "11": {
+    "Id": "11",
+    "Name": "Drug Rookie",
+    "Description": "Pick up illegal substances for the first time.",
+    "Unlocked": false
+  },
+  "12": {
+    "Id": "12",
+    "Name": "Stocking Up!",
+    "Description": "Purchased your first item at a shop",
+    "Unlocked": false
+  },
+  "13": {
+    "Id": "13",
+    "Name": "Ouch! First Aid",
+    "Description": "Use your first first aid item.",
+    "Unlocked": false
+  },
+  "14": {
+    "Id": "14",
+    "Name": "Breaking Bad Jr.",
+    "Description": "Bag your first drug.",
+    "Unlocked": false
+  },
+  "15": {
+    "Id": "15",
+    "Name": "Gas Guzzler",
+    "Description": "Fill a vehicle with fuel for the first time.",
+    "Unlocked": false
+  },
+  "16": {
+    "Id": "16",
+    "Name": "Trunk Fanatic",
+    "Description": "Use trunk storage for the first time.",
+    "Unlocked": false
+  },
+  "17": {
+    "Id": "17",
+    "Name": "Flat Tyre Fixer",
+    "Description": "Change a tyre on a vehicle.",
+    "Unlocked": false
+  },
+  "18": {
+    "Id": "18",
+    "Name": "High Flyer",
+    "Description": "Smoke a joint or use a bong.",
+    "Unlocked": false
+  },
+  "19": {
+    "Id": "19",
+    "Name": "Safety First",
+    "Description": "Equip a seatbelt",
+    "Unlocked": false
+  },
+  "20": {
+    "Id": "20",
+    "Name": "I'm the DJ Now",
+    "Description": "Turned on a custom radio stream",
+    "Unlocked": false
+  },
+  "21": {
+    "Id": "21",
+    "Name": "Fashion Disaster Survivor",
+    "Description": "Buy clothes for the first time.",
+    "Unlocked": false
+  },
+  "22": {
+    "Id": "22",
+    "Name": "Sexy Mofo!",
+    "Description": "Create your first MP ped.",
+    "Unlocked": true
+  },
+  "23": {
+    "Id": "23",
+    "Name": "Insure Me, Bro",
+    "Description": "Insure a vehicle for the first time.",
+    "Unlocked": false
+  },
+  "24": {
+    "Id": "24",
+    "Name": "Hotdog Hero",
+    "Description": "Buy a hotdog from a vendor.",
+    "Unlocked": false
+  },
+  "25": {
+    "Id": "25",
+    "Name": "Burger Lover",
+    "Description": "Buy a burger from a stand.",
+    "Unlocked": false
+  },
+  "26": {
+    "Id": "26",
+    "Name": "Fruity McFruitface",
+    "Description": "Buy fruit from a street vendor.",
+    "Unlocked": false
+  },
+  "27": {
+    "Id": "27",
+    "Name": "I Need A New Coat",
+    "Description": "Skin an animal.",
+    "Unlocked": false
+  },
+  "28": {
+    "Id": "28",
+    "Name": "Drag Strip King",
+    "Description": "Win a drag race.",
+    "Unlocked": false
+  },
+  "29": {
+    "Id": "29",
+    "Name": "Drug Dealer in Training",
+    "Description": "Increase your drug reputation to 50%.",
+    "Unlocked": false
+  },
+  "30": {
+    "Id": "30",
+    "Name": "Kingpin Status",
+    "Description": "Reach 100% drug reputation.",
+    "Unlocked": false
+  },
+  "31": {
+    "Id": "31",
+    "Name": "Rival Wrecker",
+    "Description": "Kill a rival dealer.",
+    "Unlocked": false
+  },
+  "32": {
+    "Id": "32",
+    "Name": "Ticket Master",
+    "Description": "Get a police ticket.",
+    "Unlocked": false
+  },
+  "33": {
+    "Id": "33",
+    "Name": "Fugitive 101",
+    "Description": "Successfully outrun the police.",
+    "Unlocked": false
+  },
+  "34": {
+    "Id": "34",
+    "Name": "Valet Novice",
+    "Description": "Do your first valet job.",
+    "Unlocked": false
+  }
+}

@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ca582364-9de8-4ff5-a883-e4663608b35b" name="@b70e9edd2349 2026-10-22 04:32:51" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-22T04:32:51.4519466+00:00" queuing="2026-10-22T04:32:51.4519467+00:00" start="2026-10-22T04:32:50.9073607+00:00" finish="2026-10-22T04:32:51.5346865+00:00" />
+  <TestSettings name="default" id="a8c177ac-a01f-4fd1-9a99-29be2fb0901a">
+    <Deployment runDeploymentRoot="_b70e9edd2349_2026-10-22_04_32_51" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d396c2a7-9cbf-445b-9248-3ec8bb98bb18" testId="f516f780-7fe6-2b2d-1836-0d9865762f55" testName="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: Infinity)" computerName="b70e9edd2349" duration="00:00:00.0000255" startTime="2026-10-22T04:32:51.4020176+00:00" endTime="2026-10-22T04:32:51.4020177+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d396c2a7-9cbf-445b-9248-3ec8bb98bb18" />
+    <UnitTestResult executionId="aadfe868-de20-4956-bad3-a6ea15320131" testId="8987d9fc-7458-c96c-9011-47303d063ec1" testName="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: -1)" computerName="b70e9edd2349" duration="00:00:00.0075912" startTime="2026-10-22T04:32:51.3989278+00:00" endTime="2026-10-22T04:32:51.3989408+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aadfe868-de20-4956-bad3-a6ea15320131" />
+    <UnitTestResult executionId="812d309a-e8a1-4c6d-a314-0809287c1c13" testId="782b9d0e-31a6-c689-94cc-574f940f8e54" testName="RPCore.Tests.DataTests.InvalidSaveCannotBeOverwrittenByDefaults(text: &quot;null&quot;)" computerName="b70e9edd2349" duration="00:00:00.0005210" startTime="2026-10-22T04:32:51.4772868+00:00" endTime="2026-10-22T04:32:51.4772868+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="812d309a-e8a1-4c6d-a314-0809287c1c13" />
+    <UnitTestResult executionId="c64290d1-ae48-4349-a90e-6623cf338843" testId="532f22da-6ccc-6638-fd34-4e3401ca81ad" testName="RPCore.Tests.DataTests.CustomWalletAndExchangeCommitTogether" computerName="b70e9edd2349" duration="00:00:00.0106787" startTime="2026-10-22T04:32:51.4739674+00:00" endTime="2026-10-22T04:32:51.4739676+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c64290d1-ae48-4349-a90e-6623cf338843" />
+    <UnitTestResult executionId="2fe6a98d-b197-44cd-bca7-b96395b302ee" testId="53097931-122e-5330-6d85-a645fc38de33" testName="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: 10)" computerName="b70e9edd2349" duration="00:00:00.0001638" startTime="2026-10-22T04:32:51.4231652+00:00" endTime="2026-10-22T04:32:51.4231653+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fe6a98d-b197-44cd-bca7-b96395b302ee" />
+    <UnitTestResult executionId="59a9426f-ac76-4266-8828-501945ec533e" testId="4bdc4fc2-de7b-98fe-0aaf-498f8129a5b5" testName="RPCore.Tests.DataTests.FlatMigrationNeverReplacesExistingProfile" computerName="b70e9edd2349" duration="00:00:00.0002954" startTime="2026-10-22T04:32:51.4766950+00:00" endTime="2026-10-22T04:32:51.4766950+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="59a9426f-ac76-4266-8828-501945ec533e" />
+    <UnitTestResult executionId="55a60214-60d8-4074-875f-cd3e9359519d" testId="bb3df587-01f4-968c-aa96-5a7437452398" testName="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: -1, price: 10)" computerName="b70e9edd2349" duration="00:00:00.0000530" startTime="2026-10-22T04:32:51.4023768+00:00" endTime="2026-10-22T04:32:51.4023768+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="55a60214-60d8-4074-875f-cd3e9359519d" />
+    <UnitTestResult executionId="06183c38-f1ca-407a-93da-ab39f55de99a" testId="7f33a47f-c67c-b824-209a-acbf70749b79" testName="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 0, price: 10)" computerName="b70e9edd2349" duration="00:00:00.0000077" startTime="2026-10-22T04:32:51.4024569+00:00" endTime="2026-10-22T04:32:51.4024570+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="06183c38-f1ca-407a-93da-ab39f55de99a" />
+    <UnitTestResult executionId="375f029d-4599-42c8-aca0-2ccd6e9ce1ad" testId="d1a43f99-3273-4c3d-9be1-ff659b4c1f38" testName="RPCore.Tests.DataTests.InvalidImportLeavesNoPartialProfile" computerName="b70e9edd2349" duration="00:00:00.0013036" startTime="2026-10-22T04:32:51.4629484+00:00" endTime="2026-10-22T04:32:51.4629484+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="375f029d-4599-42c8-aca0-2ccd6e9ce1ad" />
+    <UnitTestResult executionId="4db237a2-1832-410e-9212-ce6a74030b21" testId="b75a9fa1-1a3a-b05e-6600-da2280f91064" testName="RPCore.Tests.DataTests.FlatSavesMigrateOnceAndOriginalsRemainUnchanged" computerName="b70e9edd2349" duration="00:00:00.0037212" startTime="2026-10-22T04:32:51.4612596+00:00" endTime="2026-10-22T04:32:51.4612596+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4db237a2-1832-410e-9212-ce6a74030b21" />
+    <UnitTestResult executionId="d53116ba-5cc2-40ee-b5aa-de8942595d79" testId="2ccc1cc3-94b7-3730-b876-08480c4fd8a9" testName="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1000, price: 10)" computerName="b70e9edd2349" duration="00:00:00.0004150" startTime="2026-10-22T04:32:51.4021157+00:00" endTime="2026-10-22T04:32:51.4021158+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d53116ba-5cc2-40ee-b5aa-de8942595d79" />
+    <UnitTestResult executionId="3d6fa257-b1e0-4742-9a4f-cc418179bdbf" testId="abbd0da6-1335-c4f8-f818-97a12b042762" testName="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Protagonist&quot;)" computerName="b70e9edd2349" duration="00:00:00.0053957" startTime="2026-10-22T04:32:51.4471227+00:00" endTime="2026-10-22T04:32:51.4471227+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3d6fa257-b1e0-4742-9a4f-cc418179bdbf" />
+    <UnitTestResult executionId="9d833682-5442-4b52-9268-9ec1e1935a44" testId="b02ca0c1-8df9-338b-1fa4-472de77c1613" testName="RPCore.Tests.DataTests.OversizedTradeFailsWithoutOverflowOrMutation" computerName="b70e9edd2349" duration="00:00:00.0003012" startTime="2026-10-22T04:32:51.4474715+00:00" endTime="2026-10-22T04:32:51.4474716+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9d833682-5442-4b52-9268-9ec1e1935a44" />
+    <UnitTestResult executionId="7bca8e83-7e81-4c03-b8ed-86b1f56338b5" testId="c83092ab-ec27-572f-d08c-f5de16bfc87f" testName="RPCore.Tests.DataTests.TransferRejectsIntegerOverflow" computerName="b70e9edd2349" duration="00:00:00.0001810" startTime="2026-10-22T04:32:51.4789645+00:00" endTime="2026-10-22T04:32:51.4789646+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7bca8e83-7e81-4c03-b8ed-86b1f56338b5" />
+    <UnitTestResult executionId="08506843-59f4-4470-bbbf-f6feeb1a8a34" testId="0f541c44-742b-aa14-bd83-de1db2054cf7" testName="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Terry_Evans&quot;)" computerName="b70e9edd2349" duration="00:00:00.0050815" startTime="2026-10-22T04:32:51.4421440+00:00" endTime="2026-10-22T04:32:51.4421440+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="08506843-59f4-4470-bbbf-f6feeb1a8a34" />
+    <UnitTestResult executionId="0be50caa-773b-46bc-86e9-bb30a443e655" testId="6953640e-a8b4-35ca-bdce-ae2ad40331ac" testName="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1, price: -1)" computerName="b70e9edd2349" duration="00:00:00.0000124" startTime="2026-10-22T04:32:51.4024323+00:00" endTime="2026-10-22T04:32:51.4024323+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0be50caa-773b-46bc-86e9-bb30a443e655" />
+    <UnitTestResult executionId="c06ba08c-a9e9-4da9-96ac-90f9974775c3" testId="5b0d73c9-5e24-6302-8a34-707877925741" testName="RPCore.Tests.DataTests.MissingSaveUsesFallbackWithoutWriting" computerName="b70e9edd2349" duration="00:00:00.0032358" startTime="2026-10-22T04:32:51.4229935+00:00" endTime="2026-10-22T04:32:51.4229937+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c06ba08c-a9e9-4da9-96ac-90f9974775c3" />
+    <UnitTestResult executionId="4f47daee-94c5-4c12-bf77-83cdb132ae45" testId="f63b5bdc-4fe0-2dce-d9f1-a98c320ce886" testName="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: -1)" computerName="b70e9edd2349" duration="00:00:00.0001491" startTime="2026-10-22T04:32:51.4231332+00:00" endTime="2026-10-22T04:32:51.4231332+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4f47daee-94c5-4c12-bf77-83cdb132ae45" />
+    <UnitTestResult executionId="ac570e40-dd60-49ad-b897-e109cb31a238" testId="dba9037e-c40a-aa9b-01d9-fd3c7f6ee7b5" testName="RPCore.Tests.DataTests.UnknownCustomItemCanBeMovedWithoutDeletingIt" computerName="b70e9edd2349" duration="00:00:00.0001520" startTime="2026-10-22T04:32:51.4763649+00:00" endTime="2026-10-22T04:32:51.4763650+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ac570e40-dd60-49ad-b897-e109cb31a238" />
+    <UnitTestResult executionId="e1700303-115f-48c9-b4ba-31e9ba97da17" testId="e1f49910-fc08-d384-83ff-28a7711647ff" testName="RPCore.Tests.DataTests.AtomicSaveKeepsPreviousVersion" computerName="b70e9edd2349" duration="00:00:00.0094801" startTime="2026-10-22T04:32:51.4570876+00:00" endTime="2026-10-22T04:32:51.4570878+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e1700303-115f-48c9-b4ba-31e9ba97da17" />
+    <UnitTestResult executionId="83f41464-16ef-4859-b10f-5d22ac0c07f2" testId="6f09b642-b488-4578-a85e-48c024be5af7" testName="RPCore.Tests.DataTests.ExtensionFieldsSurviveRoundTrip" computerName="b70e9edd2349" duration="00:00:00.0019847" startTime="2026-10-22T04:32:51.4761548+00:00" endTime="2026-10-22T04:32:51.4761548+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="83f41464-16ef-4859-b10f-5d22ac0c07f2" />
+    <UnitTestResult executionId="ef72fc3a-3f1b-4c05-9103-310cba3563cc" testId="cf8d19af-1983-763d-bdee-b68512eecb62" testName="RPCore.Tests.DataTests.CorruptDestinationCannotConsumeItems" computerName="b70e9edd2349" duration="00:00:00.0002393" startTime="2026-10-22T04:32:51.4616020+00:00" endTime="2026-10-22T04:32:51.4616021+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ef72fc3a-3f1b-4c05-9103-310cba3563cc" />
+    <UnitTestResult executionId="6e1b3f19-2be7-4cf8-8afd-eaf9b61f95e6" testId="54f6a591-0597-7a2c-4ade-7a321289d0f5" testName="RPCore.Tests.DataTests.BuyUsesWeightedCostAndSellConservesFunds" computerName="b70e9edd2349" duration="00:00:00.0018027" startTime="2026-10-22T04:32:51.4808458+00:00" endTime="2026-10-22T04:32:51.4808458+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6e1b3f19-2be7-4cf8-8afd-eaf9b61f95e6" />
+    <UnitTestResult executionId="704513f9-986f-43af-8646-446202d71748" testId="ef10d076-0167-bc33-9bf0-3916963b0008" testName="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Tk_Santos&quot;)" computerName="b70e9edd2349" duration="00:00:00.0300912" startTime="2026-10-22T04:32:51.4364054+00:00" endTime="2026-10-22T04:32:51.4364056+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="704513f9-986f-43af-8646-446202d71748" />
+    <UnitTestResult executionId="b16c63eb-ffe9-433c-85f3-863e84698ee5" testId="e0ef8952-a0f7-40a8-1aa9-fff527a2c33e" testName="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: 0)" computerName="b70e9edd2349" duration="00:00:00.0000166" startTime="2026-10-22T04:32:51.4231947+00:00" endTime="2026-10-22T04:32:51.4231948+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b16c63eb-ffe9-433c-85f3-863e84698ee5" />
+    <UnitTestResult executionId="c6fe4739-0bbf-4ea5-9e49-0212ef22a3c3" testId="5cf8a6c7-9f56-4e80-649e-e5f839ef1b45" testName="RPCore.Tests.DataTests.CapacityFailureDoesNotLoseItem" computerName="b70e9edd2349" duration="00:00:00.0003488" startTime="2026-10-22T04:32:51.4581560+00:00" endTime="2026-10-22T04:32:51.4581561+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c6fe4739-0bbf-4ea5-9e49-0212ef22a3c3" />
+    <UnitTestResult executionId="02341f7a-5520-4139-907a-cb479b463671" testId="dcd869bb-0467-af7d-b090-f043b9dfda5a" testName="RPCore.Tests.DataTests.CannotSellUnownedShares" computerName="b70e9edd2349" duration="00:00:00.0027422" startTime="2026-10-22T04:32:51.4020775+00:00" endTime="2026-10-22T04:32:51.4020775+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="02341f7a-5520-4139-907a-cb479b463671" />
+    <UnitTestResult executionId="49c94866-a59f-4f6c-9621-68ff1fe47e8d" testId="074e7a09-7fb0-6c02-e8ef-c71ece4723da" testName="RPCore.Tests.DataTests.InvalidSaveCannotBeOverwrittenByDefaults(text: &quot;{&quot;)" computerName="b70e9edd2349" duration="00:00:00.0014018" startTime="2026-10-22T04:32:51.4787083+00:00" endTime="2026-10-22T04:32:51.4787084+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="49c94866-a59f-4f6c-9621-68ff1fe47e8d" />
+    <UnitTestResult executionId="6bc95870-cc9a-465b-8d23-ddd8a40bf4e5" testId="141fb2b4-83f7-50a2-1eab-07b9e01803d8" testName="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1, price: 0)" computerName="b70e9edd2349" duration="00:00:00.0001658" startTime="2026-10-22T04:32:51.4022910+00:00" endTime="2026-10-22T04:32:51.4022911+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6bc95870-cc9a-465b-8d23-ddd8a40bf4e5" />
+    <UnitTestResult executionId="9269a4f1-c997-488b-ba16-310bf60f8fc1" testId="13f1b59a-c788-1c6b-207c-908fc8dee397" testName="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: NaN)" computerName="b70e9edd2349" duration="00:00:00.0003987" startTime="2026-10-22T04:32:51.4017565+00:00" endTime="2026-10-22T04:32:51.4017566+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9269a4f1-c997-488b-ba16-310bf60f8fc1" />
+    <UnitTestResult executionId="c86cd024-1927-4721-a8a3-68fea81882f4" testId="dff2aeb7-a9dc-9c7c-85e1-53bbc3ad4a2f" testName="RPCore.Tests.DataTests.TransfersConserveItems" computerName="b70e9edd2349" duration="00:00:00.0002624" startTime="2026-10-22T04:32:51.4740347+00:00" endTime="2026-10-22T04:32:51.4740348+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c86cd024-1927-4721-a8a3-68fea81882f4" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="RPCore.Tests.DataTests.FlatSavesMigrateOnceAndOriginalsRemainUnchanged" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="b75a9fa1-1a3a-b05e-6600-da2280f91064">
+      <Execution id="4db237a2-1832-410e-9212-ce6a74030b21" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="FlatSavesMigrateOnceAndOriginalsRemainUnchanged" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 0, price: 10)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="7f33a47f-c67c-b824-209a-acbf70749b79">
+      <Execution id="06183c38-f1ca-407a-93da-ab39f55de99a" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidPurchaseDoesNotCreateShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.TransfersConserveItems" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="dff2aeb7-a9dc-9c7c-85e1-53bbc3ad4a2f">
+      <Execution id="c86cd024-1927-4721-a8a3-68fea81882f4" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="TransfersConserveItems" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1, price: -1)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="6953640e-a8b4-35ca-bdce-ae2ad40331ac">
+      <Execution id="0be50caa-773b-46bc-86e9-bb30a443e655" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidPurchaseDoesNotCreateShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1, price: 0)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="141fb2b4-83f7-50a2-1eab-07b9e01803d8">
+      <Execution id="6bc95870-cc9a-465b-8d23-ddd8a40bf4e5" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidPurchaseDoesNotCreateShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.AtomicSaveKeepsPreviousVersion" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="e1f49910-fc08-d384-83ff-28a7711647ff">
+      <Execution id="e1700303-115f-48c9-b4ba-31e9ba97da17" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="AtomicSaveKeepsPreviousVersion" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.FlatMigrationNeverReplacesExistingProfile" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="4bdc4fc2-de7b-98fe-0aaf-498f8129a5b5">
+      <Execution id="59a9426f-ac76-4266-8828-501945ec533e" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="FlatMigrationNeverReplacesExistingProfile" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.BuyUsesWeightedCostAndSellConservesFunds" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="54f6a591-0597-7a2c-4ade-7a321289d0f5">
+      <Execution id="6e1b3f19-2be7-4cf8-8afd-eaf9b61f95e6" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="BuyUsesWeightedCostAndSellConservesFunds" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.CustomWalletAndExchangeCommitTogether" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="532f22da-6ccc-6638-fd34-4e3401ca81ad">
+      <Execution id="c64290d1-ae48-4349-a90e-6623cf338843" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="CustomWalletAndExchangeCommitTogether" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Protagonist&quot;)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="abbd0da6-1335-c4f8-f818-97a12b042762">
+      <Execution id="3d6fa257-b1e0-4742-9a4f-cc418179bdbf" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="RealPsrpSavesImportWithoutLosingAnyOriginalField" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.TransferRejectsIntegerOverflow" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="c83092ab-ec27-572f-d08c-f5de16bfc87f">
+      <Execution id="7bca8e83-7e81-4c03-b8ed-86b1f56338b5" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="TransferRejectsIntegerOverflow" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: 1000, price: 10)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="2ccc1cc3-94b7-3730-b876-08480c4fd8a9">
+      <Execution id="d53116ba-5cc2-40ee-b5aa-de8942595d79" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidPurchaseDoesNotCreateShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.CannotSellUnownedShares" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="dcd869bb-0467-af7d-b090-f043b9dfda5a">
+      <Execution id="02341f7a-5520-4139-907a-cb479b463671" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="CannotSellUnownedShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.CorruptDestinationCannotConsumeItems" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="cf8d19af-1983-763d-bdee-b68512eecb62">
+      <Execution id="ef72fc3a-3f1b-4c05-9103-310cba3563cc" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="CorruptDestinationCannotConsumeItems" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: Infinity)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="f516f780-7fe6-2b2d-1836-0d9865762f55">
+      <Execution id="d396c2a7-9cbf-445b-9248-3ec8bb98bb18" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidStorageCapacityCannotConsumeItems" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.MissingSaveUsesFallbackWithoutWriting" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="5b0d73c9-5e24-6302-8a34-707877925741">
+      <Execution id="c06ba08c-a9e9-4da9-96ac-90f9974775c3" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="MissingSaveUsesFallbackWithoutWriting" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.CapacityFailureDoesNotLoseItem" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="5cf8a6c7-9f56-4e80-649e-e5f839ef1b45">
+      <Execution id="c6fe4739-0bbf-4ea5-9e49-0212ef22a3c3" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="CapacityFailureDoesNotLoseItem" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidPurchaseDoesNotCreateShares(quantity: -1, price: 10)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="bb3df587-01f4-968c-aa96-5a7437452398">
+      <Execution id="55a60214-60d8-4074-875f-cd3e9359519d" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidPurchaseDoesNotCreateShares" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: 0)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="e0ef8952-a0f7-40a8-1aa9-fff527a2c33e">
+      <Execution id="b16c63eb-ffe9-433c-85f3-863e84698ee5" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidTransferDoesNotMutateEitherInventory" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: -1)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="8987d9fc-7458-c96c-9011-47303d063ec1">
+      <Execution id="aadfe868-de20-4956-bad3-a6ea15320131" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidStorageCapacityCannotConsumeItems" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidSaveCannotBeOverwrittenByDefaults(text: &quot;{&quot;)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="074e7a09-7fb0-6c02-e8ef-c71ece4723da">
+      <Execution id="49c94866-a59f-4f6c-9621-68ff1fe47e8d" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidSaveCannotBeOverwrittenByDefaults" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Terry_Evans&quot;)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="0f541c44-742b-aa14-bd83-de1db2054cf7">
+      <Execution id="08506843-59f4-4470-bbbf-f6feeb1a8a34" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="RealPsrpSavesImportWithoutLosingAnyOriginalField" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: -1)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="f63b5bdc-4fe0-2dce-d9f1-a98c320ce886">
+      <Execution id="4f47daee-94c5-4c12-bf77-83cdb132ae45" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidTransferDoesNotMutateEitherInventory" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.ExtensionFieldsSurviveRoundTrip" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="6f09b642-b488-4578-a85e-48c024be5af7">
+      <Execution id="83f41464-16ef-4859-b10f-5d22ac0c07f2" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="ExtensionFieldsSurviveRoundTrip" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.UnknownCustomItemCanBeMovedWithoutDeletingIt" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="dba9037e-c40a-aa9b-01d9-fd3c7f6ee7b5">
+      <Execution id="ac570e40-dd60-49ad-b897-e109cb31a238" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="UnknownCustomItemCanBeMovedWithoutDeletingIt" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidSaveCannotBeOverwrittenByDefaults(text: &quot;null&quot;)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="782b9d0e-31a6-c689-94cc-574f940f8e54">
+      <Execution id="812d309a-e8a1-4c6d-a314-0809287c1c13" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidSaveCannotBeOverwrittenByDefaults" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.OversizedTradeFailsWithoutOverflowOrMutation" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="b02ca0c1-8df9-338b-1fa4-472de77c1613">
+      <Execution id="9d833682-5442-4b52-9268-9ec1e1935a44" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="OversizedTradeFailsWithoutOverflowOrMutation" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidTransferDoesNotMutateEitherInventory(qty: 10)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="53097931-122e-5330-6d85-a645fc38de33">
+      <Execution id="2fe6a98d-b197-44cd-bca7-b96395b302ee" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidTransferDoesNotMutateEitherInventory" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidStorageCapacityCannotConsumeItems(capacity: NaN)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="13f1b59a-c788-1c6b-207c-908fc8dee397">
+      <Execution id="9269a4f1-c997-488b-ba16-310bf60f8fc1" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidStorageCapacityCannotConsumeItems" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.RealPsrpSavesImportWithoutLosingAnyOriginalField(name: &quot;Tk_Santos&quot;)" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="ef10d076-0167-bc33-9bf0-3916963b0008">
+      <Execution id="704513f9-986f-43af-8646-446202d71748" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="RealPsrpSavesImportWithoutLosingAnyOriginalField" />
+    </UnitTest>
+    <UnitTest name="RPCore.Tests.DataTests.InvalidImportLeavesNoPartialProfile" storage="/workspace/rpcore/tests/bin/release/net8.0/rpcore.tests.dll" id="d1a43f99-3273-4c3d-9be1-ff659b4c1f38">
+      <Execution id="375f029d-4599-42c8-aca0-2ccd6e9ce1ad" />
+      <TestMethod codeBase="/workspace/RPCore/tests/bin/Release/net8.0/RPCore.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="RPCore.Tests.DataTests" name="InvalidImportLeavesNoPartialProfile" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f516f780-7fe6-2b2d-1836-0d9865762f55" executionId="d396c2a7-9cbf-445b-9248-3ec8bb98bb18" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8987d9fc-7458-c96c-9011-47303d063ec1" executionId="aadfe868-de20-4956-bad3-a6ea15320131" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="782b9d0e-31a6-c689-94cc-574f940f8e54" executionId="812d309a-e8a1-4c6d-a314-0809287c1c13" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="532f22da-6ccc-6638-fd34-4e3401ca81ad" executionId="c64290d1-ae48-4349-a90e-6623cf338843" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="53097931-122e-5330-6d85-a645fc38de33" executionId="2fe6a98d-b197-44cd-bca7-b96395b302ee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4bdc4fc2-de7b-98fe-0aaf-498f8129a5b5" executionId="59a9426f-ac76-4266-8828-501945ec533e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bb3df587-01f4-968c-aa96-5a7437452398" executionId="55a60214-60d8-4074-875f-cd3e9359519d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f33a47f-c67c-b824-209a-acbf70749b79" executionId="06183c38-f1ca-407a-93da-ab39f55de99a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d1a43f99-3273-4c3d-9be1-ff659b4c1f38" executionId="375f029d-4599-42c8-aca0-2ccd6e9ce1ad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b75a9fa1-1a3a-b05e-6600-da2280f91064" executionId="4db237a2-1832-410e-9212-ce6a74030b21" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2ccc1cc3-94b7-3730-b876-08480c4fd8a9" executionId="d53116ba-5cc2-40ee-b5aa-de8942595d79" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="abbd0da6-1335-c4f8-f818-97a12b042762" executionId="3d6fa257-b1e0-4742-9a4f-cc418179bdbf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b02ca0c1-8df9-338b-1fa4-472de77c1613" executionId="9d833682-5442-4b52-9268-9ec1e1935a44" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c83092ab-ec27-572f-d08c-f5de16bfc87f" executionId="7bca8e83-7e81-4c03-b8ed-86b1f56338b5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0f541c44-742b-aa14-bd83-de1db2054cf7" executionId="08506843-59f4-4470-bbbf-f6feeb1a8a34" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6953640e-a8b4-35ca-bdce-ae2ad40331ac" executionId="0be50caa-773b-46bc-86e9-bb30a443e655" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5b0d73c9-5e24-6302-8a34-707877925741" executionId="c06ba08c-a9e9-4da9-96ac-90f9974775c3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f63b5bdc-4fe0-2dce-d9f1-a98c320ce886" executionId="4f47daee-94c5-4c12-bf77-83cdb132ae45" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dba9037e-c40a-aa9b-01d9-fd3c7f6ee7b5" executionId="ac570e40-dd60-49ad-b897-e109cb31a238" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e1f49910-fc08-d384-83ff-28a7711647ff" executionId="e1700303-115f-48c9-b4ba-31e9ba97da17" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6f09b642-b488-4578-a85e-48c024be5af7" executionId="83f41464-16ef-4859-b10f-5d22ac0c07f2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cf8d19af-1983-763d-bdee-b68512eecb62" executionId="ef72fc3a-3f1b-4c05-9103-310cba3563cc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="54f6a591-0597-7a2c-4ade-7a321289d0f5" executionId="6e1b3f19-2be7-4cf8-8afd-eaf9b61f95e6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ef10d076-0167-bc33-9bf0-3916963b0008" executionId="704513f9-986f-43af-8646-446202d71748" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e0ef8952-a0f7-40a8-1aa9-fff527a2c33e" executionId="b16c63eb-ffe9-433c-85f3-863e84698ee5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5cf8a6c7-9f56-4e80-649e-e5f839ef1b45" executionId="c6fe4739-0bbf-4ea5-9e49-0212ef22a3c3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dcd869bb-0467-af7d-b090-f043b9dfda5a" executionId="02341f7a-5520-4139-907a-cb479b463671" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="074e7a09-7fb0-6c02-e8ef-c71ece4723da" executionId="49c94866-a59f-4f6c-9621-68ff1fe47e8d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="141fb2b4-83f7-50a2-1eab-07b9e01803d8" executionId="6bc95870-cc9a-465b-8d23-ddd8a40bf4e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="13f1b59a-c788-1c6b-207c-908fc8dee397" executionId="9269a4f1-c997-488b-ba16-310bf60f8fc1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dff2aeb7-a9dc-9c7c-85e1-53bbc3ad4a2f" executionId="c86cd024-1927-4721-a8a3-68fea81882f4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="31" executed="31" passed="31" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.25)
+[xUnit.net 00:00:00.06]   Discovering: RPCore.Tests
+[xUnit.net 00:00:00.13]   Discovered:  RPCore.Tests
+[xUnit.net 00:00:00.13]   Starting:    RPCore.Tests
+[xUnit.net 00:00:00.26]   Finished:    RPCore.Tests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

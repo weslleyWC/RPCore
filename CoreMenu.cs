@@ -1,0 +1,101 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using GTA.UI;
+using LemonUI;
+using LemonUI.Menus;
+using Newtonsoft.Json.Linq;
+
+namespace RPCore
+{
+    public class CoreMenu : ISystem
+    {
+        public string Name { get { return "coremenu"; } }
+        readonly ObjectPool pool;
+        readonly AchievementSystem ach;
+        readonly Action save;
+        readonly NativeMenu menu = new NativeMenu("RPCore", "");
+        public string RequestedProfile;
+        bool dirty;
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save) { this.pool = pool; this.ach = ach; this.save = save; pool.Add(menu); }
+
+        void Add(string title, string description, Action action)
+        {
+            var item = new NativeItem(title, description);
+            item.Activated += (s, e) => { action(); dirty = true; }; menu.Add(item);
+        }
+        void Rebuild()
+        {
+            menu.Clear(); menu.Name = Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            Add("Save now", "Writes the active profile; keeps previous versions as .bak.", () => { save(); Notify.Show("Save requested. Check RPCore.log for any write errors."); });
+            Add("Bank: deposit $100", "RPCore bank balance is separate from other mods.", () => { if (Wallet.Deposit(100)) BankUsed(); else Notify.Show("Insufficient cash or balance limit."); });
+            Add("Bank: withdraw $100", "Withdraw to the active character wallet.", () => { if (Wallet.Withdraw(100)) BankUsed(); else Notify.Show("Insufficient bank balance or cash limit."); });
+            Add("Reload configuration", "Reads Settings.ini and Keys.ini. Feature switches take effect after script restart.", () => { Cfg.Load(); Notify.Show("Configuration reloaded."); });
+            foreach (var directory in new[] { Path.Combine(Cfg.SaveDir, "Players"), Path.Combine(Cfg.Dir, "Legacy", "SaveData", "Players"), Path.Combine("scripts", "PSRP", "SaveData", "Players") }.Distinct())
+            {
+                if (!Directory.Exists(directory)) continue;
+                foreach (string path in Directory.GetFiles(directory, "*.json"))
+                {
+                    string source = path;
+                    string id = "PSRP_" + Profile.SafeId(Path.GetFileNameWithoutExtension(source));
+                    Add("Import: " + Path.GetFileNameWithoutExtension(source), "Creates " + id + ". Imports hunger, hydration, cash, bank, gang, portfolio and unlocks. Does not change your ped model or original PSRP saves.", () => Import(source, id));
+                }
+            }
+            if (Directory.Exists(Cfg.SaveDir))
+                foreach (string directory in Directory.GetDirectories(Cfg.SaveDir).Where(d => File.Exists(Path.Combine(d, "Wallet.json"))))
+                {
+                    string id = Path.GetFileName(directory);
+                    if (Profile.IsProtagonist(id)) continue;
+                    Add("Use profile: " + id, "For freemode peds only. Does not change appearance, position or vehicles.", () => {
+                        if (Profile.IsProtagonist(Profile.Detect())) { Notify.Show("Switch to a freemode ped first."); return; }
+                        RequestedProfile = id; menu.Visible = false;
+                    });
+                }
+            dirty = false;
+        }
+
+        void BankUsed()
+        {
+            ach.Bump("bank_used"); if (Wallet.Bank >= 1000000) ach.Bump("bank_million");
+            Wallet.Save(); ach.Save();
+        }
+
+        void Import(string source, string id)
+        {
+            try
+            {
+                string target = Path.Combine(Cfg.SaveDir, id);
+                LegacyImport.ImportPlayer(source, target);
+                // Supplementary data never overwrites an existing profile or any source file.
+                string root = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(source)));
+                var player = JObject.Parse(File.ReadAllText(source));
+                string displayName = (string)player["PlayerName"];
+                if (!string.IsNullOrEmpty(displayName) && displayName == Path.GetFileName(displayName) && displayName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0)
+                {
+                    string portfolio = Path.Combine(root, "StockMarket", displayName + ".portfolio.json");
+                    string destination = Path.Combine(Cfg.Dir, "StockMarket", id + ".portfolio.json");
+                    if (File.Exists(portfolio) && !File.Exists(destination))
+                    {
+                        JObject.Parse(File.ReadAllText(portfolio)); Directory.CreateDirectory(Path.GetDirectoryName(destination)); File.Copy(portfolio, destination);
+                    }
+                }
+                string achievements = Path.Combine(root, "Achievements.json");
+                if (File.Exists(achievements))
+                {
+                    var entries = JObject.Parse(File.ReadAllText(achievements));
+                    var data = new AchData();
+                    foreach (var entry in entries.Properties()) if (entry.Value is JObject && (bool?)entry.Value["Unlocked"] == true) data.Unlocked.Add("psrp_" + entry.Name);
+                    new JsonFiles().Write(Path.Combine(target, "Achievements.json"), data);
+                }
+                Notify.Show("Imported " + id + ". Select Use profile while using a freemode ped.");
+            }
+            catch (Exception ex) { Log.Error("PSRP import", ex); Notify.Show("Import incomplete or profile already exists. Originals preserved; see RPCore.log."); }
+        }
+        public void Tick() { if (dirty && menu.Visible) Rebuild(); }
+        public void OnKey(KeyEventArgs e) { if (e.KeyCode != Cfg.CoreKey) return; if (menu.Visible) menu.Visible = false; else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; } }
+        public void Reload() { menu.Visible = false; }
+        public void Save() { }
+        public void Dispose() { menu.Visible = false; }
+    }
+}
