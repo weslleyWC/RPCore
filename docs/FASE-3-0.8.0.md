@@ -73,7 +73,7 @@ Crédito, recibo, contagem de serviços, término do turno e soma/quantidade de 
 | AchievementSystem.cs | Gatilhos uber_trips e valet_returns para as conquistas correspondentes |
 | Visuals.cs / VisualAssetDefaults.cs / Bindings.json | Banners originais para os novos trabalhos e versão de diagnóstico |
 | RPCore.csproj / AssemblyInfo.cs / config/Jobs | Defaults embutidos, configurações e versão 0.8.0 |
-| tests/DrivingJobTests.cs / projeto de testes | 60 casos novos; 222 no total, incluindo os 166 anteriores |
+| tests/DrivingJobTests.cs / projeto de testes | 60 casos novos; 226 no total, incluindo os 166 anteriores |
 
 ## Teste no GTA desta entrega
 
