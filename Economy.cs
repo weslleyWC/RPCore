@@ -8,6 +8,7 @@ namespace RPCore
         public int Cash;
         public int Bank;
         public Portfolio Exchange;
+        public TransportData Transport;
     }
 
     public class Portfolio : ExtensibleData

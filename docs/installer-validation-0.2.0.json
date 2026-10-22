@@ -1,0 +1,8 @@
+{
+  "runtime": "PowerShell 7.6.7/Linux; temporary fixture with previous released payload; GTA not executed",
+  "upgradeRuns": 2,
+  "preexistingFilesPreserved": 76,
+  "previousBinaryAndSavesBackedUp": true,
+  "newVehicleConfigurationsInstalled": true,
+  "duplicateModRejectedBeforeMutation": true
+}

@@ -38,7 +38,7 @@ with zipfile.ZipFile(dist / 'RPCore-update.zip', 'w', zipfile.ZIP_DEFLATED) as a
 with zipfile.ZipFile(dist / 'RPCore-source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(root.rglob('*')):
         relative = path.relative_to(root)
-        if not path.is_file() or any(part in {'.git', '.deps', 'bin', 'obj', 'dist', 'TestResults', '__pycache__'} for part in relative.parts):
+        if not path.is_file() or any(part in {'.git', '.deps', 'bin', 'obj', 'dist', 'downloads', 'TestResults', '__pycache__'} for part in relative.parts):
             continue
         archive.write(path, relative)
 print(dist / 'RPCore-update.zip')

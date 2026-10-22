@@ -10,7 +10,8 @@ namespace RPCore
         static readonly Dictionary<string, SoundPlayer> Cache = new Dictionary<string, SoundPlayer>();
         static readonly Dictionary<string, string> Aliases = new Dictionary<string, string> {
             { "belt_on", "Vehicles/seatbelt.wav" }, { "belt_off", "Vehicles/seatbeltunhook.wav" },
-            { "achievement", "Phone/Noti1.wav" }, { "buy", "Phone/Noti2.wav" }, { "delivered", "Phone/Noti3.wav" }
+            { "achievement", "Phone/Noti1.wav" }, { "buy", "Phone/Noti2.wav" }, { "delivered", "Phone/Noti3.wav" },
+            { "fuel", "Vehicles/PetrolPump.wav" }
         };
 
         public static void Play(string name)
@@ -30,5 +31,6 @@ namespace RPCore
             catch (System.Exception ex) { Log.Error("sfx " + name, ex); }
         }
         public static void Dispose() { foreach (var sp in Cache.Values) if (sp != null) { sp.Stop(); sp.Dispose(); } Cache.Clear(); }
+        public static void Stop(string name) { SoundPlayer sp; if (Cache.TryGetValue(name, out sp) && sp != null) sp.Stop(); }
     }
 }

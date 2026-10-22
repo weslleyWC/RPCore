@@ -1,0 +1,184 @@
+[
+  {
+    "Name": "RPCore Fuel 1",
+    "X": 49.4,
+    "Y": 2778.8,
+    "Z": 58.0,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 2",
+    "X": 263.9,
+    "Y": 2606.5,
+    "Z": 45.0,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 3",
+    "X": 1039.9,
+    "Y": 2671.1,
+    "Z": 39.6,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 4",
+    "X": 1207.3,
+    "Y": 2660.2,
+    "Z": 37.9,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 5",
+    "X": 2539.7,
+    "Y": 2594.2,
+    "Z": 37.9,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 6",
+    "X": 2679.8,
+    "Y": 3263.9,
+    "Z": 55.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 7",
+    "X": 2005.1,
+    "Y": 3773.9,
+    "Z": 32.4,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 8",
+    "X": 1687.2,
+    "Y": 4929.9,
+    "Z": 42.1,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 9",
+    "X": 1701.3,
+    "Y": 6416.0,
+    "Z": 32.8,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 10",
+    "X": 179.8,
+    "Y": 6602.8,
+    "Z": 31.9,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 11",
+    "X": -94.5,
+    "Y": 6419.1,
+    "Z": 31.5,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 12",
+    "X": -2554.9,
+    "Y": 2334.4,
+    "Z": 33.1,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 13",
+    "X": -1800.4,
+    "Y": 803.6,
+    "Z": 138.7,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 14",
+    "X": -1437.6,
+    "Y": -276.7,
+    "Z": 46.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 15",
+    "X": -2096.2,
+    "Y": -320.3,
+    "Z": 13.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 16",
+    "X": -724.6,
+    "Y": -935.2,
+    "Z": 19.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 17",
+    "X": -526.0,
+    "Y": -1211.0,
+    "Z": 18.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 18",
+    "X": -70.2,
+    "Y": -1761.8,
+    "Z": 29.5,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 19",
+    "X": 265.6,
+    "Y": -1261.3,
+    "Z": 29.3,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 20",
+    "X": 819.7,
+    "Y": -1028.8,
+    "Z": 26.4,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 21",
+    "X": 1208.9,
+    "Y": -1402.6,
+    "Z": 35.2,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 22",
+    "X": 1181.4,
+    "Y": -330.8,
+    "Z": 69.3,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 23",
+    "X": 620.8,
+    "Y": 269.0,
+    "Z": 103.1,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 24",
+    "X": 2581.3,
+    "Y": 362.0,
+    "Z": 108.5,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 25",
+    "X": 1785.6,
+    "Y": 3330.4,
+    "Z": 41.4,
+    "Radius": 18
+  },
+  {
+    "Name": "RPCore Fuel 26",
+    "X": -319.3,
+    "Y": -1471.7,
+    "Z": 30.5,
+    "Radius": 18
+  }
+]

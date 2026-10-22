@@ -46,6 +46,11 @@ namespace RPCore
             systems.Add(new SeatbeltSystem(ach));
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
+            FuelSystem fuel = null;
+            if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach); return fuel; });
+            if (Cfg.EnableVehicleControls) AddOptional(() => new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)));
+            if (Cfg.EnableGarages) AddOptional(() => new GarageSystem(pool, ach));
+            if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
             if (Cfg.EnableGangs) AddOptional(() => new GangSystem(pool, ach));
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             core = new CoreMenu(pool, ach, SaveAll); systems.Add(core);
@@ -56,7 +61,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.2.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

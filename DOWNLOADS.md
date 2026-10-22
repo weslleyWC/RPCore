@@ -1,10 +1,15 @@
-# Baixar RPCore
+# RPCore 0.2.0 — downloads
 
-Pacotes da implementação preparada para ScriptHookVDotNet Enhanced 1.1.0.6 e LemonUI 2.2:
+- [Baixar atualização 0.2.0 com DLL compilada e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.2.0.zip)
+- [Baixar fontes completos 0.2.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.2.0.zip)
 
-- [Baixar atualização com instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update.zip)
-- [Baixar código-fonte completo](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source.zip)
+Os nomes sem versão também apontam para esta atualização. Se abrir a página do arquivo, use **Download raw**. Repositório privado exige login no GitHub.
 
-Se o GitHub abrir a página do arquivo, clique em **Download raw**. Em repositório privado, entre na sua conta do GitHub antes de baixar.
+Novidades: motor/cruise/setas, combustível com 26 postos, compra de três garagens, persistência de veículos/personalização/danos, reparo/lavagem e compra pessoal de veículos no PDM. F10 identifica 0.2.0. A base anterior foi testada no GTA pelo usuário; os sistemas novos aguardam o teste de gameplay do usuário. Checklist: [docs/TESTES-0.2.0.md](../docs/TESTES-0.2.0.md).
 
-A atualização inclui instalador PowerShell com backup. Leia o README e docs/TESTES-GTA.md antes de instalar. Validação: 31 testes passaram; build sem erros ou avisos. Testes dentro do GTA/Windows continuam pendentes. Os sistemas PSRP ainda não implementados estão listados em docs/ALTERACOES.md. Os saves e recursos enviados pelo usuário estão preservados nos pacotes.
+A base anterior continua disponível para retorno:
+
+- [Atualização anterior testada](https://github.com/weslleyWC/RPCore/raw/68191401248ec0282dd0d6c50ad96c07625f8790/downloads/RPCore-update.zip)
+- [Fontes anteriores](https://github.com/weslleyWC/RPCore/raw/68191401248ec0282dd0d6c50ad96c07625f8790/downloads/RPCore-source.zip)
+
+Esta versão ainda não conclui os sistemas amplos restantes do PSRP. Veja README.md e docs/ALTERACOES.md. O instalador faz backup e preserva configurações/saves existentes; todos os recursos e saves PSRP originais permanecem nos pacotes.

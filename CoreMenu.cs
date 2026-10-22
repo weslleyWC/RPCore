@@ -27,7 +27,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.2.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
             Add("Save now", "Writes the active profile; keeps previous versions as .bak.", () => { save(); Notify.Show("Save requested. Check RPCore.log for any write errors."); });
             Add("Bank: deposit $100", "RPCore bank balance is separate from other mods.", () => { if (Wallet.Deposit(100)) BankUsed(); else Notify.Show("Insufficient cash or balance limit."); });
             Add("Bank: withdraw $100", "Withdraw to the active character wallet.", () => { if (Wallet.Withdraw(100)) BankUsed(); else Notify.Show("Insufficient bank balance or cash limit."); });

@@ -12,6 +12,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
+    <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
     <None Include="../assets/RPCore/SaveData/Players/*.json" Link="Fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

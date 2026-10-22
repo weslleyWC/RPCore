@@ -1,0 +1,5 @@
+[
+  { "Id": "strawberry", "Name": "Strawberry Garage", "X": -79.8, "Y": -1826.4, "Z": 26.9, "SpawnX": -73.3, "SpawnY": -1834.0, "SpawnZ": 26.8, "Heading": 138, "Price": 10000, "Capacity": 3 },
+  { "Id": "burton", "Name": "Burton Garage", "X": -354.5, "Y": -134.0, "Z": 39.0, "SpawnX": -365.3, "SpawnY": -124.2, "SpawnZ": 38.7, "Heading": 70, "Price": 25000, "Capacity": 6 },
+  { "Id": "sandy", "Name": "Sandy Shores Garage", "X": 1175.0, "Y": 2640.4, "Z": 37.8, "SpawnX": 1179.3, "SpawnY": 2633.3, "SpawnZ": 37.8, "Heading": 0, "Price": 8000, "Capacity": 2 }
+]

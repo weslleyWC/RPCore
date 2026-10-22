@@ -1,4 +1,25 @@
-# Análise dos arquivos e alterações
+# Análise dos arquivos e alterações — histórico 0.1 + atualização 0.2.0
+
+## Atualização 0.2.0 (após confirmação de teste da base pelo usuário)
+
+A versão anterior continua identificada pelo commit `68191401248ec0282dd0d6c50ad96c07625f8790`. O usuário informou que a testou no GTA e que a base funcionou. A atualização atual mantém os sistemas anteriores e acrescenta:
+
+- `VehicleData.cs`: identidade por modelo/placa, tanque/consumo/cotação, cadastro de veículos e validação de vagas; DTOs extensíveis preservam campos desconhecidos.
+- `VehicleControlSystem.cs`: motor, cruise por aceleração, indicadores, pisca-alerta, capô/porta-malas; restauração/liberação dos estados alterados e proteção durante missões.
+- `FuelSystem.cs`: 26 postos, consumo por distância/marcha lenta, HUD, falta de combustível, compra limitada por tanque/saldo, suspensão em pausas/missões e exclusões de modelos.
+- `VehicleSnapshot.cs`: captura/restauração de pintura, equipamentos e danos suportados; nenhum dado de ped/reboque/handling é aplicado.
+- `GarageSystem.cs`: compra de três garagens, vagas por perfil, saída do motorista antes de guardar, gravação antes da remoção, recuperação com busca prévia de veículo existente, reparo e lavagem pagos.
+- `DealershipSystem.cs`: compra pessoal de cinco veículos configuráveis no PDM, vaga obrigatória, modelo/área/saldo verificados e placa gerada sem colisão detectada. Não inclui o negócio empresarial PDM do PSRP.
+- `WalletData.Transport` / `Wallet.Transport`: dados novos agregados à carteira existente, sem sobrescrever os JSONs originais PSRP. Saves antigos não exigem reinício de progresso.
+- `Cfg.cs`, `CoreMenu.cs`, `Main.cs`: opções/teclas, versão no menu/log e registro dos quatro sistemas (15 com todos os recursos habilitados).
+- `AchievementSystem.cs`: mais três gatilhos PSRP: primeiro carro, garagem e abastecimento (12 de 35 com regras ativas nesta versão).
+- `Sfx.cs`: áudio de abastecimento e parada direcionada do som.
+- `AssemblyInfo.cs`: versão da DLL 0.2.0.0.
+- `config/Vehicles.ini`, `config/Fuel/Stations.json`, `config/Garages/Locations.json`, `config/Dealership/Vehicles.json`: defaults novos separados dos arquivos já usados.
+- `tests/VehicleDataTests.cs`: 19 casos adicionais, além dos 31 anteriores; dados reais PSRP continuam nas regressões.
+- `scripts/package.py`: exclui os ZIPs publicados em downloads da cópia de fontes para evitar arquivos recursivos/inchados.
+
+Esta atualização ainda precisa do teste de gameplay descrito em `TESTES-0.2.0.md`. As seções abaixo documentam a base 0.1 e seus limites naquele momento; garagem, combustível e compra pessoal de veículos foram acrescentados acima. Continuam pendentes os demais sistemas amplos PSRP, incluindo casas, empregos adicionais, polícia, captura de territórios, drogas, seguro, telefone, aparência e gestão da empresa PDM.
 
 ## Entradas examinadas antes da implementação
 

@@ -13,6 +13,7 @@ namespace RPCore
         }
         public static int Bank { get { return data.Bank; } }
         public static Portfolio Exchange { get { return data.Exchange; } set { data.Exchange = value; } }
+        public static TransportData Transport { get { if (data.Transport == null) data.Transport = new TransportData(); data.Transport.Validate(); return data.Transport; } }
         public static void Reload() { data = Store.Load("Wallet.json", () => new WalletData()); data.Cash = Math.Max(0, data.Cash); data.Bank = Math.Max(0, data.Bank); }
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }

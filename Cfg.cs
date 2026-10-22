@@ -13,6 +13,10 @@ namespace RPCore
         public static Keys CoreKey, StorageKey, StocksKey, GangsKey, RadioKey;
         public static string CustomProfile;
         public static bool EnableGangs, EnableRadio;
+        public static bool EnableFuel, EnableVehicleControls, EnableGarages, AllowMissionStorage;
+        public static Keys EngineKey, CruiseKey, LeftSignalKey, RightSignalKey, HazardKey, VehicleMenuKey, FuelKey, GarageKey, DealerKey;
+        public static float FuelPer100Km, IdleFuelPerHour, PumpLitersPerSecond;
+        public static int FuelPrice;
         public static float HungerPerMin, ThirstPerMin, SprintMult, MaxWeight, HudX, HudY;
         public static int AutosaveMs;
         public static int PizzaBase, PizzaOnTimeBonus, PizzaShiftBonus, PizzaDrops;
@@ -59,6 +63,32 @@ namespace RPCore
                 InventoryKey = keys.GetValue("SETTINGS", "Inventory Key", InventoryKey);
                 SeatbeltKey = keys.GetValue("SETTINGS", "Seatbelt Key", SeatbeltKey);
             }
+            var vehicles = ScriptSettings.Load(Path.Combine(Dir, "Vehicles.ini"));
+            EnableFuel = vehicles.GetValue("Features", "Fuel", true);
+            EnableVehicleControls = vehicles.GetValue("Features", "Controls", true);
+            EnableGarages = vehicles.GetValue("Features", "Garages", true);
+            AllowMissionStorage = vehicles.GetValue("Garages", "AllowMissionVehicles", false);
+            EngineKey = vehicles.GetValue("Keys", "Engine", Keys.X);
+            CruiseKey = vehicles.GetValue("Keys", "Cruise", Keys.C);
+            LeftSignalKey = vehicles.GetValue("Keys", "LeftIndicator", Keys.B);
+            RightSignalKey = vehicles.GetValue("Keys", "RightIndicator", Keys.N);
+            HazardKey = vehicles.GetValue("Keys", "Hazards", Keys.H);
+            VehicleMenuKey = vehicles.GetValue("Keys", "VehicleMenu", Keys.K);
+            FuelKey = vehicles.GetValue("Keys", "Refuel", Keys.G);
+            GarageKey = vehicles.GetValue("Keys", "Garage", Keys.F11);
+            DealerKey = vehicles.GetValue("Keys", "Dealership", Keys.F12);
+            if (File.Exists(keysPath))
+            {
+                var keys = ScriptSettings.Load(keysPath);
+                EngineKey = keys.GetValue("SETTINGS", "Engine Key", EngineKey);
+                CruiseKey = keys.GetValue("SETTINGS", "Cruise Control Key", CruiseKey);
+                LeftSignalKey = keys.GetValue("SETTINGS", "Left Indicator Key", LeftSignalKey);
+                RightSignalKey = keys.GetValue("SETTINGS", "Right Indicator Key", RightSignalKey);
+            }
+            FuelPer100Km = System.Math.Min(100, Positive(vehicles.GetValue("Fuel", "LitersPer100Km", 8f), 8));
+            IdleFuelPerHour = System.Math.Min(20, Positive(vehicles.GetValue("Fuel", "IdleLitersPerHour", .8f), .8f));
+            PumpLitersPerSecond = System.Math.Max(.1f, System.Math.Min(20, Positive(vehicles.GetValue("Fuel", "PumpLitersPerSecond", 3f), 3)));
+            FuelPrice = System.Math.Max(1, System.Math.Min(1000, vehicles.GetValue("Fuel", "PricePerLiter", 7)));
 
             HungerPerMin = Get(s, "Needs", "HungerPerMin", 1.1f);
             ThirstPerMin = Get(s, "Needs", "ThirstPerMin", 1.6f);

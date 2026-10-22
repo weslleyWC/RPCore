@@ -1,0 +1,7 @@
+[
+  { "Model": "faggio", "Name": "Pegassi Faggio", "Price": 3500 },
+  { "Model": "asea", "Name": "Declasse Asea", "Price": 12000 },
+  { "Model": "blista", "Name": "Dinka Blista", "Price": 18000 },
+  { "Model": "dominator", "Name": "Vapid Dominator", "Price": 45000 },
+  { "Model": "sultan", "Name": "Karin Sultan", "Price": 55000 }
+]

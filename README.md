@@ -1,6 +1,8 @@
-# RPCore — GTA V Legacy
+# RPCore 0.2.0 — GTA V Legacy
 
 Projeto C# .NET Framework 4.8 para **ScriptHookVDotNet Enhanced 1.1.0.6** e **LemonUI SHVDN3 2.2**, as versões informadas pelo desenvolvedor. Implementação própria sobre os fontes enviados, mantendo `ISystem`, LemonUI e os formatos básicos de inventário, necessidades e pizza.
+
+A base anterior foi testada no GTA pelo usuário e ele informou que funcionou. As adições 0.2.0 abaixo foram compiladas e testadas nos dados; o teste de gameplay desta nova versão será feito pelo usuário.
 
 ## Instalar no GTA
 
@@ -31,8 +33,16 @@ Configurações antigas são preservadas: se `Settings.ini` já existir, acresce
 | F3 | Rádio: selecionar/parar uma transmissão |
 | F9 | Registrar coordenadas no log |
 | F10 | Salvar, banco, configuração, importar e selecionar perfis |
+| X | Ligar/desligar motor como motorista |
+| C | Ativar/cancelar cruise acima de 29 km/h; freio/acelerador também cancelam |
+| B / N | Seta esquerda / direita |
+| H | Pisca-alerta |
+| K | Menu do veículo: motor, cruise, setas, capô e porta-malas |
+| G | Iniciar/parar abastecimento no posto, parado e com motor desligado |
+| F11 | Garagens: GPS, compra, guardar/retirar e serviços |
+| F12 | Concessionária: GPS e compra junto ao PDM |
 
-Altere as teclas em `Settings.ini` se conflitam com trainers ou outros mods. Use F10 → Reload configuration; alterações de `Features` precisam de reinício do script.
+Altere as teclas em `Settings.ini` se conflitam com trainers ou outros mods. Use F10 → Reload configuration para reler opções e teclas. Para alterar quais sistemas ficam habilitados, reinicie o script após editar `Features`. Os novos controles, combustível e garagem usam `Vehicles.ini`; as teclas de motor, cruise e setas de `Keys.ini` têm prioridade se estiverem presentes. `Car Controller Key = N` do PSRP continua sem efeito; K abre o menu de veículo, evitando a colisão com a seta direita N.
 
 ## Dados e compatibilidade
 
@@ -41,13 +51,28 @@ Altere as teclas em `Settings.ini` se conflitam com trainers ou outros mods. Use
 - Saves antigos do RPCore diretamente em `SaveData` são copiados uma única vez para o primeiro perfil detectado. `FlatMigration.json` registra o destino; os originais permanecem intactos. Faça a primeira inicialização com o protagonista dono desses saves.
 - Michael, Franklin e Trevor têm perfis separados. Peds freemode usam o perfil selecionado no F10, persistido em `ActiveProfile.json`. Modelos desconhecidos/transições mantêm o último perfil. O RPCore não troca aparência ou modelo automaticamente.
 - Arquivos originais do PSRP ficam em `assets/RPCore` nos fontes e em `scripts/RPCore/Legacy` no pacote, com áudio e gangues nos diretórios correspondentes. F10 importa os três jogadores enviados ou saves encontrados em `scripts/PSRP/SaveData/Players`. A importação nunca sobrescreve um perfil existente: cria `PSRP_<nome>` e retém uma cópia byte a byte do JSON completo, com todos os 151 campos.
-- Importação funcional: fome, hidratação, dinheiro, banco, gangue/reputação, carteira de ações e conquistas já desbloqueadas. Campos de aparência, veículos, negócios, dívidas e territórios são preservados na cópia original; não são aplicados por esta versão. A importação não entrega dinheiro de um save MP para um protagonista.
+- Importação funcional: fome, hidratação, dinheiro, banco, gangue/reputação, carteira de ações e conquistas já desbloqueadas. Campos de aparência, veículos PSRP, negócios, dívidas e territórios são preservados na cópia original; não são aplicados por esta versão. O novo cadastro de veículos RPCore é separado dos veículos PSRP antigos. A importação não entrega dinheiro de um save MP para um protagonista.
 - `Wallet.json` é o checkpoint principal de dinheiro MP, banco e bolsa. Os protagonistas usam o dinheiro nativo do GTA; o salvamento desse dinheiro depende também do save do próprio jogo. A carteira em `StockMarket/<perfil>.portfolio.json` é exportada como cópia compatível; a bolsa RPCore é uma simulação local com três ativos e variação por minuto, sem integração com BAWSAQ/LCN.
 - Porta-malas são identificados por modelo + placa dentro do perfil. Duas cópias do mesmo modelo com a mesma placa compartilham o compartimento; use placas distintas. O baú padrão está em `(-14.1, -1440.2, 31.1)`, editável em `Storage/Locations.json`. Limites: 100 kg no porta-malas e 200 kg no baú padrão.
 - Gangues leem os três registros de `Gangs/CustomGangs.json`: nome, descrição, HQ e cor. Entre a pé no HQ pelo menu; cada entrega de pizza concede reputação até 100. Esta versão não cria NPCs armados, não muda relacionamentos globais nem simula guerras territoriais.
 - Rádio usa Windows Media Player COM e conexão de rede no computador do GTA. Instale/habilite esse componente do Windows se necessário e forneça URLs diretas de áudio MP3 em `CustomRadioStream.xml`. O endereço fornecido no PSRP aparenta ser uma página de rádio, não um fluxo MP3 garantido; falhas de conexão são exibidas e registradas. Desligue o rádio nativo manualmente para evitar sobreposição. Reprodução real exige teste no Windows.
 - Áudios de cinto, compra, entrega e conquista usam os WAVs PCM enviados, sem conversão dos originais. Os demais WAVs estão preservados. Os dois `RivalDealer*.wav` são IEEE float: não são enviados ao `SoundPlayer`, que espera PCM.
-- Não há alterações em polícia, combustível, handling, armas, interior, mapas ou outros mods. Opções antigas de `Keys.ini` e `Legacy/SaveData/Settings.ini` referentes a esses sistemas são preservadas, mas não ganham efeito automaticamente no RPCore.
+- A versão 0.2.0 acrescenta motor/cruise/setas, combustível e garagem próprios, com opções independentes em `Vehicles.ini`. Se outro mod já controla combustível, use `[Features] Fuel = False` e reinicie o script. O RPCore não reescreve handling, limite nativo de velocidade, polícia, armas, mapas ou configurações de outros mods. As opções PSRP de sistemas ainda ausentes permanecem sem efeito automático.
+
+## Veículos, postos, garagem e concessionária (0.2.0)
+
+- **Motor e setas:** ações somente como motorista de carro/moto/quadriciclo. O menu K abre capô e porta-malas com o carro parado. Setas e controle de auto-start alterados pelo RPCore são restaurados/liberados ao sair, trocar de veículo ou recarregar.
+- **Cruise:** C registra a velocidade atual acima de 29 km/h e fornece aceleração para mantê-la aproximadamente. Frear, acelerar manualmente, puxar freio de mão, colidir, sair do chão, parar o motor ou abrir um menu cancela. Não é piloto de direção nem freio automático de descida e não modifica handling/max-speed.
+- **Combustível:** 26 postos com blips, listados em `Fuel/Stations.json`. Pare na área, desligue o motor com X e pressione G; G novamente interrompe. Também é possível abastecer a pé a até 5 m do carro. O preço é por litro, arredondando a cobrança da operação para dólares inteiros; saldo e espaço no tanque limitam a quantidade. O consumo padrão é 8 L/100 km mais 0,8 L/h em marcha lenta. Tanque vazio desliga o motor, mantendo a possibilidade de reabastecer. Pausa, cutscene e missões do GTA suspendem o sistema. O tanque inicial usa o valor nativo do veículo, não recebe combustível gratuito ao recarregar. HUD mostra litros e distância rodada pelo RPCore.
+- **Exclusões:** bicicletas, aeronaves, barcos, trens, elétricos e modelos de `SaveData/ExcludedGasList.json` (ou o original em `Legacy/SaveData`) não recebem consumo/intervenção RPCore. Não há recarga elétrica nesta versão. Combustível é identificado por modelo + placa e fica em `Wallet.json` → `Transport.Tanks` por perfil.
+- **Garagens:** F11 mostra GPS para três localizações: Strawberry ($10.000/3 veículos), Burton ($25.000/6), Sandy Shores ($8.000/2), editáveis em `Garages/Locations.json`. Compre perto do marcador; vagas incluem veículos associados que estão fora. Guarde parado, como motorista, sem passageiros/reboque. O jogo recebe uma tarefa de saída; mantenha-se perto por até 15 segundos. O snapshot é salvo antes de remover a entidade; uma marca pendente permite recuperar uma interrupção sem criar automaticamente outra cópia.
+- **Retirada/recuperação:** usa a saída configurada e recusa saída bloqueada. Primeiro procura modelo/placa no mundo; se o veículo existir, marca GPS em vez de duplicar. Se não existir, recria o último snapshot salvo. Modelo de addon ausente não apaga o cadastro. Não há seguro nem recuperação de estado posterior ao último save. Placas repetidas não são suportadas para veículos diferentes do mesmo modelo.
+- **Personalização/danos:** preserva placa/estilo, cores normais e RGB, cores extras, roda, até 50 slots de mods disponíveis, variações, toggles, extras, neon, fumaça, película, livery, saúde de motor/carroceria/tanque, sujeira, combustível, pneus furados, vidros e portas quebrados. A forma exata de amassados, marcas de balas, ocupantes e flags/scripts de outros mods não é serializada. Guarde veículos parados sem ocupantes; veículos de missão são recusados por padrão. `AllowMissionVehicles = True` é uma opção explícita para veículos de seus mods/trainer; não muda a proibição durante missões ativas.
+- **Serviços:** na própria garagem, como motorista parado, reparar custa $500 e lavar $25. Reparar preserva o combustível. Não há reparo automático gratuito nem intervenção em veículos de missão protegidos.
+- **Concessionária:** F12 define GPS para o PDM; perto da entrada, permite comprar Faggio, Asea, Blista, Dominator e Sultan. `Dealership/Vehicles.json` aceita outros modelos/preços. É necessário ter vaga em uma garagem própria; a compra registra o carro, gera uma placa RP única e entrega na saída. Modelo ausente, saldo insuficiente ou saída bloqueada não devem cobrar. Isso implementa compra pessoal de veículos; a empresa PDM, funcionários e contabilidade empresarial do PSRP continuam pendentes.
+- **Persistência:** garagem, veículos e combustível usam `Wallet.json` → `Transport`. Para peds MP, o pagamento e esses dados usam o mesmo checkpoint atômico da carteira. Nos protagonistas, o dinheiro nativo também depende do save GTA, como antes. A atualização lê saves 0.1 sem conversão destrutiva. As conquistas PSRP de primeiro carro, primeira garagem e primeiro abastecimento agora têm gatilhos.
+
+O checklist específico da nova DLL está em [TESTES-0.2.0.md](docs/TESTES-0.2.0.md). Configurações antigas são mantidas; as novas ficam em arquivos separados copiados pelo instalador.
 
 Veja [o relatório de alterações](docs/ALTERACOES.md) e [os testes no GTA](docs/TESTES-GTA.md). A compilação e os testes de dados executam no Linux; a execução do jogo e do áudio COM exige Windows/GTA.
 
