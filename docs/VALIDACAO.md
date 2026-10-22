@@ -1,13 +1,11 @@
-# Validação — RPCore 0.5.0
+# Validação — RPCore 0.5.1
 
-Build Release net48 com SHVDN Enhanced 1.1.0.6 e LemonUI SHVDN3 2.2: zero erros e zero avisos. DLL SHA256: `9b296dd3e1a3de1ec3473f48c807d45d6f406598fda7cc78047998d4d3457ee6`.
+Build Release net48 com SHVDN Enhanced 1.1.0.6 e LemonUI SHVDN3 2.2: zero erros, zero avisos. DLL SHA256 `cbccefe84e8ef4732f384aff8d13fea494d69174b578a806cf8760f21454f0c9`.
 
-96 testes de dados passam, zero falhas/ignorados. Os 21 casos novos usam os modelos reais InterfaceData/InventoryData: evolução do inventário antigo com preservação de quantidades/compartimentos/campos futuros, reparação/ordenação e múltiplas páginas, geometria 5×5, transformação de margens alpha, recursos originais do celular, cálculo seguro, notas/histórico, unidades e margem dos seis indicadores. Os 75 testes anteriores continuam passando. Relatório: DataTests.trx.
+112 testes passam, zero falhas/ignorados. Os 16 novos casos cobrem metadados embutidos sem sidecars, merge seguro, ciclo de banners e classificação/JSON do diagnóstico. Os 96 casos anteriores continuam passando. Relatório DataTests.trx. Catalog.json e Bindings.json foram confirmados como recursos do binário Release, sem bytes YTD embutidos.
 
-Downloads.zip foi inspecionado como dados, sem executar instruções ou programas do arquivo. As três imagens originais de referência ficam em referencias-0.5.0 com hashes; não são capturas de execução do RPCore. PSRP.dll foi consultada somente para referências de UI; código de gameplay não foi transplantado.
+Varredura estática: 75 arquivos C# exportados da PSRP.dll, 251 construções ScaledTexture, 21 TextureAsset, 2 DRAW_SPRITE e 82 referências de fábrica de slots. Relatório PSRP-TEXTURE-AUDIT.json, hashes dos YTDs em PSRP-YTD-FILES.json, interpretação em AUDITORIA-YTD-0.5.1.md. Expressões dinâmicas/execução não são resolvidas inteiramente; a PSRP.dll não foi executada.
 
-PSRP.oiv mantém SHA256 `5435e920c9bfa84c15b53a8d9206cf8a31c993b5f22d85fae895b71611053990`; psrp_props.zip mantém `e781c8a9039b2289635808f7dc080d3ef189f3dafe2fbd9042453ece817ebf1f`. RPF/YTD originais sem edição. Não alterou update.rpf/dlclist nem recursos de outros mods.
+Nenhuma mudança em saves, recursos YTD/RPF, DLC, update.rpf ou dlclist.xml. O caminho esperado foi confirmado pelo assembly.xml do OIV e pelo print do OpenIV do usuário. O novo diagnóstico nativo só pode ser executado no GTA do usuário; não se afirma que ele já retornou 679 matches ou que o visual já esteja idêntico.
 
-Renderização real, input, props/animações e gameplay aguardam teste no GTA/Windows. O build e os testes não demonstram igualdade visual no jogo. Diferenças de revisão da DLL e dos prints foram documentadas, assim como funções ainda pendentes de Uber/telefonia/SMS, durabilidade, crafting e editor de objetos. Checklist em INTERFACE-0.5.0.md.
-
-O instalador 0.5.0 foi executado duas vezes com PowerShell 7/Linux sobre pasta GTA simulada com a distribuição 0.4.0. Os 85 arquivos existentes foram preservados byte a byte, incluindo INIs, necessidades, carteira/veículos, inventário/baús e notas do telefone. DLL anterior em backup, DLL instalada idêntica ao build, SpeedLimits.json novo instalado. Relatório: installer-validation-0.5.0.json. Não é um teste de GTA/Windows.
+Instalador executado duas vezes com PowerShell 7/Linux sobre pasta GTA simulada com a distribuição 0.5.0: 86 arquivos existentes preservados byte a byte, incluindo catálogo parcial e Bindings.json inválido, saves, INIs, carteira e inventário. DLL anterior em backup e DLL nova idêntica ao build. Relatório installer-validation-0.5.1.json. Isto valida o instalador; não executa o GTA nem consultas nativas.

@@ -23,6 +23,8 @@ namespace RPCore
         static readonly List<MenuSkin> menus = new List<MenuSkin>();
         static readonly HashSet<string> requested = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         static readonly Dictionary<string, int> retry = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        static readonly Dictionary<string, int> requestedAt = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        static int bannerStarted = -1;
         public static VisualCatalog Catalog = new VisualCatalog();
         public static VisualBindings Bindings = new VisualBindings();
         public static bool Enabled, NeedsHud, VehicleHud, WalletHud, MenuBanners, ItemIcons, UseProps, PhoneEnabled, Running;
@@ -45,10 +47,15 @@ namespace RPCore
             if (NeedsOffsetY == 60 || NeedsOffsetY == 12) NeedsOffsetY = 20; // recognize the previous defaults without rewriting their INIs
             NeedsOffsetY = Math.Max(10, Math.Min(700, NeedsOffsetY));
             failed = false;
+            VisualCatalog localCatalog = null; VisualBindings localBindings = null;
+            try { localCatalog = new JsonFiles().Read<VisualCatalog>(Path.Combine(Cfg.Dir,"Visuals","Catalog.json"),()=>null); }
+            catch (Exception ex) { Log.Error("visual catalog override ignored; original file retained",ex); }
+            try { localBindings = new JsonFiles().Read<VisualBindings>(Path.Combine(Cfg.Dir,"Visuals","Bindings.json"),()=>null); }
+            catch (Exception ex) { Log.Error("visual bindings override ignored; original file retained",ex); }
             try
             {
-                Catalog = new JsonFiles().Read(Path.Combine(Cfg.Dir, "Visuals", "Catalog.json"), () => new VisualCatalog());
-                Bindings = new JsonFiles().Read(Path.Combine(Cfg.Dir, "Visuals", "Bindings.json"), () => new VisualBindings());
+                Catalog = VisualAssetDefaults.Catalog(localCatalog); Bindings = VisualAssetDefaults.Bindings(localBindings);
+                Log.Write("VISUAL metadata: built-in defaults + local overrides; image source: GTA streamed YTDs in " + VisualAssetDefaults.GameArchive);
             }
             catch (Exception ex) { Fail(ex); }
         }
@@ -57,16 +64,21 @@ namespace RPCore
         public static float InsetX { get { return InterfaceOptions.RespectSafeZone ? HudMath.SafeInset(Width, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)) : 0; } }
         public static float InsetY { get { return InterfaceOptions.RespectSafeZone ? HudMath.SafeInset(1080, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)) : 0; } }
 
-        public static bool Ready(string dictionary)
+        public static bool Ready(string dictionary) { return Request(dictionary,false); }
+        public static bool RequestForDiagnostic(string dictionary) { return Request(dictionary,true); }
+        public static bool RequestTimedOut(string dictionary)
+        { int at; return requestedAt.TryGetValue(dictionary,out at) && unchecked(Game.GameTime-at)>10000; }
+        static bool Request(string dictionary,bool force)
         {
-            if (!Active) return false;
+            if (!Active && !force) return false;
             try
             {
                 if (Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, dictionary)) return true;
                 int next;
                 if (!retry.TryGetValue(dictionary, out next) || unchecked(Game.GameTime - next) >= 0)
                 {
-                    Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT, dictionary, false);
+                    Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT, dictionary, true); // matches LemonUI 2.2 ScaledTexture.Request
+                    if (!requestedAt.ContainsKey(dictionary)) requestedAt[dictionary]=Game.GameTime;
                     requested.Add(dictionary); retry[dictionary] = Game.GameTime + 1000;
                 }
             }
@@ -113,6 +125,9 @@ namespace RPCore
         }
         public static void TickMenus()
         {
+            bool animate = InterfaceOptions.AnimateSettingsBanner && menus.Exists(s=>s.Key=="reference-settings" && s.Menu.Visible);
+            if (!animate) bannerStarted=-1;
+            else if (bannerStarted<0) bannerStarted=Game.GameTime;
             foreach (var skin in menus)
             {
                 if (!skin.Menu.Visible && !skin.Applied) continue;
@@ -127,12 +142,13 @@ namespace RPCore
                     }
                     ApplyBadges(skin); continue;
                 }
-                string texture = skin.Key == "reference-settings" ? ReferenceInterface.SettingsBanner : null;
+                string texture = skin.Key=="reference-actions" ? ReferenceInterface.SettingsBanner : skin.Key == "reference-settings" ? (animate ? ReferenceInterface.AnimatedSettingsBanner(unchecked(Game.GameTime-bannerStarted)) : ReferenceInterface.SettingsBanner) : null;
                 if (texture == null && Bindings.Banners != null) Bindings.Banners.TryGetValue(skin.Key, out texture);
                 bool use = Active && MenuBanners && Has("PSRP_Banners", texture);
                 if (use && (!skin.Applied || skin.AppliedTexture != texture))
                 {
-                    skin.Menu.Banner = new ScaledTexture(PointF.Empty, new SizeF(skin.Menu.Width, skin.Menu.Width / 4), "PSRP_Banners", texture);
+                    float height=skin.Key=="reference-settings" ? 128 : skin.Menu.Width/4;
+                    skin.Menu.Banner = new ScaledTexture(PointF.Empty, new SizeF(skin.Menu.Width,height), "PSRP_Banners", texture);
                     skin.Menu.BannerText.Text = ""; skin.Applied = true; skin.AppliedTexture = texture;
                 }
                 else if (!use && skin.Applied) { skin.Menu.Banner = skin.Original; skin.Menu.BannerText.Text = skin.Text; skin.Applied = false; }
@@ -204,7 +220,7 @@ namespace RPCore
                 foreach (var item in skin.Items.Keys) item.LeftBadge = null;
             }
             foreach (var dictionary in requested) Function.Call(Hash.SET_STREAMED_TEXTURE_DICT_AS_NO_LONGER_NEEDED, dictionary);
-            menus.Clear(); requested.Clear(); retry.Clear();
+            menus.Clear(); requested.Clear(); retry.Clear(); requestedAt.Clear(); bannerStarted=-1;
         }
     }
 }

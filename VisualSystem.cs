@@ -14,47 +14,78 @@ namespace RPCore
         readonly Func<bool> cruise;
         readonly Func<Vehicle, FuelTank> fuel;
         int diagnosticEnd, nextDiagnostic;
-        readonly int started;
         bool warned;
         public VisualSystem(SeatbeltSystem belt, Func<bool> cruise, Func<Vehicle, FuelTank> fuel)
         {
-            this.belt = belt; this.cruise = cruise; this.fuel = fuel; Visuals.Running = true; started = Game.GameTime; LoadRoads();
+            this.belt = belt; this.cruise = cruise; this.fuel = fuel; Visuals.Running = true; LoadRoads();
         }
+        VisualDiagnosticReport report;
+        System.Collections.Generic.Queue<TextureProbe> pending;
         public void Diagnose()
         {
-            diagnosticEnd = Game.GameTime + 6000; nextDiagnostic = Game.GameTime;
-            Notify.Show("Checking PSRP textures/models. Result in RPCore.log in 6 seconds.");
+            report = new VisualDiagnosticReport(); pending = null;
+            diagnosticEnd = Game.GameTime+6000; nextDiagnostic = Game.GameTime;
+            Notify.Show("Checking installed YTD dictionaries and texture dimensions. Result in about 10 seconds.");
         }
         void Diagnostics()
         {
-            if (diagnosticEnd == 0) return;
-            if (unchecked(Game.GameTime - nextDiagnostic) >= 0)
+            if(report==null) return;
+            if(pending==null)
             {
-                nextDiagnostic = Game.GameTime + 1000;
-                if (Visuals.Catalog.Dictionaries != null) foreach (var dictionary in Visuals.Catalog.Dictionaries.Keys) Visuals.Ready(dictionary);
+                if(unchecked(Game.GameTime-nextDiagnostic)>=0)
+                {
+                    nextDiagnostic=Game.GameTime+1000;
+                    foreach(var dictionary in Visuals.Catalog.Dictionaries.Keys) Visuals.RequestForDiagnostic(dictionary);
+                }
+                if(unchecked(Game.GameTime-diagnosticEnd)<0) return;
+                pending = new System.Collections.Generic.Queue<TextureProbe>();
+                foreach(var dictionary in Visuals.Catalog.Dictionaries)
+                {
+                    bool loaded=false;
+                    try { loaded=Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED,dictionary.Key); }
+                    catch(Exception ex) { Log.Error("visual dictionary probe: "+dictionary.Key,ex); }
+                    report.Dictionaries[dictionary.Key]=loaded;
+                    Log.Write("VISUAL dict "+dictionary.Key+": "+(loaded ? "loaded" : "not loaded after explicit streaming request"));
+                    foreach(var texture in dictionary.Value) pending.Enqueue(new TextureProbe { Dictionary=dictionary.Key,Texture=texture.Name,ExpectedWidth=texture.Width,ExpectedHeight=texture.Height,DictionaryLoaded=loaded });
+                }
             }
-            if (unchecked(Game.GameTime - diagnosticEnd) < 0) return;
-            diagnosticEnd = 0; int loaded = 0, registered = 0;
-            if (Visuals.Catalog.Dictionaries != null) foreach (var dictionary in Visuals.Catalog.Dictionaries.Keys)
+            // Spread native queries across frames; do not block the game for a full catalog sweep.
+            for(int i=0;i<16 && pending.Count>0;i++)
             {
-                bool ready = Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, dictionary); if (ready) loaded++;
-                Log.Write("VISUAL dict " + dictionary + ": " + (ready ? "loaded" : "not loaded; check OIV in mods/update/update.rpf"));
+                var probe=pending.Dequeue();
+                if(probe.DictionaryLoaded)
+                {
+                    try { var size=Function.Call<GTA.Math.Vector3>(Hash.GET_TEXTURE_RESOLUTION,probe.Dictionary,probe.Texture); probe.Width=size.X; probe.Height=size.Y; }
+                    catch(Exception ex) { probe.Error=ex.Message; }
+                }
+                report.Textures.Add(probe);
+                if(probe.Status!="dimensions_match") Log.Write("VISUAL texture "+probe.Dictionary+"/"+probe.Texture+": "+probe.Status+"; expected "+probe.ExpectedWidth+"x"+probe.ExpectedHeight+", returned "+probe.Width+"x"+probe.Height);
             }
-            if (Visuals.Catalog.Models != null) foreach (var name in Visuals.Catalog.Models)
+            if(pending.Count>0) return;
+            foreach(string name in Visuals.Catalog.Models)
             {
-                Model m = new Model(name); bool valid = m.IsValid && m.IsInCdImage; if (valid) registered++;
-                Log.Write("VISUAL model " + name + ": " + (valid ? "registered (render not tested)" : "unavailable; check psrp_props DLC registration"));
+                bool valid=false;
+                try { var model=new Model(name);valid=model.IsValid && model.IsInCdImage; }
+                catch(Exception ex) { Log.Error("visual model probe: "+name,ex); }
+                report.Models[name]=valid;
             }
-            Log.Write("VISUAL enabled=" + Visuals.Enabled + ", active=" + Visuals.Active + ", aspect=" + GTA.UI.Screen.AspectRatio);
-            Notify.Show("PSRP: " + loaded + "/8 dictionaries; " + registered + "/27 models registered. See RPCore.log.");
+            report.Enabled=Visuals.Enabled;report.Active=Visuals.Active;report.NeedsHud=Visuals.NeedsHud;report.WalletHud=Visuals.WalletHud;
+            report.VehicleHud=Visuals.VehicleHud;report.MenuBanners=Visuals.MenuBanners;report.PhoneEnabled=Visuals.PhoneEnabled;
+            report.AspectRatio=GTA.UI.Screen.AspectRatio;
+            int matched=report.Textures.Count(t=>t.Status=="dimensions_match"),loadedCount=report.Dictionaries.Count(d=>d.Value);
+            string path=System.IO.Path.Combine(Cfg.Dir,"VisualDiagnostics.json");
+            try { new JsonFiles().Write(path,report);Notify.Show("YTD: "+loadedCount+"/"+report.Dictionaries.Count+" loaded; "+matched+"/"+report.Textures.Count+" dimensions match. See RPCore/VisualDiagnostics.json."); }
+            catch(Exception ex) { Log.Error("visual diagnostic report write",ex);Notify.Show("Could not write visual report. See RPCore.log."); }
+            Log.Write("VISUAL summary "+loadedCount+" dictionaries; "+matched+"/"+report.Textures.Count+" matching resolutions. Names/dimensions do not prove rendered appearance. Active="+report.Active);
+            report=null;pending=null;
         }
         public void Tick()
         {
             Diagnostics(); Visuals.TickMenus();
-            if (Visuals.Active && !warned && unchecked(Game.GameTime - started) > 10000 && !Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, "PSRP"))
+            if (Visuals.Active && !warned && Visuals.RequestTimedOut("PSRP") && !Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED, "PSRP"))
             {
-                warned = true; Log.Write("VISUAL PSRP texture dictionary not loaded: install PSRP.oiv into OpenIV mods. Basic HUD retained.");
-                Notify.Show("PSRP visual assets not loaded. Basic HUD active. F10 > Visual assets: diagnose.");
+                warned = true; Log.Write("VISUAL PSRP still not loaded 10s after an explicit request. Check mounted archive/overrides and run the native texture diagnostic; installation is not inferred from this check.");
+                Notify.Show("PSRP did not stream after a request. F10 > Visual assets: diagnose.");
             }
             if (!Visuals.Active || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || Function.Call<bool>(Hash.IS_HUD_HIDDEN)) return;
             var p = Game.Player.Character; if (p.IsDead) return;

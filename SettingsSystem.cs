@@ -33,7 +33,7 @@ namespace RPCore
         NativeMenu Menu(string title)
         {
             var menu = new NativeMenu("", title.ToUpperInvariant()) { Width = 420, Offset = new PointF(40,8), SafeZoneAware = InterfaceOptions.RespectSafeZone, NameFont = GTA.UI.Font.ChaletComprimeCologne };
-            pool.Add(menu); menus.Add(menu); Visuals.Register(menu, "reference-settings"); return menu;
+            pool.Add(menu); menus.Add(menu); Visuals.Register(menu,title=="Fast GPS"||title=="Emotes"||title=="Interactions" ? "reference-actions" : "reference-settings"); return menu;
         }
         static void Add(NativeMenu menu, string title, string description, Action action)
         {

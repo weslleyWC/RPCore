@@ -1,0 +1,38 @@
+{
+  "source": "original uploaded PSRP.oiv; not a read of the user GTA installation",
+  "target": "mods/update/update.rpf/x64/data/cdimages/scaleform_generic.rpf",
+  "files": {
+    "PSRP.ytd": {
+      "bytes": 2975015,
+      "sha256": "07796411129785912d45473b3a4b81c2dc9387412784221e521dffde4a9c3c11"
+    },
+    "PSRP_Banners.ytd": {
+      "bytes": 993979,
+      "sha256": "4cdefc34d01cd684bbb4c72eb8d04fb5e73976eae22ccc167988650a23cc7846"
+    },
+    "PSRP_Inventory.ytd": {
+      "bytes": 2293673,
+      "sha256": "b371c2c4e3bc7fa6ef05291462403dd8fbe4394d545e60f377dbc2267478aae7"
+    },
+    "PSRP_Jobs.ytd": {
+      "bytes": 304807,
+      "sha256": "6c24cef944c16df781d26c2b316028a3832b59ed19434a72c8dfc9e2cdaaefb6"
+    },
+    "PSRP_PHONE.ytd": {
+      "bytes": 2574984,
+      "sha256": "618d4ca683ef9caafa4d55203491b2f94b0a2d5d5660108a2a1f980d81201bdb"
+    },
+    "PSRP_RADICAL.ytd": {
+      "bytes": 94528,
+      "sha256": "d5e34859724970094009b416f6f03096ba0f26561bdb771fbc040a30abc3f43f"
+    },
+    "char_jmc.ytd": {
+      "bytes": 2279,
+      "sha256": "0b8cd6cd39c2f6a27ee2cb0ced089e7f682b8cbc15d5ab1aacb65fa3b2fb8920"
+    },
+    "char_music.ytd": {
+      "bytes": 1253,
+      "sha256": "42dee3dc12b0bdcd91eeeedc60907d32b9701f37ee976e3da718324ecf4b8ab0"
+    }
+  }
+}

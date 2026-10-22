@@ -9,6 +9,7 @@ namespace RPCore
         public static readonly string[] RadialLabels = { "Phone", "Inventory", "Emotes", "Vehicle Control", "Fast GPS", "Gangs", "Interactions", "Settings" };
         public static readonly string[] RadialIcons = { "PhoneIconRad", "InventoryIconRad", "EmoteIconRad", "CarIconRad", "GpsIconRad", "GangIconRad", "InteractionIconRad", "SettingsIconRad" };
         public const string SectorDictionary = "PSRP_Inventory", SettingsBanner = "PSRPBANNER2";
+        public static string AnimatedSettingsBanner(int elapsedMs) { return "PSRPBANNER" + (Math.Max(0,elapsedMs)/5000%3+1); }
     }
     public class TextureInfo { public string Name; public int Width, Height; }
     public class VisualCatalog

@@ -1,4 +1,12 @@
-# RPCore 0.5.0 — GTA V Legacy
+# RPCore 0.5.1 — GTA V Legacy
+
+## YTD instalados — correção 0.5.1
+
+[Atualização 0.5.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.5.1.zip) · [Código-fonte 0.5.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.5.1.zip) · [Auditoria da PSRP.dll e mapa dos recursos](docs/AUDITORIA-YTD-0.5.1.md)
+
+O destino confirmado pelo OIV/print é mods/update/update.rpf/x64/data/cdimages/scaleform_generic.rpf. O RPCore usa os dicionários/imagens já montados pelo GTA; não abre esse RPF pelo caminho do Windows. Nomes e vínculos agora vêm também embutidos na DLL: faltar um JSON auxiliar não bloqueia mais as imagens padrão. Overrides locais continuam preservados. O banner F11 alterna as três imagens originais a cada cinco segundos, com altura 128 da referência.
+
+F10 > Visual assets: diagnose agora verifica o carregamento e a resolução de cada textura, grava scripts/RPCore/VisualDiagnostics.json e um resumo no log. O relatório precisa ser gerado dentro do GTA. Dimensões iguais não provam renderização idêntica. Não precisa reinstalar os YTDs já instalados para esta atualização. Build sem erros/avisos e 112 testes aprovados.
 
 ## Interface 0.5.0 — referências do Downloads.zip
 

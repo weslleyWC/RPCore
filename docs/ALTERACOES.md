@@ -113,3 +113,13 @@ Rádio, posição exata dos marcadores, ciclo do cinto e coexistência com mods 
 - 21 testes novos, total 96; build sem erros/avisos. Instalador/docs/referências/downloads atualizados. Checklist completo em INTERFACE-0.5.0.md.
 
 - Main/ShopSystem/VehicleControlSystem: estado de modal publicado antes do processamento dos sistemas; evita E abrir loja por polling sob o radial/grade e cancela cruise nos modais novos, preservando o comportamento de menus anteriores.
+
+
+## 0.5.1 — varredura PSRP.dll e streaming dos YTDs instalados
+
+- scripts/audit-psrp-textures.py e relatórios: varredura estática de referências em todos os 75 arquivos C# decompilados; leitura apenas, sem executar/incorporar o código de referência. Mapa entre engine, dicionários, imagens e destino do OIV.
+- VisualAssetDefaults.cs + RPCore.csproj: metadados Catalog/Bindings embutidos, overrides opcionais mesclados sem retirar recursos padrão. JSON inválido preservado e ignorado com log. Nenhuma imagem YTD embutida.
+- Visuals.cs: requisição com o mesmo parâmetro da LemonUI 2.2; aviso de timeout baseado em solicitação real; banner F11 cíclico 1/2/3 a cada 5 s e altura 128. InterfaceOptions/Interface.ini habilitam congelar o banner caso desejado.
+- VisualSystem/CoreMenu: diagnóstico com oito dicionários e resoluções de todas as texturas, consultas distribuídas por frames e VisualDiagnostics.json. Checa mesmo com UI desligada. Resultado não é prova de igualdade de pixels.
+- Main/CoreMenu/AssemblyInfo: versão 0.5.1. Testes/recursos do projeto de testes: 16 casos novos, total 112.
+- Configurações, saves e YTD/RPF existentes permanecem sem sobrescrita. Pacotes, instalador e docs atualizados.

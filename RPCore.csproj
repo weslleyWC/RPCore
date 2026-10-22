@@ -15,6 +15,8 @@
     <GTAV Condition="'$(GTAV)'==''">C:\Program Files\Rockstar Games\Grand Theft Auto V</GTAV>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="config/Visuals/Catalog.json" LogicalName="RPCore.VisualDefaults.Catalog.json" />
+    <EmbeddedResource Include="config/Visuals/Bindings.json" LogicalName="RPCore.VisualDefaults.Bindings.json" />
     <Reference Include="ScriptHookVDotNet3">
       <HintPath Condition="'$(ReferenceDir)'!=''">$(ReferenceDir)/ScriptHookVDotNet3.dll</HintPath>
       <HintPath Condition="'$(ReferenceDir)'==''">$(GTAV)\ScriptHookVDotNet3.dll</HintPath>

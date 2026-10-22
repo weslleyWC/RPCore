@@ -11,6 +11,7 @@ namespace RPCore
         public static bool RadialEnabled = true, HideRadarOnFoot;
         public static bool GridInventory = true, MetricSpeed, RespectSafeZone, LocationHud = true;
         public static bool ModalOpen;
+        public static bool AnimateSettingsBanner = true;
         static string PathName { get { return Path.Combine(Cfg.Dir, "Interface.ini"); } }
         public static void Load()
         {
@@ -20,6 +21,7 @@ namespace RPCore
             GridInventory = s.GetValue("Interface", "GridInventory", true);
             MetricSpeed = s.GetValue("VehicleHud", "Metric", false); LocationHud = s.GetValue("VehicleHud", "Location", true);
             RespectSafeZone = s.GetValue("Layout", "RespectSafeZone", false);
+            AnimateSettingsBanner = s.GetValue("Interface", "AnimateSettingsBanner", true);
         }
         public static void Set<T>(string file, string section, string key, T value)
         {
