@@ -185,12 +185,13 @@ namespace RPCore
             }
             catch (Exception ex) { Fail(ex); return false; }
         }
-        public static bool TryPizzaHeader(string status, Color color)
+        public static bool TryPizzaHeader(string status, Color color) => TryJobHeader("pizza", status, color);
+        public static bool TryJobHeader(string key, string status, Color color)
         {
             try
             {
                 string banner;
-                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue("pizza", out banner)) banner = "PizzaBanner";
+                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "postop" ? "PostOpBanner" : "PizzaBanner";
                 if (!Active || !MenuBanners || !Has("PSRP_Banners", banner)) return false;
                 float w = 320 * Scale, x = (Width - w) / 2, y = InsetY + 8;
                 Sprite("PSRP_Banners", banner, x, y, w, w / 4, Color.White);

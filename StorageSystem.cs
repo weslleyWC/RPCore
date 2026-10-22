@@ -58,6 +58,7 @@ namespace RPCore
             else
             {
                 vehicle = World.GetNearbyVehicles(p, 6).Where(v => v.Exists() && v.Model.IsCar && p.Position.DistanceTo(v.GetOffsetPosition(new Vector3(0, -2.5f, 0))) < 3).OrderBy(v => p.Position.DistanceTo(v.Position)).FirstOrDefault();
+                if (JobVehicles.Contains(vehicle)) { Notify.Show("Veiculo de trabalho: use seu veiculo pessoal para guardar itens."); return; }
                 if (vehicle == null) { Notify.Show("Stand near a trunk or a configured stash."); return; }
                 if (Function.Call<int>(Hash.GET_VEHICLE_DOOR_LOCK_STATUS, vehicle) > 1) { Notify.Show("Vehicle locked."); return; }
                 string plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, vehicle).Trim();

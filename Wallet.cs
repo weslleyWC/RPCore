@@ -18,6 +18,18 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static DeliveryProgress JobProgress(string job) { if (data.Jobs == null) data.Jobs = new JobLedger(); return data.Jobs.Get(job); }
+        public static bool PayDelivery(string job, string session, int step, int amount, bool bank, bool delivery, bool complete, out bool credited)
+        {
+            return DeliveryPayments.Commit(data, () => Cash, n => Cash = n, job, session, step, amount, bank, delivery, complete, Save, out credited);
+        }
+        public static void SeedPizzaStats(PizzaStats legacy)
+        {
+            if (data.Jobs == null) data.Jobs = new JobLedger();
+            DeliveryProgress existing;
+            if (data.Jobs.Jobs != null && data.Jobs.Jobs.TryGetValue("pizza", out existing) && existing != null) return;
+            var stats = data.Jobs.Get("pizza"); stats.Deliveries = Math.Max(0, legacy.Deliveries); stats.Earned = Math.Max(0, legacy.Earned);
+        }
         public static bool Deposit(int amount)
         {
             if (amount <= 0 || data.Bank > int.MaxValue - amount || !Debit(amount)) return false;

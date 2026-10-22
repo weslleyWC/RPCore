@@ -16,13 +16,14 @@ namespace RPCore
         readonly PropPresentation props;
         readonly InventorySystem inventory;
         readonly NeedsSystem needs;
-        readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings" };
+        readonly Action jobs;
+        readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings", "Trabalhos / Post OP" };
         PhoneData data;
         int selection, row, stopwatchStart = -1;
         string page = "Home", query = "", result = "0";
         public bool Visible { get; private set; }
-        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs)
-        { this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
+        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null)
+        { this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
         void ItemUsed(ItemDef item)
         {
             // Presentation/history must never abort consumption or corrupt the inventory transaction.
@@ -38,6 +39,7 @@ namespace RPCore
         int[] Matches() { return Enumerable.Range(0, shortcuts.Length).Where(i => shortcuts[i].IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0).ToArray(); }
         void Shortcut(int i)
         {
+            if (i == 8) { Close(); jobs?.Invoke(); return; }
             if ((i == 2 && !Cfg.EnableGarages) || (i == 4 && !Cfg.EnableRadio) || (i == 5 && !Cfg.EnableGangs)) { Notify.Show("System disabled in configuration."); return; }
             Keys key = i == 0 ? Cfg.CoreKey : i == 1 ? Cfg.InventoryKey : i == 2 ? Cfg.GarageKey : i == 3 ? Cfg.StocksKey : i == 4 ? Cfg.RadioKey : i == 5 ? Cfg.GangsKey : i == 6 ? Cfg.JobKey : InterfaceOptions.SettingsKey;
             Close(); dispatch(key);
@@ -73,14 +75,14 @@ namespace RPCore
                 if (row == 0) { query = Game.GetUserInput(WindowTitle.EnterMessage60, query, 32); row = 0; }
                 else if (row-1 < matches.Length) Shortcut(matches[row-1]);
             }
-            else if (page == "Contacts") { Shortcut(new[] { 0,2,6,5 }[row]); }
+            else if (page == "Contacts") { Shortcut(new[] { 0,2,6,5,8 }[row]); }
         }
         int RowCount()
         {
             if (page == "Notes") return data.Notes.Count + 1;
             if (page == "Settings") return shortcuts.Length + 1;
             if (page == "Search") return Matches().Length + 1;
-            if (page == "Contacts") return 4;
+            if (page == "Contacts") return 5;
             return 1;
         }
         void Navigate(int dx, int dy)
@@ -165,7 +167,7 @@ namespace RPCore
             else if (page == "Search") { line("Search: "+query,0); var found=Matches(); for(int i=0;i<found.Length;i++) line(shortcuts[found[i]],i+1); }
             else if (page == "Contacts")
             {
-                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);
+                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);line("Trabalhos / Post OP",4);
                 text("RPCore service shortcuts.~n~Voice calls are not integrated.",23,283,.23f,Color.LightGray,GTA.UI.Alignment.Left,196);
             }
             else if (page == "Notifications" || page == "Messages")

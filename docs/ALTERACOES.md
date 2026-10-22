@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.7.0 — fase 2: entregas
+
+Contrato Post OP funcional com van, 40 endereços de referência, cinco paradas padrão, retirada de caixas, entrega a pé, crédito bancário e bônus ao retornar. Pizza ganha contrato presencial, mantendo F6 rápido e progresso anterior. Turnos compartilham exclusão, estados, recibos e checkpoint financeiro; veículos pessoais são preservados. Interface integrada a F10/F11/GPS/celular e aos banners YTD existentes. Proteção de garagem/porta-malas para veículos de trabalho. Gatilho real da conquista Post OP. Build sem erros/avisos; 166 testes. [Arquivos alterados, limites e teste no GTA](FASE-2-0.7.0.md).
+
 ## 0.6.0 — fase 1: conveniências e mapa
 
 - ShopData.cs/ShopSystem.cs/config/Shops.json: 20 pontos extraídos da lista de lojas da PSRP; correção dos três pontos antigos, incluindo LTD Davis. Overlay em memória apenas para padrões reconhecidos, sem escrita em configs/saves; compra anterior preservada. Bloqueio de interação quando morto/em missão.

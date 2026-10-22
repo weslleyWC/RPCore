@@ -20,6 +20,8 @@ namespace RPCore
         readonly Action<Keys> dispatch;
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
+        readonly Action jobs;
+        readonly Vector3 postOp;
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
         readonly List<Blip> pins = new List<Blip>();
@@ -66,9 +68,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp;
             root = Menu("Settings Menu");
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
@@ -100,6 +102,7 @@ namespace RPCore
             Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.HideRadarOnFoot = v; InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); });
             Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { Visuals.Scale = Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale", Visuals.Scale); Notify.Show("Escala: " + Visuals.Scale); });
             var game = Menu("Game Settings"); Link(root, game);
+            if (jobs != null) Add(game, "Trabalhos / contratos", "Pizza e Post OP: contratar, GPS e cancelar.", () => { pool.HideAll(); jobs(); });
             Shortcut(game, "Salvar / configurar / diagnosticar", () => Cfg.CoreKey);
             Shortcut(game, "Radio", () => Cfg.RadioKey, () => Cfg.EnableRadio);
             Shortcut(game, "Conquistas", () => Cfg.AchKey);
@@ -142,6 +145,11 @@ namespace RPCore
             Shortcut(gps, "Concessionaria / GPS", () => Cfg.DealerKey, () => Cfg.EnableGarages);
             Shortcut(gps, "Gangues / GPS", () => Cfg.GangsKey, () => Cfg.EnableGangs);
             Add(gps, "GPS: trabalho de pizza", "Pizzaria. Inicie/encerre o turno com " + Cfg.JobKey + ".", () => { Function.Call(Hash.SET_NEW_WAYPOINT, PizzaJob.StartLocation.X, PizzaJob.StartLocation.Y); gps.Visible = false; });
+            if (jobs != null)
+            {
+                Add(gps, "Trabalhos / contratos", "Gerenciar pizza e Post OP.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: trabalho Post OP", "Contrate a pe, retire a van e entregue as caixas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, postOp.X, postOp.Y); gps.Visible = false; });
+            }
             foreach (var pin in map.ToList())
             {
                 var point = pin;

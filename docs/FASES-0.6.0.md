@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Histórico da fase 1. A 0.6.0 foi posteriormente confirmada funcionando pelo usuário. A fase 2 foi implementada na 0.7.0: [Post OP, pizza e teste atual](FASE-2-0.7.0.md). A tabela abaixo registra o estado na 0.6.0.
+
 A 0.5.1 foi confirmada funcionando no GTA pelo usuário. Esta entrega implementa a fase 1: conveniências e mapa. Os demais jobs ainda precisam ser desenvolvidos. A PSRP.dll foi inspecionada estaticamente, sem execução no GTA; encontrar uma classe, um menu ou um pagamento não comprova que o sistema inteiro funciona.
 
 ## Evidência da comparação

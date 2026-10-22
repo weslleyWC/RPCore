@@ -11,7 +11,8 @@
     "gangs": "PSRPBANNER3",
     "radio": "PSRPBANNER1",
     "stocks": "BankBanner",
-    "pizza": "PizzaBanner"
+    "pizza": "PizzaBanner",
+    "postop": "PostOpBanner"
   },
   "ItemIcons": {
     "water": "water",

@@ -114,6 +114,7 @@ namespace RPCore
         bool MayStore(Vehicle v, GarageDefinition garage, bool driverRequired)
         {
             var p = Game.Player.Character;
+            if (JobVehicles.Contains(v)) return false;
             if (!Nearby(garage) || !data.Garages.Contains(garage.Id) || v == null || !v.Exists() || v.IsDead || v.Speed > .5f || v.Position.DistanceTo(garage.Position) > 15 || !(v.Model.IsCar || v.Model.IsBike || v.Model.IsQuadBike) || v.Model.IsBicycle) return false;
             if (driverRequired && v.Driver != p) return false;
             if (v.PassengerCount > 0 || (v.Driver != null && v.Driver.Exists() && v.Driver != p) || Function.Call<bool>(Hash.IS_ENTITY_ATTACHED, v)) return false;

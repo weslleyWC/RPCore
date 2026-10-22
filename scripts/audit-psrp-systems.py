@@ -48,5 +48,13 @@ report = {'scope': 'Static metadata and decompiled source only; neither DLL was 
           'psrp_binary_classes': a.psrp_types.read_text().splitlines(),
           'rpcore_binary_classes': a.rpcore_types.read_text().splitlines(),
           'reference_files': files}
+post_source = a.reference_source / 'PSRP/_JOB__Post_Op.cs'
+post_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PostOp.json'
+if post_source.exists() and post_config.exists():
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)', post_source.read_text())}
+    config = json.loads(post_config.read_text())
+    report['postop_addresses'] = {'count': len(config['Addresses']),
+        'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in config['Addresses']),
+        'reference_source': 'PSRP/_JOB__Post_Op.cs', 'configuration_sha256': digest(post_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

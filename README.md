@@ -1,4 +1,14 @@
-# RPCore 0.6.0 — GTA V Legacy
+# RPCore 0.7.0 — GTA V Legacy
+
+## Fase 2 — Post OP e contrato de pizza
+
+[Atualização 0.7.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.7.0.zip) · [Código-fonte 0.7.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.7.0.zip) · [Como jogar, alterações e teste desta fase](docs/FASE-2-0.7.0.md)
+
+**F10 → Trabalhos / contratos → Post OP → GPS.** Vá ao marcador a pé, E → Iniciar contrato, entre na van azul e siga o GPS. No endereço, pare, saia, retire a caixa com E na traseira e entregue a pé com E na porta. Cada entrega paga no banco. Complete cinco e volte ao depósito para o bônus de retorno. Segure End por um segundo ou use o menu do contrato para cancelar.
+
+A pizzaria agora também oferece contrato com scooter, pizza na mão, entrega na porta e retorno. **F6 mantém o modo rápido anterior**, inclusive com veículo próprio. Contratos também estão em F11/Game Settings, GPS e F1/Settings/Contacts. Um turno por vez; confirmação persistente de pagamento, cancelamento e preservação dos saves. O catálogo de jobs vem na DLL e pode ser personalizado em Jobs/PostOp.json. Banners usam os YTDs já instalados.
+
+Build zero erros/avisos e 166 testes aprovados. A 0.6.0 foi confirmada pelo usuário no GTA; a 0.7.0 precisa do teste de van/endereços/carga/animações. [Roteiro completo de teste](docs/FASE-2-0.7.0.md#teste-no-gta-desta-entrega). Uber e valet ficam para a fase 3.
 
 ## Fase 1 — conveniências e mapa
 
