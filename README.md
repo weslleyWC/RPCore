@@ -1,6 +1,14 @@
-# RPCore 0.8.0 — GTA V Legacy
+# RPCore 0.9.0 — GTA V Legacy
 
-## Fase 3 — Uber e valet
+## Fase 4.1 — reposição de lojas
+
+[Atualização 0.9.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.9.0.zip) · [Código-fonte 0.9.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.9.0.zip) · [Como trabalhar, arquivos alterados e teste](docs/FASE-4.1-0.9.0.md)
+
+**F10 → Trabalhos → Reposicao → GPS.** Retire o Mule2 em Davis, carregue na base, entregue cinco caixas nas lojas e devolva o caminhão para o bônus. Crédito bancário por descarga, prioridade de E no destino e progresso preservado. Usa os recursos visuais já instalados.
+
+**Celular F2**, respeitando o INI existente. Garagem usa O quando a tecla anterior conflita com o telefone, sem regravar sua configuração. Pizza/Post OP/Uber/valet foram testados e aprovados pelo usuário no GTA. Esta fase tem build sem erros/avisos e 256 testes aprovados; o novo trabalho ainda precisa do teste no jogo. Combustível, prisão e piloto ficam para entregas seguintes.
+
+## Histórico — fase 3: Uber e valet
 
 [Atualização 0.8.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.8.0.zip) · [Código-fonte 0.8.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.8.0.zip) · [Como jogar, alterações e teste desta fase](docs/FASE-3-0.8.0.md)
 
@@ -8,7 +16,7 @@
 
 **Valet: F10 → Trabalhos → Valet → GPS.** Contrate no hotel a pé, receba o carro do cliente, estacione/tranque, retorne ao hotel, solicite a devolução e traga o mesmo carro ao dono. Pagamento após o cliente voltar ao banco do motorista. Três atendimentos por turno por padrão; End cancela. Pizza e Post OP continuam disponíveis com seus ciclos validados.
 
-Build zero erros/avisos e 226 testes aprovados. O usuário confirmou os turnos completos e pagamentos de pizza/Post OP da 0.7.0 no GTA. A 0.8.0 precisa do teste de IA, portas, trânsito e estacionamento. Nenhuma reinstalação de OIV/YTD/DLC necessária. [Roteiro de teste e limites](docs/FASE-3-0.8.0.md#teste-no-gta-desta-entrega).
+Build zero erros/avisos e 226 testes aprovados. O usuário confirmou os turnos completos e pagamentos de pizza/Post OP da 0.7.0 no GTA. O usuário também confirmou Uber e valet funcionando na 0.8.0; a próxima entrega é a fase 4.1. Nenhuma reinstalação de OIV/YTD/DLC necessária. [Roteiro de teste e limites](docs/FASE-3-0.8.0.md#teste-no-gta-desta-entrega).
 
 ## Histórico — fase 2: Post OP e contrato de pizza
 

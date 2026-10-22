@@ -14,17 +14,18 @@ namespace RPCore
 {
     public abstract class DeliveryJobSystem : ISystem, IWorkContract
     {
-        public string Name => pizza ? "pizza" : "postop";
-        public string Label => pizza ? "Pizza" : "Post OP";
+        public string Name => freight ? "supply" : pizza ? "pizza" : "postop";
+        public string Label => freight ? "Reposicao" : pizza ? "Pizza" : "Post OP";
         public bool Active => run != null;
         protected readonly ObjectPool pool;
-        readonly bool pizza;
+        readonly bool pizza, freight;
         readonly ShiftGate gate;
         readonly AchievementSystem achievements;
         readonly NativeMenu menu;
         readonly DeliveryCargo cargo = new DeliveryCargo();
         readonly Random random = new Random();
         readonly DeliveryOptions options;
+        readonly StoreDeliveryOptions freightOptions;
         readonly Blip startBlip;
         Vehicle vehicle;
         Blip targetBlip, vehicleBlip;
@@ -33,7 +34,7 @@ namespace RPCore
         PizzaStats legacy;
         Vector3 destination;
         double distance;
-        int deadline, handoverUntil, nextPaymentAttempt;
+        int deadline, handoverUntil, nextPaymentAttempt, loadUntil;
         bool supplied, quick, cargoDoorsOpen;
         int cancelHeldAt = -1;
         public static readonly Vector3 PizzaLocation = new Vector3(536.945f, 100.5983f, 96.51432f);
@@ -42,14 +43,24 @@ namespace RPCore
         static Vector3 Position(JobPoint point) => new Vector3(point.X, point.Y, point.Z);
         static JobPoint Point(Vector3 p) => new JobPoint { Name = "position", X = p.X, Y = p.Y, Z = p.Z };
 
-        protected DeliveryJobSystem(ObjectPool pool, AchievementSystem achievements, ShiftGate gate, bool pizza)
+        protected DeliveryJobSystem(ObjectPool pool, AchievementSystem achievements, ShiftGate gate, bool pizza, bool freight = false)
         {
-            this.pool = pool; this.achievements = achievements; this.gate = gate; this.pizza = pizza;
-            var defaults = JobDefaults.PostOp();
-            options = Store.LoadDef("Jobs/PostOp.json", () => defaults);
-            if (options == null || !options.Valid) { Log.Write("Jobs/PostOp.json invalid; using embedded defaults without overwriting user file."); options = defaults; }
+            this.pool = pool; this.achievements = achievements; this.gate = gate; this.pizza = pizza; this.freight = freight;
+            if (freight)
+            {
+                var defaults = FreightDefaults.Load();
+                freightOptions = Store.LoadDef("Jobs/StoreDelivery.json", () => defaults);
+                if (freightOptions == null || !freightOptions.ValidFreight) { Log.Write("Invalid StoreDelivery.json; embedded defaults used, original retained."); freightOptions = defaults; }
+                options = freightOptions;
+            }
+            else
+            {
+                var defaults = JobDefaults.PostOp();
+                options = Store.LoadDef("Jobs/PostOp.json", () => defaults);
+                if (options == null || !options.Valid) { Log.Write("Jobs/PostOp.json invalid; using embedded defaults without overwriting user file."); options = defaults; }
+            }
             menu = new NativeMenu(Label, "TRABALHO DE ENTREGAS"); pool.Add(menu); Visuals.Register(menu, Name);
-            startBlip = MapBlips.Create(StartPosition, "RPCore Job: " + Label, pizza ? BlipSprite.LuckyWheel : BlipSprite.Package, BlipColor.Blue, .8f);
+            startBlip = MapBlips.Create(StartPosition, "RPCore Job: " + Label, freight ? BlipSprite.Truck : pizza ? BlipSprite.LuckyWheel : BlipSprite.Package, BlipColor.Blue, .8f);
             LoadLegacy();
         }
         void LoadLegacy()
@@ -76,7 +87,7 @@ namespace RPCore
             Add("GPS: " + Label, "Local de contratacao. Pressione E no marcador.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             if (!Active)
             {
-                Add("Iniciar contrato", pizza ? "Retire a scooter, leve a pizza a pe e retorne a pizzaria. Pagamento em dinheiro." : "Retire a van, entregue as caixas e retorne a base. Pagamento no banco por entrega.", () => Begin(false));
+                Add("Iniciar contrato", freight ? "Retire o caminhao, carregue na base, reponha as lojas e retorne. Pagamento no banco." : pizza ? "Retire a scooter, leve a pizza a pe e retorne a pizzaria. Pagamento em dinheiro." : "Retire a van, entregue as caixas e retorne a base. Pagamento no banco por entrega.", () => Begin(false));
                 if (pizza) Add("Turno rapido (" + Cfg.JobKey + ")", "Modo anterior: inicia de qualquer lugar e entrega ao parar perto do destino.", () => Begin(true));
             }
             else
@@ -107,14 +118,14 @@ namespace RPCore
                 int count = pizza ? Cfg.PizzaDrops : options.Drops;
                 int available = options.Addresses.GroupBy(p => new { p.X, p.Y, p.Z }).Count();
                 if (!rapid) count = Math.Min(count, available);
-                route = DeliveryRoute.Select(options.Addresses, Point(StartPosition), Math.Min(count, available), random);
+                route = freight ? FreightDefaults.Route(freightOptions,random) : DeliveryRoute.Select(options.Addresses, Point(StartPosition), Math.Min(count, available), random);
                 var p = Game.Player.Character;
                 if (rapid && p.IsInVehicle()) vehicle = p.CurrentVehicle;
                 else
                 {
                     var spawn = FindSpawn(rapid ? p.Position : pizza ? StartPosition : Depot);
                     if (spawn == Vector3.Zero) { Notify.Show("Saida ocupada. Libere a area do veiculo e tente novamente."); return; }
-                    var model = new Model(pizza ? VehicleHash.Faggio : VehicleHash.Boxville2);
+                    var model = new Model(freight ? VehicleHash.Mule2 : pizza ? VehicleHash.Faggio : VehicleHash.Boxville2);
                     try
                     {
                         if (!model.IsValid || !model.IsInCdImage || !model.Request(2500)) { Notify.Show("Modelo do veiculo indisponivel."); return; }
@@ -123,15 +134,16 @@ namespace RPCore
                     finally { model.MarkAsNoLongerNeeded(); }
                     if (vehicle == null || !vehicle.Exists()) { Notify.Show("Nao foi possivel retirar o veiculo."); return; }
                     supplied = true; vehicle.IsPersistent = true;
+                    if (freight) { vehicle.IsStolen = false; vehicle.NeedsToBeHotwired = false; Function.Call(Hash.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER,vehicle,true); }
                     if (!p.Exists() || p != Game.Player.Character || Game.IsMissionActive || p.IsDead) return;
                     float tank = vehicle.PetrolTankVolume; vehicle.FuelLevel = !float.IsNaN(tank) && tank > 0 ? tank : 60;
-                    Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, vehicle, (pizza ? "PZ" : "PO") + random.Next(100000,999999));
+                    Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, vehicle, (freight ? "RP" : pizza ? "PZ" : "PO") + random.Next(100000,999999));
                     if (rapid) p.SetIntoVehicle(vehicle, VehicleSeat.Driver);
                 }
                 JobVehicles.Reserve(vehicle);
-                vehicleBlip = World.CreateBlip(vehicle.Position); vehicleBlip.Sprite = pizza ? BlipSprite.PersonalVehicleBike : BlipSprite.PersonalVehicleCar;
+                vehicleBlip = World.CreateBlip(vehicle.Position); vehicleBlip.Sprite = freight ? BlipSprite.Truck : pizza ? BlipSprite.PersonalVehicleBike : BlipSprite.PersonalVehicleCar;
                 vehicleBlip.Color = BlipColor.Blue; vehicleBlip.Name = Label + ": veiculo de trabalho";
-                run = new DeliveryRun(count, !rapid); nextPaymentAttempt = 0; cancelHeldAt = -1;
+                run = new DeliveryRun(count, !rapid, freight); loadUntil = 0; nextPaymentAttempt = 0; cancelHeldAt = -1;
                 if (rapid) run.EnterVehicle();
                 NextDestination(); if (!Active) return; menu.Visible = false; started = true;
                 Notify.Show(Label + ": turno iniciado. " + (rapid ? "Entregue como antes. " : "Entre no veiculo marcado. ") + "Segure End para cancelar.");
@@ -145,14 +157,15 @@ namespace RPCore
             {
                 var point = World.GetNextPositionOnStreet(origin + new Vector3((i % 3 - 1) * 7, (i / 3 - 1) * 7, 0), true);
                 if (point == Vector3.Zero || point.DistanceTo(origin) > 45) continue;
-                if (World.GetNearbyVehicles(point, 5).Length == 0 && World.GetNearbyPeds(point, 3).Length == 0) return point;
+                if (World.GetNearbyVehicles(point, freight ? 8 : 5).Length == 0 && World.GetNearbyPeds(point, 3).Length == 0) return point;
             }
             return Vector3.Zero;
         }
         void NextDestination()
         {
             if (targetBlip != null && targetBlip.Exists()) targetBlip.Delete(); targetBlip = null;
-            if (run.Stage == DeliveryStage.Returning) destination = Depot;
+            if (freight && (run.Stage == DeliveryStage.AwaitVehicle || run.Stage == DeliveryStage.AwaitLoading)) destination = Depot;
+            else if (run.Stage == DeliveryStage.Returning) destination = Depot;
             else if (quick)
             {
                 var p = Game.Player.Character; destination = Vector3.Zero;
@@ -165,11 +178,16 @@ namespace RPCore
                 if (destination == Vector3.Zero) { End("Nenhuma rua de entrega disponivel."); return; }
             }
             else destination = Position(route[run.Delivered]);
+            if (freight)
+            {
+                if (run.Stage == DeliveryStage.AwaitVehicle || run.Stage == DeliveryStage.AwaitLoading || run.Stage == DeliveryStage.Returning) WorkContext.ShopDelivery.Clear(Name);
+                else WorkContext.ShopDelivery.Set(Name, Point(destination), 4.5f);
+            }
             distance = Game.Player.Character.Position.DistanceTo2D(destination);
             deadline = Game.GameTime + (int)Math.Min(1800000, distance / 8 * 1000 + 45000);
             targetBlip = World.CreateBlip(destination); targetBlip.Sprite = run.Stage == DeliveryStage.Returning ? BlipSprite.Garage : BlipSprite.Package;
             targetBlip.Color = BlipColor.Yellow; targetBlip.Scale = .8f; targetBlip.ShowRoute = true;
-            targetBlip.Name = run.Stage == DeliveryStage.Returning ? Label + ": retornar a base" : Label + ": " + (quick ? "entrega " + (run.Delivered + 1) : route[run.Delivered].Name);
+            targetBlip.Name = run.Stage == DeliveryStage.AwaitLoading || (freight && run.Stage == DeliveryStage.AwaitVehicle) ? Label + ": carregar na base" : run.Stage == DeliveryStage.Returning ? Label + ": retornar a base" : Label + ": " + (quick ? "entrega " + (run.Delivered + 1) : route[run.Delivered].Name);
         }
         bool InputAllowed => !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && !Game.IsPaused;
         bool SafeOnFoot(Ped p) => !p.IsInVehicle() && !p.IsRagdoll && !p.IsInCombat && p.Weapons.Current.Hash == WeaponHash.Unarmed;
@@ -195,16 +213,22 @@ namespace RPCore
             if (cargoDoorsOpen && p.IsInVehicle(vehicle)) CloseCargoDoors();
             if (vehicleBlip != null && vehicleBlip.Exists()) { vehicleBlip.Position = vehicle.Position; vehicleBlip.Alpha = p.IsInVehicle(vehicle) ? 0 : 255; }
             if (!quick && (run.Stage == DeliveryStage.Carrying || run.Stage == DeliveryStage.Handover) && !SafeOnFoot(p)) { cargo.Stop(); run.RecoverPackage(); Notify.Show("Pacote devolvido a carga. Retire novamente no veiculo."); }
-            if (InterfaceOptions.ModalOpen || Game.IsPaused) { cargo.Stop(); if (run.Stage == DeliveryStage.Handover) run.InterruptHandover(); return; }
+            if (InterfaceOptions.ModalOpen || Game.IsPaused) { if (loadUntil != 0) { loadUntil = 0; } cargo.Stop(); if (run.Stage == DeliveryStage.Handover) run.InterruptHandover(); return; }
             if (!quick && run.Stage == DeliveryStage.Carrying && !cargo.Started) cargo.Start(p, pizza);
             cargo.Tick();
             DrawStatus();
             if (run.Stage == DeliveryStage.AwaitVehicle)
             {
-                if (p.IsInVehicle(vehicle) && vehicle.Driver == p) { run.EnterVehicle(); Notify.Show("Siga o GPS. No endereco, pare e retire a carga do veiculo com E."); }
+                if (p.IsInVehicle(vehicle) && vehicle.Driver == p)
+                {
+                    run.EnterVehicle();
+                    if (freight) { NextDestination(); Notify.Show("Carregue na base: pare perto do deposito, saia e pressione E na traseira."); }
+                    else Notify.Show("Siga o GPS. No endereco, pare e retire a carga do veiculo com E.");
+                }
                 else if (InputAllowed) Prompt.Help("Entre como motorista no veiculo azul de " + Label + ".");
                 return;
             }
+            if (run.Stage == DeliveryStage.AwaitLoading) { TickLoading(p); return; }
             if (run.Stage == DeliveryStage.Returning) { TickReturn(p); return; }
             Marker(destination, Color.FromArgb(110,255,200,0));
             if (quick) { TickQuick(p); return; }
@@ -212,14 +236,14 @@ namespace RPCore
             if (run.Stage == DeliveryStage.NeedPackage)
             {
                 if (p.Position.DistanceTo(destination) > 45) return;
-                var rear = vehicle.GetOffsetPosition(new Vector3(0, pizza ? -1.4f : -3.2f, 0));
+                var rear = Rear;
                 Marker(rear, Color.FromArgb(100,80,160,255), .8f);
                 if (!p.IsInVehicle() && p.Position.DistanceTo(rear) < 2.2f && vehicle.Speed < .5f)
                 {
                     Prompt.Help(SafeOnFoot(p) ? "~INPUT_CONTEXT~: retirar " + (pizza ? "pizza" : "caixa") + " do veiculo" : "Guarde a arma para retirar a carga.");
                     if (SafeOnFoot(p) && Game.IsControlJustPressed(GTA.Control.Context))
                     {
-                        if (!pizza) { vehicle.Doors[VehicleDoorIndex.BackLeftDoor].Open(false, false); vehicle.Doors[VehicleDoorIndex.BackRightDoor].Open(false, false); cargoDoorsOpen = true; }
+                        if (!pizza) OpenCargoDoors();
                         run.TakePackage(); cargo.Start(p, pizza);
                     }
                 }
@@ -238,12 +262,13 @@ namespace RPCore
         }
         void DrawStatus()
         {
-            string stage = run.Stage == DeliveryStage.AwaitVehicle ? "retire o veiculo" : run.Stage == DeliveryStage.Returning ? "retorne a base" : run.Stage == DeliveryStage.Carrying ? "leve a carga a pe" : "siga o GPS";
+            string stage = run.Stage == DeliveryStage.AwaitLoading ? "carregue na base" : run.Stage == DeliveryStage.AwaitVehicle ? "retire o veiculo" : run.Stage == DeliveryStage.Returning ? "retorne a base" : run.Stage == DeliveryStage.Carrying ? "leve a carga a pe" : "siga o GPS";
+            if (freight && run.Stage == DeliveryStage.NeedPackage && Game.Player.Character.Position.DistanceTo(destination) < 45) stage = "retire caixa do caminhao";
             string text = Label + "  " + run.Delivered + "/" + run.Total + "  " + stage;
             if (pizza && quick) text += "  " + ((deadline - Game.GameTime) / 1000) + "s";
             bool banner = Visuals.TryJobHeader(Name, text, Color.White);
             if (!banner) new TextElement(text, new PointF(GTA.UI.Screen.ScaledWidth / 2f, 20), .4f, Color.White, GTA.UI.Font.ChaletLondon, Alignment.Center).Draw();
-            if (!quick && run.Stage != DeliveryStage.Returning && run.Stage != DeliveryStage.AwaitVehicle)
+            if (!quick && run.Stage != DeliveryStage.Returning && run.Stage != DeliveryStage.AwaitVehicle && run.Stage != DeliveryStage.AwaitLoading)
             {
                 if (banner)
                 {
@@ -278,8 +303,8 @@ namespace RPCore
                 Sfx.Play("delivered");
                 try
                 {
-                    if (delivery) achievements.Bump(pizza ? "pizza_drops" : "postop_drops");
-                    achievements.Bump("cash_earned", amount); if (complete) achievements.Bump(pizza ? "shifts_done" : "postop_shifts");
+                    if (delivery) achievements.Bump(freight ? "supply_drops" : pizza ? "pizza_drops" : "postop_drops");
+                    achievements.Bump("cash_earned", amount); if (complete) achievements.Bump(freight ? "supply_shifts" : pizza ? "shifts_done" : "postop_shifts");
                     achievements.Save();
                 }
                 catch (Exception ex) { Log.Error(Name + " achievements; payment already committed", ex); }
@@ -301,7 +326,7 @@ namespace RPCore
         void TickReturn(Ped p)
         {
             Marker(Depot, Color.FromArgb(110,80,160,255), 3);
-            if (!InputAllowed || !p.IsInVehicle(vehicle) || vehicle.Driver != p || vehicle.Position.DistanceTo(Depot) > (pizza ? 12 : 8) || vehicle.Speed > .5f) return;
+            if (!InputAllowed || !p.IsInVehicle(vehicle) || vehicle.Driver != p || vehicle.Position.DistanceTo(Depot) > (freight ? 15 : pizza ? 12 : 8) || vehicle.Speed > .5f) return;
             Prompt.Help("~INPUT_CONTEXT~: devolver veiculo e encerrar turno");
             if (Game.IsControlJustPressed(GTA.Control.Context) && run.ReturnToDepot(step => Pay(step, pizza ? Math.Min(1000000,Cfg.PizzaShiftBonus) : options.ReturnBonus, false, true))) End("Turno concluido. Bonus de retorno recebido!", false);
         }
@@ -325,15 +350,45 @@ namespace RPCore
             finally { run = null; menu.Visible = false; gate.Release(Name); }
             Notify.Show(message + (returningVehicle ? " Desca para devolver o veiculo da empresa." : ""));
         }
+        Vector3 Rear => freight ? vehicle.RearPosition-vehicle.ForwardVector*.7f : vehicle.GetOffsetPosition(new Vector3(0,pizza ? -1.4f : -3.2f,0));
+        void OpenCargoDoors()
+        {
+            if (freight) vehicle.Doors[VehicleDoorIndex.Trunk].Open(false,false);
+            else { vehicle.Doors[VehicleDoorIndex.BackLeftDoor].Open(false,false); vehicle.Doors[VehicleDoorIndex.BackRightDoor].Open(false,false); }
+            cargoDoorsOpen = true;
+        }
+        void TickLoading(Ped p)
+        {
+            Marker(Depot,Color.FromArgb(110,80,160,255),3);
+            bool nearby = vehicle.Position.DistanceTo(Depot) < 25 && vehicle.Speed < .5f && p.Position.DistanceTo(Rear) < 3 && SafeOnFoot(p);
+            if (!InputAllowed || !nearby)
+            {
+                if (loadUntil != 0) { loadUntil = 0; cargo.Stop(); }
+                if (InputAllowed) Prompt.Help("Pare na base, saia, guarde a arma e va a traseira para carregar.");
+                return;
+            }
+            if (loadUntil == 0)
+            {
+                Prompt.Help("~INPUT_CONTEXT~: carregar " + run.Total + " caixas para as lojas");
+                if (Game.IsControlJustPressed(GTA.Control.Context)) { OpenCargoDoors(); cargo.Start(p,false); loadUntil = Game.GameTime+freightOptions.LoadSeconds*1000; }
+                return;
+            }
+            Prompt.Help("Carregando... permaneça junto ao caminhao.");
+            if (unchecked(Game.GameTime-loadUntil) >= 0 && run.LoadCargo())
+            {
+                loadUntil = 0; cargo.Stop(); NextDestination(); Notify.Show("Carga pronta. " + run.Total + " lojas na rota. Siga o GPS.");
+            }
+        }
         void CloseCargoDoors()
         {
             if (cargoDoorsOpen && vehicle != null && vehicle.Exists())
-            { vehicle.Doors[VehicleDoorIndex.BackLeftDoor].Close(false); vehicle.Doors[VehicleDoorIndex.BackRightDoor].Close(false); }
+            { if (freight) vehicle.Doors[VehicleDoorIndex.Trunk].Close(false); else { vehicle.Doors[VehicleDoorIndex.BackLeftDoor].Close(false); vehicle.Doors[VehicleDoorIndex.BackRightDoor].Close(false); } }
             cargoDoorsOpen = false;
         }
         void Cleanup()
         {
-            cargo.Stop(); CloseCargoDoors();
+            if (freight) WorkContext.ShopDelivery.Clear(Name);
+            loadUntil = 0; cargo.Stop(); CloseCargoDoors();
             if (targetBlip != null && targetBlip.Exists()) targetBlip.Delete(); targetBlip = null;
             if (vehicleBlip != null && vehicleBlip.Exists()) vehicleBlip.Delete(); vehicleBlip = null;
             if (supplied) JobVehicles.Retire(vehicle); else JobVehicles.Release(vehicle);
@@ -350,6 +405,10 @@ namespace RPCore
             try { Cleanup(); }
             finally { run = null; gate.Release(Name); menu.Visible = false; if (startBlip != null && startBlip.Exists()) startBlip.Delete(); }
         }
+    }
+    public sealed class StoreDeliveryJob : DeliveryJobSystem
+    {
+        public StoreDeliveryJob(ObjectPool pool, AchievementSystem achievements, ShiftGate gate) : base(pool, achievements, gate, false, true) { }
     }
     public sealed class PostOpJob : DeliveryJobSystem
     {

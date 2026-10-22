@@ -21,7 +21,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
         readonly Action jobs;
-        readonly Vector3 postOp, valet;
+        readonly Vector3 postOp, valet, supply;
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
         readonly List<Blip> pins = new List<Blip>();
@@ -68,9 +68,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply;
             root = Menu("Settings Menu");
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
@@ -148,6 +148,7 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gps, "Trabalhos / contratos", "Gerenciar pizza, Post OP, Uber e valet.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); gps.Visible = false; });
                 Add(gps, "GPS: trabalho Valet", "Contrate no hotel e cuide dos carros dos clientes.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, valet.X, valet.Y); gps.Visible = false; });
                 Add(gps, "GPS: trabalho Post OP", "Contrate a pe, retire a van e entregue as caixas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, postOp.X, postOp.Y); gps.Visible = false; });
             }

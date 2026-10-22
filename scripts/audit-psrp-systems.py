@@ -68,5 +68,14 @@ for name, source_name, keys in [
         report[name.lower() + '_points'] = {'count': len(points),
             'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
             'reference_source': 'PSRP/' + source_name, 'configuration_sha256': digest(config_file.read_bytes())}
+freight_source = a.reference_source / 'PSRP/JobDeliveryDriver.cs'
+freight_config = Path(__file__).resolve().parents[1] / 'config/Jobs/StoreDelivery.json'
+if freight_source.exists() and freight_config.exists():
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)', freight_source.read_text())}
+    config = json.loads(freight_config.read_text())
+    points = config['Addresses'] + [config['Start'], config['Depot']]
+    report['store_delivery_points'] = {'store_count': len(config['Addresses']),
+        'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
+        'reference_source': 'PSRP/JobDeliveryDriver.cs', 'configuration_sha256': digest(freight_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

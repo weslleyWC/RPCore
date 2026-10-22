@@ -66,7 +66,7 @@ namespace RPCore
             if(!BeginShift(options.TripsPerShift))return;
             vehicle=v;originalLock=v.LockStatus;unlocked=false;driverAway=-1;JobVehicles.Reserve(v);
             if(originalLock!=VehicleLockStatus.Unlocked){v.LockStatus=VehicleLockStatus.Unlocked;unlocked=true;}
-            nextOffer=Game.GameTime+2000;offered=false;ride=null;Record("Entrou em servico.");Notify.Show("Uber online. Aguarde a solicitacao. F1 no carro parado ou F10 para gerenciar; End encerra.");
+            nextOffer=Game.GameTime+2000;offered=false;ride=null;Record("Entrou em servico.");Notify.Show("Uber online. Aguarde a solicitacao. " + Visuals.PhoneKey + " no carro parado ou F10 para gerenciar; End encerra.");
         }
         bool Offer()
         {

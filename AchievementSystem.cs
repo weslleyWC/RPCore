@@ -54,6 +54,8 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "supply_first")) defs.Add(new AchDef { Id="supply_first",Name="Reposicao iniciada",Desc="Conclua uma entrega de reposicao de loja.",Stat="supply_drops",Target=1 });
+            if (!defs.Any(d => d.Id == "supply_shift")) defs.Add(new AchDef { Id="supply_shift",Name="Lojas abastecidas",Desc="Conclua um turno de reposicao com retorno do caminhao.",Stat="supply_shifts",Target=1 });
             string legacy = Path.Combine(Cfg.Dir, "Achievements.json");
             if (File.Exists(legacy))
             {

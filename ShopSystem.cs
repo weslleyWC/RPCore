@@ -85,6 +85,7 @@ namespace RPCore
             if (menu.Visible && current != null && pos.DistanceTo(Pos(current)) > 4f) menu.Visible = false;
             if (menu.Visible || pool.AreAnyVisible || p.IsInVehicle() || p.IsDead || Game.IsMissionActive) return;
 
+            if (WorkContext.ShopDelivery.Contains(pos.X,pos.Y,pos.Z)) return;
             foreach (ShopDef s in shops)
             {
                 Vector3 sp = Pos(s);

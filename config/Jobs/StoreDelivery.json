@@ -1,0 +1,144 @@
+{
+  "Drops": 5,
+  "BasePay": 180,
+  "ReturnBonus": 300,
+  "PayPerMeter": 0.06,
+  "CandidateStores": 8,
+  "LoadSeconds": 3,
+  "Start": {
+    "Name": "Davis freight depot",
+    "X": 30.10219,
+    "Y": -1761.373,
+    "Z": 29.53956,
+    "Heading": 49.51094
+  },
+  "Depot": {
+    "Name": "Davis freight depot",
+    "X": 30.10219,
+    "Y": -1761.373,
+    "Z": 29.53956,
+    "Heading": 49.51094
+  },
+  "Addresses": [
+    {
+      "Name": "Rob’s Liquor Murrieta Heights",
+      "X": 1136.87,
+      "Y": -978.955,
+      "Z": 46.416
+    },
+    {
+      "Name": "LTD Mirror Park",
+      "X": 1155.941,
+      "Y": -320.24,
+      "Z": 69.205
+    },
+    {
+      "Name": "24/7 Strawberry",
+      "X": 33.312,
+      "Y": -1346.681,
+      "Z": 29.497
+    },
+    {
+      "Name": "LTD Davis",
+      "X": -54.7,
+      "Y": -1749.089,
+      "Z": 29.421
+    },
+    {
+      "Name": "Rob’s Liquor Vespucci",
+      "X": -1226.175,
+      "Y": -906.743,
+      "Z": 12.326
+    },
+    {
+      "Name": "Rob’s Liquor Morningwood",
+      "X": -1486.774,
+      "Y": -382.577,
+      "Z": 40.163
+    },
+    {
+      "Name": "24/7 Downtown Vinewood",
+      "X": 381.065,
+      "Y": 324.738,
+      "Z": 103.566
+    },
+    {
+      "Name": "24/7 Palomino Freeway",
+      "X": 2557.164,
+      "Y": 389.37,
+      "Z": 108.623
+    },
+    {
+      "Name": "LTD Banham Canyon",
+      "X": -1828.42,
+      "Y": 792.017,
+      "Z": 138.249
+    },
+    {
+      "Name": "24/7 Ineseno Road",
+      "X": -3041.866,
+      "Y": 592.298,
+      "Z": 7.909
+    },
+    {
+      "Name": "Rob’s Liquor Route 68",
+      "X": -2969.848,
+      "Y": 388.746,
+      "Z": 15.043
+    },
+    {
+      "Name": "24/7 Chumash",
+      "X": -3241.843,
+      "Y": 1009.127,
+      "Z": 12.831
+    },
+    {
+      "Name": "24/7 Harmony",
+      "X": 540.362,
+      "Y": 2669.842,
+      "Z": 42.156
+    },
+    {
+      "Name": "Scoops Liquor Barn",
+      "X": 1168.984,
+      "Y": 2707.549,
+      "Z": 38.158
+    },
+    {
+      "Name": "24/7 Grapeseed Highway",
+      "X": 1399.139,
+      "Y": 3603.706,
+      "Z": 34.981
+    },
+    {
+      "Name": "24/7 Sandy Shores",
+      "X": 1966.941,
+      "Y": 3744.537,
+      "Z": 32.344
+    },
+    {
+      "Name": "24/7 Senora Freeway",
+      "X": 2681.884,
+      "Y": 3287.724,
+      "Z": 55.241
+    },
+    {
+      "Name": "LTD Grapeseed",
+      "X": 1706.255,
+      "Y": 4927.944,
+      "Z": 42.064
+    },
+    {
+      "Name": "24/7 Mount Chiliad",
+      "X": 1735.854,
+      "Y": 6412.169,
+      "Z": 35.037
+    },
+    {
+      "Name": "LTD Little Seoul",
+      "X": -714.1821,
+      "Y": -909.6077,
+      "Z": 19.21558
+    }
+  ]
+}

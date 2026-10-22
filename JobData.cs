@@ -58,17 +58,18 @@ namespace RPCore
         public bool Acquire(string owner) { if (string.IsNullOrEmpty(owner) || Owner != null) return false; Owner = owner; return true; }
         public void Release(string owner) { if (Owner == owner) Owner = null; }
     }
-    public enum DeliveryStage { AwaitVehicle, NeedPackage, Carrying, Handover, Returning, Finished, Cancelled }
+    public enum DeliveryStage { AwaitVehicle, NeedPackage, Carrying, Handover, Returning, Finished, Cancelled, AwaitLoading }
     public sealed class DeliveryRun
     {
         public readonly string Id = Guid.NewGuid().ToString("N");
         public readonly int Total;
-        public readonly bool ReturnRequired;
+        public readonly bool ReturnRequired, RequiresLoading;
         public int Delivered { get; private set; }
         public DeliveryStage Stage { get; private set; } = DeliveryStage.AwaitVehicle;
         public int ReceiptStep => Delivered + 1;
-        public DeliveryRun(int total, bool returnRequired) { if (total < 1 || total > 100) throw new ArgumentOutOfRangeException(nameof(total)); Total = total; ReturnRequired = returnRequired; }
-        public bool EnterVehicle() { if (Stage != DeliveryStage.AwaitVehicle) return false; Stage = DeliveryStage.NeedPackage; return true; }
+        public DeliveryRun(int total, bool returnRequired, bool requiresLoading = false) { if (total < 1 || total > 100) throw new ArgumentOutOfRangeException(nameof(total)); Total = total; ReturnRequired = returnRequired; RequiresLoading = requiresLoading; }
+        public bool EnterVehicle() { if (Stage != DeliveryStage.AwaitVehicle) return false; Stage = RequiresLoading ? DeliveryStage.AwaitLoading : DeliveryStage.NeedPackage; return true; }
+        public bool LoadCargo() { if (Stage != DeliveryStage.AwaitLoading) return false; Stage = DeliveryStage.NeedPackage; return true; }
         public bool TakePackage() { if (Stage != DeliveryStage.NeedPackage) return false; Stage = DeliveryStage.Carrying; return true; }
         public bool BeginHandover() { if (Stage != DeliveryStage.Carrying) return false; Stage = DeliveryStage.Handover; return true; }
         public void RecoverPackage() { if (Stage == DeliveryStage.Carrying || Stage == DeliveryStage.Handover) Stage = DeliveryStage.NeedPackage; }

@@ -29,7 +29,7 @@ namespace RPCore
         public static VisualBindings Bindings = new VisualBindings();
         public static bool Enabled, NeedsHud, VehicleHud, WalletHud, MenuBanners, ItemIcons, UseProps, PhoneEnabled, Running;
         public static float Scale = 1, NeedsOffsetY = 20;
-        public static System.Windows.Forms.Keys PhoneKey = System.Windows.Forms.Keys.F1;
+        public static System.Windows.Forms.Keys PhoneKey = System.Windows.Forms.Keys.F2;
         static bool failed;
 
         public static void Load()
@@ -39,7 +39,7 @@ namespace RPCore
             NeedsHud = options.GetValue("Visuals", "NeedsHud", true); VehicleHud = options.GetValue("Visuals", "VehicleHud", true);
             WalletHud = options.GetValue("Visuals", "WalletHud", true); MenuBanners = options.GetValue("Visuals", "MenuBanners", true);
             ItemIcons = options.GetValue("Visuals", "ItemIcons", true); UseProps = options.GetValue("Visuals", "ConsumableProps", true);
-            PhoneEnabled = options.GetValue("Visuals", "Phone", true); PhoneKey = options.GetValue("Keys", "Phone", System.Windows.Forms.Keys.F1);
+            PhoneEnabled = options.GetValue("Visuals", "Phone", true); PhoneKey = options.GetValue("Keys", "Phone", System.Windows.Forms.Keys.F2);
             Scale = options.GetValue("Layout", "Scale", 1f); if (float.IsNaN(Scale) || float.IsInfinity(Scale)) Scale = 1;
             Scale = Math.Max(.6f, Math.Min(1.4f, Scale));
             NeedsOffsetY = options.GetValue("Layout", "NeedsTop", 20f);
@@ -191,7 +191,7 @@ namespace RPCore
             try
             {
                 string banner;
-                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
+                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "supply" ? "PostOpBanner" : key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
                 if (!Active || !MenuBanners || !Has("PSRP_Banners", banner)) return false;
                 float w = 320 * Scale, x = (Width - w) / 2, y = InsetY + 8;
                 Sprite("PSRP_Banners", banner, x, y, w, w / 4, Color.White);

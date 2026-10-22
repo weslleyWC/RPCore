@@ -14,7 +14,8 @@
     "pizza": "PizzaBanner",
     "postop": "PostOpBanner",
     "uber": "BoltBanner",
-    "valet": "Valet"
+    "valet": "Valet",
+    "supply": "PostOpBanner"
   },
   "ItemIcons": {
     "water": "water",

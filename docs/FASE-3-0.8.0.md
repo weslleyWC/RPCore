@@ -1,5 +1,7 @@
 # Fase 3 — Uber e valet (RPCore 0.8.0)
 
+Atualização de status: o usuário confirmou Uber e valet funcionando no GTA. A entrega seguinte está em [fase 4.1 — reposição de lojas](FASE-4.1-0.9.0.md). As informações de validação abaixo registram a entrega original.
+
 O usuário confirmou no GTA os turnos completos de pizza e Post OP da 0.7.0 e seus pagamentos. A 0.8.0 implementa Uber e valet com código próprio, integrados ao celular, central de trabalhos e ao mesmo controle de turnos/pagamentos. Esta versão ainda depende da validação de passageiros, portas, tráfego e estacionamento no GTA.
 
 ## Uber: como trabalhar

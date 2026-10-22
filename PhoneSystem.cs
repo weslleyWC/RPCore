@@ -18,7 +18,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly Action jobs;
         readonly UberJob uber;
-        readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings", "Trabalhos / Post OP" };
+        readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings", "Trabalhos / contratos" };
         PhoneData data;
         int selection, row, stopwatchStart = -1;
         string page = "Home", query = "", result = "0";
@@ -180,7 +180,7 @@ namespace RPCore
             else if (page == "Search") { line("Search: "+query,0); var found=Matches(); for(int i=0;i<found.Length;i++) line(shortcuts[found[i]],i+1); }
             else if (page == "Contacts")
             {
-                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);line("Trabalhos / Post OP",4);
+                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);line("Trabalhos / contratos",4);
                 text("RPCore service shortcuts.~n~Voice calls are not integrated.",23,283,.23f,Color.LightGray,GTA.UI.Alignment.Left,196);
             }
             else if (page == "Notifications" || page == "Messages")
@@ -197,7 +197,7 @@ namespace RPCore
             else if (page == "Calculator") { text(result,23,105,.35f,Color.White,GTA.UI.Alignment.Left,196);text("Enter: type e.g. 125*4",23,302,.27f,Color.LightGray,GTA.UI.Alignment.Left,196); }
             else if (page == "Fitness") { text("Health: "+pHealth()+"~n~Armor: "+Game.Player.Character.Armor+"~n~Hunger: "+HudMath.Percent(needs.Hunger)+"~n~Hydration: "+HudMath.Percent(needs.Thirst)+"~n~Sleep: "+HudMath.Percent(needs.Sleep),23,105,.3f,Color.White,GTA.UI.Alignment.Left,196); }
             else if (page == "Uber") { var lines=uber?.PhoneRows() ?? new[]{"Uber indisponivel"};row=Math.Min(row,lines.Length-1);for(int i=0;i<lines.Length;i++)line(lines[i],i); }
-            text("Backspace: home | F1: close",23,401,.21f,Color.LightGray,GTA.UI.Alignment.Left,200);
+            text("Backspace: home | " + Visuals.PhoneKey + ": close",23,401,.21f,Color.LightGray,GTA.UI.Alignment.Left,200);
         }
         int pHealth() { return Game.Player.Character.Health; }
         public void Reload()

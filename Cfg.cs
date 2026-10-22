@@ -122,8 +122,9 @@ namespace RPCore
             if (create) s.Save();
             Visuals.Load();
             InterfaceOptions.Load();
-            // F11 belongs to the reference settings interface, including installs with the old garage default.
-            if (GarageKey == InterfaceOptions.SettingsKey) GarageKey = Keys.F2;
+            var oldGarageKey = GarageKey;
+            GarageKey = (Keys)KeyBindingRules.Garage((int)GarageKey,(int)Visuals.PhoneKey,(int)InterfaceOptions.SettingsKey,Visuals.Enabled && Visuals.PhoneEnabled);
+            if (oldGarageKey != GarageKey) Log.Write("Garage key conflict resolved in memory: " + oldGarageKey + " -> " + GarageKey + "; local INIs retained.");
         }
 
         static float Positive(float v, float fallback) { return float.IsNaN(v) || float.IsInfinity(v) || v < 0 ? fallback : v; }

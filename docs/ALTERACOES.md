@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.9.0 — fase 4.1: reposição de lojas
+
+Contrato com Mule2, carregamento obrigatório, cinco lojas por turno, caixa na mão, crédito por descarga e bônus único ao devolver. Prioridade de E só na loja de destino; progresso e configurações preservados. Celular passa a F2 por padrão e respeita a configuração local; garagem usa O em memória quando houver conflito. 30 testes novos, total 256, build zero erros/avisos. Uber/valet da fase anterior confirmados pelo usuário no GTA. [Arquivos alterados, limites e teste](FASE-4.1-0.9.0.md).
+
 ## 0.8.0 — fase 3: Uber e valet
 
 Uber com solicitação/tarifa, NPC em calçada, embarque/desembarque real, gorjeta e média de avaliações. Valet com cliente chegando de carro, estacionamento/trava, solicitação de devolução, recuperação da mesma instância e entrega ao dono. Turnos compartilhados com pizza/Post OP; crédito bancário, recibo e avaliação no mesmo checkpoint. Telefone funcional no carro parado como motorista, aplicativo Uber com estado/ações e histórico local; central/GPS inclui os quatro trabalhos. Banners originais BoltBanner/Valet e gatilhos reais de conquistas. Defaults de jobs embutidos e JSONs locais preservados. Build zero erros/avisos, 226 testes. [Arquivos alterados, limites e teste](FASE-3-0.8.0.md).

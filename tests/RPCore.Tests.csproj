@@ -12,6 +12,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../DrivingJobData.cs" Link="DrivingJobData.cs" />
+    <Compile Include="../FreightData.cs" Link="FreightData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
@@ -21,6 +22,7 @@
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
+    <EmbeddedResource Include="../config/Jobs/StoreDelivery.json" LogicalName="RPCore.JobDefaults.StoreDelivery.json" />
     <EmbeddedResource Include="../config/Jobs/PostOp.json" LogicalName="RPCore.JobDefaults.PostOp.json" />
     <EmbeddedResource Include="../config/Jobs/Uber.json" LogicalName="RPCore.JobDefaults.Uber.json" />
     <EmbeddedResource Include="../config/Jobs/Valet.json" LogicalName="RPCore.JobDefaults.Valet.json" />
