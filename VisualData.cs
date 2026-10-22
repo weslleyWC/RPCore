@@ -4,6 +4,12 @@ using System.Linq;
 
 namespace RPCore
 {
+    public static class ReferenceInterface
+    {
+        public static readonly string[] RadialLabels = { "Phone", "Inventory", "Emotes", "Vehicle Control", "Fast GPS", "Gangs", "Interactions", "Settings" };
+        public static readonly string[] RadialIcons = { "PhoneIconRad", "InventoryIconRad", "EmoteIconRad", "CarIconRad", "GpsIconRad", "GangIconRad", "InteractionIconRad", "SettingsIconRad" };
+        public const string SectorDictionary = "PSRP_Inventory", SettingsBanner = "PSRPBANNER2";
+    }
     public class TextureInfo { public string Name; public int Width, Height; }
     public class VisualCatalog
     {
@@ -30,6 +36,15 @@ namespace RPCore
     }
     public static class HudMath
     {
+        public static int MoveRadial(int index, int delta) { return ((index + delta) % 8 + 8) % 8; }
+        public static string CompactMoney(long value)
+        {
+            var culture = System.Globalization.CultureInfo.InvariantCulture;
+            if (value >= 1000000000) return (value / 1000000000d).ToString("0.#", culture) + "B";
+            if (value >= 1000000) return (value / 1000000d).ToString("0.#", culture) + "M";
+            if (value >= 1000) return (value / 1000d).ToString("0.#", culture) + "K";
+            return value.ToString(culture);
+        }
         public static int Percent(float value)
         {
             return float.IsNaN(value) || float.IsInfinity(value) ? 0 : (int)Math.Round(Math.Max(0, Math.Min(100, value)));

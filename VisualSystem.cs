@@ -60,11 +60,12 @@ namespace RPCore
             var p = Game.Player.Character; if (p.IsDead) return;
             if (Visuals.WalletHud && Visuals.Has("PSRP", "MoneyIcon"))
             {
-                float x = Visuals.Width - Visuals.InsetX - 244 * Visuals.Scale, y = Visuals.InsetY + Visuals.NeedsOffsetY + 92 * Visuals.Scale;
-                Visuals.Rect(x - 5, y - 3, 230 * Visuals.Scale, 58 * Visuals.Scale, Color.FromArgb(150, 12, 16, 23));
-                Visuals.Sprite("PSRP", "MoneyIcon", x, y, 25 * Visuals.Scale, 25 * Visuals.Scale, Color.LightGreen);
-                Visuals.Text("$" + Wallet.Cash.ToString("N0"), x + 34 * Visuals.Scale, y, .3f, Color.White);
-                Visuals.Text("Bank  $" + Wallet.Bank.ToString("N0"), x + 34 * Visuals.Scale, y + 27 * Visuals.Scale, .25f, Color.LightBlue);
+                float s = Visuals.Scale, x = Visuals.Width - Visuals.InsetX - 234 * s, y = Visuals.InsetY + (Visuals.NeedsOffsetY + 46) * s;
+                // MoneyUI/BankUI contain their own round icon and black pill in a padded 384px texture.
+                Visuals.Sprite("PSRP", "MoneyUI", x - 25 * s, y - 51 * s, 130 * s, 130 * s, Color.White);
+                Visuals.Sprite("PSRP", "BankUI", x + 85 * s, y - 51 * s, 130 * s, 130 * s, Color.White);
+                Visuals.Text("$" + HudMath.CompactMoney(Wallet.Cash), x + 38 * s, y + 6 * s, .25f * s, Color.White);
+                Visuals.Text(HudMath.CompactMoney(Wallet.Bank), x + 148 * s, y + 6 * s, .25f * s, Color.White);
             }
             if (!Visuals.VehicleReady || !p.IsInVehicle()) return;
             var v = p.CurrentVehicle;

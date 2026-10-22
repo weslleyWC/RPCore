@@ -63,6 +63,7 @@ namespace RPCore.Tests
             Assert.Equal(original, File.ReadAllBytes(source));
             var sourceData = JObject.Parse(File.ReadAllText(source)); var needs = JObject.Parse(File.ReadAllText(Path.Combine(target, "Needs.json")));
             Assert.Equal((float)sourceData["Hunger"], (float)needs["Hunger"]); Assert.Equal((float)sourceData["Hydration"], (float)needs["Thirst"]);
+            Assert.Equal((float?)sourceData["Sleep"] ?? 100, (float)needs["Sleep"]);
             var wallet = JObject.Parse(File.ReadAllText(Path.Combine(target, "Wallet.json")));
             Assert.Equal((int)sourceData["PlayerBankBalance"], (int)wallet["Bank"]);
             Assert.Equal(151, JObject.Parse(File.ReadAllText(Path.Combine(target, "PSRP.original.json"))).Count);

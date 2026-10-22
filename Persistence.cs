@@ -74,7 +74,7 @@ namespace RPCore
             {
                 Directory.CreateDirectory(stage);
                 File.Copy(source, Path.Combine(stage, "PSRP.original.json"));
-                files.Write(Path.Combine(stage, "Needs.json"), new { Hunger = Percent(player, "Hunger"), Thirst = Percent(player, "Hydration") });
+                files.Write(Path.Combine(stage, "Needs.json"), new { Hunger = Percent(player, "Hunger"), Thirst = Percent(player, "Hydration"), Sleep = Percent(player, "Sleep") });
                 files.Write(Path.Combine(stage, "Wallet.json"), new { Cash = Math.Max(0, (int?)player["PlayerMoneyBalance"] ?? 0), Bank = Math.Max(0, (int?)player["PlayerBankBalance"] ?? 0) });
                 files.Write(Path.Combine(stage, "GangState.json"), new { Gang = (string)player["PlayerGangAffiliation"], Reputation = Math.Max(0, (int?)player["PlayerGangReputation"] ?? 0) });
                 Directory.Move(stage, targetDirectory);

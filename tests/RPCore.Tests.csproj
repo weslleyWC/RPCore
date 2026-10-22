@@ -14,6 +14,7 @@
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
     <Compile Include="../VisualData.cs" Link="VisualData.cs" />
+    <Compile Include="../NeedsData.cs" Link="NeedsData.cs" />
     <None Include="../config/Visuals/*.json" Link="Visuals/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../assets/RPCore/SaveData/Players/*.json" Link="Fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

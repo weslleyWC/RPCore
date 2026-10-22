@@ -26,7 +26,7 @@ namespace RPCore
         public static VisualCatalog Catalog = new VisualCatalog();
         public static VisualBindings Bindings = new VisualBindings();
         public static bool Enabled, NeedsHud, VehicleHud, WalletHud, MenuBanners, ItemIcons, UseProps, PhoneEnabled, Running;
-        public static float Scale = 1, NeedsOffsetY = 60;
+        public static float Scale = 1, NeedsOffsetY = 12;
         public static System.Windows.Forms.Keys PhoneKey = System.Windows.Forms.Keys.F1;
         static bool failed;
 
@@ -40,8 +40,9 @@ namespace RPCore
             PhoneEnabled = options.GetValue("Visuals", "Phone", true); PhoneKey = options.GetValue("Keys", "Phone", System.Windows.Forms.Keys.F1);
             Scale = options.GetValue("Layout", "Scale", 1f); if (float.IsNaN(Scale) || float.IsInfinity(Scale)) Scale = 1;
             Scale = Math.Max(.6f, Math.Min(1.4f, Scale));
-            NeedsOffsetY = options.GetValue("Layout", "NeedsTop", 60f);
-            if (float.IsNaN(NeedsOffsetY) || float.IsInfinity(NeedsOffsetY)) NeedsOffsetY = 60;
+            NeedsOffsetY = options.GetValue("Layout", "NeedsTop", 12f);
+            if (float.IsNaN(NeedsOffsetY) || float.IsInfinity(NeedsOffsetY)) NeedsOffsetY = 12;
+            if (NeedsOffsetY == 60) NeedsOffsetY = 12; // recognize the 0.3 default without rewriting its INI
             NeedsOffsetY = Math.Max(10, Math.Min(700, NeedsOffsetY));
             failed = false;
             try
@@ -105,16 +106,33 @@ namespace RPCore
             foreach (var skin in menus)
             {
                 if (!skin.Menu.Visible && !skin.Applied) continue;
-                string texture; bool use = Active && MenuBanners && Bindings.Banners != null && Bindings.Banners.TryGetValue(skin.Key, out texture) && Has("PSRP_Banners", texture);
-                if (use && (!skin.Applied || skin.AppliedTexture != Bindings.Banners[skin.Key]))
+                // The screenshot's personal inventory uses a blue handwritten header,
+                // whereas ShopBanner is specifically the shop inventory artwork.
+                if (skin.Key == "inventory" && Active && MenuBanners)
                 {
-                    texture = Bindings.Banners[skin.Key];
+                    if (!skin.Applied || skin.AppliedTexture != "inventory-blue")
+                    {
+                        skin.Menu.Banner = new ScaledRectangle(PointF.Empty, new SizeF(skin.Menu.Width, 108)) { Color = Color.FromArgb(255, 45, 100, 180) };
+                        skin.Menu.BannerText.Text = "Inventory"; skin.Applied = true; skin.AppliedTexture = "inventory-blue";
+                    }
+                    ApplyBadges(skin); continue;
+                }
+                string texture = skin.Key == "reference-settings" ? ReferenceInterface.SettingsBanner : null;
+                if (texture == null && Bindings.Banners != null) Bindings.Banners.TryGetValue(skin.Key, out texture);
+                bool use = Active && MenuBanners && Has("PSRP_Banners", texture);
+                if (use && (!skin.Applied || skin.AppliedTexture != texture))
+                {
                     skin.Menu.Banner = new ScaledTexture(PointF.Empty, new SizeF(skin.Menu.Width, skin.Menu.Width / 4), "PSRP_Banners", texture);
                     skin.Menu.BannerText.Text = ""; skin.Applied = true; skin.AppliedTexture = texture;
                 }
                 else if (!use && skin.Applied) { skin.Menu.Banner = skin.Original; skin.Menu.BannerText.Text = skin.Text; skin.Applied = false; }
-                if (!skin.Menu.Visible) continue;
-                foreach (var item in skin.Items)
+                ApplyBadges(skin);
+            }
+        }
+        static void ApplyBadges(MenuSkin skin)
+        {
+            if (!skin.Menu.Visible) return;
+            foreach (var item in skin.Items)
                 {
                     string icon;
                     if (Active && ItemIcons && Bindings.ItemIcons != null && Bindings.ItemIcons.TryGetValue(item.Value, out icon) && Has("PSRP_Inventory", icon))
@@ -124,17 +142,19 @@ namespace RPCore
                     }
                     else item.Key.LeftBadge = null;
                 }
-            }
         }
-        public static bool TryNeeds(float hunger, float thirst, float health)
+        public static bool TryNeeds(float hunger, float thirst, float health, float armor, float stamina, float sleep)
         {
             try
             {
                 if (!Active || !NeedsHud || !Has("PSRP", "OutBar100") || !Has("PSRP", "FoodIcon") || !Has("PSRP", "DrinkIcon")) return false;
-                float unit = 70 * Scale, x = Width - InsetX - unit * 3 - 24, y = InsetY + NeedsOffsetY;
-                Gauge("HealthIcon", health, x, y, Color.FromArgb(255, 230, 90, 100));
-                Gauge("FoodIcon", hunger, x + unit, y, Color.FromArgb(255, 245, 180, 65));
-                Gauge("DrinkIcon", thirst, x + unit * 2, y, Color.FromArgb(255, 80, 180, 245));
+                float unit = 47 * Scale, x = Width - InsetX - unit * 6 - 10, y = InsetY + NeedsOffsetY * Scale;
+                Gauge("HealthIcon", health, x, y, Color.FromArgb(255, 245, 60, 75));
+                Gauge("ArmorIcon", armor, x + unit, y, Color.FromArgb(255, 105, 80, 245));
+                Gauge("DrinkVisual", thirst, x + unit * 2, y, Color.FromArgb(255, 0, 180, 245));
+                Gauge("FoodIcon", hunger, x + unit * 3, y, Color.FromArgb(255, 245, 160, 50));
+                Gauge("LungIcon", stamina, x + unit * 4, y, Color.FromArgb(255, 0, 210, 100));
+                Gauge("SleepIcon", sleep, x + unit * 5, y, Color.FromArgb(255, 200, 210, 0));
                 return true;
             }
             catch (Exception ex) { Fail(ex); return false; }
@@ -155,10 +175,10 @@ namespace RPCore
         }
         static void Gauge(string icon, float amount, float x, float y, Color color)
         {
-            float size = 60 * Scale;
+            float size = 40 * Scale;
+            Sprite("PSRP", "CircleWhite", x, y, size, size, Color.FromArgb(150, color));
             Sprite("PSRP", "OutBar" + HudMath.Percent(amount), x, y, size, size, color);
-            Sprite("PSRP", icon, x + size * .27f, y + size * .27f, size * .46f, size * .46f, Color.White);
-            Text(HudMath.Percent(amount) + "%", x + 15 * Scale, y + size + 2, .24f, Color.White);
+            Sprite("PSRP", icon, x + 2 * Scale, y + 2 * Scale, 36 * Scale, 36 * Scale, Color.White);
         }
         public static void Fail(Exception ex)
         {

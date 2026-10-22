@@ -58,5 +58,37 @@ namespace RPCore.Tests
             Assert.Equal(3, HudMath.MoveGrid(0, 0, 1, 3, 9)); Assert.Equal(0, HudMath.MoveGrid(3, 0, -1, 3, 9));
             Assert.Equal(8, HudMath.MoveGrid(8, 0, 1, 3, 9)); Assert.Equal(0, HudMath.MoveGrid(5, 1, 0, 0, 0));
         }
+        [Fact] public void ScreenshotRadialUsesEightCompleteSectorsAndMatchingIcons()
+        {
+            var c = Catalog();
+            Assert.Equal(8, ReferenceInterface.RadialLabels.Length); Assert.Equal(8, ReferenceInterface.RadialIcons.Length);
+            for (int i = 1; i <= 8; i++)
+            {
+                var sector = c.Find(ReferenceInterface.SectorDictionary, "RadMenu" + i);
+                Assert.NotNull(sector); Assert.Equal(1920, sector.Width); Assert.Equal(1080, sector.Height);
+            }
+            Assert.All(ReferenceInterface.RadialIcons, icon => Assert.NotNull(c.Find(ReferenceInterface.SectorDictionary, icon)));
+            Assert.NotNull(c.Find(ReferenceInterface.SectorDictionary, "RadMiddle"));
+            Assert.NotNull(c.Find("PSRP_Banners", ReferenceInterface.SettingsBanner));
+            // The similarly named PSRP_RADICAL dictionary does not contain the eighth sector.
+            Assert.Null(c.Find("PSRP_RADICAL", "RadMenu8"));
+        }
+        [Theory] [InlineData(0,-1,7)] [InlineData(7,1,0)] [InlineData(0,-9,7)] [InlineData(5,18,7)]
+        public void RadialNavigationWrapsBothDirections(int index, int move, int expected) { Assert.Equal(expected, HudMath.MoveRadial(index, move)); }
+        [Theory] [InlineData(0,"0")] [InlineData(500300,"500.3K")] [InlineData(5000,"5K")] [InlineData(1000000,"1M")] [InlineData(2147483647,"2.1B")]
+        public void MoneyUsesCompactScreenshotFormat(long value, string expected) { Assert.Equal(expected, HudMath.CompactMoney(value)); }
+        [Fact] public void SixStatusIconsAndBothMoneyPillsArePresentInUploadedArt()
+        {
+            var c = Catalog();
+            foreach (string name in new[] { "HealthIcon", "ArmorIcon", "DrinkVisual", "FoodIcon", "LungIcon", "SleepIcon", "CircleWhite", "MoneyUI", "BankUI" }) Assert.NotNull(c.Find("PSRP", name));
+        }
+        [Fact] public void OldNeedsSavesGainSleepWithoutLosingValuesOrUnknownFields()
+        {
+            var old = JsonConvert.DeserializeObject<NeedsData>("{\"Hunger\":42,\"Thirst\":31,\"FutureModField\":{\"enabled\":true}}");
+            Assert.Equal(42, old.Hunger); Assert.Equal(31, old.Thirst); Assert.Equal(100, old.Sleep);
+            var roundtrip = Newtonsoft.Json.Linq.JObject.Parse(JsonConvert.SerializeObject(old));
+            Assert.True((bool)roundtrip["FutureModField"]["enabled"]);
+            old.Sleep = 28; Assert.Equal(28, JsonConvert.DeserializeObject<NeedsData>(JsonConvert.SerializeObject(old)).Sleep);
+        }
     }
 }

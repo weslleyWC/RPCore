@@ -89,3 +89,14 @@ Esta atualização ainda precisa do teste de gameplay descrito em `TESTES-0.2.0.
 Os arquivos de dados não fornecem o código nem o comportamento completo de PSRP. Não foram recriados: polícia/LSPDFR, táxi/Uber, emprego de piloto/valet/encomendas, concessionária e funcionários/PDM, compra de casas/garagens, criação de ped/aparência, combustível, manutenção/pneus, drogas, guerras/captura de território, caça, corridas, seguros, roupas, lojas ambulantes, lavagem de dinheiro, telefone, clima real ou streaming Twitch. Os campos, saves, áudios e conquistas correspondentes foram preservados; não devem ser confundidos com sistemas funcionais do RPCore.
 
 Rádio, posição exata dos marcadores, ciclo do cinto e coexistência com mods instalados precisam de teste no GTA/Windows. Não houve execução do jogo neste ambiente Linux. O instalador PowerShell foi revisado, mas a execução dele no Windows também permanece pendente.
+
+
+## 0.4.0 — interface dos prints
+
+- Novos RadialSystem.cs, SettingsSystem.cs, InterfaceOptions.cs e config/Interface.ini: radial J com arte original, modal de teclado/controle, oito categorias F11, ajustes persistentes, emotes, pontos/GPS e ações explícitas.
+- Main.cs: integração dos dois sistemas e consumo exclusivo de entradas do radial/F11; Cfg.cs e Vehicles.ini: garagem F2, compatibilidade com antigo F11 em memória.
+- Visuals.cs/VisualSystem.cs: seis círculos compactos, MoneyUI/BankUI, banner PSRPBANNER2 das configurações e inventário azul. Layout antigo NeedsTop=60 reconhecido como padrão anterior.
+- NeedsData.cs/NeedsSystem.cs/Persistence.cs: sono por perfil, descanso, importação Sleep e preservação dos saves antigos/campos desconhecidos.
+- GangSystem.cs: cadastro de gangues em arquivo separado, HQ e blips. PhoneSystem.cs: atalho Config abre F11. CoreMenu/AssemblyInfo: versão 0.4.0.
+- VisualData.cs/testes: navegação circular, formatação compacta, catálogo real do radial e compatibilidade de Needs; 75 testes passam.
+- Instalador, downloads e documentação atualizados. Detalhamento/limites/testes dentro do GTA em INTERFACE-0.4.0.md.

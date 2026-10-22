@@ -1,4 +1,15 @@
-# RPCore 0.3.0 — GTA V Legacy
+# RPCore 0.4.0 — GTA V Legacy
+
+## Interface 0.4.0 — J e F11
+
+[Baixar atualização 0.4.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.4.0.zip) · [Código-fonte 0.4.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.4.0.zip)
+
+**J** abre o radial com oito setores originais do OIV, Q/E seleciona e Enter abre. **F11** abre Settings Menu com as oito categorias dos prints e o banner do carro preto. **F2** abre garagens; F10 continua com perfis/banco/diagnóstico. O HUD passa a seis indicadores reais e dinheiro compacto; inventário pessoal tem cabeçalho azul.
+
+O usuário confirmou que a 0.3.0 funciona; esta nova composição ainda precisa do teste visual no jogo. Veja [ações implementadas, limites e testes da 0.4.0](docs/INTERFACE-0.4.0.md). Map Builder nesta versão edita pontos pessoais com GPS; não coloca objetos. A PSRP.dll foi usada como referência de interface e não deve ser instalada junto do RPCore. Não foram copiadas todas as suas funcionalidades.
+
+O pacote visual 0.3.0 continua válido e não precisa ser reinstalado se já estiver funcionando. O instalador da atualização preserva saves/configurações e acrescenta Interface.ini quando ausente.
+
 
 Projeto C# .NET Framework 4.8 para **ScriptHookVDotNet Enhanced 1.1.0.6** e **LemonUI SHVDN3 2.2**, as versões informadas pelo desenvolvedor. Implementação própria sobre os fontes enviados, mantendo `ISystem`, LemonUI e os formatos básicos de inventário, necessidades e pizza.
 
@@ -48,7 +59,9 @@ Configurações antigas são preservadas: se `Settings.ini` já existir, acresce
 | H | Pisca-alerta |
 | K | Menu do veículo: motor, cruise, setas, capô e porta-malas |
 | G | Iniciar/parar abastecimento no posto, parado e com motor desligado |
-| F11 | Garagens: GPS, compra, guardar/retirar e serviços |
+| F2 | Garagens: GPS, compra, guardar/retirar e serviços |
+| J | Radial: Q/E, Enter; J/Esc fecha |
+| F11 | Settings Menu: oito categorias de configuração |
 | F12 | Concessionária: GPS e compra junto ao PDM |
 
 Altere as teclas em `Settings.ini` se conflitam com trainers ou outros mods. Use F10 → Reload configuration para reler opções e teclas. Para alterar quais sistemas ficam habilitados, reinicie o script após editar `Features`. Os novos controles, combustível e garagem usam `Vehicles.ini`; as teclas de motor, cruise e setas de `Keys.ini` têm prioridade se estiverem presentes. `Car Controller Key = N` do PSRP continua sem efeito; K abre o menu de veículo, evitando a colisão com a seta direita N.

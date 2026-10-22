@@ -27,7 +27,7 @@ namespace RPCore
         {
             if (selection == 8) { Close(); return; }
             if ((selection == 2 && !Cfg.EnableGarages) || (selection == 4 && !Cfg.EnableRadio) || (selection == 5 && !Cfg.EnableGangs)) { Notify.Show("This system is disabled in your configuration."); return; }
-            Keys key = selection == 0 ? Cfg.CoreKey : selection == 1 ? Cfg.InventoryKey : selection == 2 ? Cfg.GarageKey : selection == 3 ? Cfg.StocksKey : selection == 4 ? Cfg.RadioKey : selection == 5 ? Cfg.GangsKey : selection == 6 ? Cfg.JobKey : Cfg.CoreKey;
+            Keys key = selection == 0 ? Cfg.CoreKey : selection == 1 ? Cfg.InventoryKey : selection == 2 ? Cfg.GarageKey : selection == 3 ? Cfg.StocksKey : selection == 4 ? Cfg.RadioKey : selection == 5 ? Cfg.GangsKey : selection == 6 ? Cfg.JobKey : InterfaceOptions.SettingsKey;
             Close(); dispatch(key);
         }
         void Navigate(int dx, int dy) { selection = HudMath.MoveGrid(selection, dx, dy, 3, names.Length); }
@@ -76,7 +76,7 @@ namespace RPCore
             Visuals.Rect(x + 11 * s, y + 9 * s, 220 * s, 424 * s, Color.FromArgb(245, 18, 23, 36));
             bool wallpaper = Visuals.Sprite("PSRP_PHONE", "PhoneWallpaper1", fullX, fullY, 1920 * s, 1080 * s, Color.White);
             Visuals.Rect(x + 11 * s, y + 9 * s, 220 * s, 424 * s, Color.FromArgb(wallpaper ? 100 : 230, 5, 8, 18));
-            Visuals.Text("RPCore 0.3.0", x + 23 * s, y + 24 * s, .25f, Color.White);
+            Visuals.Text("RPCore 0.4.0", x + 23 * s, y + 24 * s, .25f, Color.White);
             Visuals.Text(GTA.Chrono.GameClock.Hour.ToString("00") + ":" + GTA.Chrono.GameClock.Minute.ToString("00"), x + 174 * s, y + 24 * s, .23f, Color.White);
             for (int i = 0; i < names.Length; i++)
             {

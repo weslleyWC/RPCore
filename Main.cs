@@ -27,6 +27,8 @@ namespace RPCore
         readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
         readonly CoreMenu core;
         readonly PhoneSystem phone;
+        readonly RadialSystem radial;
+        readonly SettingsSystem settings;
 
         public Main()
         {
@@ -53,12 +55,27 @@ namespace RPCore
             if (Cfg.EnableVehicleControls) AddOptional(() => { controls = new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)); return controls; });
             if (Cfg.EnableGarages) AddOptional(() => new GarageSystem(pool, ach));
             if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
-            if (Cfg.EnableGangs) AddOptional(() => new GangSystem(pool, ach));
+            GangSystem gangs = null;
+            if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach); return gangs; });
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
             phone = new PhoneSystem(pool, DispatchSystemKey, props); systems.Add(phone);
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose); systems.Add(core);
+            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs); systems.Add(settings);
+            radial = new RadialSystem(pool, slot => {
+                switch (slot)
+                {
+                    case 0: DispatchSystemKey(Visuals.PhoneKey); break;
+                    case 1: DispatchSystemKey(Cfg.InventoryKey); break;
+                    case 2: settings.OpenEmotes(); break;
+                    case 3: if (Cfg.EnableVehicleControls) DispatchSystemKey(Cfg.VehicleMenuKey); else Notify.Show("Controles do veiculo desativados."); break;
+                    case 4: settings.OpenGps(); break;
+                    case 5: if (Cfg.EnableGangs) DispatchSystemKey(Cfg.GangsKey); else Notify.Show("Gangues desativadas."); break;
+                    case 6: settings.OpenInteractions(); break;
+                    case 7: DispatchSystemKey(InterfaceOptions.SettingsKey); break;
+                }
+            }); systems.Add(radial);
             systems.Add(visual);
             ach.Bump("started");
 
@@ -67,7 +84,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.3.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.4.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -129,6 +146,12 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if (!phone.Visible && !faulted.Contains(radial) && (radial.Visible || e.KeyCode == InterfaceOptions.RadialKey))
+            {
+                try { radial.OnKey(e); }
+                catch (Exception ex) { faulted.Add(radial); Log.Error("radial.key", ex); radial.Dispose(); }
+                return;
+            }
             if (phone.Visible || (Visuals.Enabled && Visuals.PhoneEnabled && e.KeyCode == Visuals.PhoneKey))
             {
                 if (!faulted.Contains(phone))
@@ -154,6 +177,12 @@ namespace RPCore
         void DispatchSystemKey(Keys key)
         {
             var e = new KeyEventArgs(key);
+            if (key == InterfaceOptions.SettingsKey)
+            {
+                if (!faulted.Contains(settings))
+                    try { settings.OnKey(e); } catch (Exception ex) { faulted.Add(settings); Log.Error("settings.key", ex); settings.Dispose(); }
+                return;
+            }
             foreach (ISystem s in systems)
             {
                 if (faulted.Contains(s)) continue;

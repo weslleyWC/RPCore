@@ -39,6 +39,7 @@ namespace RPCore
         {
             this.pool = pool; this.ach = ach; pool.Add(menu); Visuals.Register(menu, "gangs");
             gangs = Store.LoadDef("Gangs/CustomGangs.json", () => new List<GangDefinition>()).Where(g => g != null && !string.IsNullOrWhiteSpace(g.Name)).GroupBy(g => g.Name).Select(g => g.First()).ToList();
+            gangs.AddRange(Store.LoadDef("Gangs/RPCoreCreated.json", () => new List<GangDefinition>()).Where(g => g != null && !string.IsNullOrWhiteSpace(g.Name) && !gangs.Any(old => old.Name == g.Name)));
             foreach (var gang in gangs)
             {
                 var b = World.CreateBlip(gang.Position); b.Name = gang.Name; b.IsShortRange = true;
@@ -46,6 +47,19 @@ namespace RPCore
                 blips.Add(b);
             }
             ach.Progress += Progress; Reload();
+        }
+
+        public void Create(string name)
+        {
+            if (gangs.Any(g => string.Equals(g.Name, name, StringComparison.OrdinalIgnoreCase))) { Notify.Show("Ja existe uma gangue com este nome."); return; }
+            string path = System.IO.Path.Combine(Cfg.Dir, "Gangs", "RPCoreCreated.json");
+            var created = new JsonFiles().Read(path, () => new List<GangDefinition>());
+            if (created.Count >= 50) { Notify.Show("Limite de 50 gangues criadas."); return; }
+            var p = Game.Player.Character.Position;
+            var gang = new GangDefinition { Name = name, Description = "Gangue criada no RPCore", HQX = p.X, HQY = p.Y, HQZ = p.Z, GangColor = "Purple" };
+            created.Add(gang); new JsonFiles().Write(path, created); gangs.Add(gang);
+            var b = World.CreateBlip(gang.Position); b.Name = name; b.Color = BlipColor.Purple; b.IsShortRange = true; blips.Add(b); dirty = true;
+            Notify.Show("Gangue cadastrada. F4: HQ e afiliacao.");
         }
 
         void Progress(string stat, int amount)

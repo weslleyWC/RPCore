@@ -121,6 +121,9 @@ namespace RPCore
             PizzaPerMeter = Positive(PizzaPerMeter, 0.08f);
             if (create) s.Save();
             Visuals.Load();
+            InterfaceOptions.Load();
+            // F11 belongs to the reference settings interface, including installs with the old garage default.
+            if (GarageKey == InterfaceOptions.SettingsKey) GarageKey = Keys.F2;
         }
 
         static float Positive(float v, float fallback) { return float.IsNaN(v) || float.IsInfinity(v) || v < 0 ? fallback : v; }
