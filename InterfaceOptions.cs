@@ -9,12 +9,17 @@ namespace RPCore
     {
         public static Keys RadialKey = Keys.J, SettingsKey = Keys.F11;
         public static bool RadialEnabled = true, HideRadarOnFoot;
+        public static bool GridInventory = true, MetricSpeed, RespectSafeZone, LocationHud = true;
+        public static bool ModalOpen;
         static string PathName { get { return Path.Combine(Cfg.Dir, "Interface.ini"); } }
         public static void Load()
         {
             var s = ScriptSettings.Load(PathName);
             RadialKey = s.GetValue("Keys", "Radial", Keys.J); SettingsKey = s.GetValue("Keys", "Settings", Keys.F11);
             RadialEnabled = s.GetValue("Interface", "Radial", true); HideRadarOnFoot = s.GetValue("Interface", "HideRadarOnFoot", false);
+            GridInventory = s.GetValue("Interface", "GridInventory", true);
+            MetricSpeed = s.GetValue("VehicleHud", "Metric", false); LocationHud = s.GetValue("VehicleHud", "Location", true);
+            RespectSafeZone = s.GetValue("Layout", "RespectSafeZone", false);
         }
         public static void Set<T>(string file, string section, string key, T value)
         {

@@ -161,7 +161,7 @@ namespace RPCore
             if (tank == null) return;
             if (Visuals.VehicleReady)
             {
-                if (pumping) Visuals.Text("Refueling: " + Cfg.FuelKey + " to stop", Visuals.Width - Visuals.InsetX - 360 * Visuals.Scale, 1080 - Visuals.InsetY - 260 * Visuals.Scale, .28f, Color.White);
+                if (pumping) Visuals.Label("Refueling: " + Cfg.FuelKey + " to stop", Visuals.Width/2,1080-Visuals.InsetY-215*Visuals.Scale,.28f,Color.White,GTA.UI.Font.ChaletLondon,GTA.UI.Alignment.Center);
                 return;
             }
             string label = string.Format("FUEL {0:0.0}/{1:0} L  |  {2:0.0} km{3}", tank.Liters, tank.Capacity, tank.DistanceKm, pumping ? "  [" + Cfg.FuelKey + ": stop]" : "");

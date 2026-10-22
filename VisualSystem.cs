@@ -18,7 +18,7 @@ namespace RPCore
         bool warned;
         public VisualSystem(SeatbeltSystem belt, Func<bool> cruise, Func<Vehicle, FuelTank> fuel)
         {
-            this.belt = belt; this.cruise = cruise; this.fuel = fuel; Visuals.Running = true; started = Game.GameTime;
+            this.belt = belt; this.cruise = cruise; this.fuel = fuel; Visuals.Running = true; started = Game.GameTime; LoadRoads();
         }
         public void Diagnose()
         {
@@ -60,12 +60,12 @@ namespace RPCore
             var p = Game.Player.Character; if (p.IsDead) return;
             if (Visuals.WalletHud && Visuals.Has("PSRP", "MoneyIcon"))
             {
-                float s = Visuals.Scale, x = Visuals.Width - Visuals.InsetX - 234 * s, y = Visuals.InsetY + (Visuals.NeedsOffsetY + 46) * s;
+                float s = Visuals.Scale, x = ReferenceLayout.StatusX(Visuals.Width,s,Visuals.InsetX), y = Visuals.InsetY+Visuals.NeedsOffsetY*s;
                 // MoneyUI/BankUI contain their own round icon and black pill in a padded 384px texture.
-                Visuals.Sprite("PSRP", "MoneyUI", x - 25 * s, y - 51 * s, 130 * s, 130 * s, Color.White);
-                Visuals.Sprite("PSRP", "BankUI", x + 85 * s, y - 51 * s, 130 * s, 130 * s, Color.White);
-                Visuals.Text("$" + HudMath.CompactMoney(Wallet.Cash), x + 38 * s, y + 6 * s, .25f * s, Color.White);
-                Visuals.Text(HudMath.CompactMoney(Wallet.Bank), x + 148 * s, y + 6 * s, .25f * s, Color.White);
+                Visuals.Sprite("PSRP", "MoneyUI", x +30*s, y-2*s,130*s,130*s,Color.White);
+                Visuals.Sprite("PSRP", "BankUI", x +120*s, y-2*s,130*s,130*s,Color.White);
+                Visuals.Label(HudMath.CompactCash(Wallet.Cash),x+88*s,y+52*s,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne);
+                Visuals.Label(HudMath.CompactMoney(Wallet.Bank),x+178*s,y+52*s,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne);
             }
             if (!Visuals.VehicleReady || !p.IsInVehicle()) return;
             var v = p.CurrentVehicle;
@@ -74,36 +74,66 @@ namespace RPCore
         }
         void DrawVehicle(Vehicle v)
         {
-            float s = Visuals.Scale, x = Visuals.Width - Visuals.InsetX - 360 * s, y = 1080 - Visuals.InsetY - 225 * s;
-            Visuals.Rect(x + 8 * s, y + 8 * s, 320 * s, 144 * s, Color.FromArgb(155, 8, 12, 18));
-            Visuals.Sprite("PSRP", "RectangleBorder", x, y, 336 * s, 163 * s, Color.FromArgb(210, 240, 245, 255));
-            Visuals.Text((v.Speed * 3.6f).ToString("0"), x + 35 * s, y + 20 * s, .9f, Color.White);
-            Visuals.Text("km/h", x + 145 * s, y + 55 * s, .32f, Color.White);
-            Visuals.Text(v.GetSpeedVector(true).Y < -.5f ? "R" : v.CurrentGear > 0 ? v.CurrentGear.ToString() : "N", x + 255 * s, y + 32 * s, .6f, Color.LightBlue);
-            float rpm = Math.Max(0, Math.Min(1, v.CurrentRPM));
-            Visuals.Rect(x + 34 * s, y + 106 * s, 250 * s * rpm, 4 * s, rpm > .85f ? Color.OrangeRed : Color.LightBlue);
-            Visuals.Sprite("PSRP", "SpeedoLine", x + 34 * s, y + 97 * s, 250 * s, 16 * s, Color.White);
+            float s = Visuals.Scale, center = Visuals.Width / 2 - 6*s, y = 1080-Visuals.InsetY-175*s;
+            float speed = ReferenceLayout.Speed(v.Speed,InterfaceOptions.MetricSpeed);
+            string gear = v.GetSpeedVector(true).Y < -.5f ? "R" : v.CurrentGear > 0 ? v.CurrentGear.ToString() : "N";
+            Visuals.Label(speed.ToString("0"),center,y,.9f*s,Color.White,GTA.UI.Font.Pricedown,GTA.UI.Alignment.Center);
+            Visuals.Label(gear,center+22*s,y,.2f*s,Color.White,GTA.UI.Font.Pricedown);
+            Visuals.Label(InterfaceOptions.MetricSpeed ? "kph" : "mph",center+22*s,y+30*s,.2f*s,Color.White,GTA.UI.Font.Pricedown);
+            float rpm = Math.Max(0,Math.Min(1,v.CurrentRPM));
+            Visuals.Rect(center-130*s,y+53*s,260*s,12*s,Color.FromArgb(200,0,0,0));
+            Visuals.Rect(center-130*s,y+53*s,260*s*rpm,10*s,rpm>.88f ? Color.Red : rpm>.61f ? Color.Orange : Color.LimeGreen);
+            Color off = Color.FromArgb(175,200,200,200);
+            Visuals.Sprite("PSRP","FlatTireIcon",center-129*s,y+82*s,45*s,45*s,new[] {0,1,2,3,4,5,45,47}.Any(i=>Function.Call<bool>(Hash.IS_VEHICLE_TYRE_BURST,v,i,false)) ? Color.Red : off);
+            Visuals.Sprite("PSRP","CarSeatbeltIcon",center-82*s,y+77*s,50*s,50*s,belt.IsBelted ? Color.Lime : off);
+            Visuals.Sprite("PSRP","CarCruiseIcon",center+31*s,y+77*s,50*s,50*s,cruise() ? Color.Lime : off);
+            Visuals.Sprite("PSRP","CarHeadLightIcon",center+81*s,y+81*s,50*s,50*s,v.AreLightsOn ? Color.White : off);
+            if (v.EngineHealth<300) Visuals.Sprite("PSRP","CarOilIcon",center+64*s,y+60*s,30*s,40*s,Color.Red);
             FuelTank tank = fuel(v);
-            if (tank != null)
+            if (tank!=null && tank.Capacity>0)
             {
-                Visuals.Sprite("PSRP", "CarFuelIcon", x + 14 * s, y + 173 * s, 25 * s, 25 * s, tank.Liters / tank.Capacity < .1f ? Color.OrangeRed : Color.White);
-                Visuals.Text(tank.Liters.ToString("0.0") + "/" + tank.Capacity.ToString("0") + " L | " + tank.DistanceKm.ToString("0.0") + " km", x + 47 * s, y + 173 * s, .27f, Color.White);
+                double f = Math.Max(0,Math.Min(1,tank.Liters/tank.Capacity));
+                Visuals.Sprite("PSRP","CarFuelIcon",center-18*s,y+68*s,40*s,40*s,Color.White);
+                Visuals.Rect(center-29*s,y+110*s,60*s,10*s,Color.FromArgb(200,0,0,0));
+                Visuals.Rect(center-29*s,y+110*s,60*s*(float)f,10*s,f<.2 ? Color.Red : Color.Orange);
+                Visuals.Label((InterfaceOptions.MetricSpeed ? "km: " : "mi: ")+(tank.DistanceKm/(InterfaceOptions.MetricSpeed ? 1 : 1.609344)).ToString("0.0"),center,y+123*s,.22f*s,Color.White,GTA.UI.Font.Pricedown,GTA.UI.Alignment.Center);
             }
-            float row = y + 124 * s;
-            Visuals.Sprite("PSRP", "CarSeatbeltIcon", x + 37 * s, row, 24 * s, 24 * s, belt.IsBelted ? Color.LightGreen : Color.OrangeRed);
-            Visuals.Sprite("PSRP", "CarCruiseIcon", x + 88 * s, row, 24 * s, 24 * s, cruise() ? Color.LightGreen : Color.Gray);
-            Visuals.Sprite("PSRP", "CarHeadLightIcon", x + 139 * s, row, 24 * s, 24 * s, v.AreLightsOn ? Color.LightGreen : Color.Gray);
-            Visuals.Sprite("PSRP", "CarOilIcon", x + 190 * s, row, 24 * s, 24 * s, v.EngineHealth < 300 ? Color.OrangeRed : Color.Gray);
-            bool flat = new[] { 0, 1, 2, 3, 4, 5, 45, 47 }.Any(i => Function.Call<bool>(Hash.IS_VEHICLE_TYRE_BURST, v, i, false));
-            Visuals.Sprite("PSRP", "FlatTireIcon", x + 241 * s, row, 24 * s, 24 * s, flat ? Color.OrangeRed : Color.Gray);
-            if ((Game.GameTime / 500) % 2 == 0)
+            if ((Game.GameTime/500)%2==0)
             {
-                if (v.IsLeftIndicatorLightOn) Visuals.Sprite("PSRP", "LBlinker", x + 5 * s, y + 55 * s, 24 * s, 24 * s, Color.LightGreen);
-                if (v.IsRightIndicatorLightOn) Visuals.Sprite("PSRP", "Rblinker", x + 301 * s, y + 55 * s, 24 * s, 24 * s, Color.LightGreen);
+                if(v.IsLeftIndicatorLightOn) Visuals.Sprite("PSRP","LBlinker",center-170*s,y+80*s,30*s,30*s,Color.Lime);
+                if(v.IsRightIndicatorLightOn) Visuals.Sprite("PSRP","Rblinker",center+144*s,y+80*s,30*s,30*s,Color.Lime);
             }
+            if (InterfaceOptions.LocationHud) DrawLocation(v.Position);
+        }
+        int nextLocation;
+        string street = "", zone = "";
+        System.Collections.Generic.Dictionary<string,int> speedLimits = new System.Collections.Generic.Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
+        void LoadRoads()
+        {
+            try
+            {
+                var loaded = new JsonFiles().Read(System.IO.Path.Combine(Cfg.Dir,"Visuals","SpeedLimits.json"),()=>new System.Collections.Generic.Dictionary<string,int>());
+                speedLimits = new System.Collections.Generic.Dictionary<string,int>(loaded,StringComparer.OrdinalIgnoreCase);
+            }
+            catch(Exception ex) { Log.Error("visual road rules",ex); }
+        }
+        void DrawLocation(GTA.Math.Vector3 position)
+        {
+            if(unchecked(Game.GameTime-nextLocation)>=0)
+            {
+                nextLocation=Game.GameTime+500; street=World.GetStreetName(position); zone=World.GetZoneLocalizedName(position);
+            }
+            float s=Visuals.Scale,x=Visuals.InsetX+345*s,y=1080-Visuals.InsetY-84*s;
+            Visuals.Label(zone,x,y,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne);
+            Visuals.Label(street,x,y+31*s,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne);
+            Visuals.Label(GTA.Chrono.GameClock.Hour.ToString("00")+":"+GTA.Chrono.GameClock.Minute.ToString("00"),x+187*s,y,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne,GTA.UI.Alignment.Right);
+            Visuals.Label(GTA.Chrono.GameClock.Day+"/"+GTA.Chrono.GameClock.Month+"/"+GTA.Chrono.GameClock.Year,x+187*s,y+31*s,.3f*s,Color.White,GTA.UI.Font.ChaletComprimeCologne,GTA.UI.Alignment.Right);
+            int limit;
+            if(street!=null && speedLimits.TryGetValue(street,out limit) && new[] {40,50,60,70}.Contains(limit))
+                Visuals.Sprite("PSRP",limit.ToString(),Visuals.InsetX+250*s,1080-Visuals.InsetY-210*s,45*s,55*s,Color.White);
         }
         public void OnKey(KeyEventArgs e) { }
-        public void Reload() { }
+        public void Reload() { LoadRoads(); }
         public void Save() { }
         public void Dispose() { Visuals.Dispose(); }
     }

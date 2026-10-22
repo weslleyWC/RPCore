@@ -1,0 +1,17 @@
+{
+  "phone.png": {
+    "role": "user-supplied target/reference; not RPCore gameplay validation",
+    "bytes": 256336,
+    "sha256": "78ebca1ea2974013f10e5f9c8c15c5549ac4776a153e4f55668f79db933da883"
+  },
+  "inventory.png": {
+    "role": "user-supplied target/reference; not RPCore gameplay validation",
+    "bytes": 655022,
+    "sha256": "e660283c5c08c84d61b4a9eb51dfd822543c4c523a0bdae125feff34d1338b44"
+  },
+  "vehicle.png": {
+    "role": "user-supplied target/reference; not RPCore gameplay validation",
+    "bytes": 6343725,
+    "sha256": "6313855e8482e5ca40ed5400ac67e0bba9014c3b12ed7e0be3493932ed0fd8e7"
+  }
+}

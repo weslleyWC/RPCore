@@ -29,4 +29,4 @@ Get-ChildItem -LiteralPath (Join-Path $payload 'scripts') -File -Recurse | ForEa
     }
 }
 Write-Host "RPCore instalado. Backup: $backup"
-Write-Host 'Abra GTA Legacy no modo historia. J: radial. F11: configuracoes. F2: garagens. F10: perfis/banco. Leia docs/INTERFACE-0.4.0.md.'
+Write-Host 'Abra GTA Legacy no modo historia. I: inventario em grade. F1: celular. J: radial. F11: configuracoes. F2: garagens. Leia docs/INTERFACE-0.5.0.md.'

@@ -36,6 +36,7 @@ namespace RPCore
     }
     public static class HudMath
     {
+        public static string CompactCash(long value) { return value < 1000 ? value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) : CompactMoney(value); }
         public static int MoveRadial(int index, int delta) { return ((index + delta) % 8 + 8) % 8; }
         public static string CompactMoney(long value)
         {

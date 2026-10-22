@@ -89,7 +89,7 @@ namespace RPCore
             if (engineOff) Function.Call(Hash.SET_VEHICLE_ENGINE_ON, controlled, false, true, true);
             if (!cruise) return;
             // Supply throttle only; do not rewrite handling, native max-speed or engine-power multipliers.
-            if (pool.AreAnyVisible || !controlled.IsEngineRunning || !hasFuel(controlled) || !controlled.IsOnAllWheels || controlled.HasCollided || controlled.Speed < 3 ||
+            if (pool.AreAnyVisible || InterfaceOptions.ModalOpen || !controlled.IsEngineRunning || !hasFuel(controlled) || !controlled.IsOnAllWheels || controlled.HasCollided || controlled.Speed < 3 ||
                 Game.GetControlValueNormalized(GTA.Control.VehicleBrake) > .05f || Game.GetControlValueNormalized(GTA.Control.VehicleHandbrake) > .05f || Game.GetControlValueNormalized(GTA.Control.VehicleAccelerate) > .1f)
             { CancelCruise(); return; }
             float throttle = Math.Max(0, Math.Min(1, .2f + (cruiseSpeed - controlled.Speed) * .18f));

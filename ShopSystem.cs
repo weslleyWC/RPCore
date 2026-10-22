@@ -99,6 +99,7 @@ namespace RPCore
 
         public void Tick()
         {
+            if (InterfaceOptions.ModalOpen) return;
             Ped p = Game.Player.Character;
             Vector3 pos = p.Position;
 

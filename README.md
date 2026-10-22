@@ -1,6 +1,16 @@
-# RPCore 0.4.0 — GTA V Legacy
+# RPCore 0.5.0 — GTA V Legacy
 
-## Interface 0.4.0 — J e F11
+## Interface 0.5.0 — referências do Downloads.zip
+
+[DLL pronta 0.5.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.5.0.zip) · [Código-fonte 0.5.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.5.0.zip)
+
+**Velocímetro no centro inferior**, seis indicadores no canto superior direito com dinheiro/banco alinhados, **inventário I em grade 5×5**, **celular F1 com wallpaper do carro vermelho/relógio/ícones do print**, radial J com tamanho corrigido e F11 com posição/fonte do menu de referência. F2 mantém garagens e F10 mantém banco/perfis/diagnóstico. O pacote visual 0.3.0 continua válido.
+
+[Instalação, funções disponíveis, limites e testes da 0.5.0](docs/INTERFACE-0.5.0.md). A composição foi corrigida no código e validada nos dados; a renderização final precisa do teste no GTA. Notas/calculadora/pesquisa funcionam; Uber, chamadas de voz e SMS continuam pendentes. O inventário mostra durabilidade n/a; editor de objetos e crafting continuam pendentes. Não foi transplantada toda a lógica da PSRP.dll.
+
+Configurações anteriores são preservadas. Os valores padrão antigos de NeedsTop (60/12) são reconhecidos em memória como o novo topo 20. As opções novas de Interface.ini usam defaults compatíveis mesmo se o INI antigo já existir. A unidade do desenho é mph por padrão, alterável em F11 > Vehicle Settings. A lista de inventário anterior permanece disponível no F11 > UI Settings.
+
+## Histórico — interface 0.4.0
 
 [Baixar atualização 0.4.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.4.0.zip) · [Código-fonte 0.4.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.4.0.zip)
 
@@ -15,7 +25,7 @@ Projeto C# .NET Framework 4.8 para **ScriptHookVDotNet Enhanced 1.1.0.6** e **Le
 
 A primeira entrega (commit 6819140) foi testada no GTA pelo usuário e ele informou que funcionou. As adições 0.2.0 e a integração visual 0.3.0 foram compiladas/testadas nos dados e aguardam seus testes de gameplay.
 
-## Visuais novos — importante para a versão 0.3.0
+## Histórico — recursos visuais da 0.3.0
 
 A DLL agora usa os recursos **PSRP.oiv** e **psrp_props.zip** enviados pelo usuário: HUD de anéis/ícones, painel de veículo, banners, ícones de itens, apresentação de props e telefone F1 com atalhos para os sistemas existentes. Instalar somente a DLL não registra texturas ou DLC no GTA.
 
@@ -41,8 +51,8 @@ Configurações antigas são preservadas: se `Settings.ini` já existir, acresce
 
 | Tecla | Ação |
 |---|---|
-| F1 | Telefone PSRP: setas/Enter para atalhos, Esc/F1 para fechar (a pé) |
-| I | Inventário; selecionar um consumível para usá-lo |
+| F1 | Celular: setas/Enter para aplicativos, Backspace para voltar, F1 para fechar (a pé) |
+| I | Inventário em grade: setas/Enter; C para reorganizar; I/Backspace fecha |
 | E | Abrir uma loja quando estiver próximo ao balcão e a pé |
 | F6 | Iniciar/cancelar turno de pizza, com 5 entregas por padrão |
 | F7 | Conquistas e progresso |

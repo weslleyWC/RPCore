@@ -10,24 +10,6 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public class ItemDef
-    {
-        public string Id;
-        public string Name;
-        public string Desc = "";
-        public float Weight = 0.1f;
-        public int Price;          // 0 = not sold in shops
-        public float Hunger;
-        public float Thirst;
-        public int Health;
-    }
-
-    public class InvData : ExtensibleData
-    {
-        public Dictionary<string, int> Items = new Dictionary<string, int>();
-        public Dictionary<string, Dictionary<string, int>> Containers = new Dictionary<string, Dictionary<string, int>>();
-    }
-
     public class InventorySystem : ISystem
     {
         public string Name { get { return "inventory"; } }
@@ -37,6 +19,9 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly AchievementSystem ach;
         readonly NativeMenu menu = new NativeMenu("Inventory", "");
+        readonly InventoryGridView grid;
+        public bool GridVisible { get { return grid.Visible; } }
+        internal List<string> Layout { get { return d.GridSlots; } set { d.GridSlots = value; } }
         InvData d;
         bool dirty;
         public event Action<ItemDef> Used;
@@ -69,6 +54,7 @@ namespace RPCore
             }
             Defs = items.Where(i => i != null && !string.IsNullOrEmpty(i.Id) && i.Weight >= 0 && !float.IsNaN(i.Weight) && !float.IsInfinity(i.Weight)).GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.Last());
             pool.Add(menu); Visuals.Register(menu, "inventory");
+            grid = new InventoryGridView(this, needs);
             Reload();
         }
 
@@ -79,7 +65,11 @@ namespace RPCore
             if (d.Containers == null) d.Containers = new Dictionary<string, Dictionary<string, int>>();
             // Unknown item IDs remain in the save, so temporarily removed custom definitions do not delete inventory.
             if (menu.Visible) menu.Visible = false;
+            grid.Close(false);
+            ReconcileLayout();
         }
+        internal void ReconcileLayout() { d.GridSlots = InventoryLayout.Reconcile(d.GridSlots, d.Items.Where(p => p.Value > 0).Select(p => p.Key)); }
+        internal void UseSelected(string id) { ItemDef def; if (id != null && Defs.TryGetValue(id, out def)) { Use(def); Save(); needs.Save(); } }
 
         public float Weight
         {
@@ -160,19 +150,23 @@ namespace RPCore
         {
             // rebuild outside LemonUI's event dispatch, not inside the Activated handler
             if (dirty && menu.Visible) Rebuild();
+            if (dirty) ReconcileLayout();
+            grid.Tick();
             dirty = false;
         }
 
         public void OnKey(KeyEventArgs e)
         {
+            if (grid.Visible) { grid.OnKey(e); return; }
             if (e.KeyCode != Cfg.InventoryKey) return;
             if (menu.Visible) { menu.Visible = false; return; }
             if (pool.AreAnyVisible) return;
+            if (InterfaceOptions.GridInventory) { ReconcileLayout(); grid.Open(); return; }
             Rebuild();
             menu.Visible = true;
         }
 
-        public void Save() { Store.Write("Inventory.json", d); }
+        public void Save() { ReconcileLayout(); Store.Write("Inventory.json", d); }
         public Dictionary<string, int> Snapshot() { return new Dictionary<string, int>(d.Items); }
         public Dictionary<string, int> Container(string id)
         {
@@ -188,6 +182,6 @@ namespace RPCore
             if (moved) { dirty = true; Save(); }
             return moved;
         }
-        public void Dispose() { }
+        public void Dispose() { grid.Close(false); menu.Visible = false; }
     }
 }

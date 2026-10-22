@@ -100,3 +100,16 @@ Rádio, posição exata dos marcadores, ciclo do cinto e coexistência com mods 
 - GangSystem.cs: cadastro de gangues em arquivo separado, HQ e blips. PhoneSystem.cs: atalho Config abre F11. CoreMenu/AssemblyInfo: versão 0.4.0.
 - VisualData.cs/testes: navegação circular, formatação compacta, catálogo real do radial e compatibilidade de Needs; 75 testes passam.
 - Instalador, downloads e documentação atualizados. Detalhamento/limites/testes dentro do GTA em INTERFACE-0.4.0.md.
+
+
+## 0.5.0 — referências do Downloads.zip
+
+- InterfaceData.cs: geometria/margens alpha reais, reconciliação de slots sem mexer nas quantidades, dados do telefone e cálculo de dois operandos. InventoryData.cs extrai ItemDef/InvData para testar os modelos reais, mantendo os mesmos tipos e formatos, acrescentando GridSlots.
+- InventoryGridView.cs/InventorySystem.cs/Main.cs: grade 5×5 com painel lateral, uso existente, ordenação, descarte explícito, páginas e entrada exclusiva do modal. Shops/Storage continuam usando as mesmas APIs.
+- VisualSystem.cs/Visuals.cs: HUD do carro central inferior, status/dinheiro com posições/margens/cores da referência, ruas/bairro/hora/data, placa somente para ruas cadastradas. FuelSystem.cs reposiciona instrução de abastecimento.
+- PhoneSystem.cs: tela inicial da referência com arte original, relógio/dia, onze ícones, notas/calculadora/pesquisa/histórico real/cronômetro e atalhos preservados em Settings. Sem serviço Uber/chamadas/SMS; limites explícitos.
+- RadialSystem.cs: tamanho correto de texturas de ícones, fontes/posições das instruções. SettingsSystem.cs: offset/fonte/zona segura e opções de unidades/grade.
+- InterfaceOptions.cs, Interface.ini, Visuals.ini e Visuals/SpeedLimits.json: opções novas/defaults com preservação dos arquivos instalados. Main/CoreMenu/AssemblyInfo: versão 0.5.0.
+- 21 testes novos, total 96; build sem erros/avisos. Instalador/docs/referências/downloads atualizados. Checklist completo em INTERFACE-0.5.0.md.
+
+- Main/ShopSystem/VehicleControlSystem: estado de modal publicado antes do processamento dos sistemas; evita E abrir loja por polling sob o radial/grade e cancela cruise nos modais novos, preservando o comportamento de menus anteriores.

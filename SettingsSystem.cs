@@ -32,7 +32,7 @@ namespace RPCore
 
         NativeMenu Menu(string title)
         {
-            var menu = new NativeMenu("", title.ToUpperInvariant()) { Width = 420 };
+            var menu = new NativeMenu("", title.ToUpperInvariant()) { Width = 420, Offset = new PointF(40,8), SafeZoneAware = InterfaceOptions.RespectSafeZone, NameFont = GTA.UI.Font.ChaletComprimeCologne };
             pool.Add(menu); menus.Add(menu); Visuals.Register(menu, "reference-settings"); return menu;
         }
         static void Add(NativeMenu menu, string title, string description, Action action)
@@ -86,11 +86,14 @@ namespace RPCore
             Rate(survival, "Sede por minuto (passo 0.5)", () => Cfg.ThirstPerMin, v => { Cfg.ThirstPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "ThirstPerMin", v); }, .5f);
             Add(survival, "Descansar / parar descanso", "A pe, parado e fora de combate. Recupera sono gradualmente sem adiantar o relogio.", () => { pool.HideAll(); needs.ToggleRest(); });
             var vehicle = Menu("Vehicle Settings"); Link(root, vehicle);
+            Toggle(vehicle,"Velocimetro em km/h",()=>InterfaceOptions.MetricSpeed,v=> { InterfaceOptions.MetricSpeed=v; InterfaceOptions.Set("Interface.ini","VehicleHud","Metric",v); });
             Shortcut(vehicle, "Controles do veiculo", () => Cfg.VehicleMenuKey, () => Cfg.EnableVehicleControls);
             Shortcut(vehicle, "Garagens", () => Cfg.GarageKey, () => Cfg.EnableGarages);
             Shortcut(vehicle, "Concessionaria", () => Cfg.DealerKey, () => Cfg.EnableGarages);
             Rate(vehicle, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { Cfg.FuelPer100Km = v; InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); }, 4);
             var ui = Menu("UI Settings"); Link(root, ui);
+            Toggle(ui,"Inventario em grade",()=>InterfaceOptions.GridInventory,v=> { InterfaceOptions.GridInventory=v; InterfaceOptions.Set("Interface.ini","Interface","GridInventory",v); });
+            Toggle(ui,"Zona segura de tela",()=>InterfaceOptions.RespectSafeZone,v=> { InterfaceOptions.RespectSafeZone=v; InterfaceOptions.Set("Interface.ini","Layout","RespectSafeZone",v); foreach(var menu in menus) menu.SafeZoneAware=v; });
             VisualToggle(ui, "HUD de necessidades", "NeedsHud", () => Visuals.NeedsHud, v => Visuals.NeedsHud = v);
             VisualToggle(ui, "HUD do veiculo", "VehicleHud", () => Visuals.VehicleHud, v => Visuals.VehicleHud = v);
             VisualToggle(ui, "Dinheiro / banco", "WalletHud", () => Visuals.WalletHud, v => Visuals.WalletHud = v);

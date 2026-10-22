@@ -1,13 +1,13 @@
-# RPCore 0.4.0 — downloads
+# RPCore 0.5.0 — downloads
 
-- [Atualização 0.4.0 — DLL pronta, configuração e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.4.0.zip)
-- [Código-fonte 0.4.0 — para compilar](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.4.0.zip)
-- [Recursos visuais originais — os mesmos da 0.3.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-visual-assets-0.3.0.zip)
+- [Atualização 0.5.0 — DLL compilada, configurações e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.5.0.zip)
+- [Código-fonte 0.5.0 — projeto para compilar](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.5.0.zip)
+- [Recursos visuais originais — continuam os mesmos da 0.3.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-visual-assets-0.3.0.zip)
 
-J: radial com setores do OIV. F11: configurações nas oito categorias dos prints. F2: garagens. F10: perfis/banco/diagnóstico. HUD com seis indicadores, dinheiro compacto e inventário azul. [Instalação, funcionalidades exatas, limites e testes](../docs/INTERFACE-0.4.0.md).
+Painel do carro no centro inferior; seis indicadores no canto superior direito; inventário 5×5; celular com composição do print; radial com ícones corrigidos; F11 com posição/fonte da referência. I inventário, F1 celular, J radial, F11 configurações, F2 garagens, F10 banco/perfis/diagnóstico.
 
-Build net48 sem erros/avisos; 75 testes passam. Renderização/input/animações dentro do GTA precisam do teste do usuário. Não instala a PSRP.dll nem transplanta toda a sua lógica. Se o OIV já está instalado, atualize apenas o pacote principal.
+[Instalação, detalhes, limites e checklist](../docs/INTERFACE-0.5.0.md). Build sem erros/avisos e 96 testes aprovados; execução/renderização no GTA ainda precisa do teste do usuário. Uber, chamadas/SMS, durabilidade, crafting e mapa de objetos não foram implementados nesta entrega.
 
-Se abrir a página do arquivo, use Download raw; entre na conta se o repositório for privado. A atualização contém a DLL pronta; o csproj para compilar está no pacote source.
+Use Install-RPCore.ps1 do pacote update com o GTA fechado; preserva saves e configurações. Não exige compilar. O csproj está no pacote source. Se o OIV já estiver carregando, mantenha-o. Os nomes sem versão também apontam para a entrega atual.
 
-[Retornar à atualização 0.3.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.3.0.zip). Os nomes sem versão apontam para a entrega atual.
+[Retornar à 0.4.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.4.0.zip). Se abrir a página de arquivo, use Download raw e autentique-se se o repositório for privado.

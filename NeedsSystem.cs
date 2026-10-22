@@ -15,6 +15,9 @@ namespace RPCore
         int last, nextHurt;
         bool wasDead;
         bool resting;
+        public float Hunger { get { return d.Hunger; } }
+        public float Thirst { get { return d.Thirst; } }
+        public float Sleep { get { return d.Sleep; } }
 
         public NeedsSystem() { Reload(); }
 

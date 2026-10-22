@@ -26,7 +26,7 @@ namespace RPCore
         public static VisualCatalog Catalog = new VisualCatalog();
         public static VisualBindings Bindings = new VisualBindings();
         public static bool Enabled, NeedsHud, VehicleHud, WalletHud, MenuBanners, ItemIcons, UseProps, PhoneEnabled, Running;
-        public static float Scale = 1, NeedsOffsetY = 12;
+        public static float Scale = 1, NeedsOffsetY = 20;
         public static System.Windows.Forms.Keys PhoneKey = System.Windows.Forms.Keys.F1;
         static bool failed;
 
@@ -40,9 +40,9 @@ namespace RPCore
             PhoneEnabled = options.GetValue("Visuals", "Phone", true); PhoneKey = options.GetValue("Keys", "Phone", System.Windows.Forms.Keys.F1);
             Scale = options.GetValue("Layout", "Scale", 1f); if (float.IsNaN(Scale) || float.IsInfinity(Scale)) Scale = 1;
             Scale = Math.Max(.6f, Math.Min(1.4f, Scale));
-            NeedsOffsetY = options.GetValue("Layout", "NeedsTop", 12f);
-            if (float.IsNaN(NeedsOffsetY) || float.IsInfinity(NeedsOffsetY)) NeedsOffsetY = 12;
-            if (NeedsOffsetY == 60) NeedsOffsetY = 12; // recognize the 0.3 default without rewriting its INI
+            NeedsOffsetY = options.GetValue("Layout", "NeedsTop", 20f);
+            if (float.IsNaN(NeedsOffsetY) || float.IsInfinity(NeedsOffsetY)) NeedsOffsetY = 20;
+            if (NeedsOffsetY == 60 || NeedsOffsetY == 12) NeedsOffsetY = 20; // recognize the previous defaults without rewriting their INIs
             NeedsOffsetY = Math.Max(10, Math.Min(700, NeedsOffsetY));
             failed = false;
             try
@@ -54,8 +54,8 @@ namespace RPCore
         }
         public static bool Active { get { return Running && Enabled && !failed; } }
         public static float Width { get { return HudMath.CanvasWidth(GTA.UI.Screen.AspectRatio); } }
-        public static float InsetX { get { return HudMath.SafeInset(Width, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)); } }
-        public static float InsetY { get { return HudMath.SafeInset(1080, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)); } }
+        public static float InsetX { get { return InterfaceOptions.RespectSafeZone ? HudMath.SafeInset(Width, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)) : 0; } }
+        public static float InsetY { get { return InterfaceOptions.RespectSafeZone ? HudMath.SafeInset(1080, Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE)) : 0; } }
 
         public static bool Ready(string dictionary)
         {
@@ -74,7 +74,17 @@ namespace RPCore
             return false;
         }
         public static bool Has(string dictionary, string texture) { return Catalog.Find(dictionary, texture) != null && Ready(dictionary); }
-        public static bool VehicleReady { get { return Active && VehicleHud && Has("PSRP", "RectangleBorder") && Has("PSRP", "CarFuelIcon"); } }
+        public static bool VehicleReady { get { return Active && VehicleHud && Has("PSRP", "CarFuelIcon"); } }
+        public static void SpriteVisible(string dictionary, string texture, RectangleF visible, RectangleF alphaBounds, Color color)
+        {
+            var info = Catalog.Find(dictionary, texture); if (info == null) return;
+            var full = ReferenceLayout.FitTexture(visible, alphaBounds, info.Width, info.Height);
+            Sprite(dictionary, texture, full.X, full.Y, full.Width, full.Height, color);
+        }
+        public static void Label(string text, float x, float y, float scale, Color color, GTA.UI.Font font = GTA.UI.Font.ChaletLondon, GTA.UI.Alignment alignment = GTA.UI.Alignment.Left, float wrap = 0)
+        {
+            new ScaledText(new PointF(x, y), text ?? "", scale, font) { Color = color, Alignment = alignment, WordWrap = wrap }.Draw();
+        }
         public static bool Sprite(string dictionary, string texture, float x, float y, float w, float h, Color color, float rotation = 0)
         {
             if (!Has(dictionary, texture)) return false;
@@ -148,13 +158,13 @@ namespace RPCore
             try
             {
                 if (!Active || !NeedsHud || !Has("PSRP", "OutBar100") || !Has("PSRP", "FoodIcon") || !Has("PSRP", "DrinkIcon")) return false;
-                float unit = 47 * Scale, x = Width - InsetX - unit * 6 - 10, y = InsetY + NeedsOffsetY * Scale;
-                Gauge("HealthIcon", health, x, y, Color.FromArgb(255, 245, 60, 75));
-                Gauge("ArmorIcon", armor, x + unit, y, Color.FromArgb(255, 105, 80, 245));
-                Gauge("DrinkVisual", thirst, x + unit * 2, y, Color.FromArgb(255, 0, 180, 245));
-                Gauge("FoodIcon", hunger, x + unit * 3, y, Color.FromArgb(255, 245, 160, 50));
-                Gauge("LungIcon", stamina, x + unit * 4, y, Color.FromArgb(255, 0, 210, 100));
-                Gauge("SleepIcon", sleep, x + unit * 5, y, Color.FromArgb(255, 200, 210, 0));
+                float unit = 47 * Scale, x = ReferenceLayout.StatusX(Width,Scale,InsetX), y = InsetY + NeedsOffsetY * Scale;
+                Gauge("HealthIcon", health, x, y, Color.FromArgb(255,255,51,51));
+                Gauge("ArmorIcon", armor, x + unit, y, Color.FromArgb(255,102,102,255));
+                Gauge("DrinkVisual", thirst, x + unit * 2, y, Color.FromArgb(255,0,174,255));
+                Gauge("FoodIcon", hunger, x + unit * 3, y, Color.FromArgb(255,255,153,51));
+                Gauge("LungIcon", stamina, x + unit * 4, y, Color.FromArgb(255,0,204,102));
+                Gauge("SleepIcon", sleep, x + unit * 5, y, Color.FromArgb(255,196,183,2));
                 return true;
             }
             catch (Exception ex) { Fail(ex); return false; }
@@ -176,8 +186,8 @@ namespace RPCore
         static void Gauge(string icon, float amount, float x, float y, Color color)
         {
             float size = 40 * Scale;
-            Sprite("PSRP", "CircleWhite", x, y, size, size, Color.FromArgb(150, color));
-            Sprite("PSRP", "OutBar" + HudMath.Percent(amount), x, y, size, size, color);
+            Sprite("PSRP", "CircleWhite", x, y, size, size, color);
+            Sprite("PSRP", "OutBar" + HudMath.Percent(amount), x, y, size, size, Color.FromArgb(255, Math.Min(255, color.R + 70), Math.Min(255, color.G + 70), Math.Min(255, color.B + 70)));
             Sprite("PSRP", icon, x + 2 * Scale, y + 2 * Scale, 36 * Scale, 36 * Scale, Color.White);
         }
         public static void Fail(Exception ex)

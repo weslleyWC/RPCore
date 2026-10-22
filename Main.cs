@@ -29,6 +29,7 @@ namespace RPCore
         readonly PhoneSystem phone;
         readonly RadialSystem radial;
         readonly SettingsSystem settings;
+        readonly InventorySystem inventory;
 
         public Main()
         {
@@ -41,6 +42,7 @@ namespace RPCore
             var ach = new AchievementSystem(pool);
             var needs = new NeedsSystem();
             var inv = new InventorySystem(pool, needs, ach);
+            inventory = inv;
             systems.Add(ach);
             systems.Add(needs);
             systems.Add(inv);
@@ -60,7 +62,7 @@ namespace RPCore
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
-            phone = new PhoneSystem(pool, DispatchSystemKey, props); systems.Add(phone);
+            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs); systems.Add(phone);
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
@@ -84,7 +86,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.4.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.5.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -118,6 +120,10 @@ namespace RPCore
                 Log.Write("profile -> " + pid);
             }
 
+            // World Context is polled by shops before the late radial/phone draw ticks.
+            // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
+            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible;
+            if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             try { pool.Process(); }
             catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
 
@@ -146,6 +152,12 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if (inventory.GridVisible && !faulted.Contains(inventory))
+            {
+                try { inventory.OnKey(e); }
+                catch (Exception ex) { faulted.Add(inventory); Log.Error("inventory.grid.key", ex); inventory.Dispose(); }
+                return;
+            }
             if (!phone.Visible && !faulted.Contains(radial) && (radial.Visible || e.KeyCode == InterfaceOptions.RadialKey))
             {
                 try { radial.OnKey(e); }
@@ -204,6 +216,7 @@ namespace RPCore
 
         void OnAborted(object sender, EventArgs e)
         {
+            InterfaceOptions.ModalOpen = false;
             SaveAll();
             foreach (ISystem s in systems)
             {

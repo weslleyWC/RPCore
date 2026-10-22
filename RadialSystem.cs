@@ -58,12 +58,12 @@ namespace RPCore
             else Visuals.Rect(Visuals.Width / 2 - 280 * s, 280, 560 * s, 490 * s, Color.FromArgb(190,0,0,0));
             for (int i = 0; i < 8; i++)
             {
-                float ix = x + (centers[i].X - 35) * s, iy = y + (centers[i].Y - 35) * s;
-                if (!ready || !Visuals.Sprite("PSRP_Inventory", icons[i], ix, iy, 70 * s, 70 * s, Color.White))
+                float ix = x + (centers[i].X - 50) * s, iy = y + (centers[i].Y - 50) * s;
+                if (!ready || !Visuals.Sprite("PSRP_Inventory", icons[i], ix, iy, 100 * s, 100 * s, Color.White))
                     Visuals.Text((i == selected ? "~r~" : "") + labels[i], ix - 20 * s, iy + 15 * s, .23f, Color.White);
             }
-            new GTA.UI.TextElement(labels[selected], new PointF(Visuals.Width / 3, (y + 510 * s) * 2 / 3), .5f * s, Color.White, GTA.UI.Font.Pricedown, GTA.UI.Alignment.Center).ScaledDraw();
-            new GTA.UI.TextElement("Q / E: selecionar~n~Enter: abrir~n~" + InterfaceOptions.RadialKey + " / Esc: fechar", new PointF(Visuals.Width / 3, (y + 800 * s) * 2 / 3), .35f * s, Color.White, GTA.UI.Font.ChaletLondon, GTA.UI.Alignment.Center).ScaledDraw();
+            Visuals.Label(labels[selected],x+958*s,y+520*s,.5f*s,Color.White,GTA.UI.Font.Pricedown,GTA.UI.Alignment.Center,200*s);
+            Visuals.Label("Press ~b~Q~s~ To Move Left~n~Press ~b~E~s~ To Move Right~n~Press ~b~Enter~s~ To Select",x+960*s,y+800*s,.5f*s,Color.White,GTA.UI.Font.ChaletLondon,GTA.UI.Alignment.Center);
         }
         public void Reload() { Close(); }
         public void Save() { }
