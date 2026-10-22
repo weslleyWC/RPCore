@@ -56,5 +56,17 @@ if post_source.exists() and post_config.exists():
     report['postop_addresses'] = {'count': len(config['Addresses']),
         'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in config['Addresses']),
         'reference_source': 'PSRP/_JOB__Post_Op.cs', 'configuration_sha256': digest(post_config.read_bytes())}
+for name, source_name, keys in [
+    ('Uber', '_JOB__UberDriver.cs', ['Locations']),
+    ('Valet', '_JOB__Valet.cs', ['Stand', 'Arrival', 'Spawn', 'Parking', 'Exit'])]:
+    source = a.reference_source / 'PSRP' / source_name
+    config_file = Path(__file__).resolve().parents[1] / 'config/Jobs' / (name + '.json')
+    if source.exists() and config_file.exists():
+        reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)', source.read_text())}
+        config = json.loads(config_file.read_text())
+        points = config['Locations'] if name == 'Uber' else [config[k] for k in keys]
+        report[name.lower() + '_points'] = {'count': len(points),
+            'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
+            'reference_source': 'PSRP/' + source_name, 'configuration_sha256': digest(config_file.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

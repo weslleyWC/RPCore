@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.8.0 — fase 3: Uber e valet
+
+Uber com solicitação/tarifa, NPC em calçada, embarque/desembarque real, gorjeta e média de avaliações. Valet com cliente chegando de carro, estacionamento/trava, solicitação de devolução, recuperação da mesma instância e entrega ao dono. Turnos compartilhados com pizza/Post OP; crédito bancário, recibo e avaliação no mesmo checkpoint. Telefone funcional no carro parado como motorista, aplicativo Uber com estado/ações e histórico local; central/GPS inclui os quatro trabalhos. Banners originais BoltBanner/Valet e gatilhos reais de conquistas. Defaults de jobs embutidos e JSONs locais preservados. Build zero erros/avisos, 226 testes. [Arquivos alterados, limites e teste](FASE-3-0.8.0.md).
+
 ## 0.7.0 — fase 2: entregas
 
 Contrato Post OP funcional com van, 40 endereços de referência, cinco paradas padrão, retirada de caixas, entrega a pé, crédito bancário e bônus ao retornar. Pizza ganha contrato presencial, mantendo F6 rápido e progresso anterior. Turnos compartilham exclusão, estados, recibos e checkpoint financeiro; veículos pessoais são preservados. Interface integrada a F10/F11/GPS/celular e aos banners YTD existentes. Proteção de garagem/porta-malas para veículos de trabalho. Gatilho real da conquista Post OP. Build sem erros/avisos; 166 testes. [Arquivos alterados, limites e teste no GTA](FASE-2-0.7.0.md).

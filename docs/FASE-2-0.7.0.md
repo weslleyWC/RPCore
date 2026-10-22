@@ -1,5 +1,7 @@
 # Fase 2 — pizza e Post OP (RPCore 0.7.0)
 
+Histórico: o usuário confirmou no GTA os dois turnos completos e pagamentos corretos. A entrega atual é a [fase 3 — Uber e valet, 0.8.0](FASE-3-0.8.0.md). O restante deste documento descreve a 0.7.0.
+
 A fase 1 (0.6.0) foi confirmada funcionando pelo usuário no GTA. Esta fase entrega o trabalho normal do Post OP e o contrato presencial de pizza, com código próprio e infraestrutura compartilhada de turnos. O jogo precisa confirmar spawn, acesso aos endereços e apresentação das caixas/animações.
 
 ## Onde abrir

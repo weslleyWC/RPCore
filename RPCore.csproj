@@ -16,6 +16,8 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="config/Jobs/PostOp.json" LogicalName="RPCore.JobDefaults.PostOp.json" />
+    <EmbeddedResource Include="config/Jobs/Uber.json" LogicalName="RPCore.JobDefaults.Uber.json" />
+    <EmbeddedResource Include="config/Jobs/Valet.json" LogicalName="RPCore.JobDefaults.Valet.json" />
     <EmbeddedResource Include="config/Visuals/Catalog.json" LogicalName="RPCore.VisualDefaults.Catalog.json" />
     <EmbeddedResource Include="config/Visuals/Bindings.json" LogicalName="RPCore.VisualDefaults.Bindings.json" />
     <Reference Include="ScriptHookVDotNet3">

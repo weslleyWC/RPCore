@@ -1,6 +1,16 @@
-# RPCore 0.7.0 — GTA V Legacy
+# RPCore 0.8.0 — GTA V Legacy
 
-## Fase 2 — Post OP e contrato de pizza
+## Fase 3 — Uber e valet
+
+[Atualização 0.8.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.8.0.zip) · [Código-fonte 0.8.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.8.0.zip) · [Como jogar, alterações e teste desta fase](docs/FASE-3-0.8.0.md)
+
+**Uber: pare um carro vazio como motorista → F1 → Uber → Entrar em serviço.** Aceite a solicitação, busque o passageiro, E/buzina para embarcar e E no destino parado para desembarcar. Pagamento no banco após o NPC sair; tarifa, gorjeta e avaliação persistentes. O celular abre no carro parado e fecha ao dirigir.
+
+**Valet: F10 → Trabalhos → Valet → GPS.** Contrate no hotel a pé, receba o carro do cliente, estacione/tranque, retorne ao hotel, solicite a devolução e traga o mesmo carro ao dono. Pagamento após o cliente voltar ao banco do motorista. Três atendimentos por turno por padrão; End cancela. Pizza e Post OP continuam disponíveis com seus ciclos validados.
+
+Build zero erros/avisos e 226 testes aprovados. O usuário confirmou os turnos completos e pagamentos de pizza/Post OP da 0.7.0 no GTA. A 0.8.0 precisa do teste de IA, portas, trânsito e estacionamento. Nenhuma reinstalação de OIV/YTD/DLC necessária. [Roteiro de teste e limites](docs/FASE-3-0.8.0.md#teste-no-gta-desta-entrega).
+
+## Histórico — fase 2: Post OP e contrato de pizza
 
 [Atualização 0.7.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.7.0.zip) · [Código-fonte 0.7.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.7.0.zip) · [Como jogar, alterações e teste desta fase](docs/FASE-2-0.7.0.md)
 

@@ -1,0 +1,298 @@
+{
+  "TripsPerShift": 3,
+  "BaseFare": 65,
+  "PayPerMeter": 0.1,
+  "CleanTip": 20,
+  "ShiftBonus": 100,
+  "MaxPickupDistance": 2500,
+  "Locations": [
+    {
+      "Name": "ULSA1",
+      "X": -1577.04,
+      "Y": 183.68,
+      "Z": 58.88
+    },
+    {
+      "Name": "VineInst",
+      "X": -173.1,
+      "Y": -26.6,
+      "Z": 68.3
+    },
+    {
+      "Name": "ULSA3",
+      "X": -1212.6,
+      "Y": -407.6,
+      "Z": 33.8
+    },
+    {
+      "Name": "EpsilonHQ",
+      "X": -696.74,
+      "Y": 44.1,
+      "Z": 43.32
+    },
+    {
+      "Name": "HillValleyChurch",
+      "X": -1685.52,
+      "Y": -292.62,
+      "Z": 51.89
+    },
+    {
+      "Name": "LittleSeoulChurch",
+      "X": -765.65,
+      "Y": -684.76,
+      "Z": 30.09
+    },
+    {
+      "Name": "StBrigidBaptist",
+      "X": -331.65,
+      "Y": 6150.4,
+      "Z": 32.31
+    },
+    {
+      "Name": "StraMort",
+      "X": 411.9,
+      "Y": -1488.0,
+      "Z": 30.1
+    },
+    {
+      "Name": "PBCC",
+      "X": -3023.85,
+      "Y": 80.96,
+      "Z": 11.61
+    },
+    {
+      "Name": "RatonCanyonTrails",
+      "X": -1492.77,
+      "Y": 4968.99,
+      "Z": 63.93
+    },
+    {
+      "Name": "sDPBeachS",
+      "X": -1463.03,
+      "Y": -979.96,
+      "Z": 6.91
+    },
+    {
+      "Name": "BrokerPark1",
+      "X": 756.6,
+      "Y": -179.4,
+      "Z": 73.7
+    },
+    {
+      "Name": "MirrorPark1",
+      "X": 1046.1,
+      "Y": -535.54,
+      "Z": 61.03
+    },
+    {
+      "Name": "PuertaDelSol",
+      "X": -816.41,
+      "Y": -1346.46,
+      "Z": 5.15
+    },
+    {
+      "Name": "GWCGolf",
+      "X": -1139.8,
+      "Y": 376.2,
+      "Z": 71.3
+    },
+    {
+      "Name": "BJSmith",
+      "X": -223.7,
+      "Y": -1499.6,
+      "Z": 32.0
+    },
+    {
+      "Name": "MuscGym",
+      "X": 127.9,
+      "Y": 342.3,
+      "Z": 111.9
+    },
+    {
+      "Name": "SalvMount",
+      "X": 2481.7,
+      "Y": 3808.6,
+      "Z": 40.3
+    },
+    {
+      "Name": "LagoZanWet",
+      "X": -2211.8,
+      "Y": 2322.4,
+      "Z": 32.5
+    },
+    {
+      "Name": "Whitewater",
+      "X": -1505.5,
+      "Y": 1511.7,
+      "Z": 115.3
+    },
+    {
+      "Name": "IAAPlaza1",
+      "X": 93.0,
+      "Y": -683.9,
+      "Z": 44.2
+    },
+    {
+      "Name": "BeanQuikHouse",
+      "X": -310.2,
+      "Y": -826.3,
+      "Z": 32.4
+    },
+    {
+      "Name": "MusclePeach",
+      "X": -1186.9,
+      "Y": -1533.7,
+      "Z": 4.4
+    },
+    {
+      "Name": "SanAnTaq",
+      "X": 980.8,
+      "Y": -1398.0,
+      "Z": 31.5
+    },
+    {
+      "Name": "Chinese Restaurant",
+      "X": 1893.9,
+      "Y": 3714.2,
+      "Z": 32.8
+    },
+    {
+      "Name": "Ground & Pound Cafe",
+      "X": 370.6,
+      "Y": -1028.1,
+      "Z": 29.3
+    },
+    {
+      "Name": "Wook Noodle House",
+      "X": -655.0,
+      "Y": 880.2,
+      "Z": 24.6
+    },
+    {
+      "Name": "Hookies Seafood Diner",
+      "X": -2194.4,
+      "Y": 4279.0,
+      "Z": 49.2
+    },
+    {
+      "Name": "Park View Diner",
+      "X": 2697.5,
+      "Y": 4325.0,
+      "Z": 45.9
+    },
+    {
+      "Name": "Rex's Diner",
+      "X": 2558.1,
+      "Y": 2608.3,
+      "Z": 38.1
+    },
+    {
+      "Name": "Pipeline Inn",
+      "X": -2192.54,
+      "Y": -389.54,
+      "Z": 13.47
+    },
+    {
+      "Name": "Bayview Lodge",
+      "X": -697.98,
+      "Y": 5802.34,
+      "Z": 17.33
+    },
+    {
+      "Name": "Sightings Bar & Restaurant",
+      "X": -886.79,
+      "Y": -2536.09,
+      "Z": 14.55
+    },
+    {
+      "Name": "Rob's Liquor (Murr)",
+      "X": 1136.3,
+      "Y": -979.4,
+      "Z": 46.4
+    },
+    {
+      "Name": "Liquor Jr",
+      "X": 579.5,
+      "Y": 2678.2,
+      "Z": 41.8
+    },
+    {
+      "Name": "Scoops Liquor Barn",
+      "X": 1166.2,
+      "Y": 2708.5,
+      "Z": 38.2
+    },
+    {
+      "Name": "Grapeseed Supermarket",
+      "X": 1706.2,
+      "Y": 4792.6,
+      "Z": 42.0
+    },
+    {
+      "Name": "Don's Country Store",
+      "X": 161.8,
+      "Y": 6635.9,
+      "Z": 31.6
+    },
+    {
+      "Name": "Tim Vapid",
+      "X": -549.5,
+      "Y": -345.9,
+      "Z": 35.2
+    },
+    {
+      "Name": "Chumash Family Pier",
+      "X": -3239.96,
+      "Y": 971.7,
+      "Z": 12.7
+    },
+    {
+      "Name": "Rancho Towers",
+      "X": 378.9,
+      "Y": -2139.5,
+      "Z": 16.3
+    },
+    {
+      "Name": "Vinewood Bowl",
+      "X": 815.1,
+      "Y": 544.5,
+      "Z": 125.9
+    },
+    {
+      "Name": "Oeuvre Gallery",
+      "X": 207.8,
+      "Y": -191.3,
+      "Z": 54.2
+    },
+    {
+      "Name": "BilgecoLSIA",
+      "X": -1024.47,
+      "Y": -2127.24,
+      "Z": 13.16
+    },
+    {
+      "Name": "FleecaChumash",
+      "X": -2967.19,
+      "Y": 482.39,
+      "Z": 15.69
+    },
+    {
+      "Name": "PisswasserFac",
+      "X": 930.4,
+      "Y": -1807.9,
+      "Z": 31.3
+    },
+    {
+      "Name": "JetsamPort",
+      "X": 795.5,
+      "Y": -2979.6,
+      "Z": 6.0
+    },
+    {
+      "Name": "BigHouseLSIA",
+      "X": -534.0,
+      "Y": -2201.0,
+      "Z": 6.3
+    }
+  ]
+}

@@ -60,7 +60,7 @@ namespace RPCore
                 try
                 {
                     var entries = JObject.Parse(File.ReadAllText(legacy));
-                    var stats = new Dictionary<string, string> { { "0", "started" }, { "1", "bank_used" }, { "3", "bank_million" }, { "5", "pizza_drops" }, { "6", "postop_drops" }, { "7", "cars_bought" }, { "9", "garages_bought" }, { "12", "items_bought" }, { "13", "first_aid" }, { "15", "gas_filled" }, { "16", "storage_used" }, { "19", "belts_on" }, { "20", "radio_started" } };
+                    var stats = new Dictionary<string, string> { { "0", "started" }, { "1", "bank_used" }, { "3", "bank_million" }, { "4", "uber_trips" }, { "5", "pizza_drops" }, { "6", "postop_drops" }, { "7", "cars_bought" }, { "9", "garages_bought" }, { "12", "items_bought" }, { "13", "first_aid" }, { "15", "gas_filled" }, { "16", "storage_used" }, { "19", "belts_on" }, { "20", "radio_started" }, { "34", "valet_returns" } };
                     foreach (var entry in entries.Properties())
                     {
                         if (!(entry.Value is JObject)) continue;

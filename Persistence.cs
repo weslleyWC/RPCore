@@ -39,6 +39,33 @@ namespace RPCore
         public void Protect(string path) { blocked.Add(Path.GetFullPath(path)); }
     }
 
+    public static class JsonDefinitions
+    {
+        public static T Load<T>(string path, Func<T> defaults, Action<Exception> report = null)
+        {
+            if (File.Exists(path))
+            {
+                try
+                {
+                    var value = JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+                    if (value == null) throw new InvalidDataException("JSON null definition: " + path);
+                    return value;
+                }
+                catch (Exception ex) { report?.Invoke(ex); return defaults(); }
+            }
+            var fallback = defaults();
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
+                // CreateNew also protects a definition created by the user between check and write.
+                using (var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write))
+                using (var writer = new StreamWriter(stream)) writer.Write(JsonConvert.SerializeObject(fallback, Formatting.Indented));
+            }
+            catch (Exception ex) { report?.Invoke(ex); }
+            return fallback;
+        }
+    }
+
     public class ExtensibleData
     {
         [JsonExtensionData] public IDictionary<string, JToken> Extra;

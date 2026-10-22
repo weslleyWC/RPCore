@@ -88,7 +88,8 @@ namespace RPCore
     public class DeliveryProgress : ExtensibleData
     {
         public int Deliveries, CompletedShifts;
-        public long Earned;
+        public long Earned, RatingSum;
+        public int RatedTrips;
         public Dictionary<string, int> Receipts = new Dictionary<string, int>();
         public List<string> RecentSessions = new List<string>();
     }
@@ -107,10 +108,10 @@ namespace RPCore
     {
         // Receipt, bank/MP cash and lifetime totals share the same atomic Wallet.json checkpoint.
         // Native protagonist cash is external GTA state; rollback covers write failures in this session.
-        public static bool Commit(WalletData wallet, Func<int> cash, Action<int> setCash, string job, string session, int step, int amount, bool bank, bool delivery, bool complete, Action save, out bool credited)
+        public static bool Commit(WalletData wallet, Func<int> cash, Action<int> setCash, string job, string session, int step, int amount, bool bank, bool delivery, bool complete, Action save, out bool credited, int rating = 0)
         {
             credited = false;
-            if (string.IsNullOrWhiteSpace(job) || string.IsNullOrWhiteSpace(session) || step < 1 || step > 101 || amount < 0 || amount > 1000000) return false;
+            if (string.IsNullOrWhiteSpace(job) || string.IsNullOrWhiteSpace(session) || step < 1 || step > 101 || rating < 0 || rating > 5 || amount < 0 || amount > 1000000) return false;
             var old = wallet.Jobs;
             var next = old == null ? new JobLedger() : JsonConvert.DeserializeObject<JobLedger>(JsonConvert.SerializeObject(old));
             var stats = next.Get(job);
@@ -120,10 +121,11 @@ namespace RPCore
             if (step != (stats.Receipts.TryGetValue(session, out paid) ? paid : 0) + 1) return false;
             int before = bank ? wallet.Bank : cash();
             if (before < 0 || before > int.MaxValue - amount || stats.Earned < 0 || stats.Earned > long.MaxValue - amount || stats.Deliveries < 0 || (delivery && stats.Deliveries == int.MaxValue) || stats.CompletedShifts < 0 || (complete && stats.CompletedShifts == int.MaxValue)) return false;
+            if (rating > 0 && (stats.RatedTrips < 0 || stats.RatedTrips == int.MaxValue || stats.RatingSum < 0 || stats.RatingSum > long.MaxValue-rating)) return false;
             if (!stats.Receipts.ContainsKey(session)) stats.RecentSessions.Add(session);
             stats.Receipts[session] = step;
             while (stats.RecentSessions.Count > 64) { stats.Receipts.Remove(stats.RecentSessions[0]); stats.RecentSessions.RemoveAt(0); }
-            stats.Earned += amount; if (delivery) stats.Deliveries++; if (complete) stats.CompletedShifts++;
+            stats.Earned += amount; if (rating > 0) { stats.RatedTrips++; stats.RatingSum += rating; } if (delivery) stats.Deliveries++; if (complete) stats.CompletedShifts++;
             try
             {
                 wallet.Jobs = next;

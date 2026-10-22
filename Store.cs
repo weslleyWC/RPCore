@@ -57,20 +57,7 @@ namespace RPCore
         // scripts/RPCore/*.json: user-editable definitions. Written once from defaults if missing.
         public static T LoadDef<T>(string name, Func<T> defaults)
         {
-            string p = Path.Combine(Cfg.Dir, name);
-            try
-            {
-                if (File.Exists(p))
-                {
-                    T v = JsonConvert.DeserializeObject<T>(File.ReadAllText(p));
-                    if (v != null) return v;
-                }
-            }
-            catch (Exception ex) { Log.Error("def " + name, ex); return defaults(); }
-            T d = defaults();
-            try { Directory.CreateDirectory(Path.GetDirectoryName(p)); File.WriteAllText(p, JsonConvert.SerializeObject(d, Formatting.Indented)); }
-            catch (Exception ex) { Log.Error("def write " + name, ex); }
-            return d;
+            return JsonDefinitions.Load(Path.Combine(Cfg.Dir, name), defaults, ex => Log.Error("def " + name, ex));
         }
     }
 }

@@ -12,7 +12,7 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public abstract class DeliveryJobSystem : ISystem
+    public abstract class DeliveryJobSystem : ISystem, IWorkContract
     {
         public string Name => pizza ? "pizza" : "postop";
         public string Label => pizza ? "Pizza" : "Post OP";
@@ -311,7 +311,7 @@ namespace RPCore
             if (Active) End("Turno de pizza cancelado."); else if (!pool.AreAnyVisible) Begin(true);
         }
         // End is held in Tick through the shared hub; this avoids collisions with existing function keys.
-        internal void PollCancel()
+        public void PollCancel()
         {
             if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelHeldAt = -1; return; }
             if (cancelHeldAt < 0) cancelHeldAt = Game.GameTime;

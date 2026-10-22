@@ -12,7 +12,9 @@
     "radio": "PSRPBANNER1",
     "stocks": "BankBanner",
     "pizza": "PizzaBanner",
-    "postop": "PostOpBanner"
+    "postop": "PostOpBanner",
+    "uber": "BoltBanner",
+    "valet": "Valet"
   },
   "ItemIcons": {
     "water": "water",

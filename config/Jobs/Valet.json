@@ -1,0 +1,49 @@
+{
+  "CustomersPerShift": 3,
+  "BasePay": 120,
+  "CleanTip": 40,
+  "ShiftBonus": 100,
+  "ParkingRadius": 50,
+  "Stand": {
+    "Name": "Valet hotel",
+    "X": -1217.306,
+    "Y": -197.5938,
+    "Z": 39.32496,
+    "Heading": 0
+  },
+  "Arrival": {
+    "Name": "Hotel reception",
+    "X": -1227.787,
+    "Y": -196.7568,
+    "Z": 39.17067,
+    "Heading": 0
+  },
+  "Spawn": {
+    "Name": "Client arrival",
+    "X": -1235.399,
+    "Y": -246.8429,
+    "Z": 38.71352,
+    "Heading": 27
+  },
+  "Parking": {
+    "Name": "Hotel parking area",
+    "X": -1292.911,
+    "Y": -217.8813,
+    "Z": 60.65302,
+    "Heading": 0
+  },
+  "Exit": {
+    "Name": "Client departure",
+    "X": -1232.787,
+    "Y": -250.6419,
+    "Z": 39.18677,
+    "Heading": 0
+  },
+  "Cars": [
+    "sultan",
+    "tailgater",
+    "oracle2",
+    "schafter2",
+    "felon"
+  ]
+}

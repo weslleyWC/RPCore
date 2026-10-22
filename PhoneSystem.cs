@@ -17,13 +17,24 @@ namespace RPCore
         readonly InventorySystem inventory;
         readonly NeedsSystem needs;
         readonly Action jobs;
+        readonly UberJob uber;
         readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings", "Trabalhos / Post OP" };
         PhoneData data;
         int selection, row, stopwatchStart = -1;
         string page = "Home", query = "", result = "0";
         public bool Visible { get; private set; }
-        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null)
-        { this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
+        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null, UberJob uber = null)
+        { this.uber = uber; if (uber != null) uber.Activity += JobActivity; this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
+        void JobActivity(string title, string body)
+        {
+            try { data.History.Insert(0,new PhoneEntry { Title=title,Body=body }); if(data.History.Count>64)data.History.RemoveRange(64,data.History.Count-64);Save(); }
+            catch(Exception ex){Log.Error("phone job history",ex);}
+        }
+        static bool MovingOrPassenger()
+        {
+            var p=Game.Player.Character;
+            return p.IsInVehicle() && (p.CurrentVehicle.Driver!=p || p.CurrentVehicle.Speed>.5f);
+        }
         void ItemUsed(ItemDef item)
         {
             // Presentation/history must never abort consumption or corrupt the inventory transaction.
@@ -53,7 +64,8 @@ namespace RPCore
                 if (page == "Radio") Shortcut(4);
                 return;
             }
-            if (page == "Notes")
+            if (page == "Uber") { int selected=row; Close(); uber?.PhoneAction(selected); }
+            else if (page == "Notes")
             {
                 string text = Game.GetUserInput(WindowTitle.EnterMessage60, row == 0 ? "" : data.Notes[Math.Min(row-1,data.Notes.Count-1)], 120);
                 if (!string.IsNullOrWhiteSpace(text)) { if (row == 0) { if (data.Notes.Count < 30) data.Notes.Insert(0,text); } else data.Notes[row-1] = text; Save(); }
@@ -79,6 +91,7 @@ namespace RPCore
         }
         int RowCount()
         {
+            if (page == "Uber") return uber?.PhoneRows().Length ?? 1;
             if (page == "Notes") return data.Notes.Count + 1;
             if (page == "Settings") return shortcuts.Length + 1;
             if (page == "Search") return Matches().Length + 1;
@@ -94,7 +107,7 @@ namespace RPCore
             {
                 if (Visible) { Close(); return; }
                 var p = Game.Player.Character;
-                if (!Visuals.Enabled || !Visuals.PhoneEnabled || pool.AreAnyVisible || inventory.GridVisible || p.IsDead || p.IsInVehicle() || Game.IsMissionActive) return;
+                if (!Visuals.Enabled || !Visuals.PhoneEnabled || pool.AreAnyVisible || inventory.GridVisible || p.IsDead || MovingOrPassenger() || Game.IsMissionActive) return;
                 Visible = true; page = "Home"; props?.ShowPhone(); return;
             }
             if (!Visible) return;
@@ -110,7 +123,7 @@ namespace RPCore
         {
             if (!Visible) return;
             var p = Game.Player.Character;
-            if (!Visuals.Enabled || !Visuals.PhoneEnabled || p.IsDead || p.IsInVehicle() || Game.IsMissionActive || pool.AreAnyVisible || inventory.GridVisible || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) { Close(); return; }
+            if (!Visuals.Enabled || !Visuals.PhoneEnabled || p.IsDead || MovingOrPassenger() || Game.IsMissionActive || pool.AreAnyVisible || inventory.GridVisible || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) { Close(); return; }
             foreach (var control in new[] { GTA.Control.Attack, GTA.Control.Aim, GTA.Control.Phone, GTA.Control.SelectWeapon, GTA.Control.FrontendPause, GTA.Control.FrontendPauseAlternate }) Game.DisableControlThisFrame(control);
             if (!Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0))
             {
@@ -183,7 +196,7 @@ namespace RPCore
             }
             else if (page == "Calculator") { text(result,23,105,.35f,Color.White,GTA.UI.Alignment.Left,196);text("Enter: type e.g. 125*4",23,302,.27f,Color.LightGray,GTA.UI.Alignment.Left,196); }
             else if (page == "Fitness") { text("Health: "+pHealth()+"~n~Armor: "+Game.Player.Character.Armor+"~n~Hunger: "+HudMath.Percent(needs.Hunger)+"~n~Hydration: "+HudMath.Percent(needs.Thirst)+"~n~Sleep: "+HudMath.Percent(needs.Sleep),23,105,.3f,Color.White,GTA.UI.Alignment.Left,196); }
-            else if (page == "Uber") text("Uber passenger jobs are not implemented in RPCore yet. Use Settings for garages and existing jobs.",23,105,.29f,Color.White,GTA.UI.Alignment.Left,196);
+            else if (page == "Uber") { var lines=uber?.PhoneRows() ?? new[]{"Uber indisponivel"};row=Math.Min(row,lines.Length-1);for(int i=0;i<lines.Length;i++)line(lines[i],i); }
             text("Backspace: home | F1: close",23,401,.21f,Color.LightGray,GTA.UI.Alignment.Left,200);
         }
         int pHealth() { return Game.Player.Character.Health; }
@@ -196,6 +209,6 @@ namespace RPCore
             data.Wallpaper = Math.Max(1,Math.Min(10,data.Wallpaper)); row = 0; stopwatchStart = -1;
         }
         public void Save() { Store.Write("Phone.json",data); }
-        public void Dispose() { inventory.Used -= ItemUsed; Close(); }
+        public void Dispose() { if (uber != null) uber.Activity -= JobActivity; inventory.Used -= ItemUsed; Close(); }
     }
 }

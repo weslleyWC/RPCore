@@ -1,0 +1,13 @@
+# Validação — RPCore 0.7.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6 e LemonUI SHVDN3 2.2: zero erros, zero avisos. DLL SHA256 `6696740eb8eaf0c48b8cf3f1ae5afd5a4c1aca790251b4b1a850bfb202743eee`.
+
+166 testes aprovados, zero falhas/ignorados: 124 anteriores e 42 novos. Casos novos cobrem transições completas de turno, carga interrompida, cancelamento parcial, retorno, exclusão entre trabalhos, ID de sessão, pagamento repetido, banco/caixa, rollback após erro de gravação, save corrompido protegido, recibos recarregados, campos desconhecidos, sequência de confirmação, limites de saldo, isolamento de perfil, migração de totais de pizza, catálogo embutido, configuração inválida, seleção de rota sem repetição/mutação e cálculo financeiro. Relatórios DataTests.trx e DataTests-0.7.0.trx. O teste de ciclo completo confirma cinco entregas e um bônus com totais persistentes, sem simular renderização ou tráfego.
+
+Comparação estática renovada com PSRP.dll e RPCore.dll 0.7.0, incluindo hash do DLL 0.6.0 distribuído como baseline. Os 40 endereços do catálogo foram comparados automaticamente com coordenadas presentes na referência. O catálogo padrão de 20 lojas continua coincidindo. Evidência: PSRP-SYSTEMS-AUDIT-0.7.0.json; 75 arquivos de referência indexados. O binário contém RPCore.JobDefaults.PostOp.json e os metadados visuais embutidos.
+
+O usuário confirmou a 0.6.0 funcionando no GTA antes desta fase. A 0.7.0 ainda não foi executada no GTA/Windows nesta nuvem. Acessibilidade dos endereços, estacionamento, streaming dos modelos, animações, controles e coexistência com scripts instalados precisam dos testes em FASE-2-0.7.0.md.
+
+Persistência: Jobs é campo adicional em Wallet.json; PizzaStats.json conserva dados/extension data anteriores. Recibo e crédito bancário/caixa customizado são checkpoint único. Dinheiro nativo dos protagonistas é estado externo do GTA; o rollback em sessão não transforma o save nativo do jogo e o JSON do mod numa transação única de recuperação de crash. Turnos ativos não são retomados após reload. Não foram alterados OIV/YTD/RPF/DLC, dlclist.xml, arquivos originais PSRP nem saves locais existentes pelo instalador.
+
+Instalador executado duas vezes com PowerShell 7/Linux sobre pasta GTA simulada com a distribuição 0.6.0. Os 86 arquivos existentes permaneceram byte a byte, incluindo Wallet.json com progresso de jobs, inventário, perfis, Shops.json, INIs e catálogos locais. O novo Jobs/PostOp.json foi instalado na primeira execução; uma personalização feita entre as execuções foi preservada na segunda. DLL anterior ficou em backup e DLL instalada coincide com o build. Evidência: installer-validation-0.7.0.json. Isso não equivale a instalação/execução real no Windows ou teste de gameplay.

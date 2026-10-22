@@ -10,25 +10,30 @@ namespace RPCore
     {
         public string Name => "jobsmenu";
         readonly ObjectPool pool;
-        readonly PizzaJob pizza;
-        readonly PostOpJob post;
-        readonly NativeMenu menu = new NativeMenu("Trabalhos", "ENTREGAS / CONTRATOS");
-        public DeliveryJobsMenu(ObjectPool pool, PizzaJob pizza, PostOpJob post)
+        readonly IWorkContract[] contracts;
+        readonly NativeMenu menu = new NativeMenu("Trabalhos", "TRABALHOS / CONTRATOS");
+        public DeliveryJobsMenu(ObjectPool pool, params IWorkContract[] contracts)
         {
-            this.pool = pool; this.pizza = pizza; this.post = post; pool.Add(menu); Visuals.Register(menu,"core");
-            Add("Pizza", "Contrato na pizzaria ou turno rapido com " + Cfg.JobKey + ".", pizza.OpenMenu);
-            Add("Post OP", "Van, caixas, entregas e retorno. Pagamento no banco.", post.OpenMenu);
-            Add("Cancelar turno ativo", "Mantem entregas ja pagas. Abra o contrato ativo para cancelar, ou segure End fora do menu.", () => { if (pizza.Active) pizza.OpenMenu(); else if (post.Active) post.OpenMenu(); else Notify.Show("Nenhum turno ativo."); });
+            this.pool = pool; this.contracts = contracts; pool.Add(menu); Visuals.Register(menu,"core");
+            foreach (var job in contracts)
+            {
+                var selected = job;
+                Add(job.Label, "Contratar, GPS, progresso e encerramento do trabalho.", selected.OpenMenu);
+            }
+            Add("Gerenciar turno ativo", "Abra o trabalho ativo para cancelar ou segure End fora do menu.", () => {
+                foreach (var job in contracts) if (job.Active) { job.OpenMenu(); return; }
+                Notify.Show("Nenhum turno ativo.");
+            });
         }
         void Add(string title, string description, System.Action action)
         {
             var row = new NativeItem(title,description); row.Activated += (s,e) => { menu.Visible=false; action(); }; menu.Add(row);
         }
         public void Open() { pool.HideAll(); menu.Visible = true; }
-        public void Tick() { pizza.PollCancel(); post.PollCancel(); JobVehicles.Tick(); }
+        public void Tick() { foreach (var job in contracts) job.PollCancel(); JobActors.Tick(); JobVehicles.Tick(); }
         public void OnKey(KeyEventArgs e) { }
         public void Reload() { menu.Visible = false; }
         public void Save() { }
-        public void Dispose() { menu.Visible = false; JobVehicles.Dispose(); }
+        public void Dispose() { menu.Visible = false; JobActors.Dispose(); JobVehicles.Dispose(); }
     }
 }
