@@ -1,13 +1,11 @@
-# RPCore 0.10.0 — downloads
+# RPCore 0.10.1 — downloads
 
-- [Atualização 0.10.0 — DLL pronta e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.10.0.zip)
-- [Código-fonte 0.10.0 — projeto para compilar](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.10.0.zip)
-- [Fase 4.2: instruções, alterações e teste no GTA](docs/FASE-4.2-0.10.0.md)
+- [Atualização 0.10.1 — DLL pronta e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.10.1.zip)
+- [Código-fonte 0.10.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.10.1.zip)
+- [Correção do pátio LS GAS e teste](docs/CORRECAO-0.10.1.md)
 
-Transporte LS GAS com Hauler e carreta-tanque fornecidos, engate real, descarga no posto, crédito bancário e bônus ao retornar com os dois. F10 → Trabalhos → Transporte de combustivel → GPS. Contrate a pé no porto. Motor desligado para descarregar/devolver (X no padrão); E/buzina confirma. End segurado cancela.
+O bloqueio “Patio LS GAS ocupado” usava raios muito amplos e uma única posição. A atualização procura até 35 pares de vagas com verificação de modelos/chão/cenário. Não apaga trânsito, carros pessoais nem objetos. FuelDelivery.json, saves e celular F2 são preservados. Não reinstale OIV/YTD/DLC para esta correção.
 
-Feche o GTA, extraia o update e execute Install-RPCore.ps1 dessa pasta com o caminho real do jogo. Faz backup e copia Jobs/FuelDelivery.json só se ausente, preservando saves/configurações. Não precisa reinstalar OIV/YTD/DLC. Build zero erros/avisos, 295 testes; engate/descarga/retorno ainda precisam do teste no GTA.
+Feche o GTA, extraia o ZIP e execute Install-RPCore.ps1 dessa pasta com o caminho real do jogo. F10 → Trabalhos → Transporte de combustivel → GPS/Iniciar contrato. Os veículos podem aparecer em uma vaga próxima: siga os blips. [Instruções de engate, descarga e retorno](docs/FASE-4.2-0.10.0.md). Build sem erros/avisos e 309 testes; spawn e ciclo completo ainda precisam do teste no GTA.
 
-Celular F2 preservado. Garagem O quando a tecla antiga conflitar com o telefone; INI mantido. F10 central, F11 configurações/GPS, J radial, I inventário, F6 pizza rápida, F8 armazenamento. Os cinco contratos anteriores permanecem disponíveis. Source contém o csproj; update contém a DLL pronta. ZIPs sem versão apontam para a entrega atual.
-
-[Entrega anterior 0.9.0 — reposição aprovada pelo usuário](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.9.0.zip). [Recursos visuais originais 0.3.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-visual-assets-0.3.0.zip), para instalações que ainda não tenham esses recursos.
+Source contém o csproj; update contém a DLL pronta. ZIPs sem versão apontam para esta entrega.

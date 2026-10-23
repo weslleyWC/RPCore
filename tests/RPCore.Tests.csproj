@@ -12,6 +12,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../DrivingJobData.cs" Link="DrivingJobData.cs" />
+    <Compile Include="../RigSpawnData.cs" Link="RigSpawnData.cs" />
     <Compile Include="../TankerData.cs" Link="TankerData.cs" />
     <Compile Include="../FreightData.cs" Link="FreightData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />

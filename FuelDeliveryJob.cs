@@ -77,13 +77,10 @@ namespace RPCore
             try
             {
                 station=TankerDefaults.Select(options,random);
-                var trailerPoint=Pos(options.Trailer);
-                double radians=options.Trailer.Heading*Math.PI/180;
-                var direction=new Vector3(-(float)Math.Sin(radians),(float)Math.Cos(radians),0);
-                var tractorPoint=trailerPoint+direction*19;
-                // Both slots are checked before creation; no traffic or personal vehicle is cleared.
-                if(!JobActors.Free(trailerPoint,12) || !JobActors.Free(tractorPoint,8))
-                {Notify.Show("Patio LS GAS ocupado. Libere a area dos veiculos e tente novamente.");return;}
+                var slot=RigSpawn.Find(options.Trailer);
+                if(slot==null)
+                {Notify.Show("Nao encontramos duas vagas livres no patio LS GAS. Veja RPCore.log para o diagnostico e tente novamente.");return;}
+                var trailerPoint=Pos(slot.Trailer);var tractorPoint=Pos(slot.Truck);
                 trailer=Create(VehicleHash.Tanker,trailerPoint,options.Trailer.Heading);
                 if(trailer==null || !trailer.Exists()){Notify.Show("Modelo do tanque indisponivel.");return;}
                 truck=Create(VehicleHash.Hauler,tractorPoint,options.Trailer.Heading);

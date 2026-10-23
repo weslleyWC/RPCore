@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.10.1 — correção do pátio LS GAS
+
+Spawn passa de um par fixo/raios amplos para 35 alternativas próximas, limites reais dos modelos, verificação de chão e sondagens síncronas do cenário. Diagnóstico no log se nenhuma vaga estiver livre. Não regrava FuelDelivery.json nem remove trânsito/objetos. 309 testes aprovados e build zero erros/avisos. [Arquivos alterados e teste](CORRECAO-0.10.1.md).
+
 ## 0.10.0 — fase 4.2: transporte de combustível
 
 Contrato LS GAS com Hauler/Tanker fornecidos, engate nativo confirmado, posto sorteado, descarga temporizada com motor desligado, pagamento bancário e bônus ao retornar o conjunto. Reengate físico, cancelamento, progresso e dois veículos protegidos de garagem/armazenamento. Recolha conjunta espera ambos vazios/parados e sem conexão com terceiros. F2/configurações/saves preservados. Build sem erros/avisos, 295 testes; reposição da fase anterior aprovada pelo usuário. [Arquivos alterados e teste](FASE-4.2-0.10.0.md).

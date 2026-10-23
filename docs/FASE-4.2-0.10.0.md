@@ -1,5 +1,7 @@
 # Fase 4.2 — RPCore 0.10.0: transporte de combustível
 
+Correção posterior: o usuário reportou bloqueio “Patio LS GAS ocupado”. A [0.10.1](CORRECAO-0.10.1.md) substitui os raios amplos por vagas alternativas e verificações do espaço dos modelos; o ciclo do trabalho abaixo continua igual. O turno completo ainda aguarda teste real.
+
 Reposição de lojas 0.9.0 aprovada pelo usuário no GTA: cinco entregas e pagamento corretos. Pizza, Post OP, Uber e valet também já foram aprovados. Esta entrega acrescenta o contrato LS GAS, com implementação própria baseada no ciclo e pontos da PSRP. Transporte prisional e piloto ficam para próximas entregas.
 
 ## Como jogar

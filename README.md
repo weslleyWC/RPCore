@@ -1,4 +1,10 @@
-# RPCore 0.10.0 — GTA V Legacy
+# RPCore 0.10.1 — GTA V Legacy
+
+## Correção 0.10.1 — pátio LS GAS
+
+[Atualização 0.10.1 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.10.1.zip) · [Código-fonte 0.10.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.10.1.zip) · [Alterações e teste](docs/CORRECAO-0.10.1.md)
+
+Corrigido o bloqueio amplo de “Patio LS GAS ocupado”: seleção de até 35 pares de vagas próximas com dimensões reais dos modelos, chão e colisão do cenário. O contrato procura alternativa se a posição original estiver ocupada. Saves, celular F2 e FuelDelivery.json preservados; sem reinstalar recursos visuais. Build zero erros/avisos e 309 testes aprovados. Precisa confirmar o spawn no mesmo local do print e completar o serviço no GTA.
 
 ## Fase 4.2 — transporte de combustível
 
