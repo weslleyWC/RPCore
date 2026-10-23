@@ -21,7 +21,8 @@
     "pilot": "PSRPBANNER1",
     "hunting": "ButcherBanner",
     "fishing": "ShopBanner",
-    "crafting": "ShopBanner"
+    "crafting": "ShopBanner",
+    "dealer": "DrugDealingBanner"
   },
   "ItemIcons": {
     "water": "water",

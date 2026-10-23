@@ -1,0 +1,17 @@
+{
+  "Supplier": { "Name": "Contato / estoque", "X": -1309.499, "Y": -770.0988, "Z": 19.86772, "Heading": 0 },
+  "SalesPerSession": 3,
+  "BuyerSeconds": 120,
+  "HandoverSeconds": 3,
+  "PolicePercent": 8,
+  "RefusePercent": 10,
+  "PremiumRefusePercent": 35,
+  "Capacity": 10,
+  "Products": [
+    { "Id": "weed", "Name": "Maconha", "Weight": 0.1, "Buy": 40, "Sell": 70 },
+    { "Id": "cocaine", "Name": "Cocaina", "Weight": 0.1, "Buy": 100, "Sell": 160 },
+    { "Id": "mdma", "Name": "MDMA", "Weight": 0.1, "Buy": 60, "Sell": 100 },
+    { "Id": "lean", "Name": "Lean", "Weight": 0.1, "Buy": 80, "Sell": 130 },
+    { "Id": "crack", "Name": "Crack", "Weight": 0.1, "Buy": 75, "Sell": 120 }
+  ]
+}

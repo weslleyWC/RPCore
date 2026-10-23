@@ -21,7 +21,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
         readonly Action jobs;
-        readonly Vector3 postOp, valet, supply, tanker, prison, pilot, hunting, huntingForest, fishing, crafting;
+        readonly Vector3 postOp, valet, supply, tanker, prison, pilot, hunting, huntingForest, fishing, crafting, dealer;
         readonly WaypointTeleport teleport = new WaypointTeleport();
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
@@ -69,9 +69,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default, Vector3 hunting = default, Vector3 huntingForest = default, Vector3 fishing = default, Vector3 crafting = default)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default, Vector3 hunting = default, Vector3 huntingForest = default, Vector3 fishing = default, Vector3 crafting = default, Vector3 dealer = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot; this.hunting = hunting; this.huntingForest = huntingForest; this.fishing = fishing; this.crafting = crafting;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot; this.hunting = hunting; this.huntingForest = huntingForest; this.fishing = fishing; this.crafting = crafting; this.dealer = dealer;
             root = Menu("Settings Menu");
             Add(root, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             var gang = Menu("Gang Creation"); Link(root, gang);
@@ -150,6 +150,7 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: contato / trafico", "Contato externo para comprar estoque da atividade.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, dealer.X, dealer.Y); gps.Visible = false; });
                 Add(gps, "GPS: bancada / crafting / feira", "Receitas e venda de produtos das bolsas de caca/pesca.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, crafting.X, crafting.Y); gps.Visible = false; });
                 Add(gps, "GPS: pesca / equipamento", "Banca de pesca: vara, iscas e venda.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, fishing.X, fishing.Y); gps.Visible = false; });
                 Add(gps, "GPS: caca / acougue", "Licenca, equipamento e venda de materiais.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, hunting.X, hunting.Y); gps.Visible = false; });

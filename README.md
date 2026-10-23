@@ -1,6 +1,12 @@
-# RPCore 0.15.0 — GTA V Legacy
+# RPCore 0.16.0 — GTA V Legacy
 
-## Fase 5.3 — crafting e feira
+## Fase 5.4 — tráfico / vendas de rua
+
+[Atualização 0.16.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.16.0.zip) · [Código-fonte 0.16.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.16.0.zip) · [Instalação, alterações e teste](docs/FASE-5.4-0.16.0.md)
+
+F10 → Trabalhos → Trafico / vendas de rua. GPS do contato externo; compre cinco pacotes por 200 do banco. Inicie em calçada pública a pé/desarmado e aguarde comprador laranja. E negocia preço normal/premium; fique junto por três segundos para confirmar. Três vendas por turno, estoque/reputação/pagamento no mesmo checkpoint, recusa e risco de uma estrela. Banner original DrugDealingBanner. 567 testes e build sem erros/avisos; novo ciclo/IA/polícia precisam do teste no GTA. Saves/F2 e sistemas anteriores preservados. Próximas atividades: streamer e arrancada; refinamentos dos trabalhos após as fases principais.
+
+## Histórico — fase 5.3: crafting e feira
 
 [Atualização 0.15.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.15.0.zip) · [Código-fonte 0.15.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.15.0.zip) · [Instalação, alterações e teste](docs/FASE-5.3-0.15.0.md)
 

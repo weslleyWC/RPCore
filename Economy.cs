@@ -13,6 +13,7 @@ namespace RPCore
         public HuntingData Hunting;
         public FishingData Fishing;
         public CraftingData Crafting;
+        public DealerData Dealer;
     }
 
     public class Portfolio : ExtensibleData

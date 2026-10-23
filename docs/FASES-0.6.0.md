@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.16.0: [fase 5.4 — tráfico / vendas de rua](FASE-5.4-0.16.0.md) implementa compra/negociação/entrega/reputação e denúncia nativa, aguardando teste no GTA. Caça, pesca e crafting continuam incluídos. Próximas atividades: streamer e arrancada. Sistemas adicionais de rivais/interiores/cozinha continuam diferenças de paridade. Refinamentos dos trabalhos após as fases principais.
+
 Andamento 0.15.0: pesca 0.14.0 aprovada pelo usuário. [Fase 5.3 — crafting e feira](FASE-5.3-0.15.0.md) implementa processamento/comércio das bolsas de caça/pesca, aguardando teste real. Próximas atividades: tráfico, streamer e arrancada. Catálogo/penhor/sucata e demais diferenças seguem na revisão de paridade; refinamentos dos trabalhos após as fases principais.
 
 Andamento 0.14.0: [fase 5.2 — pesca](FASE-5.2-0.14.0.md) implementada com ciclo próprio; caça 0.13.0 permanece. Teste real da pesca pendente. Próxima subfase: crafting/comércio; depois tráfico, streamer e arrancada. Refinamento dos trabalhos aprovados somente depois das fases principais.

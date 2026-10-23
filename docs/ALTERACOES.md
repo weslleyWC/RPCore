@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.16.0 — fase 5.4: tráfico / vendas de rua
+
+Compra de cinco categorias no contato externo da referência, compradores próprios na calçada, negociação normal/premium com sorteios fixos, entrega temporizada, estoque/pagamento/reputação no mesmo checkpoint, recusa e denúncia à polícia nativa. Três vendas por turno, décima segunda atividade exclusiva, GPS/banner/conquistas. Preserva saves/F2 e sistemas anteriores. 567 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.4-0.16.0.md).
+
 ## 0.15.0 — fase 5.3: crafting e feira
 
 Nove receitas/sete produtos a partir das bolsas de caça/pesca e estoque fabricado, lotes de um/cinco, tempo, cadeia de kit de campo, capacidade e comércio bancário. Ingredientes/resultado no mesmo checkpoint, com rollback e recibos. Décima primeira atividade exclusiva, GPS/banner/conquistas. Texto do instalador corrigido para F2/celular. Preserva saves, pesca aprovada e trabalhos. 518 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.3-0.15.0.md).

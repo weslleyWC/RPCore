@@ -150,5 +150,23 @@ if craft_source.exists() and craft_config.exists():
         'recipe_count': len(config['Recipes']), 'product_count': len(config['Products']),
         'wallet_checkpoint': 'Wallet.json/Crafting + Hunting/Fishing bags; no Inventory.json rewrite',
         'configuration_sha256': digest(craft_config.read_bytes())}
+dealer_source = a.reference_source / 'PSRP/_JOB__Drug_Dealing.cs'
+dealer_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Dealer.json'
+if dealer_source.exists() and dealer_config.exists():
+    source = dealer_source.read_text()
+    config = json.loads(dealer_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    report['dealer'] = {
+        'reference_source': 'PSRP/_JOB__Drug_Dealing.cs',
+        'supplier_matches_reference': tuple(config['Supplier'][k] for k in ['X','Y','Z']) in reference,
+        'supplier_origin': 'External Stash House entrance in reference; RPCore stock contact, no interior teleport.',
+        'reference_has_zone_reputation': 'AdjustZoneRep' in source and 'SaveZoneReps' in source,
+        'reference_has_police_risk': 'Game.Player.WantedLevel = 1' in source,
+        'reference_categories': ['Weed','Cocaine','MDMA','Lean','Crack'],
+        'rpcore_cycle': 'Own stock/bank transactions, five abstract game products, owned sidewalk buyers, normal/premium negotiation, fixed offer rolls, timed handover, zone reputation and native one-star report.',
+        'scope_limits': 'No synthesis recipes, interiors, rivals, robbery, plate resale or gang wars in this delivery.',
+        'product_count': len(config['Products']), 'sales_per_session': config['SalesPerSession'],
+        'wallet_checkpoint': 'Wallet.json/Dealer + Bank',
+        'configuration_sha256': digest(dealer_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
