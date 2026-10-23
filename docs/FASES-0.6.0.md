@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.13.0: os oito empregos da fase 4 e anteriores, piloto e teleporte foram aprovados pelo usuário. Começa a [fase 5.1 — caça](FASE-5.1-0.13.0.md), aguardando teste real. Pesca/crafting, tráfico, streamer e arrancada seguem depois; refinamento de trabalhos aprovados fica para após as fases principais. Tabelas abaixo são históricas.
+
 Andamento 0.12.0: transporte prisional regular aprovado pelo usuário; [piloto](FASE-4.4-0.12.0.md) implementado e aguardando teste real. Dirigível/publicidade e suborno/emboscada continuam pendentes. As tabelas abaixo são históricas.
 
 Andamento 0.11.0: LS GAS/correção de vagas confirmados pelo usuário. [Transporte prisional regular](FASE-4.3-0.11.0.md) implementado e aguardando teste real. Desvio/suborno/emboscada e piloto continuam pendentes; as tabelas abaixo são históricas.

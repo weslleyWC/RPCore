@@ -108,5 +108,15 @@ if pilot_source.exists() and pilot_config.exists():
         'public_base': {'origin': 'RPCore public airfield access fix; these three base points are not PSRP coordinates',
                         'points': {k: config[k] for k in ['Start', 'PlaneSpawn', 'HeliSpawn']}},
         'reference_source': 'PSRP/_JOB__Pilot.cs', 'configuration_sha256': digest(pilot_config.read_bytes())}
+hunting_source = a.reference_source / 'PSRP/NewInventorySystem.cs'
+hunting_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Hunting.json'
+if hunting_source.exists() and hunting_config.exists():
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', hunting_source.read_text())}
+    config = json.loads(hunting_config.read_text())
+    report['hunting'] = {'vendor_matches_reference': tuple(config['Vendor'][k] for k in ['X','Y','Z']) in reference,
+        'reference_source': 'PSRP/NewInventorySystem.cs + PSRP/_Activity__Hunting.cs (static behavior comparison)',
+        'forest_origin': 'RPCore expedition area; not asserted as a PSRP point', 'forest': config['Forest'],
+        'material_count': len(config['Materials']), 'wallet_checkpoint': 'Wallet.json/Hunting',
+        'configuration_sha256': digest(hunting_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -1,5 +1,7 @@
 # RPCore 0.12.2 — teleporte para testes
 
+Status posterior: o usuário confirmou piloto e teleporte funcionando e pediu deixar refinamentos dos trabalhos para depois das fases principais. Próxima entrega: [fase 5.1 — caça](FASE-5.1-0.13.0.md). O restante registra a entrega original.
+
 ## Usar
 
 1. Marque um waypoint no mapa, ou use GPS do trabalho para criar o waypoint.

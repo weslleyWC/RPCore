@@ -18,6 +18,12 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static HuntingData Hunting => data.Hunting ?? new HuntingData();
+        public static bool HuntLicense(HuntingOptions c,string id,out bool changed)=>HuntingTransactions.License(data,c,id,Save,out changed);
+        public static bool HuntBait(HuntingOptions c,int count,string id,out bool changed)=>HuntingTransactions.BuyBait(data,c,count,id,Save,out changed);
+        public static bool HuntUseBait(string id,out bool changed)=>HuntingTransactions.UseBait(data,id,Save,out changed);
+        public static bool HuntHarvest(HuntingOptions c,System.Collections.Generic.Dictionary<string,int> loot,string id,bool complete,out bool changed)=>HuntingTransactions.Harvest(data,c,loot,id,complete,Save,out changed);
+        public static bool HuntSell(HuntingOptions c,string id,out bool changed)=>HuntingTransactions.Sell(data,c,id,Save,out changed);
         public static bool PilotQualified => FlightRules.Qualified(data.Jobs);
         public static DeliveryProgress JobProgress(string job) { if (data.Jobs == null) data.Jobs = new JobLedger(); return data.Jobs.Get(job); }
         public static bool PayDelivery(string job, string session, int step, int amount, bool bank, bool delivery, bool complete, out bool credited, int rating = 0)

@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.13.0 — fase 5.1: caça
+
+Licença/kit, iscas, expedição com cervo/javali/coelho próprios, atração/fuga, coleta temporizada, qualidade e bolsa persistente. Venda/checkpoint bancário sem duplicação, capacidade e recibos. Nona atividade exclusiva, GPS/banner/conquistas; piloto/teleporte aprovados permanecem iguais. 430 testes e build sem erros/avisos. [Arquivos alterados e teste](FASE-5.1-0.13.0.md).
+
 ## 0.12.2 — teleporte para waypoint no F11
 
 Opção no topo do F11 para agilizar testes a pé ou em carro/moto/ônibus parado como motorista. Solicita terreno, verifica espaço, mantém congelado enquanto carrega e restaura em falha/cancelamento. Sem crédito/qualificação/procurado automático. F2/saves/configurações preservados. Build sem erros/avisos e 396 testes de regressão. [Arquivos alterados, uso e teste](TELEPORTE-0.12.2.md).

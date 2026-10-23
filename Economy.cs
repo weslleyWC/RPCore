@@ -10,6 +10,7 @@ namespace RPCore
         public Portfolio Exchange;
         public TransportData Transport;
         public JobLedger Jobs;
+        public HuntingData Hunting;
     }
 
     public class Portfolio : ExtensibleData

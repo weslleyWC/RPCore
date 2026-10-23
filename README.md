@@ -1,4 +1,12 @@
-# RPCore 0.12.2 — GTA V Legacy
+# RPCore 0.13.0 — GTA V Legacy
+
+## Fase 5.1 — caça
+
+[Atualização 0.13.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.13.0.zip) · [Código-fonte 0.13.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.13.0.zip) · [Como jogar, alterações e teste](docs/FASE-5.1-0.13.0.md)
+
+**F10 → Trabalhos → Caca → GPS: acougue / equipamento.** Compre licença/kit e iscas, inicie a expedição, siga à floresta verde, E coloca isca, abata o animal laranja e E coleta. Bolsa de caça persistente com carne/peles/troféus; venda no açougue credita o banco.
+
+Piloto e teleporte foram aprovados pelo usuário. Os oito trabalhos anteriores, F2, saves/configurações e recursos visuais ficam preservados. Build sem erros/avisos e 430 testes aprovados; a caça ainda precisa do teste no GTA. Pesca/crafting e demais atividades da fase 5 ficam nas próximas subentregas. Refinamento dos trabalhos aprovados fica para depois das fases principais, conforme combinado.
 
 ## 0.12.2 — teleporte para agilizar testes
 
@@ -6,7 +14,7 @@
 
 **Marque o ponto no mapa → F11 → Teleportar para o waypoint.** A opção fica no topo do menu. Funciona a pé e como motorista de carro/moto/ônibus parado; carrega o chão e procura posição livre antes de mover. Falha/cancelamento restauram o estado anterior. Não muda qualificação/dinheiro/procurado.
 
-Inclui a base pública de piloto em Grapeseed. F2, saves, configurações e trabalhos anteriores preservados. Build sem erros/avisos e 396 testes de regressão aprovados; teleporte e voos ainda precisam do teste no GTA. Não precisa reinstalar recursos visuais.
+Inclui a base pública de piloto em Grapeseed. F2, saves, configurações e trabalhos anteriores preservados. Build sem erros/avisos e 396 testes de regressão aprovados; o usuário confirmou teleporte e piloto funcionando no GTA. Não precisa reinstalar recursos visuais.
 
 ## Correção 0.12.1 — base pública de aviação
 

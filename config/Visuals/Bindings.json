@@ -18,7 +18,8 @@
     "supply": "PostOpBanner",
     "tanker": "PlaceholderBanner",
     "prison": "PSRPBANNER1",
-    "pilot": "PSRPBANNER1"
+    "pilot": "PSRPBANNER1",
+    "hunting": "ButcherBanner"
   },
   "ItemIcons": {
     "water": "water",

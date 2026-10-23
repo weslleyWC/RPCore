@@ -21,7 +21,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
         readonly Action jobs;
-        readonly Vector3 postOp, valet, supply, tanker, prison, pilot;
+        readonly Vector3 postOp, valet, supply, tanker, prison, pilot, hunting, huntingForest;
         readonly WaypointTeleport teleport = new WaypointTeleport();
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
@@ -69,9 +69,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default, Vector3 hunting = default, Vector3 huntingForest = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot; this.hunting = hunting; this.huntingForest = huntingForest;
             root = Menu("Settings Menu");
             Add(root, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             var gang = Menu("Gang Creation"); Link(root, gang);
@@ -150,6 +150,8 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: caca / acougue", "Licenca, equipamento e venda de materiais.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, hunting.X, hunting.Y); gps.Visible = false; });
+                Add(gps, "GPS: floresta de caca", "Area de isca e rastreamento em Paleto Forest.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, huntingForest.X, huntingForest.Y); gps.Visible = false; });
                 Add(gps, "GPS: piloto / base de aviacao", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte prisional", "Mission Row: retire o onibus e leve detentos a Bolingbroke.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, prison.X, prison.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); gps.Visible = false; });

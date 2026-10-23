@@ -54,6 +54,9 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "hunt_first")) defs.Add(new AchDef { Id="hunt_first",Name="Primeira coleta",Desc="Colete um animal durante a expedicao de caca.",Stat="hunting_harvests",Target=1 });
+            if (!defs.Any(d => d.Id == "hunt_trip")) defs.Add(new AchDef { Id="hunt_trip",Name="Expedicao concluida",Desc="Conclua uma expedicao de caca.",Stat="hunting_trips",Target=1 });
+            if (!defs.Any(d => d.Id == "hunt_sale")) defs.Add(new AchDef { Id="hunt_sale",Name="Venda da caca",Desc="Venda materiais de caca no acougue.",Stat="hunting_sales",Target=1 });
             if (!defs.Any(d => d.Id == "pilot_test")) defs.Add(new AchDef { Id="pilot_test",Name="Piloto qualificado",Desc="Conclua o voo de qualificacao ate Sandy Shores.",Stat="pilot_qualified",Target=1 });
             if (!defs.Any(d => d.Id == "pilot_first")) defs.Add(new AchDef { Id="pilot_first",Name="Passageiros em terra",Desc="Conclua uma entrega aerea de passageiros.",Stat="pilot_deliveries",Target=1 });
             if (!defs.Any(d => d.Id == "pilot_return")) defs.Add(new AchDef { Id="pilot_return",Name="De volta ao LSIA",Desc="Devolva uma aeronave apos um voo comercial.",Stat="pilot_returns",Target=1 });
@@ -69,7 +72,7 @@ namespace RPCore
                 try
                 {
                     var entries = JObject.Parse(File.ReadAllText(legacy));
-                    var stats = new Dictionary<string, string> { { "0", "started" }, { "1", "bank_used" }, { "3", "bank_million" }, { "4", "uber_trips" }, { "5", "pizza_drops" }, { "6", "postop_drops" }, { "7", "cars_bought" }, { "9", "garages_bought" }, { "12", "items_bought" }, { "13", "first_aid" }, { "15", "gas_filled" }, { "16", "storage_used" }, { "19", "belts_on" }, { "20", "radio_started" }, { "34", "valet_returns" } };
+                    var stats = new Dictionary<string, string> { { "0", "started" }, { "1", "bank_used" }, { "3", "bank_million" }, { "4", "uber_trips" }, { "5", "pizza_drops" }, { "6", "postop_drops" }, { "7", "cars_bought" }, { "9", "garages_bought" }, { "12", "items_bought" }, { "13", "first_aid" }, { "15", "gas_filled" }, { "16", "storage_used" }, { "19", "belts_on" }, { "20", "radio_started" }, { "27", "hunting_harvests" }, { "34", "valet_returns" } };
                     foreach (var entry in entries.Properties())
                     {
                         if (!(entry.Value is JObject)) continue;

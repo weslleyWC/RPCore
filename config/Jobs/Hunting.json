@@ -1,0 +1,72 @@
+{
+  "LicensePrice": 750,
+  "BaitPrice": 20,
+  "AnimalsPerTrip": 3,
+  "HarvestSeconds": 5,
+  "ZoneRadius": 450,
+  "BagCapacity": 25,
+  "Vendor": {
+    "Name": "Acougue / equipamento de caca",
+    "X": -42.14478,
+    "Y": -1474.272,
+    "Z": 31.21704,
+    "Heading": 0
+  },
+  "Forest": {
+    "Name": "Paleto Forest / area de caca",
+    "X": -769.8,
+    "Y": 5595.5,
+    "Z": 33.5,
+    "Heading": 0
+  },
+  "Materials": [
+    {
+      "Id": "deer_meat",
+      "Name": "Carne de cervo",
+      "Weight": 0.8,
+      "Price": 45
+    },
+    {
+      "Id": "boar_meat",
+      "Name": "Carne de javali",
+      "Weight": 0.9,
+      "Price": 40
+    },
+    {
+      "Id": "rabbit_meat",
+      "Name": "Carne de coelho",
+      "Weight": 0.25,
+      "Price": 25
+    },
+    {
+      "Id": "hide_rough",
+      "Name": "Pele danificada",
+      "Weight": 0.6,
+      "Price": 15
+    },
+    {
+      "Id": "hide_good",
+      "Name": "Pele boa",
+      "Weight": 0.6,
+      "Price": 45
+    },
+    {
+      "Id": "hide_perfect",
+      "Name": "Pele perfeita",
+      "Weight": 0.6,
+      "Price": 90
+    },
+    {
+      "Id": "antler",
+      "Name": "Galhada",
+      "Weight": 0.3,
+      "Price": 60
+    },
+    {
+      "Id": "rabbit_foot",
+      "Name": "Pe de coelho",
+      "Weight": 0.1,
+      "Price": 25
+    }
+  ]
+}
