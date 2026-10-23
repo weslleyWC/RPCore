@@ -4,7 +4,11 @@
 
 [Atualização 0.16.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.16.0.zip) · [Código-fonte 0.16.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.16.0.zip) · [Instalação, alterações e teste](docs/FASE-5.4-0.16.0.md)
 
-F10 → Trabalhos → Trafico / vendas de rua. GPS do contato externo; compre cinco pacotes por 200 do banco. Inicie em calçada pública a pé/desarmado e aguarde comprador laranja. E negocia preço normal/premium; fique junto por três segundos para confirmar. Três vendas por turno, estoque/reputação/pagamento no mesmo checkpoint, recusa e risco de uma estrela. Banner original DrugDealingBanner. 567 testes e build sem erros/avisos; novo ciclo/IA/polícia precisam do teste no GTA. Saves/F2 e sistemas anteriores preservados. Próximas atividades: streamer e arrancada; refinamentos dos trabalhos após as fases principais.
+F10 → Trabalhos → Trafico / vendas de rua. GPS do contato externo; compre cinco pacotes por 200 do banco. Inicie em calçada pública a pé/desarmado e aguarde comprador laranja. E negocia preço normal/premium; fique junto por três segundos para confirmar. Três vendas por turno, estoque/reputação/pagamento no mesmo checkpoint, recusa e risco de uma estrela. Banner original DrugDealingBanner. 567 testes e build sem erros/avisos; ciclo 0.16.0 testado e confirmado funcionando pelo usuário no GTA. Saves/F2 e sistemas anteriores preservados. Próximas atividades: streamer e arrancada; refinamentos dos trabalhos após as fases principais.
+
+## Fases de refinamento definidas pelo usuário
+
+Após concluir as fases principais, a **fase 8** refina toda a interface e suas mecânicas: fome/sede e demais indicadores do HUD, F11 e todos os menus existentes. O problema relatado de fome/sede é no funcionamento da mecânica, não somente na aparência dos ícones. A **fase 9** refina todos os trabalhos, cujos ciclos atuais ainda têm simplificações. Ambas exigem varredura aprofundada da PSRP.dll e comparação com o RPCore antes de implementar os ajustes, preservando saves, recursos e atalhos. [Escopo e critérios](docs/REFINAMENTOS-FASES-8-9.md).
 
 ## Histórico — fase 5.3: crafting e feira
 

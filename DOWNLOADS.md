@@ -8,4 +8,4 @@ F10 → Trabalhos → Trafico / vendas de rua → GPS: contato / estoque. Compre
 
 Feche o GTA, extraia o update e execute Install-RPCore.ps1 dessa pasta com seu caminho real. Backup da DLL; Dealer.json só se ausente. Saves/configurações/F2/caça/pesca/crafting preservados; sem reinstalar OIV/YTD/DLC. Source contém csproj; update contém DLL pronta. ZIPs sem versão apontam para esta entrega.
 
-Build sem erros/avisos e 567 testes. Falta teste de NPCs/negociação/polícia no GTA. Próximas atividades: streamer e arrancada; refinamentos dos trabalhos depois das fases principais.
+Build sem erros/avisos e 567 testes. O usuário confirmou a 0.16.0 funcionando no GTA. Próximas atividades: streamer e arrancada; depois das fases principais, fase 8 refina interface/mecânicas do HUD/menus e fase 9 refina todos os trabalhos, com estudo da PSRP.dll. [Escopo](docs/REFINAMENTOS-FASES-8-9.md).

@@ -1,5 +1,7 @@
 # Fase 5.4 — RPCore 0.16.0: tráfico / vendas de rua
 
+Atualização após entrega: usuário confirmou funcionamento no GTA e definiu [fase 8 (interface e mecânicas) e fase 9 (refinamento dos trabalhos)](REFINAMENTOS-FASES-8-9.md). O texto abaixo registra o escopo e a validação da entrega original; funcionamento básico não significa refinamento concluído.
+
 Esta entrega implementa o ciclo de comércio de rua previsto na fase 5: compra de estoque no contato, compradores próprios, negociação normal/premium, entrega temporizada, reputação por bairro, recusas e denúncia à polícia nativa. Estoque/saldo/reputação persistem por perfil no mesmo checkpoint. Caça, pesca, crafting, trabalhos e teleporte continuam incluídos. Streamer e arrancada são as próximas atividades; refinamento dos trabalhos fica depois das fases principais.
 
 ## Instalação
