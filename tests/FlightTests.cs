@@ -91,8 +91,8 @@ namespace RPCore.Tests
         {Assert.Equal(expected,FlightRules.Airworthy(engine,body,400));}
         [Fact] public void TimedExecutiveFlightDeadlineSupportsDisabledOptionAndOverflow()
         {Assert.False(FlightRules.Expired(149999,0,150));Assert.True(FlightRules.Expired(150000,0,150));Assert.False(FlightRules.Expired(999999,0,0));Assert.True(FlightRules.Expired(unchecked(int.MaxValue+1000),int.MaxValue-149000,150));}
-        [Fact] public void EmbeddedDefaultsContainReferenceAirportsAndFiveRoofHelipads()
-        {var c=PilotDefaults.Load();Assert.True(c.Valid);Assert.Equal(5,c.Helipads.Count);Assert.Equal(-1143.238f,c.Start.X);Assert.Equal(1698.431f,c.PlaneDestination.X);Assert.Equal(3249.649f,c.PlaneDestination.Y);Assert.Equal(211.775f,c.Helipads[0].Z);Assert.Equal("velum",c.PlaneModel);Assert.Equal("frogger",c.HeliModel);}
+        [Fact] public void EmbeddedDefaultsContainPublicBaseAndReferenceDestinations()
+        {var c=PilotDefaults.Load();Assert.True(c.Valid);Assert.Equal(5,c.Helipads.Count);Assert.Equal(2118f,c.Start.X);Assert.Equal(1698.431f,c.PlaneDestination.X);Assert.Equal(3249.649f,c.PlaneDestination.Y);Assert.Equal(211.775f,c.Helipads[0].Z);Assert.Equal("velum",c.PlaneModel);Assert.Equal("frogger",c.HeliModel);}
         [Fact] public void InvalidConfigCannotRequestUnavailableTimedHelipadOrImpossibleManifest()
         {var c=PilotDefaults.Load();c.TimedHelipadIndex=5;Assert.False(c.Valid);c.TimedHelipadIndex=-1;Assert.True(c.Valid);c.HeliPassengers=4;Assert.False(c.Valid);}
         [Fact] public void ReplayDoesNotRepayAndEarlierJobsRemainUnchanged()

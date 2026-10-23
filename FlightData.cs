@@ -11,7 +11,8 @@ namespace RPCore
         public JobPoint Start,PlaneSpawn,PlaneDestination,HeliSpawn;
         public List<JobPoint> Helipads=new List<JobPoint>();
         public string PlaneModel="velum",HeliModel="frogger";
-        public int TimedHelipadIndex=0,HeliTimeLimitSeconds=150;
+        public int TimedHelipadIndex=0,HeliTimeLimitSeconds=240;
+        public bool KeepLegacyLsiaBase;
         public int PlanePassengers=2,HeliPassengers=1,PlaneBasePay=1400,HeliBasePay=3500,PlaneReturnBonus=500,HeliReturnBonus=750;
         public float PlanePerMeter=.1f,HeliPerMeter=.25f,MinimumHealth=400;
         [JsonIgnore] public bool Valid=>new[]{Start,PlaneSpawn,PlaneDestination,HeliSpawn}.All(p=>p!=null && p.Valid) && Helipads!=null && Helipads.Count>=1 && Helipads.Count<=100 && Helipads.All(p=>p!=null && p.Valid) &&
@@ -24,6 +25,22 @@ namespace RPCore
         {
             using(var stream=typeof(PilotDefaults).Assembly.GetManifestResourceStream("RPCore.JobDefaults.Pilot.json"))
             using(var reader=new System.IO.StreamReader(stream))return JsonConvert.DeserializeObject<PilotOptions>(reader.ReadToEnd());
+        }
+    }
+    public static class PilotAccess
+    {
+        static bool Same(JobPoint p,float x,float y,float z,float heading)=>p!=null && p.Valid && Math.Abs(p.X-x)<.01 && Math.Abs(p.Y-y)<.01 && Math.Abs(p.Z-z)<.01 && Math.Abs(p.Heading-heading)<.01;
+        public static bool LegacyBase(PilotOptions c)=>c!=null && Same(c.Start,-1143.238f,-2705.508f,13.95856f,0) && Same(c.PlaneSpawn,-1023.876f,-2903.852f,13.96453f,148.8467f) && Same(c.HeliSpawn,-1111.612f,-2883.941f,13.94604f,146.4589f);
+        public static PilotOptions Resolve(PilotOptions local,out bool migrated)
+        {
+            if(local==null || !local.Valid)throw new ArgumentException("Invalid pilot options.");
+            migrated=LegacyBase(local) && !local.KeepLegacyLsiaBase;
+            if(!migrated)return local;
+            // Read-only migration of recognized shipped coordinates. Never rewrite the local JSON or license.
+            var result=JsonConvert.DeserializeObject<PilotOptions>(JsonConvert.SerializeObject(local));
+            var defaults=PilotDefaults.Load();result.Start=defaults.Start;result.PlaneSpawn=defaults.PlaneSpawn;result.HeliSpawn=defaults.HeliSpawn;
+            if(result.TimedHelipadIndex==0 && result.HeliTimeLimitSeconds==150)result.HeliTimeLimitSeconds=defaults.HeliTimeLimitSeconds;
+            return result;
         }
     }
     public static class FlightRules

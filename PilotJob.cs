@@ -50,8 +50,10 @@ namespace RPCore
             this.pool=pool;this.achievements=achievements;this.gate=gate;
             var defaults=PilotDefaults.Load();options=Store.LoadDef("Jobs/Pilot.json",()=>defaults);
             if(options==null || !options.Valid){Log.Write("Invalid Pilot.json; embedded defaults used, original retained.");options=defaults;}
-            menu=new NativeMenu(Label,"LSIA / AVIACAO");pool.Add(menu);Visuals.Register(menu,Name);
-            startBlip=MapBlips.Create(StartPosition,"RPCore Job: piloto LSIA",BlipSprite.Plane,BlipColor.Yellow,.8f);
+            bool migrated;options=PilotAccess.Resolve(options,out migrated);
+            if(migrated)Log.Write("Pilot access: legacy LSIA base moved to Grapeseed in memory; local Pilot.json and saves retained.");
+            menu=new NativeMenu(Label,"AVIACAO");pool.Add(menu);Visuals.Register(menu,Name);
+            startBlip=MapBlips.Create(StartPosition,"RPCore Job: piloto",BlipSprite.Plane,BlipColor.Yellow,.8f);
         }
         void Add(string title,string description,Action action)
         {
@@ -59,13 +61,13 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            pool.HideAll();menu.Clear();menu.Name="LSIA / "+(Qualified?"qualificado":"qualificacao pendente");
-            Add("GPS: balcao LSIA","Contratacao a pe no aeroporto.",()=>{Waypoint(StartPosition);menu.Visible=false;});
+            pool.HideAll();menu.Clear();menu.Name="Piloto / "+(Qualified?"qualificado":"qualificacao pendente");
+            Add("GPS: base de aviacao","Contratacao a pe na base de aviacao.",()=>{Waypoint(StartPosition);menu.Visible=false;});
             if(!Active)
             {
                 Add("Voo de qualificacao", "Velum: decole, voe ate Sandy Shores e pouse parado. Salva qualificacao por perfil.",()=>Begin(FlightMode.Training));
-                Add("Transporte de aviao",Qualified?"Dois passageiros ate Sandy Shores, desembarque e retorno ao LSIA.":"Conclua o voo de qualificacao primeiro.",()=>Begin(FlightMode.Plane));
-                Add("Transporte de helicoptero",Qualified?"Passageiro ate um dos cinco helipontos e retorno ao LSIA.":"Conclua o voo de qualificacao primeiro.",()=>Begin(FlightMode.Helicopter));
+                Add("Transporte de aviao",Qualified?options.PlanePassengers+" passageiros ate "+options.PlaneDestination.Name+", desembarque e retorno a base.":"Conclua o voo de qualificacao primeiro.",()=>Begin(FlightMode.Plane));
+                Add("Transporte de helicoptero",Qualified?"Passageiro ate um dos cinco helipontos e retorno a base.":"Conclua o voo de qualificacao primeiro.",()=>Begin(FlightMode.Helicopter));
                 Add("Carreira","Transportes e turnos confirmados neste perfil.",()=>Notify.Show("Aviao: "+Wallet.JobProgress("pilot_plane").Deliveries+" / Helicoptero: "+Wallet.JobProgress("pilot_heli").Deliveries));
             }
             else
@@ -83,7 +85,7 @@ namespace RPCore
             if(Active)return;
             if(mode!=FlightMode.Training && !Qualified){Notify.Show("Conclua primeiro o voo de qualificacao.");return;}
             if(p.IsDead || !p.IsHuman || p.IsInVehicle() || p.IsRagdoll || p.IsInCombat || p.Position.DistanceTo(StartPosition)>6 || Game.IsMissionActive || Game.IsPaused || Game.Player.Wanted.WantedLevel>0)
-            {Notify.Show("Contrate a pe no balcao LSIA, sem procurado, combate ou missao.");return;}
+            {Notify.Show("Contrate a pe na base de aviacao, sem procurado, combate ou missao.");return;}
             if(!gate.Acquire(Name)){Notify.Show("Encerre o trabalho de "+gate.Owner+" antes de iniciar outro.");return;}
             bool started=false,heli=mode==FlightMode.Helicopter;
             var model=new Model(heli?options.HeliModel:options.PlaneModel);
@@ -138,7 +140,7 @@ namespace RPCore
                 return;
             }
             if(Game.Player.Character.IsDead || Game.IsMissionActive || !aircraft.Exists() || aircraft.IsDead || !FlightRules.Airworthy(aircraft.EngineHealth,aircraft.BodyHealth,options.MinimumHealth))
-            {End("Voo encerrado: piloto ou aeronave indisponivel/danificada.");return;}
+            {Log.Write("Pilot failure: playerDead="+Game.Player.Character.IsDead+" mission="+Game.IsMissionActive+" aircraftExists="+aircraft.Exists()+" engine="+(aircraft.Exists()?aircraft.EngineHealth.ToString():"n/a")+" body="+(aircraft.Exists()?aircraft.BodyHealth.ToString():"n/a")+" wanted="+Game.Player.Wanted.WantedLevel);End("Voo encerrado: piloto ou aeronave indisponivel/danificada.");return;}
             if(passengers.Any(p=>!p.Exists() || p.IsDead)){End("Passageiro perdido. Voo encerrado sem novo pagamento.");return;}
             if(Game.IsPaused || InterfaceOptions.ModalOpen || pool.AreAnyVisible){run.ObserveFlight(Game.GameTime,false);return;}
             if(aircraftBlip!=null && aircraftBlip.Exists()){aircraftBlip.Position=aircraft.Position;aircraftBlip.Alpha=Pilot?0:255;}
@@ -187,12 +189,12 @@ namespace RPCore
                     int pay=training?0:DeliveryRoute.Pay(Helicopter?options.HeliBasePay:options.PlaneBasePay,Helicopter?options.HeliPerMeter:options.PlanePerMeter,DeliveryRoute.Distance(Helicopter?options.HeliSpawn:options.PlaneSpawn,destination));
                     if(run.PayArrival(Landed(Pos(destination),DestinationRadius) && (training || Outside==run.Passengers),step=>Pay(step,pay,!training,training)))
                     {
-                        if(training){End("Qualificacao salva! Voos comerciais liberados. Retorne ao balcao LSIA; a aeronave ocupada continua disponivel para voltar.");Waypoint(StartPosition);return;}
-                        ReleaseArrivals();Route("retornar aeronave ao LSIA");Notify.Show("Passageiros entregues. Religue o motor com "+Cfg.EngineKey+" ou pelo menu e retorne para o bonus.");
+                        if(training){End("Qualificacao salva! Voos comerciais liberados. Retorne a base de aviacao; a aeronave ocupada continua disponivel para voltar.");Waypoint(StartPosition);return;}
+                        ReleaseArrivals();Route("retornar aeronave a base");Notify.Show("Passageiros entregues. Religue o motor com "+Cfg.EngineKey+" ou pelo menu e retorne para o bonus.");
                     }
                     break;
                 case FlightStage.Returning:
-                    Status("retorne e pouse no LSIA");Marker(departure,Helicopter?10:30);
+                    Status("retorne e pouse na base");Marker(departure,Helicopter?10:30);
                     if(Landed(departure,Helicopter?18:40) && aircraft.PassengerCount==0)
                     {Prompt.Help("~INPUT_CONTEXT~: devolver aeronave e receber bonus");if(Confirm() && run.Return(true,step=>Pay(step,Helicopter?options.HeliReturnBonus:options.PlaneReturnBonus,false,true)))End("Voo concluido. Saia da aeronave para recolha.");}
                     break;
@@ -229,7 +231,7 @@ namespace RPCore
             JobVehicles.RetireAircraft(aircraft);aircraft=null;destination=null;
         }
         void End(string message){run?.Cancel();try{Cleanup();}finally{run=null;gate.Release(Name);menu.Visible=false;}Notify.Show(message);}
-        void Status(string text){if(timed && run!=null && (run.Stage==FlightStage.AwaitTakeoff || run.Stage==FlightStage.EnRoute))text+=" / "+Math.Max(0,options.HeliTimeLimitSeconds-Math.Max(0,unchecked(Game.GameTime-flightBegan))/1000)+"s";if(!Visuals.TryJobHeader(Name,"LSIA / "+text,Color.White))new TextElement("LSIA / "+text,new PointF(GTA.UI.Screen.ScaledWidth/2,20),.36f,Color.White,GTA.UI.Font.ChaletLondon,Alignment.Center).Draw();}
+        void Status(string text){if(timed && run!=null && (run.Stage==FlightStage.AwaitTakeoff || run.Stage==FlightStage.EnRoute))text+=" / "+Math.Max(0,options.HeliTimeLimitSeconds-Math.Max(0,unchecked(Game.GameTime-flightBegan))/1000)+"s";if(!Visuals.TryJobHeader(Name,"Piloto / "+text,Color.White))new TextElement("Piloto / "+text,new PointF(GTA.UI.Screen.ScaledWidth/2,20),.36f,Color.White,GTA.UI.Font.ChaletLondon,Alignment.Center).Draw();}
         static void Marker(Vector3 p,float size){if(Game.Player.Character.Position.DistanceTo(p)<600)World.DrawMarker(MarkerType.Cylinder,p-new Vector3(0,0,1),Vector3.Zero,Vector3.Zero,new Vector3(size,size,2),Color.FromArgb(110,255,200,0));}
         public void PollCancel(){if(!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)){cancelSince=-1;return;}if(cancelSince<0)cancelSince=Game.GameTime;if(unchecked(Game.GameTime-cancelSince)>=1000)End("Voo cancelado. Etapas confirmadas mantidas.");}
         void ToggleEngine()

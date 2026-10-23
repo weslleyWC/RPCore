@@ -11,18 +11,18 @@
   "HeliPerMeter": 0.25,
   "MinimumHealth": 400,
   "Start": {
-    "Name": "LSIA Pilot desk",
-    "X": -1143.238,
-    "Y": -2705.508,
-    "Z": 13.95856,
+    "Name": "Grapeseed aviation desk",
+    "X": 2118.0,
+    "Y": 4796.0,
+    "Z": 41.2,
     "Heading": 0
   },
   "PlaneSpawn": {
-    "Name": "LSIA plane apron",
-    "X": -1023.876,
-    "Y": -2903.852,
-    "Z": 13.96453,
-    "Heading": 148.8467
+    "Name": "McKenzie Field apron",
+    "X": 2130.8,
+    "Y": 4806.2,
+    "Z": 41.2,
+    "Heading": 115
   },
   "PlaneDestination": {
     "Name": "Sandy Shores airstrip",
@@ -32,11 +32,11 @@
     "Heading": 0
   },
   "HeliSpawn": {
-    "Name": "LSIA helipad",
-    "X": -1111.612,
-    "Y": -2883.941,
-    "Z": 13.94604,
-    "Heading": 146.4589
+    "Name": "McKenzie Field helicopter apron",
+    "X": 2111,
+    "Y": 4791,
+    "Z": 41.2,
+    "Heading": 115
   },
   "Helipads": [
     {
@@ -76,5 +76,6 @@
     }
   ],
   "TimedHelipadIndex": 0,
-  "HeliTimeLimitSeconds": 150
+  "HeliTimeLimitSeconds": 240,
+  "KeepLegacyLsiaBase": false
 }

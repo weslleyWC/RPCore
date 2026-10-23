@@ -148,7 +148,7 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
-                Add(gps, "GPS: piloto LSIA", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); gps.Visible = false; });
+                Add(gps, "GPS: piloto / base de aviacao", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte prisional", "Mission Row: retire o onibus e leve detentos a Bolingbroke.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, prison.X, prison.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); gps.Visible = false; });
                 Add(gps, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); gps.Visible = false; });

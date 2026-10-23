@@ -101,8 +101,12 @@ if pilot_source.exists() and pilot_config.exists():
     reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', pilot_source.read_text())}
     config = json.loads(pilot_config.read_text())
     points = [config[k] for k in ['Start', 'PlaneSpawn', 'PlaneDestination', 'HeliSpawn']] + config['Helipads']
+    destinations = [config['PlaneDestination']] + config['Helipads']
     report['pilot_points'] = {'count': len(points), 'helipad_count': len(config['Helipads']),
         'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
+        'destinations_match_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in destinations),
+        'public_base': {'origin': 'RPCore public airfield access fix; these three base points are not PSRP coordinates',
+                        'points': {k: config[k] for k in ['Start', 'PlaneSpawn', 'HeliSpawn']}},
         'reference_source': 'PSRP/_JOB__Pilot.cs', 'configuration_sha256': digest(pilot_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

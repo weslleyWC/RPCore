@@ -1,11 +1,11 @@
-# RPCore 0.12.0 — downloads
+# RPCore 0.12.1 — downloads
 
-- [Atualização 0.12.0 — DLL pronta e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.0.zip)
-- [Código-fonte 0.12.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.0.zip)
-- [Fase 4.4: instruções, alterações e teste no GTA](docs/FASE-4.4-0.12.0.md)
+- [Atualização 0.12.1 — DLL pronta e instalador](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.1.zip)
+- [Código-fonte 0.12.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.1.zip)
+- [Como realizar o trabalho corrigido](docs/CORRECAO-0.12.1.md)
 
-Piloto com qualificação salva por perfil, Velum até Sandy Shores e Frogger até cinco helipontos. Manifesto, voo/pouso real, desembarque, crédito bancário e bônus ao retornar. F10 → Trabalhos → Piloto → GPS: balcao LSIA. Primeiro conclua Voo de qualificacao. E prepara/confirma; X/EngineKey ou menu alterna motor parado em terra; End segurado cancela.
+A base padrão de piloto foi movida do LSIA restrito para McKenzie Field/Grapeseed. F10 → Trabalhos → Piloto → GPS: base de aviacao. Contrate sem procurado, entre no Velum azul, E prepara, voe até Sandy Shores, pouse/parado e E confirma. Qualificação salva licença sem dinheiro e libera transportes pagos.
 
-Feche o GTA, extraia o update e execute Install-RPCore.ps1 dessa pasta com seu caminho real do jogo. Backup e cópia de Jobs/Pilot.json só se ausente, preservando saves/configurações/F2. Não precisa reinstalar OIV/YTD/DLC. Source contém o csproj; update contém a DLL pronta. ZIPs sem versão apontam para a entrega atual.
+Feche o GTA, extraia o update e execute Install-RPCore.ps1 dessa pasta com seu caminho real do jogo. Não apague Pilot.json/saves: padrão antigo migra em memória, configurações e licença preservadas. Telefone F2 e empregos anteriores iguais. Sem reinstalar OIV/YTD/DLC, comprar hangar ou apagar estrelas.
 
-Build sem erros/avisos, 385 testes. Prisional regular 0.11.0 aprovado pelo usuário. Os sete contratos anteriores permanecem. Piloto ainda precisa de teste no GTA: qualificação, passageiros, pousos/portas, pagamento e retorno. Dirigível e desvio/suborno/emboscada não estão incluídos nesta entrega.
+Build sem erros/avisos e 396 testes; novo acesso/spawn e voos ainda precisam de teste real. Source contém o csproj; update contém a DLL pronta. ZIPs sem versão apontam para a entrega atual.

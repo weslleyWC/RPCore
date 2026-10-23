@@ -1,5 +1,7 @@
 # Fase 4.4 — RPCore 0.12.0: piloto
 
+Correção posterior: o usuário recebeu quatro estrelas ao entrar no LSIA para qualificar. A [0.12.1](CORRECAO-0.12.1.md) move a base padrão para Grapeseed, mantém Sandy Shores e cinco helipontos e ajusta o prazo padrão Arcadius para 240 segundos. Use as instruções novas; o restante abaixo registra a entrega original. Ainda não houve aceite dos três voos no jogo.
+
 O usuário confirmou o transporte prisional regular da 0.11.0 funcionando. Esta entrega implementa os três ciclos funcionais encontrados em _JOB__Pilot da PSRP: qualificação, transporte de avião para Sandy Shores e transporte de helicóptero para cinco helipontos. Dirigível/publicidade e pontos de hover aparecem declarados na referência, sem ciclo completo conectado; não estão implementados nesta entrega. Suborno/emboscada do transporte prisional continuam pendentes.
 
 ## Começar pela qualificação

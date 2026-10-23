@@ -1,6 +1,14 @@
-# RPCore 0.12.0 — GTA V Legacy
+# RPCore 0.12.1 — GTA V Legacy
 
-## Fase 4.4 — piloto: qualificação, avião e helicóptero
+## Correção 0.12.1 — base pública de aviação
+
+[Atualização 0.12.1 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.1.zip) · [Código-fonte 0.12.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.1.zip) · [Como realizar o trabalho e testar](docs/CORRECAO-0.12.1.md)
+
+**F10 → Trabalhos → Piloto → GPS: base de aviacao.** A base padrão agora é McKenzie Field/Grapeseed, evitando a área restrita do LSIA. Qualificação e avião continuam até Sandy Shores; helicóptero mantém cinco destinos e retorna à nova base. Prazo executivo padrão Arcadius: 240 segundos.
+
+Configuração LSIA antiga padrão é ajustada somente em memória; Pilot.json, licença, saves, F2 e personalizações preservados. Sem compra de hangar ou limpeza de estrelas. Build sem erros/avisos e 396 testes aprovados; novo spawn/acesso e ciclo completo ainda precisam do teste no GTA. Não precisa reinstalar recursos visuais.
+
+## Histórico — fase 4.4
 
 [Atualização 0.12.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.0.zip) · [Código-fonte 0.12.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.0.zip) · [Instruções, alterações e teste](docs/FASE-4.4-0.12.0.md)
 

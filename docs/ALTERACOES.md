@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.12.1 — acesso ao piloto
+
+Base padrão movida para Grapeseed para evitar o acesso restrito LSIA. Migração em memória apenas das três posições padrão conhecidas, preservando JSON, licença, valores, destinos, modelos e customizações. Menus sem nome LSIA fixo, prazo Arcadius padrão 240 segundos e diagnóstico de falha. Build sem erros/avisos e 396 testes. [Arquivos alterados e instruções](CORRECAO-0.12.1.md).
+
 ## 0.12.0 — fase 4.4: piloto
 
 Qualificação LSIA/Sandy salva por perfil, avião com dois passageiros, helicóptero com cinco destinos e prazo executivo Arcadius. Voo/pouso/desembarque confirmados, crédito bancário e bônus de retorno, tecla de motor X/menu, recolha apenas vazia/parada/em terra. Oito contratos exclusivos, GPS/conquistas e recursos instalados. F2/saves/configurações preservados. Build sem erros/avisos e 385 testes. [Arquivos alterados e teste](FASE-4.4-0.12.0.md).
