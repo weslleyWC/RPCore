@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.12.2 — teleporte para waypoint no F11
+
+Opção no topo do F11 para agilizar testes a pé ou em carro/moto/ônibus parado como motorista. Solicita terreno, verifica espaço, mantém congelado enquanto carrega e restaura em falha/cancelamento. Sem crédito/qualificação/procurado automático. F2/saves/configurações preservados. Build sem erros/avisos e 396 testes de regressão. [Arquivos alterados, uso e teste](TELEPORTE-0.12.2.md).
+
 ## 0.12.1 — acesso ao piloto
 
 Base padrão movida para Grapeseed para evitar o acesso restrito LSIA. Migração em memória apenas das três posições padrão conhecidas, preservando JSON, licença, valores, destinos, modelos e customizações. Menus sem nome LSIA fixo, prazo Arcadius padrão 240 segundos e diagnóstico de falha. Build sem erros/avisos e 396 testes. [Arquivos alterados e instruções](CORRECAO-0.12.1.md).

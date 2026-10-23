@@ -22,6 +22,7 @@ namespace RPCore
         readonly GangSystem gangs;
         readonly Action jobs;
         readonly Vector3 postOp, valet, supply, tanker, prison, pilot;
+        readonly WaypointTeleport teleport = new WaypointTeleport();
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
         readonly List<Blip> pins = new List<Blip>();
@@ -72,6 +73,7 @@ namespace RPCore
         {
             this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot;
             root = Menu("Settings Menu");
+            Add(root, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
                 if (this.gangs == null || !Cfg.EnableGangs) { Notify.Show("Ative Gangs em Settings.ini e reinicie o script."); return; }
@@ -180,6 +182,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            teleport.Tick();
             var p = Game.Player.Character;
             bool hideRadar = InterfaceOptions.HideRadarOnFoot && !p.IsInVehicle() && !Game.IsMissionActive && !Game.IsPaused;
             if (hideRadar && !Function.Call<bool>(Hash.IS_RADAR_HIDDEN)) { Function.Call(Hash.DISPLAY_RADAR, false); radarHiddenByUs = true; }
@@ -199,8 +202,8 @@ namespace RPCore
             if (menus.Any(m => m.Visible)) { foreach (var m in menus) m.Visible = false; }
             else if (!pool.AreAnyVisible) root.Visible = true;
         }
-        public void Reload() { foreach (var m in menus) m.Visible = false; StopAnimation(); map = Store.Load("MapPins.json", () => new List<MapPin>()).Where(p => p != null && !string.IsNullOrWhiteSpace(p.Name) && !float.IsNaN(p.X) && !float.IsNaN(p.Y) && !float.IsNaN(p.Z) && !float.IsInfinity(p.X) && !float.IsInfinity(p.Y) && !float.IsInfinity(p.Z)).Take(100).ToList(); RefreshPins(); }
+        public void Reload() { teleport.Cancel(false); foreach (var m in menus) m.Visible = false; StopAnimation(); map = Store.Load("MapPins.json", () => new List<MapPin>()).Where(p => p != null && !string.IsNullOrWhiteSpace(p.Name) && !float.IsNaN(p.X) && !float.IsNaN(p.Y) && !float.IsNaN(p.Z) && !float.IsInfinity(p.X) && !float.IsInfinity(p.Y) && !float.IsInfinity(p.Z)).Take(100).ToList(); RefreshPins(); }
         public void Save() { Store.Write("MapPins.json", map); }
-        public void Dispose() { StopAnimation(); if (radarHiddenByUs) Function.Call(Hash.DISPLAY_RADAR, true); radarHiddenByUs = false; foreach (var m in menus) m.Visible = false; foreach (var b in pins) if (b.Exists()) b.Delete(); pins.Clear(); }
+        public void Dispose() { teleport.Cancel(false); StopAnimation(); if (radarHiddenByUs) Function.Call(Hash.DISPLAY_RADAR, true); radarHiddenByUs = false; foreach (var m in menus) m.Visible = false; foreach (var b in pins) if (b.Exists()) b.Delete(); pins.Clear(); }
     }
 }

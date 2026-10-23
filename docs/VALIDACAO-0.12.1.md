@@ -1,0 +1,13 @@
+# Validação — RPCore 0.12.1
+
+Build Release net48, SHVDN Enhanced 1.1.0.6/LemonUI SHVDN3 2.2: zero erros e zero avisos. DLL SHA256 `1f66a9c68cc781dd918dd669039e240bd13093262977475357792d960bb6d77b`.
+
+396 testes aprovados, zero falhas/ignorados: 385 anteriores e 11 novos. Migração reconhece as três coordenadas/ângulos antigos padrão e resolve em memória, sem alterar o objeto original. Casos de preços/modelos/destinos/unknowns preservados, pontos/ângulos personalizados, opt-in LSIA, prazo padrão versus customizado/desativado, JSON antigo sem flag e idempotência. FlightTests usa os defaults novos. Evidências DataTests.trx/DataTests-0.12.1.trx. A lógica de resolução testada é chamada pelo runtime.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.12.1.json: 75 fontes de referência, binário atual e pacote 0.12.0 como baseline. A base nova tem três coordenadas próprias RPCore em Grapeseed, separadas explicitamente no relatório. Portanto all_points_in_reference=false é esperado; destinations_match_reference=true confirma Sandy Shores e os cinco helipontos mantidos. Não se afirma que o novo pátio vem da PSRP nem que foi executado no GTA. Sem alterações OIV/YTD/RPF/DLC/dlclist.
+
+O usuário tentou qualificação na 0.12.0 e recebeu quatro estrelas ao entrar no LSIA, com voo encerrado. Ainda não houve aceite de qualificação/comerciais. A 0.12.1 muda a base padrão para campo de acesso público e remove o nome LSIA fixo das instruções. Não altera procurado/polícia, propriedade de hangar ou tarefas/posição do jogador. Pilot failure agora registra morte/missão/vida da aeronave/procurado para distinguir o motivo de encerramento.
+
+JSON local, qualificação e progresso financeiro permanecem preservados. Só a base antiga reconhecida passa por overlay em memória; base personalizada não muda. Prazo Arcadius 150 antigo padrão vira 240 em memória; customizado/desativado permanece. KeepLegacyLsiaBase=true permite manter a base antiga sem fornecer permissão de entrada. Contratos/recibos/pagamentos e F2 seguem iguais. O teste de acesso/spawn/colisões, qualificação, avião e helicóptero precisa ocorrer no GTA; roteiro em CORRECAO-0.12.1.md.
+
+Instalador executado duas vezes com PowerShell 7/Linux sobre GTA simulado com pacote 0.12.0: 93 arquivos existentes preservados byte a byte, incluindo Pilot.json antigo com LSIA, saves com licença/carreira, INIs e telefone F2. Personalização de Pilot.json preservada na segunda execução; backup da DLL anterior e DLL instalada igual ao build. A migração da configuração preservada é validada pela lógica de PilotAccess nos testes, sem regravação pelo instalador. Evidência installer-validation-0.12.1.json. Não executa GTA/Windows real.

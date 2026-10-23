@@ -63,6 +63,15 @@ namespace RPCore
             }
             Log.Write(label+" spawn: no bay occupied="+occupied+" ground="+ground+" world="+world);return null;
         }
+        public static bool ClearForTeleport(JobPoint point,Model model,Entity moving,Ped player)
+        {
+            var box=Bounds(point,model);var position=new Vector3(point.X,point.Y,point.Z);
+            foreach(var v in World.GetNearbyVehicles(position,30))
+                if(v.Exists() && v.Handle!=moving.Handle && box.Overlaps(Bounds(Point(v),v.Model)))return false;
+            foreach(var p in World.GetNearbyPeds(position,20))
+                if(p.Exists() && p.Handle!=player.Handle && !(moving is Vehicle car && p.IsInVehicle(car)) && box.Overlaps(new SpawnBox(Point(p),-.5,.5,-.5,.5,-1,1)))return false;
+            return WorldClear(box,moving);
+        }
         static bool Ground(JobPoint p,Model model)
         {
             float height;
@@ -78,14 +87,14 @@ namespace RPCore
             p.Z=height-min.Z+.12f;return true;
         }
         static Vector3 At(SpawnBox b,double side,double along,double z) => new Vector3((float)(b.X+b.RightX*side+b.ForwardX*along),(float)(b.Y+b.RightY*side+b.ForwardY*along),(float)z);
-        static bool ProbeClear(Vector3 start,Vector3 end,IntersectFlags flags)
+        static bool ProbeClear(Vector3 start,Vector3 end,IntersectFlags flags,Entity ignore=null)
         {
             // This lookup runs once per contract: use completed synchronous results, never a pending async result as "clear".
-            var handle=ShapeTest.StartExpensiveSyncTestLOSProbe(start,end,flags);
+            var handle=ShapeTest.StartExpensiveSyncTestLOSProbe(start,end,flags,ignore);
             ShapeTestResult result;
             return handle.GetResult(out result)==ShapeTestStatus.Ready && !result.DidHit;
         }
-        static bool WorldClear(SpawnBox b)
+        static bool WorldClear(SpawnBox b,Entity ignore=null)
         {
             // Elevated probes avoid the ground while detecting walls, pillars and static map props.
             var flags=IntersectFlags.Map|IntersectFlags.Objects;
@@ -93,9 +102,9 @@ namespace RPCore
             foreach(double z in new[]{bottom+.8,bottom+2.1,bottom+3.2})
             {
                 foreach(double side in new[]{-b.HalfWidth,0,b.HalfWidth})
-                    if(!ProbeClear(At(b,side,-b.HalfLength,z),At(b,side,b.HalfLength,z),flags))return false;
+                    if(!ProbeClear(At(b,side,-b.HalfLength,z),At(b,side,b.HalfLength,z),flags,ignore))return false;
                 foreach(double along in new[]{-b.HalfLength,0,b.HalfLength})
-                    if(!ProbeClear(At(b,-b.HalfWidth,along,z),At(b,b.HalfWidth,along,z),flags))return false;
+                    if(!ProbeClear(At(b,-b.HalfWidth,along,z),At(b,b.HalfWidth,along,z),flags,ignore))return false;
             }
             return true;
         }

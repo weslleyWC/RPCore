@@ -1,4 +1,12 @@
-# RPCore 0.12.1 — GTA V Legacy
+# RPCore 0.12.2 — GTA V Legacy
+
+## 0.12.2 — teleporte para agilizar testes
+
+[Atualização 0.12.2 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.2.zip) · [Código-fonte 0.12.2](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.2.zip) · [Como usar e testar](docs/TELEPORTE-0.12.2.md)
+
+**Marque o ponto no mapa → F11 → Teleportar para o waypoint.** A opção fica no topo do menu. Funciona a pé e como motorista de carro/moto/ônibus parado; carrega o chão e procura posição livre antes de mover. Falha/cancelamento restauram o estado anterior. Não muda qualificação/dinheiro/procurado.
+
+Inclui a base pública de piloto em Grapeseed. F2, saves, configurações e trabalhos anteriores preservados. Build sem erros/avisos e 396 testes de regressão aprovados; teleporte e voos ainda precisam do teste no GTA. Não precisa reinstalar recursos visuais.
 
 ## Correção 0.12.1 — base pública de aviação
 
