@@ -54,7 +54,8 @@ namespace RPCore
             var valet = new ValetJob(pool, ach, shifts); systems.Add(valet);
             var supply = new StoreDeliveryJob(pool, ach, shifts); systems.Add(supply);
             var tanker = new FuelDeliveryJob(pool, ach, shifts); systems.Add(tanker);
-            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker); systems.Add(jobs);
+            var prison = new PrisonTransportJob(pool, ach, shifts); systems.Add(prison);
+            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
@@ -71,7 +72,7 @@ namespace RPCore
             var props = new PropPresentation(inv); systems.Add(props);
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber); systems.Add(phone);
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open); systems.Add(core);
-            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition); systems.Add(settings);
+            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -93,7 +94,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.10.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.11.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

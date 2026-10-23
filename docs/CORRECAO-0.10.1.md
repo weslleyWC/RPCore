@@ -1,5 +1,7 @@
 # RPCore 0.10.1 — correção do pátio LS GAS
 
+Status posterior: o usuário confirmou esta correção funcionando no GTA e solicitou a próxima fase. A [0.11.0](FASE-4.3-0.11.0.md) acrescenta transporte prisional regular; as informações abaixo registram a entrega original.
+
 O teste do usuário na 0.10.0 bloqueou a contratação com “Patio LS GAS ocupado”. O código anterior tentava um único par de posições e rejeitava qualquer veículo a 12 metros do tanque/8 metros do cavalo, mesmo fora das vagas. O print não identifica qual entidade disparou o bloqueio.
 
 ## O que mudou

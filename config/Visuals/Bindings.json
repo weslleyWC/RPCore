@@ -16,7 +16,8 @@
     "uber": "BoltBanner",
     "valet": "Valet",
     "supply": "PostOpBanner",
-    "tanker": "PlaceholderBanner"
+    "tanker": "PlaceholderBanner",
+    "prison": "PSRPBANNER1"
   },
   "ItemIcons": {
     "water": "water",

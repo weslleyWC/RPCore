@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.11.0 — fase 4.3: transporte prisional regular
+
+Mission Row/Bolingbroke com PBus fornecido, quatro detentos próprios inicializados após conferência, assentos confirmados, desembarque físico e vivo, crédito bancário e bônus ao retornar vazio. Busca de vagas para um veículo, sete contratos exclusivos, GPS/central/banner/conquistas. F2/saves/configurações preservados. 340 testes e build sem erros/avisos. Suborno/emboscada não incluídos. [Arquivos alterados e teste](FASE-4.3-0.11.0.md).
+
 ## 0.10.1 — correção do pátio LS GAS
 
 Spawn passa de um par fixo/raios amplos para 35 alternativas próximas, limites reais dos modelos, verificação de chão e sondagens síncronas do cenário. Diagnóstico no log se nenhuma vaga estiver livre. Não regrava FuelDelivery.json nem remove trânsito/objetos. 309 testes aprovados e build zero erros/avisos. [Arquivos alterados e teste](CORRECAO-0.10.1.md).

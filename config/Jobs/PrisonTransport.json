@@ -1,0 +1,10 @@
+{
+  "Prisoners": 4,
+  "LoadSeconds": 4,
+  "BasePay": 1600,
+  "ReturnBonus": 400,
+  "PayPerMeter": 0.12,
+  "Start": { "Name": "Mission Row custody desk", "X": 424.1417, "Y": -1014.757, "Z": 29.28864, "Heading": 90.35921 },
+  "Spawn": { "Name": "Mission Row prison bus", "X": 449.2777, "Y": -1017.897, "Z": 28.78852, "Heading": 89.13288 },
+  "Destination": { "Name": "Bolingbroke reception", "X": 1851.775, "Y": 2608.431, "Z": 45.89056, "Heading": 0 }
+}

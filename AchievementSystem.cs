@@ -54,6 +54,8 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "prison_first")) defs.Add(new AchDef { Id="prison_first",Name="Custodia entregue",Desc="Conclua um transporte regular para Bolingbroke.",Stat="prison_transports",Target=1 });
+            if (!defs.Any(d => d.Id == "prison_shift")) defs.Add(new AchDef { Id="prison_shift",Name="Onibus de volta",Desc="Devolva o onibus apos entregar a custodia.",Stat="prison_shifts",Target=1 });
             if (!defs.Any(d => d.Id == "tanker_first")) defs.Add(new AchDef { Id="tanker_first",Name="Combustivel entregue",Desc="Conclua uma descarga de combustivel no posto.",Stat="tanker_drops",Target=1 });
             if (!defs.Any(d => d.Id == "tanker_shift")) defs.Add(new AchDef { Id="tanker_shift",Name="De volta a LS GAS",Desc="Devolva o conjunto apos uma entrega de combustivel.",Stat="tanker_shifts",Target=1 });
             if (!defs.Any(d => d.Id == "supply_first")) defs.Add(new AchDef { Id="supply_first",Name="Reposicao iniciada",Desc="Conclua uma entrega de reposicao de loja.",Stat="supply_drops",Target=1 });

@@ -1,10 +1,18 @@
-# RPCore 0.10.1 — GTA V Legacy
+# RPCore 0.11.0 — GTA V Legacy
+
+## Fase 4.3 — transporte prisional regular
+
+[Atualização 0.11.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.11.0.zip) · [Código-fonte 0.11.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.11.0.zip) · [Instruções, arquivos alterados e teste](docs/FASE-4.3-0.11.0.md)
+
+**F10 → Trabalhos → Transporte prisional → GPS: delegacia Mission Row.** Contrate a pé, retire o PBus, confira quatro detentos parado com E, leve a Bolingbroke, aguarde o desembarque físico e retorne vazio à delegacia. Pagamento no banco por custódia e bônus ao devolver o ônibus.
+
+O usuário confirmou a correção LS GAS 0.10.1 funcionando. Os seis contratos anteriores permanecem; telefone F2/saves/configurações preservados. Build sem erros/avisos e 340 testes aprovados. IA/portas do PBus e ciclo completo precisam do teste no GTA. Suborno/emboscada da referência ficam separados e pendentes; piloto vem na próxima entrega de empregos. Não precisa reinstalar recursos visuais.
 
 ## Correção 0.10.1 — pátio LS GAS
 
 [Atualização 0.10.1 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.10.1.zip) · [Código-fonte 0.10.1](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.10.1.zip) · [Alterações e teste](docs/CORRECAO-0.10.1.md)
 
-Corrigido o bloqueio amplo de “Patio LS GAS ocupado”: seleção de até 35 pares de vagas próximas com dimensões reais dos modelos, chão e colisão do cenário. O contrato procura alternativa se a posição original estiver ocupada. Saves, celular F2 e FuelDelivery.json preservados; sem reinstalar recursos visuais. Build zero erros/avisos e 309 testes aprovados. Precisa confirmar o spawn no mesmo local do print e completar o serviço no GTA.
+Corrigido o bloqueio amplo de “Patio LS GAS ocupado”: seleção de até 35 pares de vagas próximas com dimensões reais dos modelos, chão e colisão do cenário. O contrato procura alternativa se a posição original estiver ocupada. Saves, celular F2 e FuelDelivery.json preservados; sem reinstalar recursos visuais. Build zero erros/avisos e 309 testes aprovados. O usuário confirmou a 0.10.1 funcionando no GTA após a correção.
 
 ## Fase 4.2 — transporte de combustível
 

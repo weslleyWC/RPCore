@@ -43,6 +43,26 @@ namespace RPCore
             }
             finally{tanker.MarkAsNoLongerNeeded();hauler.MarkAsNoLongerNeeded();}
         }
+        // Single vehicle variant for the prison bus; the validated LS GAS pair search stays unchanged.
+        public static JobPoint FindVehicle(JobPoint anchor,Model model,string label)
+        {
+            if(!model.Request(2500)){Log.Write(label+" spawn: model request failed.");return null;}
+            var center=new Vector3(anchor.X,anchor.Y,anchor.Z);var obstacles=new List<SpawnBox>();
+            foreach(var v in World.GetNearbyVehicles(center,100))if(v.Exists())obstacles.Add(Bounds(Point(v),v.Model));
+            foreach(var p in World.GetNearbyPeds(center,100))if(p.Exists())obstacles.Add(new SpawnBox(Point(p),-.5,.5,-.5,.5,-1,1));
+            foreach(var prop in World.GetNearbyProps(center,100))if(prop.Exists() && prop.IsCollisionEnabled)AddPropBounds(obstacles,prop);
+            int occupied=0,ground=0,world=0;
+            foreach(var slot in RigSpawnSearch.Candidates(anchor))
+            {
+                var candidate=slot.Trailer;
+                if(!Ground(candidate,model)){ground++;continue;}
+                var box=Bounds(candidate,model);
+                if(obstacles.Exists(b=>box.Overlaps(b))){occupied++;continue;}
+                if(!WorldClear(box)){world++;continue;}
+                Log.Write(label+" spawn: selected="+candidate.X+","+candidate.Y+","+candidate.Z);return candidate;
+            }
+            Log.Write(label+" spawn: no bay occupied="+occupied+" ground="+ground+" world="+world);return null;
+        }
         static bool Ground(JobPoint p,Model model)
         {
             float height;

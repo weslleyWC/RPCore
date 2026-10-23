@@ -191,7 +191,7 @@ namespace RPCore
             try
             {
                 string banner;
-                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "tanker" ? "PlaceholderBanner" : key == "supply" ? "PostOpBanner" : key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
+                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "prison" ? "PSRPBANNER1" : key == "tanker" ? "PlaceholderBanner" : key == "supply" ? "PostOpBanner" : key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
                 if (!Active || !MenuBanners || !Has("PSRP_Banners", banner)) return false;
                 float w = 320 * Scale, x = (Width - w) / 2, y = InsetY + 8;
                 Sprite("PSRP_Banners", banner, x, y, w, w / 4, Color.White);
