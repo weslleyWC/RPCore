@@ -118,5 +118,21 @@ if hunting_source.exists() and hunting_config.exists():
         'forest_origin': 'RPCore expedition area; not asserted as a PSRP point', 'forest': config['Forest'],
         'material_count': len(config['Materials']), 'wallet_checkpoint': 'Wallet.json/Hunting',
         'configuration_sha256': digest(hunting_config.read_bytes())}
+fishing_source = a.reference_source / 'PSRP/_Activity__Hunting.cs'
+fishing_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Fishing.json'
+if fishing_source.exists() and fishing_config.exists():
+    source = fishing_source.read_text()
+    config = json.loads(fishing_config.read_text())
+    report['fishing'] = {
+        'reference_source': 'PSRP/_Activity__Hunting.cs',
+        'reference_has_rod': 'prop_fishing_rod_02' in source,
+        'reference_hook_phase_empty': bool(re.search(r'void SetUpHookPhase\(\)\s*\{\s*\}', source)),
+        'reference_check_fishing_occurrences': len(re.findall(r'\bCheckFishing\(', source)),
+        'reference_note': 'Only the method declaration was found; not a complete working fishing cycle.',
+        'rpcore_cycle': 'Own implementation: paid equipment/bait, native water/ground checks, hook/reel timing, atomic catch/sale.',
+        'point_origin': 'RPCore configurable public shore/pier points; not PSRP coordinates',
+        'spots': config['Spots'], 'fish_count': len(config['Fish']),
+        'wallet_checkpoint': 'Wallet.json/Fishing',
+        'configuration_sha256': digest(fishing_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

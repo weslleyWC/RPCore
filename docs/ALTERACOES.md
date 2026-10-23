@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.14.0 — fase 5.2: pesca
+
+Equipamento permanente, iscas, três áreas/GPS, vara/animação nativa, água/chão verificados antes de gastar isca, espera/fisgada/três puxadas, bolsa persistente e venda no checkpoint bancário. Décima atividade exclusiva, banner/conquistas. Preserva caça, trabalhos, F2 e saves. 477 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.2-0.14.0.md).
+
 ## 0.13.0 — fase 5.1: caça
 
 Licença/kit, iscas, expedição com cervo/javali/coelho próprios, atração/fuga, coleta temporizada, qualidade e bolsa persistente. Venda/checkpoint bancário sem duplicação, capacidade e recibos. Nona atividade exclusiva, GPS/banner/conquistas; piloto/teleporte aprovados permanecem iguais. 430 testes e build sem erros/avisos. [Arquivos alterados e teste](FASE-5.1-0.13.0.md).

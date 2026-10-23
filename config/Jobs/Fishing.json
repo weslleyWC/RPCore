@@ -1,0 +1,22 @@
+{
+  "Vendor": { "Name": "Banca de pesca / Del Perro", "X": -1604.1, "Y": -1048.2, "Z": 13.0, "Heading": 0 },
+  "Spots": [
+    { "Name": "Pier Del Perro", "X": -1840.4, "Y": -1230.2, "Z": 13.0, "Heading": 0 },
+    { "Name": "Pier Chumash", "X": -3426.5, "Y": 967.4, "Z": 8.35, "Heading": 0 },
+    { "Name": "Marina Alamo Sea", "X": 1301.5, "Y": 4226.9, "Z": 33.9, "Heading": 0 }
+  ],
+  "SpotRadius": 60,
+  "BagCapacity": 20,
+  "EquipmentPrice": 350,
+  "BaitPrice": 10,
+  "FishPerTrip": 3,
+  "WaitMinMs": 8000,
+  "WaitMaxMs": 15000,
+  "HookWindowMs": 2500,
+  "ReelWindowMs": 3000,
+  "Fish": [
+    { "Id": "sardine", "Name": "Sardinha", "Weight": 0.4, "Price": 40, "Chance": 55 },
+    { "Id": "mackerel", "Name": "Cavala", "Weight": 0.8, "Price": 85, "Chance": 30 },
+    { "Id": "seabass", "Name": "Robalo", "Weight": 1.5, "Price": 160, "Chance": 15 }
+  ]
+}

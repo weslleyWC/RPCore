@@ -11,6 +11,7 @@ namespace RPCore
         public TransportData Transport;
         public JobLedger Jobs;
         public HuntingData Hunting;
+        public FishingData Fishing;
     }
 
     public class Portfolio : ExtensibleData

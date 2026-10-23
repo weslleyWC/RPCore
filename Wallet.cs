@@ -18,6 +18,12 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static FishingData Fishing => data.Fishing ?? new FishingData();
+        public static bool FishEquipment(FishingOptions c,string id,out bool changed)=>FishingTransactions.Equipment(data,c,id,Save,out changed);
+        public static bool FishBait(FishingOptions c,int count,string id,out bool changed)=>FishingTransactions.BuyBait(data,c,count,id,Save,out changed);
+        public static bool FishUseBait(string id,out bool changed)=>FishingTransactions.UseBait(data,id,Save,out changed);
+        public static bool FishCatch(FishingOptions c,string fish,string id,bool complete,out bool changed)=>FishingTransactions.Catch(data,c,fish,id,complete,Save,out changed);
+        public static bool FishSell(FishingOptions c,string id,out bool changed)=>FishingTransactions.Sell(data,c,id,Save,out changed);
         public static HuntingData Hunting => data.Hunting ?? new HuntingData();
         public static bool HuntLicense(HuntingOptions c,string id,out bool changed)=>HuntingTransactions.License(data,c,id,Save,out changed);
         public static bool HuntBait(HuntingOptions c,int count,string id,out bool changed)=>HuntingTransactions.BuyBait(data,c,count,id,Save,out changed);

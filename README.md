@@ -1,6 +1,12 @@
-# RPCore 0.13.0 — GTA V Legacy
+# RPCore 0.14.0 — GTA V Legacy
 
-## Fase 5.1 — caça
+## Fase 5.2 — pesca
+
+[Atualização 0.14.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.14.0.zip) · [Código-fonte 0.14.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.14.0.zip) · [Alterações, instalação e teste](docs/FASE-5.2-0.14.0.md)
+
+F10 → Trabalhos → Pesca. Na banca, equipamento 350 + cinco iscas 50 do banco. Inicie, vá ao pier, guarde a arma e E olhando para água. Espere a fisgada: E, depois três puxadas E espaçadas. Complete três peixes e venda a bolsa na banca. Peixes/iscas/equipamento persistem por perfil, com checkpoint bancário e recibos. Três pontos configuráveis. Build sem erros/avisos e 477 testes aprovados; falta teste real de água/posições/vara e ciclo no GTA. F2, caça, saves e trabalhos anteriores preservados. Crafting/comércio segue na fase 5; refinamentos dos trabalhos ficam para depois das fases principais.
+
+## Histórico — fase 5.1: caça
 
 [Atualização 0.13.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.13.0.zip) · [Código-fonte 0.13.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.13.0.zip) · [Como jogar, alterações e teste](docs/FASE-5.1-0.13.0.md)
 
