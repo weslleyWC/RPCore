@@ -21,7 +21,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
         readonly Action jobs;
-        readonly Vector3 postOp, valet, supply;
+        readonly Vector3 postOp, valet, supply, tanker;
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
         readonly List<Blip> pins = new List<Blip>();
@@ -68,9 +68,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker;
             root = Menu("Settings Menu");
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
@@ -102,7 +102,7 @@ namespace RPCore
             Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.HideRadarOnFoot = v; InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); });
             Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { Visuals.Scale = Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale", Visuals.Scale); Notify.Show("Escala: " + Visuals.Scale); });
             var game = Menu("Game Settings"); Link(root, game);
-            if (jobs != null) Add(game, "Trabalhos / contratos", "Pizza, Post OP, Uber e valet: contratar, GPS e cancelar.", () => { pool.HideAll(); jobs(); });
+            if (jobs != null) Add(game, "Trabalhos / contratos", "Contratos de entregas e motoristas: contratar, GPS e cancelar.", () => { pool.HideAll(); jobs(); });
             Shortcut(game, "Salvar / configurar / diagnosticar", () => Cfg.CoreKey);
             Shortcut(game, "Radio", () => Cfg.RadioKey, () => Cfg.EnableRadio);
             Shortcut(game, "Conquistas", () => Cfg.AchKey);
@@ -147,7 +147,8 @@ namespace RPCore
             Add(gps, "GPS: trabalho de pizza", "Pizzaria. Inicie/encerre o turno com " + Cfg.JobKey + ".", () => { Function.Call(Hash.SET_NEW_WAYPOINT, PizzaJob.StartLocation.X, PizzaJob.StartLocation.Y); gps.Visible = false; });
             if (jobs != null)
             {
-                Add(gps, "Trabalhos / contratos", "Gerenciar pizza, Post OP, Uber e valet.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); gps.Visible = false; });
                 Add(gps, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); gps.Visible = false; });
                 Add(gps, "GPS: trabalho Valet", "Contrate no hotel e cuide dos carros dos clientes.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, valet.X, valet.Y); gps.Visible = false; });
                 Add(gps, "GPS: trabalho Post OP", "Contrate a pe, retire a van e entregue as caixas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, postOp.X, postOp.Y); gps.Visible = false; });

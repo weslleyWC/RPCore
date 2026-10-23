@@ -77,5 +77,14 @@ if freight_source.exists() and freight_config.exists():
     report['store_delivery_points'] = {'store_count': len(config['Addresses']),
         'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
         'reference_source': 'PSRP/JobDeliveryDriver.cs', 'configuration_sha256': digest(freight_config.read_bytes())}
+tanker_source = a.reference_source / 'PSRP/_JOB__Gas_Delivery.cs'
+tanker_config = Path(__file__).resolve().parents[1] / 'config/Jobs/FuelDelivery.json'
+if tanker_source.exists() and tanker_config.exists():
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', tanker_source.read_text())}
+    config = json.loads(tanker_config.read_text())
+    points = config['Addresses'] + [config['Start'], config['Depot'], config['Trailer']]
+    report['fuel_delivery_points'] = {'station_count': len(config['Addresses']),
+        'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
+        'reference_source': 'PSRP/_JOB__Gas_Delivery.cs', 'configuration_sha256': digest(tanker_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -73,12 +73,40 @@ namespace RPCore
     }
     internal static class JobVehicles
     {
-        static Vehicle reserved;
+        sealed class Rig { public Vehicle Truck, Trailer; }
+        static readonly System.Collections.Generic.List<Vehicle> reserved = new System.Collections.Generic.List<Vehicle>();
         static readonly System.Collections.Generic.List<Vehicle> retired = new System.Collections.Generic.List<Vehicle>();
-        public static bool Contains(Vehicle vehicle) => vehicle != null && ((reserved != null && reserved.Exists() && vehicle.Handle == reserved.Handle) || retired.Exists(v => v.Exists() && v.Handle == vehicle.Handle));
-        public static void Reserve(Vehicle vehicle) { reserved = vehicle; }
-        public static void Release(Vehicle vehicle) { if (reserved == vehicle) reserved = null; }
-        public static void Retire(Vehicle vehicle) { Release(vehicle); if (vehicle != null && vehicle.Exists()) retired.Add(vehicle); }
+        static readonly System.Collections.Generic.List<Rig> rigs = new System.Collections.Generic.List<Rig>();
+        static bool Same(Vehicle a, Vehicle b) => a != null && b != null && a.Exists() && b.Exists() && a.Handle == b.Handle;
+        static bool Exists(Vehicle v) => v != null && v.Exists();
+        public static bool Contains(Vehicle vehicle) => Exists(vehicle) && (reserved.Exists(v => Same(v,vehicle)) || retired.Exists(v => Same(v,vehicle)) || rigs.Exists(r => Same(r.Truck,vehicle) || Same(r.Trailer,vehicle)));
+        public static void Reserve(Vehicle vehicle) { if (Exists(vehicle) && !reserved.Exists(v => Same(v,vehicle))) reserved.Add(vehicle); }
+        public static void Release(Vehicle vehicle) { reserved.RemoveAll(v => !Exists(v) || Same(v,vehicle)); }
+        public static void Retire(Vehicle vehicle) { Release(vehicle); if (Exists(vehicle) && !retired.Exists(v => Same(v,vehicle))) retired.Add(vehicle); }
+        public static bool Towing(Vehicle truck, Vehicle trailer)
+        {
+            if (!Exists(truck) || !Exists(trailer)) return false;
+            var result = new OutputArgument();
+            return Function.Call<bool>(Hash.GET_VEHICLE_TRAILER_VEHICLE,truck,result) && result.GetResult<int>() == trailer.Handle;
+        }
+        public static void RetireRig(Vehicle truck, Vehicle trailer)
+        {
+            Release(truck); Release(trailer);
+            if (!Exists(truck) && !Exists(trailer)) return;
+            if (!rigs.Exists(r => Same(r.Truck,truck) || Same(r.Trailer,trailer))) rigs.Add(new Rig {Truck=truck,Trailer=trailer});
+        }
+        static bool EmptyStopped(Vehicle v) => !Exists(v) || (v.Occupants.Length == 0 && v.Speed < .5f);
+        public static bool TrailerHasOtherTractor(Vehicle trailer, Vehicle ownTruck)
+        {
+            if (Exists(trailer)) foreach (var other in World.GetNearbyVehicles(trailer.Position,30))
+                if (!Same(other,ownTruck) && Towing(other,trailer)) return true;
+            return false;
+        }
+        static bool ForeignConnection(Rig r)
+        {
+            if (Exists(r.Truck) && Function.Call<bool>(Hash.IS_VEHICLE_ATTACHED_TO_TRAILER,r.Truck) && !Towing(r.Truck,r.Trailer)) return true;
+            return TrailerHasOtherTractor(r.Trailer,r.Truck);
+        }
         public static void Tick()
         {
             for (int i = retired.Count - 1; i >= 0; i--)
@@ -87,10 +115,23 @@ namespace RPCore
                 if (!v.Exists()) { retired.RemoveAt(i); continue; }
                 if (v.Occupants.Length == 0) { v.Delete(); if (!v.Exists()) retired.RemoveAt(i); }
             }
+            // A tanker must never disappear while its tractor is occupied or either half is moving.
+            for (int i=rigs.Count-1; i>=0; i--)
+            {
+                var r=rigs[i];
+                if (!Exists(r.Truck) && !Exists(r.Trailer)) {rigs.RemoveAt(i);continue;}
+                if (!EmptyStopped(r.Truck) || !EmptyStopped(r.Trailer) || ForeignConnection(r)) continue;
+                if (Towing(r.Truck,r.Trailer)) Function.Call(Hash.DETACH_VEHICLE_FROM_TRAILER,r.Truck);
+                if (Exists(r.Trailer)) r.Trailer.Delete();
+                if (Exists(r.Truck)) r.Truck.Delete();
+                if (!Exists(r.Truck) && !Exists(r.Trailer)) rigs.RemoveAt(i);
+            }
         }
         public static void Dispose()
         {
-            Tick(); foreach (var v in retired) if (v.Exists()) v.MarkAsNoLongerNeeded(); retired.Clear(); reserved = null;
+            Tick(); foreach (var v in retired) if (v.Exists()) v.MarkAsNoLongerNeeded(); retired.Clear();
+            foreach (var r in rigs) { if(Exists(r.Truck))r.Truck.MarkAsNoLongerNeeded(); if(Exists(r.Trailer))r.Trailer.MarkAsNoLongerNeeded(); }
+            rigs.Clear(); reserved.Clear();
         }
     }
 }

@@ -15,7 +15,8 @@
     "postop": "PostOpBanner",
     "uber": "BoltBanner",
     "valet": "Valet",
-    "supply": "PostOpBanner"
+    "supply": "PostOpBanner",
+    "tanker": "PlaceholderBanner"
   },
   "ItemIcons": {
     "water": "water",

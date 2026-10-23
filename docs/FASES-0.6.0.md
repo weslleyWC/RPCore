@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento atual: pizza/Post OP, Uber/valet e reposição foram implementados e aprovados pelo usuário no GTA. A [fase 4.2 — transporte de combustível 0.10.0](FASE-4.2-0.10.0.md) foi implementada e aguarda teste real. Transporte prisional e piloto continuam seguintes na fase 4. A tabela histórica abaixo conserva a comparação original da 0.6.0.
+
 Histórico da fase 1. A 0.6.0 foi posteriormente confirmada funcionando pelo usuário. A fase 2 foi implementada na 0.7.0: [Post OP, pizza e teste atual](FASE-2-0.7.0.md). A tabela abaixo registra o estado na 0.6.0.
 
 A 0.5.1 foi confirmada funcionando no GTA pelo usuário. Esta entrega implementa a fase 1: conveniências e mapa. Os demais jobs ainda precisam ser desenvolvidos. A PSRP.dll foi inspecionada estaticamente, sem execução no GTA; encontrar uma classe, um menu ou um pagamento não comprova que o sistema inteiro funciona.

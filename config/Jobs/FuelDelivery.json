@@ -1,0 +1,178 @@
+{
+  "Drops": 1,
+  "BasePay": 450,
+  "ReturnBonus": 250,
+  "PayPerMeter": 0.08,
+  "CandidateStations": 8,
+  "UnloadSeconds": 6,
+  "Start": {
+    "Name": "LS GAS",
+    "X": 481.9995,
+    "Y": -2172.934,
+    "Z": 5.918277,
+    "Heading": 0
+  },
+  "Depot": {
+    "Name": "LS GAS return",
+    "X": 481.9995,
+    "Y": -2172.934,
+    "Z": 5.918277,
+    "Heading": 0
+  },
+  "Trailer": {
+    "Name": "LS GAS tanker",
+    "X": 524.8837,
+    "Y": -2140.734,
+    "Z": 5.986342,
+    "Heading": 170.0806
+  },
+  "Addresses": [
+    {
+      "Name": "El Burro Heights",
+      "X": 1198.775,
+      "Y": -1400.032,
+      "Z": 35.025,
+      "Heading": 0
+    },
+    {
+      "Name": "Davis",
+      "X": -68.724,
+      "Y": -1744.805,
+      "Z": 29.168,
+      "Heading": 0
+    },
+    {
+      "Name": "Strawberry",
+      "X": 273.257,
+      "Y": -1246.799,
+      "Z": 29.008,
+      "Heading": 0
+    },
+    {
+      "Name": "La Mesa",
+      "X": 819.032,
+      "Y": -1037.611,
+      "Z": 26.322,
+      "Heading": 0
+    },
+    {
+      "Name": "Mirror Park",
+      "X": 1180.619,
+      "Y": -326.014,
+      "Z": 69.0,
+      "Heading": 0
+    },
+    {
+      "Name": "Little Seoul South",
+      "X": -525.286,
+      "Y": -1200.488,
+      "Z": 18.147,
+      "Heading": 0
+    },
+    {
+      "Name": "Little Seoul West",
+      "X": -728.659,
+      "Y": -935.695,
+      "Z": 18.917,
+      "Heading": 0
+    },
+    {
+      "Name": "Downtown Vinewood",
+      "X": 616.699,
+      "Y": 266.309,
+      "Z": 102.889,
+      "Heading": 0
+    },
+    {
+      "Name": "Morningwood",
+      "X": -1434.617,
+      "Y": -279.725,
+      "Z": 46.008,
+      "Heading": 0
+    },
+    {
+      "Name": "Pacific Bluffs",
+      "X": -2101.046,
+      "Y": -318.215,
+      "Z": 12.828,
+      "Heading": 0
+    },
+    {
+      "Name": "Richman Glen",
+      "X": -1802.76,
+      "Y": 800.212,
+      "Z": 138.317,
+      "Heading": 0
+    },
+    {
+      "Name": "Palomino Freeway",
+      "X": 2577.452,
+      "Y": 361.016,
+      "Z": 108.257,
+      "Heading": 0
+    },
+    {
+      "Name": "Great Ocean Highway",
+      "X": -2554.395,
+      "Y": 2331.063,
+      "Z": 32.86,
+      "Heading": 0
+    },
+    {
+      "Name": "Harmony West",
+      "X": 48.494,
+      "Y": 2776.292,
+      "Z": 57.684,
+      "Heading": 0
+    },
+    {
+      "Name": "Harmony East",
+      "X": 262.171,
+      "Y": 2610.299,
+      "Z": 44.688,
+      "Heading": 0
+    },
+    {
+      "Name": "Route 68",
+      "X": 1210.994,
+      "Y": 2660.893,
+      "Z": 37.61,
+      "Heading": 0
+    },
+    {
+      "Name": "Sandy Shores",
+      "X": 2006.394,
+      "Y": 3770.573,
+      "Z": 32.001,
+      "Heading": 0
+    },
+    {
+      "Name": "Grapeseed",
+      "X": 1686.667,
+      "Y": 4929.267,
+      "Z": 41.878,
+      "Heading": 0
+    },
+    {
+      "Name": "Paleto East",
+      "X": 1704.975,
+      "Y": 6418.526,
+      "Z": 32.438,
+      "Heading": 0
+    },
+    {
+      "Name": "Paleto North",
+      "X": 183.77,
+      "Y": 6602.915,
+      "Z": 31.649,
+      "Heading": 0
+    },
+    {
+      "Name": "Paleto South",
+      "X": -97.645,
+      "Y": 6421.139,
+      "Z": 31.26,
+      "Heading": 0
+    }
+  ]
+}

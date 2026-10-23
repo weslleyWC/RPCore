@@ -1,5 +1,7 @@
 # Fase 4.1 — RPCore 0.9.0: reposição de lojas
 
+Status posterior: o usuário concluiu as cinco entregas e confirmou pagamento correto no GTA. Próxima entrega: [fase 4.2 — transporte de combustível](FASE-4.2-0.10.0.md). O restante registra a entrega original.
+
 Pizza, Post OP, Uber e valet foram confirmados pelo usuário no GTA. Esta entrega acrescenta o contrato de reposição; transporte de combustível, transporte prisional e piloto continuam para próximas entregas. Nenhuma mudança no OIV, YTD, RPF, DLC ou dlclist.
 
 ## Como trabalhar

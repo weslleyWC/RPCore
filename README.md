@@ -1,12 +1,20 @@
-# RPCore 0.9.0 — GTA V Legacy
+# RPCore 0.10.0 — GTA V Legacy
 
-## Fase 4.1 — reposição de lojas
+## Fase 4.2 — transporte de combustível
+
+[Atualização 0.10.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.10.0.zip) · [Código-fonte 0.10.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.10.0.zip) · [Como jogar, arquivos alterados e teste](docs/FASE-4.2-0.10.0.md)
+
+**F10 → Trabalhos → Transporte de combustivel → GPS: deposito LS GAS.** Contrate no porto, retire o Hauler, engate o tanque, descarregue no posto parado com motor desligado e retorne com o conjunto para o bônus. Pagamento bancário na descarga e no retorno; recuperação de engate e proteção das duas partes.
+
+Reposição de lojas aprovada pelo usuário: cinco entregas e pagamento corretos. Os cinco trabalhos anteriores continuam disponíveis. Celular F2 e saves/configurações preservados. Build sem erros/avisos e 295 testes aprovados; esta entrega ainda precisa do teste de engate, descarga e retorno no GTA. Não precisa reinstalar OIV/YTD/DLC. Transporte prisional e piloto ficam para próximas entregas.
+
+## Histórico — fase 4.1: reposição de lojas
 
 [Atualização 0.9.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.9.0.zip) · [Código-fonte 0.9.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.9.0.zip) · [Como trabalhar, arquivos alterados e teste](docs/FASE-4.1-0.9.0.md)
 
 **F10 → Trabalhos → Reposicao → GPS.** Retire o Mule2 em Davis, carregue na base, entregue cinco caixas nas lojas e devolva o caminhão para o bônus. Crédito bancário por descarga, prioridade de E no destino e progresso preservado. Usa os recursos visuais já instalados.
 
-**Celular F2**, respeitando o INI existente. Garagem usa O quando a tecla anterior conflita com o telefone, sem regravar sua configuração. Pizza/Post OP/Uber/valet foram testados e aprovados pelo usuário no GTA. Esta fase tem build sem erros/avisos e 256 testes aprovados; o novo trabalho ainda precisa do teste no jogo. Combustível, prisão e piloto ficam para entregas seguintes.
+**Celular F2**, respeitando o INI existente. Garagem usa O quando a tecla anterior conflita com o telefone, sem regravar sua configuração. Pizza/Post OP/Uber/valet foram testados e aprovados pelo usuário no GTA. Esta fase tem build sem erros/avisos e 256 testes aprovados; a reposição foi confirmada pelo usuário no GTA. Combustível foi acrescentado na fase 4.2; prisão e piloto ficam para entregas seguintes.
 
 ## Histórico — fase 3: Uber e valet
 

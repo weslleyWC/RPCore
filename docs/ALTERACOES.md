@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.10.0 — fase 4.2: transporte de combustível
+
+Contrato LS GAS com Hauler/Tanker fornecidos, engate nativo confirmado, posto sorteado, descarga temporizada com motor desligado, pagamento bancário e bônus ao retornar o conjunto. Reengate físico, cancelamento, progresso e dois veículos protegidos de garagem/armazenamento. Recolha conjunta espera ambos vazios/parados e sem conexão com terceiros. F2/configurações/saves preservados. Build sem erros/avisos, 295 testes; reposição da fase anterior aprovada pelo usuário. [Arquivos alterados e teste](FASE-4.2-0.10.0.md).
+
 ## 0.9.0 — fase 4.1: reposição de lojas
 
 Contrato com Mule2, carregamento obrigatório, cinco lojas por turno, caixa na mão, crédito por descarga e bônus único ao devolver. Prioridade de E só na loja de destino; progresso e configurações preservados. Celular passa a F2 por padrão e respeita a configuração local; garagem usa O em memória quando houver conflito. 30 testes novos, total 256, build zero erros/avisos. Uber/valet da fase anterior confirmados pelo usuário no GTA. [Arquivos alterados, limites e teste](FASE-4.1-0.9.0.md).
