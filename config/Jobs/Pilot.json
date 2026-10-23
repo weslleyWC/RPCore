@@ -1,0 +1,80 @@
+{
+  "PlaneModel": "velum",
+  "HeliModel": "frogger",
+  "PlanePassengers": 2,
+  "HeliPassengers": 1,
+  "PlaneBasePay": 1400,
+  "HeliBasePay": 3500,
+  "PlaneReturnBonus": 500,
+  "HeliReturnBonus": 750,
+  "PlanePerMeter": 0.1,
+  "HeliPerMeter": 0.25,
+  "MinimumHealth": 400,
+  "Start": {
+    "Name": "LSIA Pilot desk",
+    "X": -1143.238,
+    "Y": -2705.508,
+    "Z": 13.95856,
+    "Heading": 0
+  },
+  "PlaneSpawn": {
+    "Name": "LSIA plane apron",
+    "X": -1023.876,
+    "Y": -2903.852,
+    "Z": 13.96453,
+    "Heading": 148.8467
+  },
+  "PlaneDestination": {
+    "Name": "Sandy Shores airstrip",
+    "X": 1698.431,
+    "Y": 3249.649,
+    "Z": 40.94578,
+    "Heading": 0
+  },
+  "HeliSpawn": {
+    "Name": "LSIA helipad",
+    "X": -1111.612,
+    "Y": -2883.941,
+    "Z": 13.94604,
+    "Heading": 146.4589
+  },
+  "Helipads": [
+    {
+      "Name": "Arcadius Business Center",
+      "X": -145.0461,
+      "Y": -593.2454,
+      "Z": 211.775,
+      "Heading": 0
+    },
+    {
+      "Name": "Majestic Hotel",
+      "X": -912.9434,
+      "Y": -377.4493,
+      "Z": 137.906,
+      "Heading": 0
+    },
+    {
+      "Name": "Maze Bank",
+      "X": -1392.047,
+      "Y": -477.8918,
+      "Z": 91.25076,
+      "Heading": 0
+    },
+    {
+      "Name": "Lombank",
+      "X": -1580.95,
+      "Y": -570.8228,
+      "Z": 116.3277,
+      "Heading": 0
+    },
+    {
+      "Name": "Golf Course",
+      "X": -1399.45,
+      "Y": 118.2229,
+      "Z": 54.07043,
+      "Heading": 0
+    }
+  ],
+  "TimedHelipadIndex": 0,
+  "HeliTimeLimitSeconds": 150
+}

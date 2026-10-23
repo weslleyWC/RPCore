@@ -54,6 +54,9 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "pilot_test")) defs.Add(new AchDef { Id="pilot_test",Name="Piloto qualificado",Desc="Conclua o voo de qualificacao ate Sandy Shores.",Stat="pilot_qualified",Target=1 });
+            if (!defs.Any(d => d.Id == "pilot_first")) defs.Add(new AchDef { Id="pilot_first",Name="Passageiros em terra",Desc="Conclua uma entrega aerea de passageiros.",Stat="pilot_deliveries",Target=1 });
+            if (!defs.Any(d => d.Id == "pilot_return")) defs.Add(new AchDef { Id="pilot_return",Name="De volta ao LSIA",Desc="Devolva uma aeronave apos um voo comercial.",Stat="pilot_returns",Target=1 });
             if (!defs.Any(d => d.Id == "prison_first")) defs.Add(new AchDef { Id="prison_first",Name="Custodia entregue",Desc="Conclua um transporte regular para Bolingbroke.",Stat="prison_transports",Target=1 });
             if (!defs.Any(d => d.Id == "prison_shift")) defs.Add(new AchDef { Id="prison_shift",Name="Onibus de volta",Desc="Devolva o onibus apos entregar a custodia.",Stat="prison_shifts",Target=1 });
             if (!defs.Any(d => d.Id == "tanker_first")) defs.Add(new AchDef { Id="tanker_first",Name="Combustivel entregue",Desc="Conclua uma descarga de combustivel no posto.",Stat="tanker_drops",Target=1 });

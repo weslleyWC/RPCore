@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.12.0 — fase 4.4: piloto
+
+Qualificação LSIA/Sandy salva por perfil, avião com dois passageiros, helicóptero com cinco destinos e prazo executivo Arcadius. Voo/pouso/desembarque confirmados, crédito bancário e bônus de retorno, tecla de motor X/menu, recolha apenas vazia/parada/em terra. Oito contratos exclusivos, GPS/conquistas e recursos instalados. F2/saves/configurações preservados. Build sem erros/avisos e 385 testes. [Arquivos alterados e teste](FASE-4.4-0.12.0.md).
+
 ## 0.11.0 — fase 4.3: transporte prisional regular
 
 Mission Row/Bolingbroke com PBus fornecido, quatro detentos próprios inicializados após conferência, assentos confirmados, desembarque físico e vivo, crédito bancário e bônus ao retornar vazio. Busca de vagas para um veículo, sete contratos exclusivos, GPS/central/banner/conquistas. F2/saves/configurações preservados. 340 testes e build sem erros/avisos. Suborno/emboscada não incluídos. [Arquivos alterados e teste](FASE-4.3-0.11.0.md).

@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.12.0: transporte prisional regular aprovado pelo usuário; [piloto](FASE-4.4-0.12.0.md) implementado e aguardando teste real. Dirigível/publicidade e suborno/emboscada continuam pendentes. As tabelas abaixo são históricas.
+
 Andamento 0.11.0: LS GAS/correção de vagas confirmados pelo usuário. [Transporte prisional regular](FASE-4.3-0.11.0.md) implementado e aguardando teste real. Desvio/suborno/emboscada e piloto continuam pendentes; as tabelas abaixo são históricas.
 
 Andamento atual: pizza/Post OP, Uber/valet e reposição foram implementados e aprovados pelo usuário no GTA. A [fase 4.2 — transporte de combustível 0.10.0](FASE-4.2-0.10.0.md) foi implementada e aguarda teste real. Transporte prisional e piloto continuam seguintes na fase 4. A tabela histórica abaixo conserva a comparação original da 0.6.0.

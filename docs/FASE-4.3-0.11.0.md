@@ -1,5 +1,7 @@
 # Fase 4.3 — RPCore 0.11.0: transporte prisional regular
 
+Status posterior: o usuário confirmou este transporte funcionando no GTA. A [fase 4.4 — piloto](FASE-4.4-0.12.0.md) é a entrega seguinte. As informações abaixo registram a entrega original.
+
 O usuário confirmou a 0.10.1 funcionando após a correção de vagas LS GAS. Esta entrega implementa o transporte regular Mission Row → Bolingbroke → Mission Row. Suborno, desvio para fuga, emboscada e cutscenes alternativas da PSRP não fazem parte deste contrato; continuam pendentes. Piloto permanece para a próxima entrega de empregos. Não se afirma paridade com todos os eventos da referência.
 
 ## Como trabalhar

@@ -95,5 +95,14 @@ if prison_source.exists() and prison_config.exists():
     report['prison_transport_points'] = {'count': len(points),
         'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
         'reference_source': 'PSRP/JobDeliveryDriver.cs', 'configuration_sha256': digest(prison_config.read_bytes())}
+pilot_source = a.reference_source / 'PSRP/_JOB__Pilot.cs'
+pilot_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Pilot.json'
+if pilot_source.exists() and pilot_config.exists():
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', pilot_source.read_text())}
+    config = json.loads(pilot_config.read_text())
+    points = [config[k] for k in ['Start', 'PlaneSpawn', 'PlaneDestination', 'HeliSpawn']] + config['Helipads']
+    report['pilot_points'] = {'count': len(points), 'helipad_count': len(config['Helipads']),
+        'all_points_in_reference': all(tuple(p[k] for k in ['X', 'Y', 'Z']) in reference for p in points),
+        'reference_source': 'PSRP/_JOB__Pilot.cs', 'configuration_sha256': digest(pilot_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

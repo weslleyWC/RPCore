@@ -1,4 +1,12 @@
-# RPCore 0.11.0 — GTA V Legacy
+# RPCore 0.12.0 — GTA V Legacy
+
+## Fase 4.4 — piloto: qualificação, avião e helicóptero
+
+[Atualização 0.12.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.12.0.zip) · [Código-fonte 0.12.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.12.0.zip) · [Instruções, alterações e teste](docs/FASE-4.4-0.12.0.md)
+
+**F10 → Trabalhos → Piloto → GPS: balcao LSIA.** Comece pelo Voo de qualificacao até Sandy Shores. Licença salva por perfil libera transporte de avião e helicóptero, com passageiros, desembarque físico, pagamento bancário e retorno para bônus. X/tecla de motor ou menu religa a aeronave após a entrega. Helicóptero atende cinco destinos, com prazo no voo executivo Arcadius.
+
+Transporte prisional da 0.11.0 aprovado pelo usuário. Sete trabalhos anteriores, F2, saves e configurações preservados. Build sem erros/avisos e 385 testes aprovados. Qualificação, portas, pousos e ciclo completo ainda precisam do teste no GTA. Não precisa reinstalar recursos visuais. Dirigível/publicidade e desvio/suborno/emboscada prisional continuam pendentes.
 
 ## Fase 4.3 — transporte prisional regular
 

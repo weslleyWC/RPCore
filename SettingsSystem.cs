@@ -21,7 +21,7 @@ namespace RPCore
         readonly NeedsSystem needs;
         readonly GangSystem gangs;
         readonly Action jobs;
-        readonly Vector3 postOp, valet, supply, tanker, prison;
+        readonly Vector3 postOp, valet, supply, tanker, prison, pilot;
         readonly List<NativeMenu> menus = new List<NativeMenu>();
         readonly NativeMenu root, gps, emotes, interactions;
         readonly List<Blip> pins = new List<Blip>();
@@ -68,9 +68,9 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default)
         {
-            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison;
+            this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot;
             root = Menu("Settings Menu");
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
@@ -148,6 +148,7 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
+                Add(gps, "GPS: piloto LSIA", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte prisional", "Mission Row: retire o onibus e leve detentos a Bolingbroke.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, prison.X, prison.Y); gps.Visible = false; });
                 Add(gps, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); gps.Visible = false; });
                 Add(gps, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); gps.Visible = false; });

@@ -76,13 +76,16 @@ namespace RPCore
         sealed class Rig { public Vehicle Truck, Trailer; }
         static readonly System.Collections.Generic.List<Vehicle> reserved = new System.Collections.Generic.List<Vehicle>();
         static readonly System.Collections.Generic.List<Vehicle> retired = new System.Collections.Generic.List<Vehicle>();
+        static readonly System.Collections.Generic.List<Vehicle> retiredAircraft = new System.Collections.Generic.List<Vehicle>();
         static readonly System.Collections.Generic.List<Rig> rigs = new System.Collections.Generic.List<Rig>();
         static bool Same(Vehicle a, Vehicle b) => a != null && b != null && a.Exists() && b.Exists() && a.Handle == b.Handle;
         static bool Exists(Vehicle v) => v != null && v.Exists();
-        public static bool Contains(Vehicle vehicle) => Exists(vehicle) && (reserved.Exists(v => Same(v,vehicle)) || retired.Exists(v => Same(v,vehicle)) || rigs.Exists(r => Same(r.Truck,vehicle) || Same(r.Trailer,vehicle)));
+        public static bool Contains(Vehicle vehicle) => Exists(vehicle) && (reserved.Exists(v => Same(v,vehicle)) || retired.Exists(v => Same(v,vehicle)) || retiredAircraft.Exists(v => Same(v,vehicle)) || rigs.Exists(r => Same(r.Truck,vehicle) || Same(r.Trailer,vehicle)));
         public static void Reserve(Vehicle vehicle) { if (Exists(vehicle) && !reserved.Exists(v => Same(v,vehicle))) reserved.Add(vehicle); }
         public static void Release(Vehicle vehicle) { reserved.RemoveAll(v => !Exists(v) || Same(v,vehicle)); }
         public static void Retire(Vehicle vehicle) { Release(vehicle); if (Exists(vehicle) && !retired.Exists(v => Same(v,vehicle))) retired.Add(vehicle); }
+        public static void RetireAircraft(Vehicle aircraft)
+        {Release(aircraft);if(Exists(aircraft) && !retiredAircraft.Exists(v=>Same(v,aircraft)))retiredAircraft.Add(aircraft);}
         public static bool Towing(Vehicle truck, Vehicle trailer)
         {
             if (!Exists(truck) || !Exists(trailer)) return false;
@@ -115,6 +118,11 @@ namespace RPCore
                 if (!v.Exists()) { retired.RemoveAt(i); continue; }
                 if (v.Occupants.Length == 0) { v.Delete(); if (!v.Exists()) retired.RemoveAt(i); }
             }
+            for(int i=retiredAircraft.Count-1;i>=0;i--)
+            {
+                var v=retiredAircraft[i];if(!v.Exists()){retiredAircraft.RemoveAt(i);continue;}
+                if(FlightRules.CanRetire(v.Occupants.Length==0,v.IsInAir,v.HeightAboveGround,v.Speed)){v.Delete();if(!v.Exists())retiredAircraft.RemoveAt(i);}
+            }
             // A tanker must never disappear while its tractor is occupied or either half is moving.
             for (int i=rigs.Count-1; i>=0; i--)
             {
@@ -131,6 +139,7 @@ namespace RPCore
         {
             Tick(); foreach (var v in retired) if (v.Exists()) v.MarkAsNoLongerNeeded(); retired.Clear();
             foreach (var r in rigs) { if(Exists(r.Truck))r.Truck.MarkAsNoLongerNeeded(); if(Exists(r.Trailer))r.Trailer.MarkAsNoLongerNeeded(); }
+            foreach(var v in retiredAircraft)if(v.Exists())v.MarkAsNoLongerNeeded();retiredAircraft.Clear();
             rigs.Clear(); reserved.Clear();
         }
     }
