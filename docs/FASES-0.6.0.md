@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.15.0: pesca 0.14.0 aprovada pelo usuário. [Fase 5.3 — crafting e feira](FASE-5.3-0.15.0.md) implementa processamento/comércio das bolsas de caça/pesca, aguardando teste real. Próximas atividades: tráfico, streamer e arrancada. Catálogo/penhor/sucata e demais diferenças seguem na revisão de paridade; refinamentos dos trabalhos após as fases principais.
+
 Andamento 0.14.0: [fase 5.2 — pesca](FASE-5.2-0.14.0.md) implementada com ciclo próprio; caça 0.13.0 permanece. Teste real da pesca pendente. Próxima subfase: crafting/comércio; depois tráfico, streamer e arrancada. Refinamento dos trabalhos aprovados somente depois das fases principais.
 
 Andamento 0.13.0: os oito empregos da fase 4 e anteriores, piloto e teleporte foram aprovados pelo usuário. Começa a [fase 5.1 — caça](FASE-5.1-0.13.0.md), aguardando teste real. Pesca/crafting, tráfico, streamer e arrancada seguem depois; refinamento de trabalhos aprovados fica para após as fases principais. Tabelas abaixo são históricas.

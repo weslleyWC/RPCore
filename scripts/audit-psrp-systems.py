@@ -134,5 +134,21 @@ if fishing_source.exists() and fishing_config.exists():
         'spots': config['Spots'], 'fish_count': len(config['Fish']),
         'wallet_checkpoint': 'Wallet.json/Fishing',
         'configuration_sha256': digest(fishing_config.read_bytes())}
+craft_source = a.reference_source / 'PSRP/NewInventorySystem.cs'
+craft_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Crafting.json'
+if craft_source.exists() and craft_config.exists():
+    source = craft_source.read_text()
+    config = json.loads(craft_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    report['crafting'] = {
+        'reference_source': 'PSRP/NewInventorySystem.cs',
+        'reference_recipe_entries': len(re.findall(r'new CraftingRecipe\(', source)),
+        'reference_has_recipe_selection': 'GetMaxCraftAmount(CurrentRecipe)' in source,
+        'station_matches_reference_point': tuple(config['Station'][k] for k in ['X','Y','Z']) in reference,
+        'station_origin': 'Existing burger stand location from reference; RPCore assigns its own crafting/market service here.',
+        'recipe_origin': 'RPCore hunting/fishing products and chained field kit; not copied PSRP recipes or a complete legacy item catalog.',
+        'recipe_count': len(config['Recipes']), 'product_count': len(config['Products']),
+        'wallet_checkpoint': 'Wallet.json/Crafting + Hunting/Fishing bags; no Inventory.json rewrite',
+        'configuration_sha256': digest(craft_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

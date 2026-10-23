@@ -1,6 +1,12 @@
-# RPCore 0.14.0 — GTA V Legacy
+# RPCore 0.15.0 — GTA V Legacy
 
-## Fase 5.2 — pesca
+## Fase 5.3 — crafting e feira
+
+[Atualização 0.15.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.15.0.zip) · [Código-fonte 0.15.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.15.0.zip) · [Instalação, alterações e teste](docs/FASE-5.3-0.15.0.md)
+
+Pesca confirmada funcionando pelo usuário. Nova bancada/feira: F10 → Trabalhos → Bancada / crafting e feira → GPS. Leve materiais das bolsas de caça/pesca sem vendê-los, guarde a arma e fabrique. Nove receitas, sete produtos, lotes de um/cinco, tempo, estoque e venda bancária com retirada/criação no mesmo checkpoint. Produtos são mercadorias no estoque da bancada; Inventory.json continua igual. 518 testes e build sem erros/avisos. Novo ciclo precisa de teste real no GTA. Tráfico, streamer e arrancada seguem na fase 5; refinamentos dos trabalhos ficam para depois das fases principais.
+
+## Histórico — fase 5.2: pesca
 
 [Atualização 0.14.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.14.0.zip) · [Código-fonte 0.14.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.14.0.zip) · [Alterações, instalação e teste](docs/FASE-5.2-0.14.0.md)
 

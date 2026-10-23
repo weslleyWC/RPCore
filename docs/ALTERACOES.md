@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.15.0 — fase 5.3: crafting e feira
+
+Nove receitas/sete produtos a partir das bolsas de caça/pesca e estoque fabricado, lotes de um/cinco, tempo, cadeia de kit de campo, capacidade e comércio bancário. Ingredientes/resultado no mesmo checkpoint, com rollback e recibos. Décima primeira atividade exclusiva, GPS/banner/conquistas. Texto do instalador corrigido para F2/celular. Preserva saves, pesca aprovada e trabalhos. 518 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.3-0.15.0.md).
+
 ## 0.14.0 — fase 5.2: pesca
 
 Equipamento permanente, iscas, três áreas/GPS, vara/animação nativa, água/chão verificados antes de gastar isca, espera/fisgada/três puxadas, bolsa persistente e venda no checkpoint bancário. Décima atividade exclusiva, banner/conquistas. Preserva caça, trabalhos, F2 e saves. 477 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.2-0.14.0.md).

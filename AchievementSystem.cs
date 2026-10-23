@@ -54,6 +54,9 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "craft_first")) defs.Add(new AchDef { Id="craft_first",Name="Primeiro produto",Desc="Fabrique um produto na bancada.",Stat="crafting_products",Target=1 });
+            if (!defs.Any(d => d.Id == "craft_batch")) defs.Add(new AchDef { Id="craft_batch",Name="Artesao",Desc="Complete dez lotes de fabricacao.",Stat="crafting_batches",Target=10 });
+            if (!defs.Any(d => d.Id == "craft_sale")) defs.Add(new AchDef { Id="craft_sale",Name="Venda na feira",Desc="Venda produtos fabricados.",Stat="crafting_sales",Target=1 });
             if (!defs.Any(d => d.Id == "fish_first")) defs.Add(new AchDef { Id="fish_first",Name="Primeiro peixe",Desc="Fisgue e recolha um peixe.",Stat="fishing_catches",Target=1 });
             if (!defs.Any(d => d.Id == "fish_trip")) defs.Add(new AchDef { Id="fish_trip",Name="Pescaria concluida",Desc="Complete uma pescaria.",Stat="fishing_trips",Target=1 });
             if (!defs.Any(d => d.Id == "fish_sale")) defs.Add(new AchDef { Id="fish_sale",Name="Peixe vendido",Desc="Venda peixes na banca.",Stat="fishing_sales",Target=1 });

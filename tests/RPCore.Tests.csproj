@@ -13,6 +13,7 @@
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../DrivingJobData.cs" Link="DrivingJobData.cs" />
     <Compile Include="../RigSpawnData.cs" Link="RigSpawnData.cs" />
+    <Compile Include="../CraftingData.cs" Link="CraftingData.cs" />
     <Compile Include="../FishingData.cs" Link="FishingData.cs" />
     <Compile Include="../HuntingData.cs" Link="HuntingData.cs" />
     <Compile Include="../FlightData.cs" Link="FlightData.cs" />
@@ -28,6 +29,7 @@
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
+    <EmbeddedResource Include="../config/Jobs/Crafting.json" LogicalName="RPCore.JobDefaults.Crafting.json" />
     <EmbeddedResource Include="../config/Jobs/Fishing.json" LogicalName="RPCore.JobDefaults.Fishing.json" />
     <EmbeddedResource Include="../config/Jobs/Hunting.json" LogicalName="RPCore.JobDefaults.Hunting.json" />
     <EmbeddedResource Include="../config/Jobs/Pilot.json" LogicalName="RPCore.JobDefaults.Pilot.json" />

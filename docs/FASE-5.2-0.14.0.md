@@ -1,5 +1,7 @@
 # Fase 5.2 — RPCore 0.14.0: pesca
 
+Atualização: o usuário confirmou esta entrega funcionando antes de avançar para a [fase 5.3 — crafting e feira](FASE-5.3-0.15.0.md). O texto abaixo registra a entrega original.
+
 Esta subentrega implementa pesca com código próprio: equipamento permanente por perfil, iscas, lançamento em água, fisgada, três puxadas, bolsa persistente e venda. Caça 0.13.0 continua incluída, sem declarar um teste no GTA que o usuário não descreveu. Os oito trabalhos já aprovados e o teleporte permanecem; refinamentos desses trabalhos continuam para depois das fases principais. Crafting/comércio, tráfico, streamer e arrancada seguem pendentes na fase 5.
 
 ## Instalação

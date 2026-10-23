@@ -1,0 +1,203 @@
+{
+  "Station": {
+    "Name": "Bancada / feira do pier",
+    "X": -1694.761,
+    "Y": -1072.5194,
+    "Z": 12.012508,
+    "Heading": 0
+  },
+  "Capacity": 25,
+  "Products": [
+    {
+      "Id": "venison_jerky",
+      "Name": "Carne seca de cervo",
+      "Weight": 0.5,
+      "Price": 125
+    },
+    {
+      "Id": "boar_jerky",
+      "Name": "Carne seca de javali",
+      "Weight": 0.5,
+      "Price": 110
+    },
+    {
+      "Id": "smoked_sardine",
+      "Name": "Sardinha defumada",
+      "Weight": 0.3,
+      "Price": 110
+    },
+    {
+      "Id": "smoked_mackerel",
+      "Name": "Cavala defumada",
+      "Weight": 0.6,
+      "Price": 220
+    },
+    {
+      "Id": "smoked_seabass",
+      "Name": "Robalo defumado",
+      "Weight": 1.2,
+      "Price": 200
+    },
+    {
+      "Id": "leather",
+      "Name": "Couro tratado",
+      "Weight": 0.5,
+      "Price": 100
+    },
+    {
+      "Id": "field_pack",
+      "Name": "Kit de campo",
+      "Weight": 1.2,
+      "Price": 400
+    }
+  ],
+  "Recipes": [
+    {
+      "Id": "dry_venison",
+      "Name": "Secar carne de cervo",
+      "Product": "venison_jerky",
+      "Quantity": 1,
+      "Seconds": 6,
+      "Ingredients": [
+        {
+          "Source": "hunting",
+          "Id": "deer_meat",
+          "Name": "Carne de cervo",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Id": "dry_boar",
+      "Name": "Secar carne de javali",
+      "Product": "boar_jerky",
+      "Quantity": 1,
+      "Seconds": 6,
+      "Ingredients": [
+        {
+          "Source": "hunting",
+          "Id": "boar_meat",
+          "Name": "Carne de javali",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Id": "smoke_sardine",
+      "Name": "Defumar sardinha",
+      "Product": "smoked_sardine",
+      "Quantity": 1,
+      "Seconds": 6,
+      "Ingredients": [
+        {
+          "Source": "fishing",
+          "Id": "sardine",
+          "Name": "Sardinha",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Id": "smoke_mackerel",
+      "Name": "Defumar cavala",
+      "Product": "smoked_mackerel",
+      "Quantity": 1,
+      "Seconds": 6,
+      "Ingredients": [
+        {
+          "Source": "fishing",
+          "Id": "mackerel",
+          "Name": "Cavala",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Id": "smoke_seabass",
+      "Name": "Defumar robalo",
+      "Product": "smoked_seabass",
+      "Quantity": 1,
+      "Seconds": 6,
+      "Ingredients": [
+        {
+          "Source": "fishing",
+          "Id": "seabass",
+          "Name": "Robalo",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Id": "tan_rough",
+      "Name": "Tratar peles danificadas",
+      "Product": "leather",
+      "Quantity": 1,
+      "Seconds": 8,
+      "Ingredients": [
+        {
+          "Source": "hunting",
+          "Id": "hide_rough",
+          "Name": "Pele danificada",
+          "Quantity": 3
+        }
+      ]
+    },
+    {
+      "Id": "tan_good",
+      "Name": "Tratar peles boas",
+      "Product": "leather",
+      "Quantity": 1,
+      "Seconds": 8,
+      "Ingredients": [
+        {
+          "Source": "hunting",
+          "Id": "hide_good",
+          "Name": "Pele boa",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "Id": "tan_perfect",
+      "Name": "Tratar pele perfeita",
+      "Product": "leather",
+      "Quantity": 1,
+      "Seconds": 8,
+      "Ingredients": [
+        {
+          "Source": "hunting",
+          "Id": "hide_perfect",
+          "Name": "Pele perfeita",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "Id": "field_pack",
+      "Name": "Montar kit de campo",
+      "Product": "field_pack",
+      "Quantity": 1,
+      "Seconds": 10,
+      "Ingredients": [
+        {
+          "Source": "crafting",
+          "Id": "venison_jerky",
+          "Name": "Carne seca de cervo",
+          "Quantity": 1
+        },
+        {
+          "Source": "crafting",
+          "Id": "smoked_sardine",
+          "Name": "Sardinha defumada",
+          "Quantity": 1
+        },
+        {
+          "Source": "crafting",
+          "Id": "leather",
+          "Name": "Couro tratado",
+          "Quantity": 1
+        }
+      ]
+    }
+  ]
+}

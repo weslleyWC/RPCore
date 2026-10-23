@@ -1,0 +1,15 @@
+# Validação — RPCore 0.14.0
+
+Build Release net48, SHVDN Enhanced 1.1.0.6/LemonUI SHVDN3 2.2: zero erros e zero avisos. DLL SHA256 `2d9fbb06402f41765bc160fa6df26b69bb338810a9f57fcb6078cf610654bd71`.
+
+477 testes aprovados, zero falhas/ignorados: 430 anteriores e 47 novos. Cobrem equipamento/banco/iscas/replay/rollback, catálogo/chances, limites/capacidade/venda, checkpoint de estoque e saldo, campos desconhecidos e caça/empregos/licença anteriores, prazos/fisgada/três puxadas, timeout/relógio com overflow, cancelamento, confirmação após falha, três peixes/um término e exclusão de dez atividades. Relatórios DataTests.trx/DataTests-0.14.0.trx. Não executam GTA nem simulam água/animação/terreno.
+
+Campo Fishing aditivo em Wallet.json. Confirmações de peixe e compras usam cópia e checkpoint antes de avançar o estado. Venda remove estoque e credita banco no mesmo salvamento, com restauração em exceção. Recebimentos recentes limitados a 512 recibos. Unknowns são conservados; dados inválidos são preservados. Inventory.json/Hunting/Jobs não são substituídos. Pescaria ativa e temporizadores não retomam após reload, mas bolsa/equipamento/iscas/progresso persistem por perfil.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.14.0.json: binário atual/baseline 0.13.0 e 75 fontes de referência. Referência tem vara nativa, estados e verificação de água; SetUpHookPhase vazio e CheckFishing somente na declaração. Ciclo, pontos, catálogo e preços desta entrega são próprios RPCore. Texturas de pesca citadas na referência não constam do catálogo enviado; usa ShopBanner já existente e painel próprio, sem modificar YTD/OIV/RPF/DLC.
+
+Inspeção nativa: exige área, jogador a pé/desarmado e água aberta com chão abaixo da superfície antes de lançar. Modelo/prop antes do débito da isca; falha de criação/gravação não consome. Só retira a própria vara e para o próprio clipe no ped original, sem ClearAllTasks/congelamento/limpeza de ambiente. Context/E e botões equivalentes usam input nativo. Pausa/modal/movimento interrompem tentativa; queda/teleporte não encerra a sessão apenas por estar no ar. Morte/natação/veículo/combate/missão/procurado encerram e preservam os peixes confirmados.
+
+Não foi executado no GTA nesta nuvem. Precisam de teste: áreas/água/chão com os recursos instalados, vara/animação, fisgada/puxadas, venda/reload, interrupção/limpeza e regressão de caça, trabalhos e teleporte. Roteiro em FASE-5.2-0.14.0.md. Não se atribui aceite de caça ao pedido de avançar; oito empregos/piloto/teleporte já tinham aprovação explícita. Crafting/comércio e demais atividades seguem no roteiro; refinamento dos trabalhos continua após as fases principais.
+
+Instalador: duas execuções via PowerShell 7/Linux em diretório GTA simulado, sem gameplay. Os 94 arquivos existentes ficaram byte a byte iguais, incluindo saves, Hunting.json e F2. Fishing.json foi acrescentado na primeira execução e sua personalização mantida na segunda; DLL anterior em backup e nova DLL igual ao build. Relatório installer-validation-0.14.0.json.

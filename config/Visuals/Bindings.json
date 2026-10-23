@@ -20,7 +20,8 @@
     "prison": "PSRPBANNER1",
     "pilot": "PSRPBANNER1",
     "hunting": "ButcherBanner",
-    "fishing": "ShopBanner"
+    "fishing": "ShopBanner",
+    "crafting": "ShopBanner"
   },
   "ItemIcons": {
     "water": "water",
