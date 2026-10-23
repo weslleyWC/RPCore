@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.17.0: [fase 5.5 — streamer](FASE-5.5-0.17.0.md) implementada: app Twitch, chat/audiência contextual, eventos/estatísticas e checkpoint bancário, transmissão paralela a trabalhos. Precisa de teste real. Arrancada segue na fase 5. Fases 8 (interface e mecânicas associadas) e 9 (refinamento de todos os trabalhos com varredura PSRP.dll) mantidas.
+
 Atualização de escopo após o teste da 0.16.0: o usuário confirmou o ciclo funcionando e definiu **fase 8: interface e mecânicas ligadas ao HUD/menus** e **fase 9: refinamento de todos os trabalhos**. Ambas exigem varredura aprofundada da PSRP.dll e comparação de comportamento com o RPCore. Fome/sede têm problemas de mecânica relatados, não apenas de desenho dos ícones. [Escopo e critérios das fases 8 e 9](REFINAMENTOS-FASES-8-9.md). A sequência principal continua: streamer/arrancada, fases 6 e 7, depois 8 e 9.
 
 Andamento 0.16.0: [fase 5.4 — tráfico / vendas de rua](FASE-5.4-0.16.0.md) implementa compra/negociação/entrega/reputação e denúncia nativa, com funcionamento confirmado pelo usuário no GTA. O aceite do ciclo básico não encerra o refinamento previsto para a fase 9. Caça, pesca e crafting continuam incluídos. Próximas atividades: streamer e arrancada. Sistemas adicionais de rivais/interiores/cozinha continuam diferenças de paridade. Refinamentos dos trabalhos após as fases principais.

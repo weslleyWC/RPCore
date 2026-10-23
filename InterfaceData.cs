@@ -12,8 +12,8 @@ namespace RPCore
         public static readonly RectangleF InventoryBackgroundBounds = new RectangleF(107, 126, 853, 758);
         public static readonly RectangleF CellBounds = new RectangleF(11, 11, 106, 106);
         public static readonly RectangleF PhoneBounds = new RectangleF(1662, 621, 242, 441);
-        public static readonly string[] PhoneIcons = { "ContactIcon", "MessagesIcon", "NotificationsIcon", "UberIcon", "NotesIcon", "FitnessIcon", "ClockIcon", "MusicIcon", "CalculatorIcon", "IconSearch", "SettingsIcon" };
-        public static readonly string[] PhoneLabels = { "Contacts", "Messages", "Notifications", "Uber", "Notes", "Fitness", "Clock", "Radio", "Calculator", "Search", "Settings" };
+        public static readonly string[] PhoneIcons = { "ContactIcon", "MessagesIcon", "NotificationsIcon", "UberIcon", "NotesIcon", "FitnessIcon", "ClockIcon", "MusicIcon", "CalculatorIcon", "IconSearch", "SettingsIcon", "TwitchIcon" };
+        public static readonly string[] PhoneLabels = { "Contacts", "Messages", "Notifications", "Uber", "Notes", "Fitness", "Clock", "Radio", "Calculator", "Search", "Settings", "Twitch" };
         public static float StatusX(float width, float scale, float inset) { return width-inset-10-275*scale; }
         public static RectangleF Cell(int localIndex)
         { return new RectangleF(34 + localIndex % 5 * 166, 164 + localIndex / 5 * 166, 156, 156); }

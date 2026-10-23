@@ -63,9 +63,9 @@ namespace RPCore.Tests
             Assert.InRange(Math.Abs(bounds.Height*full.Height/1080-target.Height),0,.001f);
             Assert.Equal(RectangleF.Empty,ReferenceLayout.FitTexture(target,RectangleF.Empty,128,128));
         }
-        [Fact] public void ScreenshotPhoneArtAndAllElevenHomeIconsExistInOriginalOiv()
+        [Fact] public void ScreenshotPhoneArtAndAllTwelveHomeIconsExistInOriginalOiv()
         {
-            var c=Catalog(); Assert.Equal(11,ReferenceLayout.PhoneIcons.Length); Assert.Equal(11,ReferenceLayout.PhoneLabels.Length);
+            var c=Catalog(); Assert.Equal(12,ReferenceLayout.PhoneIcons.Length); Assert.Equal(12,ReferenceLayout.PhoneLabels.Length);
             foreach(var icon in ReferenceLayout.PhoneIcons) Assert.NotNull(c.Find("PSRP_PHONE",icon));
             for(int i=1;i<=10;i++) Assert.NotNull(c.Find("PSRP_PHONE","PhoneWallpaper"+i));
             foreach(string icon in new[] {"Background","InventoryBox"}) Assert.NotNull(c.Find("PSRP_Inventory",icon));

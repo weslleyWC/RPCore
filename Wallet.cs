@@ -18,6 +18,11 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static StreamerData Streamer => data.Streamer ?? new StreamerData();
+        public static bool StreamSettings(string channel,string title,string id,out bool changed)=>StreamerTransactions.Settings(data,channel,title,id,Save,out changed);
+        public static bool StreamStart(string id,out bool changed)=>StreamerTransactions.Start(data,id,Save,out changed);
+        public static bool StreamBlock(StreamerOptions c,StreamReward reward,string id,int step,bool last,out bool changed)=>StreamerTransactions.Block(data,c,reward,id,step,last,Save,out changed);
+        public static bool StreamStop(string id,string reason,out bool changed)=>StreamerTransactions.Stop(data,id,reason,Save,out changed);
         public static DealerData Dealer => data.Dealer ?? new DealerData();
         public static bool DealerBuy(DealerOptions c,string product,int count,string id,out bool changed)=>DealerTransactions.Buy(data,c,product,count,id,Save,out changed);
         public static bool DealerSale(DealerOptions c,string product,int count,string zone,bool premium,int quoted,bool last,string id,out bool changed)=>DealerTransactions.Sale(data,c,product,count,zone,premium,quoted,last,id,Save,out changed);

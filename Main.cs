@@ -60,7 +60,8 @@ namespace RPCore
             var fishing = new FishingJob(pool, ach, shifts); systems.Add(fishing);
             var crafting = new CraftingSystem(pool, ach, shifts); systems.Add(crafting);
             var dealer = new DealerJob(pool, ach, shifts); systems.Add(dealer);
-            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer); systems.Add(jobs);
+            var streamer = new StreamerJob(pool, ach, needs, shifts); systems.Add(streamer);
+            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
@@ -75,7 +76,7 @@ namespace RPCore
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
-            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber); systems.Add(phone);
+            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer); systems.Add(phone);
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
@@ -99,7 +100,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.16.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.17.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

@@ -168,5 +168,23 @@ if dealer_source.exists() and dealer_config.exists():
         'product_count': len(config['Products']), 'sales_per_session': config['SalesPerSession'],
         'wallet_checkpoint': 'Wallet.json/Dealer + Bank',
         'configuration_sha256': digest(dealer_config.read_bytes())}
+streamer_source = a.reference_source / 'PSRP/_JOB__LiveStreamer.cs'
+streamer_phone = a.reference_source / 'PSRP/CustomPhone.cs'
+streamer_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Streamer.json'
+if streamer_source.exists() and streamer_phone.exists() and streamer_config.exists():
+    source = streamer_source.read_text(); phone = streamer_phone.read_text(); config = json.loads(streamer_config.read_text())
+    report['streamer'] = {
+        'reference_source': 'PSRP/_JOB__LiveStreamer.cs + PSRP/CustomPhone.cs',
+        'reference_has_bank_events': 'IncreaseBankBalance(7)' in source and 'BitsThisStream' in source and 'DonationMessages' in source,
+        'reference_has_context_chat': 'StreamContext' in source and 'DrivingUber' in source and 'PizzaDeliveryJob' in source,
+        'reference_phone_controls': 'Start/Stop Stream' in phone and 'Change Title' in phone and 'Change Username' in phone,
+        'original_overlay': 'PSRP_PHONE/TwitchOverlay', 'overlay_alpha_bounds': [21,233,346,661],
+        'original_phone_icon': 'PSRP_PHONE/TwitchIcon',
+        'rpcore_cycle': 'Own local simulation: parallel broadcast, app/channel/title, context chat, followers/subscriptions/bits/donations, bank checkpoints, statistics and completion.',
+        'duration_seconds': config['DurationSeconds'], 'block_seconds': config['TickSeconds'],
+        'work_gate': 'Observed, never acquired or released; End remains reserved for physical jobs.',
+        'scope_limits': 'No external Twitch connection or video recording; own bounded event economy and finite broadcast duration; detailed legacy contexts deferred to phase 9, full interface/mechanics review to phase 8.',
+        'wallet_checkpoint': 'Wallet.json/Streamer + Bank; Phone.json history is secondary',
+        'configuration_sha256': digest(streamer_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

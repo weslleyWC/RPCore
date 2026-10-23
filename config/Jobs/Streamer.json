@@ -1,0 +1,10 @@
+{
+  "DurationSeconds": 180,
+  "TickSeconds": 30,
+  "BaseRevenue": 5,
+  "SubscriptionValue": 7,
+  "BitsValue": 1,
+  "DonationMin": 10,
+  "DonationMax": 60,
+  "Overlay": true
+}

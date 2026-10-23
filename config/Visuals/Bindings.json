@@ -22,7 +22,8 @@
     "hunting": "ButcherBanner",
     "fishing": "ShopBanner",
     "crafting": "ShopBanner",
-    "dealer": "DrugDealingBanner"
+    "dealer": "DrugDealingBanner",
+    "streamer": "PSRPBANNER1"
   },
   "ItemIcons": {
     "water": "water",

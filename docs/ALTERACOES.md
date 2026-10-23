@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.17.0 — fase 5.5: streamer
+
+App Twitch F2, canal/título, transmissão paralela aos trabalhos, painel original, audiência/chat contextual, eventos/seguidores e checkpoint bancário por bloco. Seis blocos de 30 s, pausa sem ganhos, encerramento/resumo persistentes e retry sem novo sorteio. End preservado para trabalhos. 614 testes e build sem erros/avisos. Fases 8/9 mantidas. [Arquivos alterados e teste](FASE-5.5-0.17.0.md).
+
 ## 0.16.0 — fase 5.4: tráfico / vendas de rua
 
 Compra de cinco categorias no contato externo da referência, compradores próprios na calçada, negociação normal/premium com sorteios fixos, entrega temporizada, estoque/pagamento/reputação no mesmo checkpoint, recusa e denúncia à polícia nativa. Três vendas por turno, décima segunda atividade exclusiva, GPS/banner/conquistas. Preserva saves/F2 e sistemas anteriores. 567 testes e build sem erros/avisos. [Arquivos alterados, instalação e teste](FASE-5.4-0.16.0.md).

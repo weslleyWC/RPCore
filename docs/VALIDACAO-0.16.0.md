@@ -1,0 +1,15 @@
+# Validação — RPCore 0.16.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI SHVDN3 2.2: zero erros e zero avisos. DLL SHA256 `94466675baa552ad48f7a1fa926215e26a0ddf7061191e7e8a7f8bd1a91b88e6`.
+
+567 testes aprovados, zero falhas/ignorados: 518 anteriores e 49 novos. Cobrem cinco categorias de compra, estoque/saldo/rollback/replay, venda e reputação no mesmo checkpoint, preço validado/premium, recusa/denúncia sem consumo, limites, unknowns e atividades/licença anteriores, sorteios fixos, prazos sem reinício/overflow, elegibilidade/entrega, três vendas/um término e exclusão entre doze atividades. Relatórios DataTests.trx/DataTests-0.16.0.trx. Não executam GTA/NPC/polícia/animação.
+
+Dealer é campo aditivo no Wallet.json. Compras e vendas usam cópia e checkpoint com banco; falha restaura referência/saldo. Recusa/denúncia salvam contadores/reputação sem retirar mercadoria. Recibos recentes limitados a 512; replay de venda funciona mesmo se a reputação já mudou o preço. Inventário pessoal e bolsas de caça/pesca/crafting não são consumidos/convertidos. Unknowns conservados; estado inválido não zerado. Turno/NPC/proposta ativa não retomam após reload; estoque/ganhos/reputação permanecem por perfil.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.16.0.json: binário/baseline 0.15.0 e 75 fontes indexadas. Contato externo coincide com Stash House da referência; cinco categorias, reputação/denúncia e banner conferidos. Código/ciclo/preços/salvamentos próprios RPCore. Não inclui interiores/cozinha/rivais/roubos/placas; não foi declarado como paridade completa dessa classe. Nenhum fonte transplantado nem edição de OIV/YTD/RPF/DLC/dlclist.
+
+Inspeção nativa: NPC próprio em posição de pedestre livre, sem controlar ambient peds ou alterar relações globais. Um comprador por proposta, aproximação e blip próprios, limpeza por JobActors e parada somente do clipe iniciado no ped original. Entrega só a pé/desarmado/próximo sem combate/missão/procurado. Denúncia usa Wanted.SetWantedLevelNoDrop/ApplyWantedLevelChangeNow do Enhanced 1.1.0.6 para acionar uma estrela sem reduzir estrelas existentes. Não remove procurado nem substitui IA policial. F2 e teleporte continuam iguais. Compras/pagamentos em banco para checkpoint único; divergência frente ao cash da referência documentada.
+
+Não executado no GTA nesta nuvem. Testar contato, calçadas/navmesh/spawn/seguimento, proposta/premium/recusa/denúncia, tempo de entrega, estoque/pagamento/reload/reputação e interrupção/limpeza. Guia FASE-5.4-0.16.0.md inclui teste opcional com riscos zerados para separar ciclo e polícia. Streamer/arrancada continuam próximos; refinamentos dos trabalhos depois das fases principais.
+
+Instalador: duas execuções via PowerShell 7/Linux em diretório GTA simulado, sem gameplay. Os 96 arquivos existentes ficaram byte a byte iguais, incluindo saves, configurações de caça/pesca/crafting e F2. Dealer.json acrescentado na primeira execução e personalização preservada na segunda; DLL anterior em backup e nova DLL igual ao build. Relatório installer-validation-0.16.0.json.

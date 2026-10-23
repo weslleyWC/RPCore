@@ -1,6 +1,12 @@
-# RPCore 0.16.0 — GTA V Legacy
+# RPCore 0.17.0 — GTA V Legacy
 
-## Fase 5.4 — tráfico / vendas de rua
+## Fase 5.5 — streamer
+
+[Atualização 0.17.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.17.0.zip) · [Código-fonte 0.17.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.17.0.zip) · [Instalação, alterações e teste](docs/FASE-5.5-0.17.0.md)
+
+F2 → Twitch ou F10 → Trabalhos → Streamer. Canal/título, live local de 180 s em seis blocos de 30 s, audiência/chat contextual, seguidores/inscrições/bits/doações, banco e estatísticas no mesmo checkpoint. Usa TwitchOverlay/TwitchIcon originais. Pode transmitir enquanto trabalha; End continua reservado aos trabalhos. Menus/pausa não avançam o relógio. 614 testes, build sem erros/avisos; novo ciclo/app/painel precisam de teste no GTA. Preserva F2, saves e sistemas anteriores. Arrancada é a próxima atividade; fases 8 (interface/mecânicas) e 9 (todos os trabalhos) mantidas.
+
+## Histórico — fase 5.4: tráfico / vendas de rua
 
 [Atualização 0.16.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.16.0.zip) · [Código-fonte 0.16.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.16.0.zip) · [Instalação, alterações e teste](docs/FASE-5.4-0.16.0.md)
 

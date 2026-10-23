@@ -54,6 +54,8 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "stream_first")) defs.Add(new AchDef { Id="stream_first",Name="Ao vivo",Desc="Confirme o primeiro bloco da live.",Stat="stream_blocks",Target=1 });
+            if (!defs.Any(d => d.Id == "stream_complete")) defs.Add(new AchDef { Id="stream_complete",Name="Live completa",Desc="Conclua uma transmissao.",Stat="stream_completed",Target=1 });
             if (!defs.Any(d => d.Id == "dealer_first")) defs.Add(new AchDef { Id="dealer_first",Name="Primeiro contato",Desc="Conclua uma venda de rua.",Stat="dealer_sales",Target=1 });
             if (!defs.Any(d => d.Id == "dealer_session")) defs.Add(new AchDef { Id="dealer_session",Name="Turno de rua",Desc="Conclua um turno de vendas.",Stat="dealer_sessions",Target=1 });
             if (!defs.Any(d => d.Id == "dealer_regular")) defs.Add(new AchDef { Id="dealer_regular",Name="Contatos pela cidade",Desc="Conclua vinte vendas de rua.",Stat="dealer_sales",Target=20 });
