@@ -1,6 +1,13 @@
 # RPCore 0.35.0 — GTA V Legacy
 
 
+## Fase 6.3D — herança e traços faciais
+
+[Atualização 0.37.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.37.0.zip) · [Código-fonte 0.37.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.37.0.zip) · [Instalação e teste](docs/FASE-6.3D-0.37.0.md)
+
+F10 → Barbearias / cortes e olhos → Aparencia / rosto e acabamento: herança de formato/pele e 20 traços independentes no freemode existente. Seleção sem alterar personagem; taxa única padrão $120 por conjunto e aplicação recuperável. Aguarda head blend em ticks antes dos detalhes, sem bloquear script; registros antigos mantidos. Build sem erros/avisos e 1332 testes aprovados. Saves/configs/F2/F11 preservados. Aparência exige teste no GTA; criação/troca de ped, tatuagens e fases 8/9 continuam pendentes.
+
+
 ## Fase 6.3C — pele e maquiagem
 
 [Atualização 0.36.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.36.0.zip) · [Código-fonte 0.36.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.36.0.zip) · [Instalação e teste](docs/FASE-6.3C-0.36.0.md)

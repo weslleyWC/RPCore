@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.37.0: [fase 6.3D — herança e 20 traços faciais](FASE-6.3D-0.37.0.md), controles opcionais de rosto integrados ao Grooming, confirmação recuperável e espera assíncrona do head blend. Não cria/troca ped. Registros anteriores preservados; criador completo e demais diferenças seguem. Fases 8/9 mantidas, teste real pendente.
+
 Andamento 0.36.0: [fase 6.3C — pele e maquiagem](FASE-6.3C-0.36.0.md), 11 overlays independentes integrados ao atendimento recuperável, sem trocar ped/rosto genético. Registros e pendências anteriores preservados. Criador facial completo e demais diferenças seguem; fases 8/9 mantidas. Teste real pendente.
 
 Andamento 0.35.0: [fase 6.3B — tintura/barba/sobrancelhas](FASE-6.3B-0.35.0.md), freemode, seleção sem alterar personagem e aplicação paga recuperável. Não modifica grupos não escolhidos nem promete backup de cores desconhecidas. Criador facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.

@@ -8,7 +8,7 @@ using LemonUI.Menus;
 using Newtonsoft.Json;
 namespace RPCore
 {
-    public sealed class GroomingSystem : ISystem
+    public sealed partial class GroomingSystem : ISystem
     {
         public string Name=>"grooming";
         readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> access;readonly Action back;readonly NativeMenu menu;readonly GroomingOptions options;
@@ -25,12 +25,12 @@ namespace RPCore
         public void OpenMenu()
         {
             End();if(!access()){Notify.Show("Va a pe a uma barbearia para acessar o acabamento.");return;}if(!Wallet.Grooming.Valid){Notify.Show("Dados de acabamento invalidos; original preservado.");return;}
-            pool.HideAll();menu.Clear();menu.Name="Acabamento / pele e maquiagem";var p=Wallet.Grooming.Pending;
+            pool.HideAll();menu.Clear();menu.Name="Aparencia / rosto e acabamento";var p=Wallet.Grooming.Pending;
             if(p!=null)
             {
                 string id=p.Id;Add("Retomar atendimento pendente / sem cobrar","Mesmo modelo salvo, na barbearia. Reaplica apenas os grupos selecionados e conclui o registro.",()=>Resume(id));
                 if(!p.Started)Add("Cancelar pendente e estornar $"+p.Price,"Aplicacao ainda nao autorizada. Devolve a taxa paga ao banco e encerra pedido.",()=>{if(!Wallet.GroomingRefund(id,out _))Notify.Show("Estorno nao confirmado; confira limite do banco e estado do pedido.");OpenMenu();});
-                else Add("Encerrar pendente sem estorno","Abre confirmacao. A aplicacao pode ja ter alterado cores; nao ha backup das cores originais.",()=>ConfirmAbandon(id));
+                else Add("Encerrar pendente sem estorno","Abre confirmacao. A aplicacao pode ja ter alterado o visual; nao ha backup completo do rosto anterior.",()=>ConfirmAbandon(id));
             }
             else
             {
@@ -38,7 +38,7 @@ namespace RPCore
                 var known=Wallet.Grooming.Looks.Find(l=>l.Model==Game.Player.Character.Model.Hash);
                 if(known!=null)Add("Reaplicar acabamento confirmado / gratis","Somente grupos que voce ja confirmou neste perfil/modelo. Sem aplicar automaticamente no load.",()=>Reapply(known.Model));
             }
-            Add("Atendimentos "+Wallet.Grooming.Services+" / pagos $"+Wallet.Grooming.Spent,"Cortes/texturas e olhos continuam no menu anterior. Este servico nao muda heranca facial, modelo ou roupas.",()=>{});
+            Add("Atendimentos "+Wallet.Grooming.Services+" / pagos $"+Wallet.Grooming.Spent,"Cortes/texturas e olhos continuam no menu anterior. Heranca/tracos so quando escolhidos; nao troca modelo ou roupas.",()=>{});
             Add("Voltar","Barbearia.",back);menu.Visible=true;
         }
         bool Acquire(){if(!gate.Acquire(Name)){Notify.Show("Encerre a atividade de "+gate.Owner+".");return false;}lease=true;return true;}
@@ -48,7 +48,7 @@ namespace RPCore
             if(!Acquire())return;actor=Game.Player.Character;profile=Profile.Id;
             var known=Wallet.Grooming.Looks.Find(l=>l.Model==actor.Model.Hash);
             draft=known==null?new GroomingLook{Model=actor.Model.Hash}:JsonConvert.DeserializeObject<GroomingLook>(JsonConvert.SerializeObject(known));
-            draft.Hair=draft.Beard=draft.Brows=false;draft.Overlays.Clear();
+            draft.Hair=draft.Beard=draft.Brows=false;draft.Overlays.Clear();draft.Heritage=null;draft.Morphs.Clear();
             int beard=Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY,actor,1),brows=Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY,actor,2);
             if(known==null || !known.Beard)draft.BeardStyle=beard>=0 && beard<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,1)?beard:255;
             if(known==null || !known.Brows)draft.BrowsStyle=brows>=0 && brows<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,2)?brows:255;
@@ -84,6 +84,8 @@ namespace RPCore
                 int group=id;bool chosen=draft.Overlays.Exists(o=>o.Id==group);
                 Add(CosmeticRules.Label(group)+": "+(chosen?"SIM / editar":"nao / configurar"),"Estilo, opacidade e cor quando disponivel. So altera o grupo marcado ao confirmar o atendimento.",()=>SelectOverlay(group));
             }
+            Add("Heranca facial: "+(draft.Heritage==null?"nao":"SIM"),"Escolha explicita de duas origens de formato e duas de pele, com misturas independentes. Sem previa aplicada.",()=>HeritageMenu(false));
+            Add("Tracos faciais: "+draft.Morphs.Count+" / 20","Cada traco pode ser selecionado sozinho. Valores novos de -100 a +100, sem ler/zerar os outros tracos.",()=>MorphMenu(false));
             bool free=draft.Valid && GroomingTransactions.SameSelected(Wallet.Grooming.Looks.Find(l=>l.Model==draft.Model),draft);
             Add(free?"Aplicar valores ja registrados / gratis":"Confirmar aplicacao / $"+options.Price,"Aplica APENAS grupos marcados SIM. Taxa unica pelo banco RPCore; antes deste botao, fechar/cancelar nao muda o visual.",Commit);
             Add("Cancelar selecao","Descarta rascunho sem mudar personagem nem banco.",OpenMenu);menu.SelectedIndex=Math.Max(0,Math.Min(selected,menu.Items.Count-1));menu.Visible=true;
@@ -135,11 +137,12 @@ namespace RPCore
         {
             if(look==null || !look.Valid || !Freemode(look.Model) || Game.Player.Character.Model.Hash!=look.Model || !Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,Game.Player.Character))return false;
             int colors=Function.Call<int>(Hash.GET_NUM_PED_HAIR_TINTS);
-            return (!look.Hair || look.HairColor<colors && look.Highlight<colors) && (!look.Beard || (look.BeardStyle==255 || look.BeardStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,1)) && look.BeardColor<colors) && (!look.Brows || (look.BrowsStyle==255 || look.BrowsStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,2)) && look.BrowsColor<colors) && look.Overlays.TrueForAll(o=>(o.Style==255 || o.Style<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,o.Id)) && (CosmeticRules.ColorType(o.Id)==0 || o.Color<OverlayColors(o.Id)));
+            return (!look.Hair || look.HairColor<colors && look.Highlight<colors) && (!look.Beard || (look.BeardStyle==255 || look.BeardStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,1)) && look.BeardColor<colors) && (!look.Brows || (look.BrowsStyle==255 || look.BrowsStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,2)) && look.BrowsColor<colors) && (look.Heritage==null || FaceRules.Compatible(look.Heritage,NativeParents())) && look.Overlays.TrueForAll(o=>(o.Style==255 || o.Style<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,o.Id)) && (CosmeticRules.ColorType(o.Id)==0 || o.Color<OverlayColors(o.Id)));
         }
-        static void Apply(GroomingLook look)
+        static void ApplySurface(GroomingLook look)
         {
             if(!Compatible(look))throw new InvalidOperationException("Unsupported grooming target/model.");var ped=Game.Player.Character;
+            foreach(var morph in look.Morphs)Function.Call(Hash.SET_PED_MICRO_MORPH,ped,morph.Index,morph.Value/100f);
             if(look.Hair)Function.Call(Hash.SET_PED_HAIR_TINT,ped,look.HairColor,look.Highlight);
             if(look.Beard){Function.Call(Hash.SET_PED_HEAD_OVERLAY,ped,1,look.BeardStyle,look.BeardStyle==255?0f:look.BeardOpacity/100f);Function.Call(Hash.SET_PED_HEAD_OVERLAY_TINT,ped,1,1,look.BeardColor,look.BeardColor);}
             if(look.Brows){Function.Call(Hash.SET_PED_HEAD_OVERLAY,ped,2,look.BrowsStyle,look.BrowsStyle==255?0f:look.BrowsOpacity/100f);Function.Call(Hash.SET_PED_HEAD_OVERLAY_TINT,ped,2,1,look.BrowsColor,look.BrowsColor);}
@@ -152,29 +155,28 @@ namespace RPCore
         void Commit()
         {
             if(!Selecting || !draft.Valid || !Compatible(draft)){Notify.Show("Selecione grupos validos no freemode atual.");return;}
-            if(GroomingTransactions.SameSelected(Wallet.Grooming.Looks.Find(l=>l.Model==draft.Model),draft)){Apply(draft);End();Notify.Show("Valores registrados reaplicados sem cobrar.");OpenMenu();return;}
+            if(GroomingTransactions.SameSelected(Wallet.Grooming.Looks.Find(l=>l.Model==draft.Model),draft)){Execute(draft,null);return;}
             string id=Guid.NewGuid().ToString("N");if(!Wallet.GroomingBegin(draft,options.Price,id,out _)){Notify.Show("Confira banco, limite ou pendencia. Nada aplicado.");return;}
-            Process(id);End();OpenMenu();
+            Process(id);
         }
         void Process(string id)
         {
-            var p=Wallet.Grooming.Pending;if(p==null || p.Id!=id)return;
-            if(!Compatible(p.Look)){Notify.Show("Volte ao mesmo ped freemode/recursos para retomar; nenhuma mudanca aplicada agora.");return;}
-            if(!p.Started && !Wallet.GroomingStart(id,out _)){Notify.Show("Aplicacao ainda nao autorizada; retome ou cancele para estornar.");return;}
-            Apply(p.Look);
-            if(!Wallet.GroomingComplete(id,out _))throw new InvalidOperationException("Grooming applied, completion pending.");
-            Notify.Show("Acabamento aplicado e registrado; sem segunda cobranca.");
+            var p=Wallet.Grooming.Pending;if(p==null || p.Id!=id){End();OpenMenu();return;}
+            if(!Compatible(p.Look)){End();OpenMenu();Notify.Show("Volte ao mesmo ped freemode/recursos para retomar; nenhuma mudanca aplicada agora.");return;}
+            if(!p.Started && !Wallet.GroomingStart(id,out _)){End();OpenMenu();Notify.Show("Aplicacao ainda nao autorizada; retome ou cancele para estornar.");return;}
+            Execute(p.Look,id);
         }
-        void Resume(string id){if(!Acquire())return;try{Process(id);}finally{End();}OpenMenu();}
+        void Resume(string id){if(Acquire())Process(id);}
         void Reapply(int model)
-        {var look=Wallet.Grooming.Looks.Find(l=>l.Model==model);if(look==null || !Compatible(look)){Notify.Show("Visual incompativel com ped/recursos atuais.");return;}if(!Acquire())return;try{Apply(look);Notify.Show("Acabamento confirmado reaplicado sem cobrar.");}finally{End();}}
+        {var look=Wallet.Grooming.Looks.Find(l=>l.Model==model);if(look==null || !Compatible(look)){Notify.Show("Visual incompativel com ped/recursos atuais.");return;}if(Acquire())Execute(look,null);}
         void ConfirmAbandon(string id)
-        {menu.Clear();menu.Name="Encerrar sem estorno?";Add("Sim, encerrar pendencia paga","Nao restaura cores anteriores e nao devolve taxa; use retomar para concluir sem pagar de novo.",()=>{if(!Wallet.GroomingAbandon(id,out _))Notify.Show("Estado do pedido mudou; confira pendencia.");OpenMenu();});Add("Voltar","Manter pedido para retomar.",OpenMenu);menu.Visible=true;}
-        void End(){editingOverlay=-1;draft=null;actor=null;profile=null;if(lease)gate.Release(Name);lease=false;}
+        {menu.Clear();menu.Name="Encerrar sem estorno?";Add("Sim, encerrar pendencia paga","Nao restaura o visual anterior e nao devolve taxa; use retomar para concluir sem pagar de novo.",()=>{if(!Wallet.GroomingAbandon(id,out _))Notify.Show("Estado do pedido mudou; confira pendencia.");OpenMenu();});Add("Voltar","Manter pedido para retomar.",OpenMenu);menu.Visible=true;}
+        void End(){application=null;editingOverlay=-1;draft=null;actor=null;profile=null;if(lease)gate.Release(Name);lease=false;}
         Color Palette(int index,bool makeup=false)
         {using(var r=new OutputArgument())using(var g=new OutputArgument())using(var b=new OutputArgument()){Function.Call(makeup?Hash.GET_PED_MAKEUP_TINT_COLOR:Hash.GET_PED_HAIR_TINT_COLOR,index,r,g,b);return Color.FromArgb(255,Math.Max(0,Math.Min(255,r.GetResult<int>())),Math.Max(0,Math.Min(255,g.GetResult<int>())),Math.Max(0,Math.Min(255,b.GetResult<int>())));}}
         public void Tick()
         {
+            if(application!=null){TickApplication();return;}
             if(draft==null)return;
             if(!Selecting || !menu.Visible){End();menu.Visible=false;return;}
             try{string title=menu.SelectedItem?.Title??"";int index=(title.StartsWith("Cor cabelo:") || title=="Proxima cor cabelo")?draft.HairColor:(title.StartsWith("Mechas:") || title=="Proxima cor mechas")?draft.Highlight:(title.StartsWith("Barba cor ") || title=="Proxima cor / Barba")?draft.BeardColor:(title.StartsWith("Sobrancelhas cor ") || title=="Proxima cor / Sobrancelhas")?draft.BrowsColor:-1;

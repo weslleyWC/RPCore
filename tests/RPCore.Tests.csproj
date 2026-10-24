@@ -20,6 +20,7 @@
     <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmRentalData.cs" Link="PdmRentalData.cs" />
     <Compile Include="../PdmShowroomData.cs" Link="PdmShowroomData.cs" />
+    <Compile Include="../FaceData.cs" Link="FaceData.cs" />
     <Compile Include="../GroomingData.cs" Link="GroomingData.cs" />
     <Compile Include="../BarberData.cs" Link="BarberData.cs" />
     <Compile Include="../HomeStorageData.cs" Link="HomeStorageData.cs" />

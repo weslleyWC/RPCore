@@ -70,3 +70,6 @@ Continuação 0.35.0: fase 6.3B com tintura/mechas/barba/sobrancelhas freemode, 
 
 
 Atualização 0.36.0 / fase 6.3C: acabamento ampliado com pele/maquiagem e overlays corporais opcionais, mesmo ciclo de confirmação/retomada da 0.35. Comparação de sete Apply da referência registrada na auditoria. Refinamento visual, enquadramento, ergonomia e confirmação das paletas no GTA continuam na fase 8; herança facial/criação de ped e demais diferenças não foram declaradas concluídas. Fase 9 permanece para todos os trabalhos.
+
+
+Atualização 0.37.0 / fase 6.3D: herança e 20 traços implementados no freemode existente, com consulta de origens nativas, valores negativos/positivos e espera de head blend antes dos detalhes. Aplicação somente após confirmação; comparação PSRP registrada. Fase 8 ainda refinará menus/câmera/ergonomia e verificará recomposição/paletas no GTA. Criação/troca de ped e tatuagens não foram declaradas concluídas. Fase 9 continua para todos os trabalhos.
