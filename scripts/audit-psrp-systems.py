@@ -484,7 +484,21 @@ if barber_config.exists():
         'native_review': 'Pinned Enhanced Hash.GET_PED_HAIR_TINT_COLOR corresponds to 0x4852FC386E2E1BB5, a palette-index-to-RGB function, not a ped tint getter. GET_PED_HEAD_OVERLAY returns overlay index only. No guessed memory offsets or incorrect getter signatures used; tint/beard kept for later subphases.',
         'defaults': config,
         'intentional_differences': 'Reference offers brows/tints/beard and MP-only styling with camera/player control changes. RPCore 6.3A limits mutable fields to safely captured component 2 and valid freemode eye color, supports available protagonist hair variations, normal camera/rotation and own configurable 150 bank fee.',
-        'scope_limits': 'No tint, beard, eyebrows, genetic face editor, makeup, tattoo, created ped or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
+        'scope_limits': '6.3B adds confirmation-only tint/beard/brows. No genetic face editor, makeup, tattoo, created ped or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(barber_config.read_bytes())}
+grooming_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Grooming.json'
+if grooming_config.exists():
+    source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text(); config = json.loads(grooming_config.read_text())
+    report['grooming'] = {
+        'reference_source': 'PSRP/MultiplayerCharacter.cs',
+        'reference_has_hair_tint': 'SET_PED_HAIR_TINT' in source and 'character.HairHighlight' in source,
+        'reference_has_beard_brows_style_opacity_color': 'ApplyFacialHair()' in source and 'ApplyBrows()' in source and 'SET_PED_HEAD_OVERLAY_TINT' in source,
+        'rpcore_cycle': 'Freemode/ready-head-blend only, optional independent hair-tint/beard/brows groups, no character preview during selection, correct palette RGB swatches, explicit paid confirmation, durable pending/started/completed checkpoints and free resume/reapply.',
+        'wallet_checkpoint': 'Additive Wallet.Grooming. Begin reserves bank fee/pending; Start is durably saved before any appearance setter; Complete merges selected groups and clears pending with no extra debit. Unstarted refund restores bank/counters; started abandonment is explicit and has no refund or invented original-color restoration.',
+        'compatibility': 'Does not read RGB palette function as current ped tint. No memory offsets, forced default head blend, ped replacement, clothing or auto-load. Preserves unknown record fields and unselected live groups. Existing Barber.json and cuts/eyes service untouched.',
+        'defaults': config,
+        'intentional_differences': 'Reference live-preview overwrites character appearance fields. RPCore adds own 120 configurable bank fee and no live tint/overlay preview because Legacy natives do not provide complete reversible color/opacity capture. Exact previously recorded selected values are free to reapply.',
+        'scope_limits': 'No genetic face editor, makeup, tattoos, full ped creator or automatic startup appearance. Rendering/silent native setters cannot be verified in this cloud. Paid-started failure remains recoverable; never claims to refund and undo unknown colors. Phases 8/9 retained.',
+        'configuration_sha256': digest(grooming_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

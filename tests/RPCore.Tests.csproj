@@ -20,6 +20,7 @@
     <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmRentalData.cs" Link="PdmRentalData.cs" />
     <Compile Include="../PdmShowroomData.cs" Link="PdmShowroomData.cs" />
+    <Compile Include="../GroomingData.cs" Link="GroomingData.cs" />
     <Compile Include="../BarberData.cs" Link="BarberData.cs" />
     <Compile Include="../HomeStorageData.cs" Link="HomeStorageData.cs" />
     <Compile Include="../WardrobeData.cs" Link="WardrobeData.cs" />
@@ -55,6 +56,7 @@
     <EmbeddedResource Include="../config/Jobs/PdmRepo.json" LogicalName="RPCore.JobDefaults.PdmRepo.json" />
     <EmbeddedResource Include="../config/Jobs/PdmRental.json" LogicalName="RPCore.JobDefaults.PdmRental.json" />
     <EmbeddedResource Include="../config/Jobs/PdmShowroom.json" LogicalName="RPCore.JobDefaults.PdmShowroom.json" />
+    <EmbeddedResource Include="../config/Jobs/Grooming.json" LogicalName="RPCore.JobDefaults.Grooming.json" />
     <EmbeddedResource Include="../config/Jobs/Barber.json" LogicalName="RPCore.JobDefaults.Barber.json" />
     <EmbeddedResource Include="../config/Jobs/HomeStorage.json" LogicalName="RPCore.JobDefaults.HomeStorage.json" />
     <EmbeddedResource Include="../config/Jobs/Wardrobe.json" LogicalName="RPCore.JobDefaults.Wardrobe.json" />

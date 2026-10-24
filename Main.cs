@@ -100,6 +100,7 @@ namespace RPCore
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
             var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
             var barber = new BarberSystem(pool, shifts); systems.Add(barber);
+            var grooming = new GroomingSystem(pool, shifts, () => barber.CanUseService, barber.OpenMenu); systems.Add(grooming); barber.OpenDetails = grooming.OpenMenu;
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
@@ -123,7 +124,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.34.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.35.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

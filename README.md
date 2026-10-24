@@ -1,4 +1,10 @@
-# RPCore 0.34.0 — GTA V Legacy
+# RPCore 0.35.0 — GTA V Legacy
+
+## Fase 6.3B — tintura, barba e sobrancelhas
+
+[Atualização 0.35.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.35.0.zip) · [Código-fonte 0.35.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.35.0.zip) · [Instalação e teste](docs/FASE-6.3B-0.35.0.md)
+
+Na barbearia: F10 → Barbearias → Tintura / barba / sobrancelhas. Freemode com rosto carregado, grupos independentes, paleta/estilo/opacidade e aplicação somente após confirmar $120 pelo banco. Cancelar rascunho não muda visual; pendência permite retomar sem nova cobrança. Sem prévia no personagem ou backup inventado das cores originais. 1233 testes aprovados e build sem erros/avisos; renderização precisa de teste no GTA. Saves/configs/sistemas anteriores e fases 8/9 preservados; criador facial e demais diferenças continuam.
 
 ## Fase 6.3A — barbearias / cortes e olhos
 

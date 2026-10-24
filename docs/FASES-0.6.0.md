@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.35.0: [fase 6.3B — tintura/barba/sobrancelhas](FASE-6.3B-0.35.0.md), freemode, seleção sem alterar personagem e aplicação paga recuperável. Não modifica grupos não escolhidos nem promete backup de cores desconhecidas. Criador facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.
+
 Andamento 0.34.0: [fase 6.3A — barbearias/cortes/olhos](FASE-6.3A-0.34.0.md). Sete pontos PSRP, prévia reversível, confirmação paga e último visual por perfil/modelo, sem troca de ped/roupas ou auto-load. Cores/barba/editor facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.
 
 Andamento 0.33.0: [fase 6.2C — armazenamento privado Eclipse](FASE-6.2C-0.33.0.md), integrado ao inventário e com rollback de transferências também nos depósitos/porta-malas existentes. Propriedade/roupas preservadas. Hotéis/editor facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.

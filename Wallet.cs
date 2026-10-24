@@ -18,6 +18,12 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static GroomingData Grooming => data.Grooming ?? new GroomingData();
+        public static bool GroomingBegin(GroomingLook look,int price,string id,out bool changed)=>GroomingTransactions.Begin(data,look,price,id,Save,out changed);
+        public static bool GroomingStart(string id,out bool changed)=>GroomingTransactions.Start(data,id,Save,out changed);
+        public static bool GroomingComplete(string id,out bool changed)=>GroomingTransactions.Complete(data,id,Save,out changed);
+        public static bool GroomingRefund(string id,out bool changed)=>GroomingTransactions.Refund(data,id,Save,out changed);
+        public static bool GroomingAbandon(string id,out bool changed)=>GroomingTransactions.Abandon(data,id,Save,out changed);
         public static BarberData Barber => data.Barber ?? new BarberData();
         public static bool BarberConfirm(BarberLook before,BarberLook after,int price,string id,out bool changed) => BarberTransactions.Confirm(data,before,after,price,id,Save,out changed);
         public static WardrobeData Wardrobe => data.Wardrobe ?? new WardrobeData();
