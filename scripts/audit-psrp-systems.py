@@ -250,7 +250,7 @@ if pdm_source.exists() and staff_config.exists():
         'period_seconds': config['PeriodSeconds'], 'roles': [r['Id'] for r in config['Roles']],
         'compatibility': 'Additive Pdm/Staff; absent field means no employees/upgrades/debt. No retroactive wages, no offline accrual, no changes to personal bank/vehicles/stock or logistics.',
         'intentional_differences': 'Own prices and 300-second gameplay payroll; bonus percentages and workshop discount are RPCore rules. No claim of identical legacy staff AI, automatic sales or weekly economy.',
-        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; parked-car repossession added in 6.1F; driving/combat variants, rental supply orders added in 6.1G; interior safe mechanics and remaining systems stay pending. Phases 8/9 retained.',
+        'scope_limits': 'Physical mechanic/cleaner services added in 6.1I; security staff AI, visual building modifications, automatic sales and transport ownership gates remain pending. Safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; parked-car repossession added in 6.1F; driving/combat variants, rental supply orders added in 6.1G; interior safe mechanics and remaining systems stay pending. Phases 8/9 retained.',
         'configuration_sha256': digest(staff_config.read_bytes())}
 safe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSafe.json'
 if pdm_source.exists() and safe_config.exists():
@@ -344,5 +344,22 @@ if pdm_source.exists() and showroom_config.exists():
         'intentional_differences': 'No global showroom/parking generator deletion or forced doors/IPL activation. Numbered slots 9-11 use exterior checks per their lower reference level. Own explicit buyer event at public desk instead of random automatic showroom sale.',
         'scope_limits': 'No preview cameras, cover-cloth system, automatic reputation/random sales, forced interior access or full building/staff upgrades. Interior/floor readiness and occupied bays can leave display pending; phases 8/9 retained.',
         'configuration_sha256': digest(showroom_config.read_bytes())}
+premises_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmPremises.json'
+if pdm_source.exists() and premises_config.exists():
+    source = pdm_source.read_text(); config = json.loads(premises_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    report['pdm_premises'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_mechanic_cleaner': 'SpawnMechanicPed' in source and 'SpawnCleanerPed' in source,
+        'reference_has_cleaner_sequence': 'CreateCleanerSequence' in source and 'amb@world_human_maid_clean@idle_a' in source,
+        'reference_has_stock_dirt': 'DirtLevel += num2' in source,
+        'all_points_match_reference': all(tuple(config[n][k] for k in ['X','Y','Z']) in reference for n in ['Mechanic','Cleaner']),
+        'rpcore_cycle': 'Own hired/paid mechanic and cleaner NPCs, selected displayed-stock service request, walk/animation, timed atomic repair or cleaning, company expense only on repair completion, preserved slot/stock and interrupted-intent recovery.',
+        'wallet_checkpoint': 'Additive Pdm.PremisesService, DirtSeconds and Stock.Dirt. Snapshot employee/price/handle; commit stock condition, expense and close intent together; no charge or partial condition change on cancellation.',
+        'compatibility': 'Old stock defaults to zero dirt; prior contracts retain saved prices. Existing four-role staff config is cloned and cleaner offer merged in memory; no rewrite/reset of custom wages, saves or visual resources.',
+        'defaults': config,
+        'intentional_differences': 'Own active-time dirt: +1 per 60 seconds to displayed units, max 15, 0.5 percent quote penalty per level. Explicit car cleaning/repair requests, not a port of legacy floor/trash chore AI. Paid cleaner salary but no per-clean fee. Reference points/models/cleaner animation guide own code; no copying source.',
+        'scope_limits': 'No guard AI, global relationship changes, forced interiors, arbitrary pedestrian removal, automatic floor/bin cleaning or full staff parity. Native paths/animations and interior access require GTA testing. Phases 8/9 retained.',
+        'configuration_sha256': digest(premises_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

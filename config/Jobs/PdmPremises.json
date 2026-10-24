@@ -1,0 +1,12 @@
+{
+  "Mechanic": { "Name": "PDM / mecanico", "X": -37.51725, "Y": -1090.692, "Z": 26.42234, "Heading": 260.3923 },
+  "Cleaner": { "Name": "PDM / zeladoria", "X": -43.24272, "Y": -1098.42, "Z": 26.42233, "Heading": 260.3923 },
+  "MechanicModel": "s_m_y_xmech_01",
+  "CleanerModel": "s_f_m_maid_01",
+  "CleanerOffer": { "Id": "cleaner", "Name": "Zeladoria", "HiringCost": 650, "Wage": 130, "SaleBonusPercent": 0 },
+  "RepairSeconds": 8,
+  "CleanSeconds": 6,
+  "TimeoutSeconds": 120,
+  "DirtIntervalSeconds": 60,
+  "EnableDirt": true
+}

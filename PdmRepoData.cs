@@ -31,7 +31,7 @@ namespace RPCore
             changed = false; if (c == null || !c.Valid || r == null || !r.Valid || operation == null || !operation.Valid || operation.Arrived || operation.VehicleHandle != 0 || operation.Location >= r.Locations.Count) return false;
             return PdmTransactions.Apply(w, operation.Id + ":repo", 0, d => {
                 var loan = d.Loans.Find(l => l.Id == operation.LoanId);
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.Stock.Count >= c.Capacity || loan == null || !loan.Defaulted || loan.Settled) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null || d.Stock.Count >= c.Capacity || loan == null || !loan.Defaulted || loan.Settled) return false;
                 d.Repo = JsonConvert.DeserializeObject<PdmRepoOperation>(JsonConvert.SerializeObject(operation)); return true;
             }, save, out changed);
         }

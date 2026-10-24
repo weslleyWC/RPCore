@@ -78,7 +78,7 @@ namespace RPCore
         PdmEntityRef Reference(Vehicle v, string model) => new PdmEntityRef { Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim(), Handle = v.Handle };
         void Begin(int count)
         {
-            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
+            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe na PDM, sem procurado/missao e sem outra entrega/coleta pendente."); return; }
             var ids = Wallet.Pdm.Stock.Where(s => s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300).Take(count).Select(s => s.Id).ToList();
             if (ids.Count != count) { Notify.Show("Nao ha pedidos suficientes em boas condicoes. Compre/repare no estoque PDM."); return; }
@@ -121,7 +121,7 @@ namespace RPCore
                 bool saved = false;
                 try
                 {
-                    v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body;
+                    v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; v.DirtLevel = stock.Dirt;
                     if (!Wallet.PdmCargo(run.Id, stock.Id, v.Handle, out _)) break;
                     cargo.Add(stock.Id, v); saved = true; var b = v.AddBlip(); b.Name = "RPCore: pedido " + stock.Name; b.Color = BlipColor.Blue; cargoBlips.Add(b);
                 }
@@ -217,7 +217,7 @@ namespace RPCore
         public bool Display(string stockId)
         {
             var stock = Wallet.Pdm.Stock.Find(s => s.Id == stockId);
-            if (Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || stock == null || stock.AwaitingCollection || !ClearDisplay()) return false;
+            if (Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || stock == null || stock.AwaitingCollection || !ClearDisplay()) return false;
             display = Spawn(options.Showroom, stock.Model, stock.Plate);
             if (!Exists(display)) { Notify.Show("Vaga de exposicao ocupada; estoque preservado."); return false; }
             display.IsInvincible = true; display.EngineHealth = stock.Engine; display.BodyHealth = stock.Body; display.IsPositionFrozen = true; Function.Call(Hash.SET_VEHICLE_DOORS_LOCKED, display, 2); Notify.Show("Carro exposto no patio externo. Continua no estoque da empresa."); return true;

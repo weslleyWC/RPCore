@@ -1,4 +1,10 @@
-# RPCore 0.26.0 — GTA V Legacy
+# RPCore 0.27.0 — GTA V Legacy
+
+## Fase 6.1I — equipe presencial e manutenção
+
+[Atualização 0.27.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.27.0.zip) · [Código-fonte 0.27.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.27.0.zip) · [Instalação e teste](docs/FASE-6.1I-0.27.0.md)
+
+F10 → Trabalhos → PDM → Equipe presencial / manutencao. Mecânico e zeladoria contratados caminham até os carros expostos para reparar/limpar, mantendo vaga e estoque. Reparo cobrado só ao concluir; limpeza sem taxa adicional, com salário devido. Sujeira progride no showroom e reduz novas cotações; limpeza recupera preço. Contrate/pague em Equipe / salarios / melhorias. 998 testes aprovados e build sem erros/avisos. Saves/configurações/F2/F11 preservados; NPCs, caminhos e animações precisam de teste no GTA. Limpeza de piso/lixo, seguranças e demais diferenças continuam pendentes; fases 8/9 mantidas.
 
 ## Fase 6.1H — showroom e atendimento
 

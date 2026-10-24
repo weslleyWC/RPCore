@@ -9,14 +9,14 @@ namespace RPCore
     {
         public string Id, Name, Requires;
         public int HiringCost, Wage, SaleBonusPercent;
-        public bool Valid => new[] { "mechanic", "junior", "senior", "director" }.Contains(Id) && !string.IsNullOrWhiteSpace(Name) && HiringCost >= 0 && HiringCost <= 100000 && Wage > 0 && Wage <= 100000 && SaleBonusPercent >= 0 && SaleBonusPercent <= 10;
+        public bool Valid => new[] { "mechanic", "junior", "senior", "director", "cleaner" }.Contains(Id) && !string.IsNullOrWhiteSpace(Name) && HiringCost >= 0 && HiringCost <= 100000 && Wage > 0 && Wage <= 100000 && SaleBonusPercent >= 0 && SaleBonusPercent <= 10 && (Id != "cleaner" || SaleBonusPercent == 0);
     }
     public sealed class PdmStaffOptions : ExtensibleData
     {
         public int PeriodSeconds = 300, WorkshopCost = 5000, AdvertisingCost = 3000, Severance = 250;
         public List<PdmStaffOffer> Roles = new List<PdmStaffOffer>();
         [JsonIgnore] public bool Valid => PeriodSeconds >= 60 && PeriodSeconds <= 3600 && WorkshopCost > 0 && WorkshopCost <= 1000000 && AdvertisingCost > 0 && AdvertisingCost <= 1000000 && Severance >= 0 && Severance <= 100000
-            && Roles != null && Roles.Count == 4 && Roles.All(r => r != null && r.Valid) && Roles.Select(r => r.Id).Distinct().Count() == 4
+            && Roles != null && Roles.Count >= 4 && Roles.Count <= 5 && Roles.All(r => r != null && r.Valid) && Roles.Select(r => r.Id).Distinct().Count() == Roles.Count && new[] { "mechanic", "junior", "senior", "director" }.All(id => Roles.Any(r => r.Id == id))
             && Roles.All(r => r.Requires == (r.Id == "senior" ? "junior" : r.Id == "director" ? "senior" : null));
     }
     public static class PdmStaffDefaults
@@ -31,8 +31,8 @@ namespace RPCore
     {
         public string Id, Role, Name;
         public int Wage, PeriodSeconds, Seconds, Owed, BonusPercent, Severance;
-        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && new[] { "mechanic", "junior", "senior", "director" }.Contains(Role) && !string.IsNullOrWhiteSpace(Name)
-            && Wage > 0 && Wage <= 100000 && PeriodSeconds >= 60 && PeriodSeconds <= 3600 && Seconds >= 0 && Seconds < PeriodSeconds && Owed >= 0 && BonusPercent >= 0 && BonusPercent <= 10 && Severance >= 0 && Severance <= 100000;
+        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && new[] { "mechanic", "junior", "senior", "director", "cleaner" }.Contains(Role) && !string.IsNullOrWhiteSpace(Name)
+            && Wage > 0 && Wage <= 100000 && PeriodSeconds >= 60 && PeriodSeconds <= 3600 && Seconds >= 0 && Seconds < PeriodSeconds && Owed >= 0 && BonusPercent >= 0 && BonusPercent <= 10 && Severance >= 0 && Severance <= 100000 && (Role != "cleaner" || BonusPercent == 0);
     }
     public sealed class PdmStaffData : ExtensibleData
     {
@@ -40,12 +40,12 @@ namespace RPCore
         public int FormerDebt;
         public long Paid, HiringSpent, UpgradeSpent;
         public bool Workshop, Advertising;
-        [JsonIgnore] public bool Valid => Employees != null && Employees.Count <= 4 && Employees.All(e => e != null && e.Valid) && Employees.Select(e => e.Role).Distinct().Count() == Employees.Count && Employees.Select(e => e.Id).Distinct().Count() == Employees.Count
+        [JsonIgnore] public bool Valid => Employees != null && Employees.Count <= 5 && Employees.All(e => e != null && e.Valid) && Employees.Select(e => e.Role).Distinct().Count() == Employees.Count && Employees.Select(e => e.Id).Distinct().Count() == Employees.Count
             && FormerDebt >= 0 && Paid >= 0 && HiringSpent >= 0 && UpgradeSpent >= 0;
     }
     public static class PdmStaffTransactions
     {
-        static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null && d.ShowroomSale == null;
+        static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null && d.ShowroomSale == null && d.PremisesService == null;
         static bool Working(PdmData d, string role) => d?.Staff != null && d.Staff.FormerDebt == 0 && d.Staff.Employees.Any(e => e.Role == role && e.Owed == 0);
         public static int RepairPrice(PdmData d, int price) => d?.Staff?.Workshop == true && Working(d, "mechanic") ? Math.Max(1, price / 2) : price;
         public static int BonusPercent(PdmData d)

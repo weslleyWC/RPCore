@@ -68,7 +68,7 @@ namespace RPCore
         { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? v : null; }
         void Begin(string loanId)
         {
-            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
+            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe no escritorio, sem procurado/missao e sem outra operacao PDM pendente."); return; }
             var loan = Wallet.Pdm.Loans.Find(l => l.Id == loanId); if (loan == null || !loan.Defaulted || loan.Settled || Wallet.Pdm.Stock.Count >= company.Capacity) { Notify.Show("Confira contrato em atraso e vaga livre no estoque."); return; }
             if (Exists(Match(loan.DeliveredHandle, loan.Asset.Model, loan.Asset.Plate))) { Notify.Show("O carro da entrega original ainda esta no mundo. Libere-o e aguarde a retirada antes de iniciar retomada."); return; }
@@ -107,7 +107,7 @@ namespace RPCore
             var point = options.Locations[a.Location]; if (Game.Player.Character.Position.DistanceTo(Pos(point)) > 150 || trailer.Position.DistanceTo(Pos(point)) > 150) return;
             retryAt = Game.GameTime + 5000; var loan = Loan; var v = Spawn(point, loan.Asset.Model, loan.Asset.Plate); if (!Exists(v)) { Notify.Show("Vaga do alvo ocupada. Afaste o conjunto; nova tentativa em 5s."); return; }
             bool saved = false;
-            try { v.EngineHealth = loan.Asset.Engine; v.BodyHealth = loan.Asset.Body; if (!Wallet.PdmRepoCar(run.Id, v.Handle, out _)) return; car = v; saved = true; carBlip = car.AddBlip(); carBlip.Name = "RPCore: alvo da retomada"; carBlip.Color = BlipColor.Blue; }
+            try { v.EngineHealth = loan.Asset.Engine; v.BodyHealth = loan.Asset.Body; v.DirtLevel = loan.Asset.Dirt; if (!Wallet.PdmRepoCar(run.Id, v.Handle, out _)) return; car = v; saved = true; carBlip = car.AddBlip(); carBlip.Name = "RPCore: alvo da retomada"; carBlip.Color = BlipColor.Blue; }
             finally { if (!saved) { v.Delete(); JobVehicles.Release(v); } }
         }
         bool UnloadReady => InputAllowed && Coupled && !Foreign && Exists(car) && car.Occupants.Length == 0 && car.IsAttachedTo(trailer) && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(trailer.Position) < 30;

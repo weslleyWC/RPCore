@@ -80,7 +80,7 @@ namespace RPCore
                 var point = RigSpawn.FindDisplayVehicle(slot.Point, model, slot.Interior); if (point == null) return null;
                 var v = World.CreateVehicle(model, Pos(point), point.Heading); if (!Exists(v)) return null;
                 v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false; v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body;
-                Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, stock.Plate); v.IsPositionFrozen = true; v.IsInvincible = true; Function.Call(Hash.SET_VEHICLE_DOORS_LOCKED, v, 2); JobVehicles.Reserve(v);
+                Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, stock.Plate); v.DirtLevel = stock.Dirt; v.IsPositionFrozen = true; v.IsInvincible = true; Function.Call(Hash.SET_VEHICLE_DOORS_LOCKED, v, 2); JobVehicles.Reserve(v);
                 return new Display { StockId = stock.Id, Model = stock.Model, Plate = stock.Plate, Car = v };
             }
             finally { model.MarkAsNoLongerNeeded(); }
@@ -120,6 +120,7 @@ namespace RPCore
             if (!PdmShowroomTransactions.Idle(Wallet.Pdm) || Wallet.Pdm.Showroom.Any(e => !Empty(Find(e.StockId)))) { Notify.Show("Encerre o atendimento/contrato e libere os carros expostos."); return false; }
             foreach (var id in Wallet.Pdm.Showroom.Select(e => e.StockId).ToList()) if (!Prepare(id)) return false; return true;
         }
+        public Vehicle GetDisplayVehicle(string id) => Find(id)?.Car;
         bool RecoverIntent()
         {
             if (!Wallet.Pdm.Valid || Active) return false; var sale = Wallet.Pdm.ShowroomSale; if (sale == null) return true;
@@ -132,11 +133,11 @@ namespace RPCore
             bool near = Game.Player.Character.Position.DistanceTo(StartPosition) < 180;
             foreach (var entry in Wallet.Pdm.Showroom.ToList())
             {
-                if (Active && run.StockId == entry.StockId) continue;
+                if (Active && run.StockId == entry.StockId || Wallet.Pdm.PremisesService?.StockId == entry.StockId) continue;
                 var d = Find(entry.StockId);
                 if (!near)
                 { if (d != null && Delete(d)) { displays.Remove(entry.StockId); if (entry.Handle != 0) Wallet.PdmShowroomTrack(entry.StockId, 0, out _); } continue; }
-                if (d != null) continue; var slot = options.Slots.Find(s => s.Id == entry.SlotId); if (slot == null || !slot.Enabled) continue;
+                if (d != null) { var condition = Wallet.Pdm.Stock.Find(s => s.Id == entry.StockId); if (Empty(d)) { d.Car.EngineHealth = condition.Engine; d.Car.BodyHealth = condition.Body; d.Car.DirtLevel = condition.Dirt; } continue; } var slot = options.Slots.Find(s => s.Id == entry.SlotId); if (slot == null || !slot.Enabled) continue;
                 var stock = Wallet.Pdm.Stock.Find(s => s.Id == entry.StockId); var created = Spawn(stock, slot); if (created == null) continue;
                 bool saved = false;
                 try { if (!Wallet.PdmShowroomTrack(stock.Id, created.Car.Handle, out _)) continue; displays[stock.Id] = created; saved = true; }

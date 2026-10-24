@@ -9,6 +9,8 @@ namespace RPCore
 {
     public sealed class PdmStaffSystem : ISystem
     {
+        public PdmPremisesOptions Premises { get; }
+        public Action OpenServices;
         public string Name => "pdmstaff";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly Func<bool> office; readonly Action back;
         readonly PdmStaffOptions options;
@@ -18,6 +20,9 @@ namespace RPCore
             this.pool = pool; this.office = office; this.back = back;
             var defaults = PdmStaffDefaults.Load(); options = Store.LoadDef("Jobs/PdmStaff.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmStaff.json; embedded defaults used, original retained."); options = defaults; }
+            var premisesDefaults = PdmPremisesDefaults.Load(); Premises = Store.LoadDef("Jobs/PdmPremises.json", () => premisesDefaults);
+            if (Premises == null || !Premises.Valid) { Log.Write("Invalid PdmPremises.json; embedded defaults used, original retained."); Premises = premisesDefaults; }
+            options = PdmPremisesDefaults.Merge(options, Premises);
             menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
@@ -65,7 +70,7 @@ namespace RPCore
             foreach (var offer in options.Roles)
             {
                 var role = offer; var employee = s.Employees.Find(e => e.Role == role.Id);
-                if (employee == null) Add("Contratar " + role.Name + ": $" + role.HiringCost, "Salario $" + role.Wage + " a cada " + options.PeriodSeconds + " segundos ativos. " + (role.Requires == null ? "" : "Requer " + role.Requires + ". ") + (role.Id == "mechanic" ? "Com oficina, reparos do estoque pela metade." : "Bonus de venda: " + role.SaleBonusPercent + "% (maior nivel, sem somar)."), () => Change(() => Wallet.PdmHire(options, role.Id, Guid.NewGuid().ToString("N"), out _)));
+                if (employee == null) Add("Contratar " + role.Name + ": $" + role.HiringCost, "Salario $" + role.Wage + " a cada " + options.PeriodSeconds + " segundos ativos. " + (role.Requires == null ? "" : "Requer " + role.Requires + ". ") + (role.Id == "mechanic" ? "Com oficina, reparos do estoque pela metade." : role.Id == "cleaner" ? "Limpeza presencial dos carros expostos, sem taxa adicional por servico." : "Bonus de venda: " + role.SaleBonusPercent + "% (maior nivel, sem somar)."), () => Change(() => Wallet.PdmHire(options, role.Id, Guid.NewGuid().ToString("N"), out _)));
                 else
                 {
                     string id = employee.Id;
@@ -74,6 +79,7 @@ namespace RPCore
                     Add("Demitir " + employee.Name, "Transfere salarios devidos, proporcional do periodo e multa de $" + employee.Severance + " ao acerto pendente. Divulgacao: demita do maior nivel para o menor.", () => Change(() => Wallet.PdmFire(id, Guid.NewGuid().ToString("N"), out _)));
                 }
             }
+            if (OpenServices != null) Add("Equipe presencial / servicos do showroom", "Solicitar mecanico/zeladoria nos carros expostos.", OpenServices);
             Add("Quitar ex-funcionarios: $" + s.FormerDebt, "Acerto pendente bloqueia novas contratacoes e beneficios ate o pagamento integral.", () => Change(() => PayExpected("former", s.FormerDebt)));
             Add(s.Workshop ? "Oficina: adquirida" : "Melhorar oficina: $" + options.WorkshopCost, "Mecanico contratado e sem atraso + oficina = metade do custo de reparar estoque. Nao repara carro pessoal.", () => Change(() => Wallet.PdmUpgrade(options, "workshop", Guid.NewGuid().ToString("N"), out _)));
             Add(s.Advertising ? "Divulgacao: adquirida" : "Melhorar divulgacao: $" + options.AdvertisingCost, "Acrescenta 2% a venda quando ha profissional de divulgacao sem atraso. Nao gera dinheiro/cliente automaticamente.", () => Change(() => Wallet.PdmUpgrade(options, "advertising", Guid.NewGuid().ToString("N"), out _)));

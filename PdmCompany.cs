@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmCompany : ISystem, IWorkContract
     {
-        public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom;
+        public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises;
         public Func<string,bool> PrepareStock;
         internal PdmOptions CompanyOptions => options;
         public PdmRepoOptions Repossession { get; }
@@ -49,8 +49,8 @@ namespace RPCore
         void Add(string title, string text, Action action) { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm action", ex); Notify.Show("Acao PDM nao confirmada. Veja RPCore.log."); } }; menu.Add(item); }
         internal bool OfficeAction()
         {
-            SyncStaff?.Invoke(); SyncFinance?.Invoke();
-            if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null)
+            SyncStaff?.Invoke(); SyncFinance?.Invoke(); SyncPremises?.Invoke();
+            if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null)
             { Notify.Show("Va a pe ao escritorio externo PDM, sem procurado/missao/combate. Encerre/recupere a entrega pendente."); return false; } return true;
         }
         bool DataValid() { if (Wallet.Pdm.Valid) return true; Log.Write("Invalid Wallet.json/Pdm; original retained."); Notify.Show("Dados da empresa invalidos. Arquivo preservado."); return false; }
@@ -62,6 +62,7 @@ namespace RPCore
             if (!d.Owned) Add("Adquirir empresa: $" + options.PurchasePrice, "Debita o banco pessoal; nao inclui capital nem estoque. Valor proprio do RPCore.", () => { if (OfficeAction()) { if (!Wallet.PdmPurchase(options, Guid.NewGuid().ToString("N"), out bool changed)) Notify.Show("Saldo bancario insuficiente ou empresa ja adquirida."); else if (changed) Bump("pdm_owned"); OpenMenu(); } });
             else
             {
+                if (OpenServices != null) Add("Equipe presencial / manutencao", "Mecanico e zeladoria atendem os carros expostos.", OpenServices);
                 if (OpenShowroom != null) Add("Showroom / vagas / compradores", "Expor estoque em vagas persistentes e atender comprador na PDM.", OpenShowroom);
                 if (OpenStaff != null) Add("Equipe / salarios / melhorias", "Contratar, quitar salarios, demitir e melhorar oficina/divulgacao.", OpenStaff);
                 if (OpenRental != null) Add("Pedidos da locadora / dois carros", "Fornecer duas unidades prontas do mesmo modelo ao patio externo e devolver o conjunto.", OpenRental);
@@ -88,7 +89,7 @@ namespace RPCore
         }
         bool RentalWithdrawalAction()
         {
-            SyncStaff?.Invoke(); SyncFinance?.Invoke();
+            SyncStaff?.Invoke(); SyncFinance?.Invoke(); SyncPremises?.Invoke();
             if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.Repo != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Rental?.Delivered != true)
             { Notify.Show("Para liberar limite do caixa, va a pe ao escritorio apos a entrega aceita pela locadora."); return false; }
             return true;
@@ -131,7 +132,7 @@ namespace RPCore
                 if (!model.IsValid || !model.IsInCdImage || !model.IsCar) { Notify.Show("Modelo indisponivel; estoque preservado."); return; }
                 var bay = RigSpawn.FindVehicle(options.Spawn, model, "PDM"); if (bay == null) { Notify.Show("Sem vaga livre para retirada. Estoque e caixa preservados."); return; }
                 car = World.CreateVehicle(model, Pos(bay), bay.Heading); if (car == null || !car.Exists()) return;
-                car.IsPersistent = true; car.EngineHealth = stock.Engine; car.BodyHealth = stock.Body; Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, car, stock.Plate); JobVehicles.Reserve(car);
+                car.IsPersistent = true; car.EngineHealth = stock.Engine; car.BodyHealth = stock.Body; car.DirtLevel = stock.Dirt; Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, car, stock.Plate); JobVehicles.Reserve(car);
                 int selected = random.Next(options.Customers.Count); string id = Guid.NewGuid().ToString("N");
                 if (!(financed ? Wallet.PdmBeginFinanced(options, stockId, id, selected, car.Handle, out _) : Wallet.PdmBegin(options, stockId, id, selected, car.Handle, out _))) { Notify.Show("Entrega nao confirmada. Estoque preservado."); return; }
                 run = new PdmRun(id, stockId, options.HandoverSeconds); ownerProfile = Profile.Id; destination = options.Customers[selected]; cancelReason = null; cancelEngine = cancelBody = -1; began = nextSave = nextBuyer = Game.GameTime;
@@ -171,7 +172,7 @@ namespace RPCore
             Status("entregando chaves / aguarde confirmacao"); if (unchecked(Game.GameTime - nextSave) < 0) return;
             try
             {
-                SyncStaff?.Invoke(); SyncFinance?.Invoke();
+                SyncStaff?.Invoke(); SyncFinance?.Invoke(); SyncPremises?.Invoke();
                 bool financed = Wallet.Pdm.Active?.Financed == true;
                 var stock = Wallet.Pdm.Stock.Find(s => s.Id == run.StockId);
                 int quoted = financed ? PdmFinanceTransactions.Entry(Financing, PdmFinanceTransactions.Quote(Wallet.Pdm, Financing, stock, Health(car.EngineHealth), Health(car.BodyHealth))) : PdmStaffTransactions.Quote(Wallet.Pdm, stock, Health(car.EngineHealth), Health(car.BodyHealth)); bool changed = false, attempted = false;

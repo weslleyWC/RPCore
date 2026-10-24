@@ -83,6 +83,10 @@
     "bytes": 33800269,
     "sha256": "d06d582be9bfc347a15969bcb1f8614aff68c6a1a7c87ea3f61734107714bd9e"
   },
+  "RPCore-source-0.27.0.zip": {
+    "bytes": 34112050,
+    "sha256": "4bbb9aeb7105ed5085ba7b1da69ebd3c2d1f270cb4df2c05d7839e8aa6b7988c"
+  },
   "RPCore-source-0.3.0.zip": {
     "bytes": 21897660,
     "sha256": "6acf8505e8170212fce29e5928f67f22405cd0cf4126f7c267d2a6a139ee1690"
@@ -116,8 +120,8 @@
     "sha256": "a7af0b6ba3a36ccf6075e1c36cfdf3708806be326e1d188b7e7dab082ed35685"
   },
   "RPCore-source.zip": {
-    "bytes": 33800269,
-    "sha256": "d06d582be9bfc347a15969bcb1f8614aff68c6a1a7c87ea3f61734107714bd9e"
+    "bytes": 34112050,
+    "sha256": "4bbb9aeb7105ed5085ba7b1da69ebd3c2d1f270cb4df2c05d7839e8aa6b7988c"
   },
   "RPCore-update-0.10.0.zip": {
     "bytes": 30034139,
@@ -203,6 +207,10 @@
     "bytes": 34010308,
     "sha256": "e725870805e7a64793ca0b0de1e3e469bc07b0bc354c0a30337ea07f73e48ed6"
   },
+  "RPCore-update-0.27.0.zip": {
+    "bytes": 34318619,
+    "sha256": "ab77111e8e13fccf17b05a3fced913c73f4bb857ddf93b3d204f35feb4fbd1f8"
+  },
   "RPCore-update-0.3.0.zip": {
     "bytes": 22169521,
     "sha256": "a828261e3ad2bd6b52a4697493495d1fa26659d7fc91e804e5e758efb84a036f"
@@ -236,8 +244,8 @@
     "sha256": "7c3e646d04c1e5e0fb47b956afe8dba2301641aab7965e056b2c367a172cfc5d"
   },
   "RPCore-update.zip": {
-    "bytes": 34010308,
-    "sha256": "e725870805e7a64793ca0b0de1e3e469bc07b0bc354c0a30337ea07f73e48ed6"
+    "bytes": 34318619,
+    "sha256": "ab77111e8e13fccf17b05a3fced913c73f4bb857ddf93b3d204f35feb4fbd1f8"
   },
   "RPCore-visual-assets-0.3.0.zip": {
     "bytes": 34765746,

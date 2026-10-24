@@ -87,7 +87,7 @@ namespace RPCore
         void Begin(List<string> ids)
         {
             var d = Wallet.Pdm;
-            if (Active || !d.Valid || !d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
+            if (Active || !d.Valid || !d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe na PDM, sem procurado/missao e sem outra operacao pendente."); return; }
             if (clearDisplay != null && !clearDisplay()) return;
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
@@ -120,7 +120,7 @@ namespace RPCore
                 var item = a.Cars[i]; if (item.Handle > 0 || cars.ContainsKey(item.StockId)) continue; var stock = Wallet.Pdm.Stock.Find(s => s.Id == item.StockId);
                 var v = Spawn(options.Pickups[i], stock.Model, stock.Plate); if (!Exists(v)) { Notify.Show("Vaga de retirada ocupada. Afaste o conjunto; nova tentativa em 5s."); return; }
                 bool saved = false;
-                try { v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; if (!Wallet.PdmRentalCar(run.Id, stock.Id, v.Handle, out _)) return; cars.Add(stock.Id, v); saved = true; Blip(v, "RPCore: carro para locadora"); }
+                try { v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; v.DirtLevel = stock.Dirt; if (!Wallet.PdmRentalCar(run.Id, stock.Id, v.Handle, out _)) return; cars.Add(stock.Id, v); saved = true; Blip(v, "RPCore: carro para locadora"); }
                 finally { if (!saved) { v.Delete(); JobVehicles.Release(v); } }
             }
         }

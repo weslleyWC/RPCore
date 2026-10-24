@@ -35,7 +35,7 @@ namespace RPCore
         {
             changed = false; if (transfer == null || !transfer.Valid || transfer.Handed) return false;
             return PdmTransactions.Apply(w, transfer.Id + ":safe-reserve", 0, d => {
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.Cash < transfer.Amount) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null || d.Cash < transfer.Amount) return false;
                 d.Cash -= transfer.Amount;
                 // Do not retain references owned by the caller after a checkpoint.
                 d.SafeTransfer = JsonConvert.DeserializeObject<PdmSafeTransfer>(JsonConvert.SerializeObject(transfer));

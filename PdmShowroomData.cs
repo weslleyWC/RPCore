@@ -36,7 +36,7 @@ namespace RPCore
     }
     public static class PdmShowroomTransactions
     {
-        public static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null && d.ShowroomSale == null;
+        public static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null && d.ShowroomSale == null && d.PremisesService == null;
         public static bool Assign(WalletData w, PdmShowroomOptions c, string stockId, string slotId, int handle, string receipt, Action save, out bool changed)
         {
             changed = false; if (c == null || !c.Valid || handle <= 0 || !c.Slots.Any(s => s.Id == slotId && s.Enabled)) return false;
@@ -49,7 +49,7 @@ namespace RPCore
         public static bool Track(WalletData w, string stockId, int handle, string receipt, Action save, out bool changed)
         {
             changed = false; if (handle < 0) return false;
-            return PdmTransactions.Apply(w, receipt, 0, d => { var e = d.Showroom.Find(x => x.StockId == stockId); if (e == null || d.ShowroomSale?.StockId == stockId || handle > 0 && d.Showroom.Any(x => x.StockId != stockId && x.Handle == handle)) return false; e.Handle = handle; return true; }, save, out changed);
+            return PdmTransactions.Apply(w, receipt, 0, d => { var e = d.Showroom.Find(x => x.StockId == stockId); if (e == null || d.ShowroomSale?.StockId == stockId || d.PremisesService?.StockId == stockId || handle > 0 && d.Showroom.Any(x => x.StockId != stockId && x.Handle == handle)) return false; e.Handle = handle; return true; }, save, out changed);
         }
         public static bool Remove(WalletData w, string stockId, string receipt, Action save, out bool changed)
         { return PdmTransactions.Apply(w, receipt, 0, d => { if (!Idle(d) || !d.Showroom.Any(e => e.StockId == stockId)) return false; d.Showroom.RemoveAll(e => e.StockId == stockId); return true; }, save, out changed); }

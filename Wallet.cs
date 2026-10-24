@@ -51,6 +51,10 @@ namespace RPCore
         public static bool PdmShowroomBegin(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,Save,out changed);
         public static bool PdmShowroomSell(string id,out bool changed)=>PdmShowroomTransactions.Sell(data,id,Save,out changed);
         public static bool PdmShowroomCancel(string id,out bool changed)=>PdmShowroomTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmServiceBegin(PdmOptions c,string stock,string kind,string id,out bool changed)=>PdmPremisesTransactions.Begin(data,c,stock,kind,id,Save,out changed);
+        public static bool PdmServiceComplete(string id,out bool changed)=>PdmPremisesTransactions.Complete(data,id,Save,out changed);
+        public static bool PdmServiceCancel(string id,out bool changed)=>PdmPremisesTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmDirtWork(PdmPremisesOptions c,int seconds,string id,out bool changed)=>PdmPremisesTransactions.Work(data,c,seconds,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

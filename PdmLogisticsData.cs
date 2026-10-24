@@ -54,7 +54,7 @@ namespace RPCore
             changed = false;
             if (string.IsNullOrWhiteSpace(id) || id.Length > 100 || stockIds == null || stockIds.Count < 1 || stockIds.Count > 2 || stockIds.Distinct().Count() != stockIds.Count || truck == null || !truck.Valid || trailer == null || !trailer.Valid || truck.Handle == trailer.Handle) return false;
             return PdmTransactions.Apply(w, id + ":collection", 0, d => {
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || stockIds.Any(s => !d.Stock.Any(v => v.Id == s && v.AwaitingCollection && v.Engine >= 300 && v.Body >= 300))) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null || stockIds.Any(s => !d.Stock.Any(v => v.Id == s && v.AwaitingCollection && v.Engine >= 300 && v.Body >= 300))) return false;
                 d.Collection = new PdmCollection { Id = id, StockIds = new List<string>(stockIds), Truck = truck, Trailer = trailer, Cargo = stockIds.Select(s => new PdmCargoRef { StockId = s }).ToList() }; return true;
             }, save, out changed);
         }
