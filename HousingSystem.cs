@@ -11,6 +11,8 @@ namespace RPCore
     public sealed class HousingSystem : ISystem
     {
         public string Name => "housing";
+        public Action OpenWardrobe;
+        public bool CanUseWardrobe => Inside && SafeFoot && transit == null && Wallet.Housing.Valid && Wallet.Housing.Owns(options.Id);
         readonly ObjectPool pool; readonly ShiftGate gate; readonly NativeMenu menu; readonly HousingOptions options; readonly Blip blip;
         HousingTransit transit; Ped owner; Vector3 origin; bool exiting; string profile; int nextProbe;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
@@ -32,6 +34,7 @@ namespace RPCore
             Add("GPS: " + options.Name, "Entrada publica do predio. Compra e entrada apenas a pe junto ao local.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, options.Entrance.X, options.Entrance.Y); menu.Visible = false; });
             if (!Wallet.Housing.Owns(options.Id)) Add("Comprar apartamento: $" + options.Price, "Compra unica pelo banco RPCore, sem aluguel recorrente. Nao compra veiculo, garagem ou mobiliario.", Buy);
             else { var home = Wallet.Housing.Properties.Find(p => p.Id == options.Id); Add("Apartamento adquirido / $" + home.Paid, "Propriedade do perfil ativo. Sem nova cobranca para entrar ou sair.", () => { }); Add("Entrar no apartamento", "Requer interior e piso carregados. Se indisponiveis, conserva posicao e propriedade.", () => Begin(false)); }
+            if (OpenWardrobe != null && Wallet.Housing.Owns(options.Id)) Add("Guardarroupa / roupas salvas", "Entre no apartamento e aproxime-se do guardarroupa no andar superior.", OpenWardrobe);
             if (Inside) Add("Sair para a entrada publica", "Saida disponivel mesmo se o perfil atual nao for proprietario.", () => Begin(true));
             if (transit != null) Add("Cancelar carregamento", "Nao muda dinheiro nem propriedade e conserva sua posicao.", Release);
             Add("Fechar", "Retornar ao jogo.", () => menu.Visible = false); menu.Visible = true;

@@ -18,6 +18,7 @@ namespace RPCore
         public DragData Drag;
         public PdmData Pdm;
         public HousingData Housing;
+        public WardrobeData Wardrobe;
     }
 
     public class Portfolio : ExtensibleData

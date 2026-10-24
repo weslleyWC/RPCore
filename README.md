@@ -1,4 +1,10 @@
-# RPCore 0.31.0 — GTA V Legacy
+# RPCore 0.32.0 — GTA V Legacy
+
+## Fase 6.2B — guardarroupa e roupas
+
+[Atualização 0.32.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.32.0.zip) · [Código-fonte 0.32.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.32.0.zip) · [Instalação e teste](docs/FASE-6.2B-0.32.0.md)
+
+No seu Eclipse, suba ao guardarroupa e E, ou F10 → Moradia → Guardarroupa / roupas salvas. Biblioteca por perfil/modelo: salvar, vestir, substituir, renomear e excluir; editor de peças/texturas/acessórios com prévia reversível. Não muda ped/cabeça/cabelo nem cobra. 1153 testes aprovados e build sem erros/avisos. Saves/propriedade/configurações/F2/F11 preservados; roupas e cancelamento precisam de teste no GTA. Armazenamento/editor facial/hotéis e demais diferenças continuam; fases 8/9 mantidas.
 
 ## Fase 6.2A — moradia / Eclipse Towers
 

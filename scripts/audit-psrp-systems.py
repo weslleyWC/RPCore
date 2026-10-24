@@ -433,7 +433,23 @@ if housing_source.exists() and housing_config.exists():
         'defaults': config,
         'compatibility': 'Missing Housing means unowned. Existing saves/configs retained. Only own blip removed on dispose. Requested IPL is not globally unloaded; no forced interior entity-set changes, invincibility or persistent player control changes.',
         'intentional_differences': 'Reference purchase invokes IPL loader but does not automatically enter; RPCore requires a separate entry action and verifies floor readiness. Ownership checks prevent repeat charges. Exit remains available to a profile already inside, including with wanted level unchanged.',
-        'scope_limits': 'Eclipse ownership and access only. No wardrobe/editor, apartment storage, rental/hotels, furniture, garage ownership or needs changes. Native IPL/floor/framing and entry/exit require GTA testing. PDM differences and phases 8/9 remain.',
+        'scope_limits': 'Eclipse ownership and access only. Wardrobe/clothing editor added in 6.2B. No apartment storage, rental/hotels, furniture, garage ownership or needs changes. Native IPL/floor/framing and entry/exit require GTA testing. PDM differences and phases 8/9 remain.',
         'configuration_sha256': digest(housing_config.read_bytes())}
+wardrobe_source = a.reference_source / 'PSRP/MultiplayerCharacter.cs'
+wardrobe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Wardrobe.json'
+if wardrobe_source.exists() and wardrobe_config.exists():
+    source = wardrobe_source.read_text(); apartment = housing_source.read_text(); config = json.loads(wardrobe_config.read_text())
+    report['wardrobe'] = {
+        'reference_source': 'PSRP/MultiplayerCharacter.cs; PSRP/Apartments.cs',
+        'reference_has_capture_apply_delete': 'SaveOutfitForCharacter' in source and 'ApplyOutfit_NoSave' in source and 'DeleteOutfit' in source,
+        'reference_has_components_props_and_menu': 'GET_PED_DRAWABLE_VARIATION' in source and 'GET_PED_PROP_INDEX' in source and 'RefreshOutfitMenu' in source,
+        'point_matches_reference': tuple(config['Point'][k] for k in ['X','Y','Z']) == (-797.761,328.302,190.7137) and '-797.761f, 328.302f, 190.7137f' in apartment,
+        'rpcore_cycle': 'Owned Eclipse wardrobe interaction/menu, per-profile/per-model saved snapshots, explicit save/replace/rename/confirmed deletion, native variation availability validation, reversible clothing/prop editor and rollback on failed apply.',
+        'wallet_checkpoint': 'Additive Wallet.Wardrobe with outfits and bounded receipts. Clone/mutate/save rollback, no money changes. Unknown library/outfit/piece metadata retained on explicit replacement.',
+        'compatibility': 'No automatic outfit application at startup/profile change. Never changes ped model, head component 0 or hair component 2. Keeps native palette, normalizes absent prop texture, preserves existing Housing/Pdm/needs/vehicles and configs.',
+        'defaults': config,
+        'intentional_differences': 'Reference captures 12 components and 8 prop slots and supports last-outfit auto-load. RPCore deliberately captures 10 clothing slots and 5 usable prop anchors, binds exact model and preflights every drawable/texture. Manual dressing only. Editor is own implementation using current ped variations.',
+        'scope_limits': 'No face/head-blend, hair, tattoos, ped replacement, camera rig, clothes store economy or apartment storage. Native clothing previews and cancellation require GTA tests; external scripts changing clothes can still conflict. Phases 8/9 retained.',
+        'configuration_sha256': digest(wardrobe_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
