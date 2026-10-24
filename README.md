@@ -1,6 +1,12 @@
-# RPCore 0.17.0 — GTA V Legacy
+# RPCore 0.18.0 — GTA V Legacy
 
-## Fase 5.5 — streamer
+## Fase 5.6 — arrancada
+
+[Atualização 0.18.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.18.0.zip) · [Código-fonte 0.18.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.18.0.zip) · [Instalação, alterações e teste](docs/FASE-5.6-0.18.0.md)
+
+F10 → Trabalhos → Arrancada / Sandy Shores → GPS. Traga carro próprio, escolha treino/aposta, alinhe no verde e E inicia contagem. Segure o freio até JA; cruze antes do NPC. Pontos/banner da referência, IA real, queima, chegada interpolada, aposta reservada e resultado salvo antes do pagamento. Carro próprio preservado; streamer continua paralelo. 653 testes e build sem erros/avisos. Corrida/IA precisam de teste no GTA. Última atividade base da fase 5; depois segue fase 6. Fases 8 (interface/mecânicas) e 9 (todos os trabalhos) mantidas.
+
+## Histórico — fase 5.5: streamer
 
 [Atualização 0.17.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.17.0.zip) · [Código-fonte 0.17.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.17.0.zip) · [Instalação, alterações e teste](docs/FASE-5.5-0.17.0.md)
 

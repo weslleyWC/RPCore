@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.18.0: [fase 5.6 — arrancada](FASE-5.6-0.18.0.md) implementada como última atividade base da fase 5, aguardando teste de pista/IA/resultado no GTA. Próxima fase principal: 6 (PDM/moradia/personagem/seguros/licenças/gangues/polícia), em subentregas. Não se declara paridade completa; diferenças e fases 8/9 continuam registradas.
+
 Andamento 0.17.0: [fase 5.5 — streamer](FASE-5.5-0.17.0.md) implementada: app Twitch, chat/audiência contextual, eventos/estatísticas e checkpoint bancário, transmissão paralela a trabalhos. Precisa de teste real. Arrancada segue na fase 5. Fases 8 (interface e mecânicas associadas) e 9 (refinamento de todos os trabalhos com varredura PSRP.dll) mantidas.
 
 Atualização de escopo após o teste da 0.16.0: o usuário confirmou o ciclo funcionando e definiu **fase 8: interface e mecânicas ligadas ao HUD/menus** e **fase 9: refinamento de todos os trabalhos**. Ambas exigem varredura aprofundada da PSRP.dll e comparação de comportamento com o RPCore. Fome/sede têm problemas de mecânica relatados, não apenas de desenho dos ícones. [Escopo e critérios das fases 8 e 9](REFINAMENTOS-FASES-8-9.md). A sequência principal continua: streamer/arrancada, fases 6 e 7, depois 8 e 9.

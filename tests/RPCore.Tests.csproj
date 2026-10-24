@@ -13,6 +13,7 @@
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../DrivingJobData.cs" Link="DrivingJobData.cs" />
     <Compile Include="../RigSpawnData.cs" Link="RigSpawnData.cs" />
+    <Compile Include="../DragData.cs" Link="DragData.cs" />
     <Compile Include="../StreamerData.cs" Link="StreamerData.cs" />
     <Compile Include="../DealerData.cs" Link="DealerData.cs" />
     <Compile Include="../CraftingData.cs" Link="CraftingData.cs" />
@@ -31,6 +32,7 @@
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
+    <EmbeddedResource Include="../config/Jobs/Drag.json" LogicalName="RPCore.JobDefaults.Drag.json" />
     <EmbeddedResource Include="../config/Jobs/Streamer.json" LogicalName="RPCore.JobDefaults.Streamer.json" />
     <EmbeddedResource Include="../config/Jobs/Dealer.json" LogicalName="RPCore.JobDefaults.Dealer.json" />
     <EmbeddedResource Include="../config/Jobs/Crafting.json" LogicalName="RPCore.JobDefaults.Crafting.json" />

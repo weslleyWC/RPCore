@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.18.0 — fase 5.6: arrancada
+
+Corrida um contra um em Sandy Shores, carro próprio/alinhamento manual, NPC rival, contagem/queima, chegada interpolada e aposta opcional com reserva/resultado/liquidação/recovery persistentes. Pontos e DragBanner da referência; preserva carro do jogador e streamer paralelo. 653 testes e build sem erros/avisos. Fases 8/9 mantidas. [Arquivos alterados e teste](FASE-5.6-0.18.0.md).
+
 ## 0.17.0 — fase 5.5: streamer
 
 App Twitch F2, canal/título, transmissão paralela aos trabalhos, painel original, audiência/chat contextual, eventos/seguidores e checkpoint bancário por bloco. Seis blocos de 30 s, pausa sem ganhos, encerramento/resumo persistentes e retry sem novo sorteio. End preservado para trabalhos. 614 testes e build sem erros/avisos. Fases 8/9 mantidas. [Arquivos alterados e teste](FASE-5.5-0.17.0.md).

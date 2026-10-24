@@ -18,6 +18,11 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static DragData Drag => data.Drag ?? new DragData();
+        public static bool DragEnter(DragOptions c,int stake,string id,out bool changed)=>DragTransactions.Enter(data,c,stake,id,Save,out changed);
+        public static bool DragGreen(string id,out bool changed)=>DragTransactions.Green(data,id,Save,out changed);
+        public static bool DragRecord(string id,DragOutcome result,int ms,out bool changed)=>DragTransactions.Record(data,id,result,ms,Save,out changed);
+        public static bool DragSettle(string id,out bool changed)=>DragTransactions.Settle(data,id,Save,out changed);
         public static StreamerData Streamer => data.Streamer ?? new StreamerData();
         public static bool StreamSettings(string channel,string title,string id,out bool changed)=>StreamerTransactions.Settings(data,channel,title,id,Save,out changed);
         public static bool StreamStart(string id,out bool changed)=>StreamerTransactions.Start(data,id,Save,out changed);

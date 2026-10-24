@@ -15,6 +15,7 @@ namespace RPCore
         public CraftingData Crafting;
         public DealerData Dealer;
         public StreamerData Streamer;
+        public DragData Drag;
     }
 
     public class Portfolio : ExtensibleData

@@ -23,7 +23,8 @@
     "fishing": "ShopBanner",
     "crafting": "ShopBanner",
     "dealer": "DrugDealingBanner",
-    "streamer": "PSRPBANNER1"
+    "streamer": "PSRPBANNER1",
+    "drag": "DragBanner"
   },
   "ItemIcons": {
     "water": "water",

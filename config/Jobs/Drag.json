@@ -1,0 +1,14 @@
+{
+  "Entry": { "Name": "Arrancada / Sandy Shores", "X": 1736.146, "Y": 3286.22, "Z": 40.74411, "Heading": 0 },
+  "PlayerStart": { "Name": "Largada jogador", "X": 1711.913, "Y": 3262.746, "Z": 40.45605, "Heading": 107 },
+  "RivalStart": { "Name": "Largada adversario", "X": 1714.609, "Y": 3253.056, "Z": 40.42599, "Heading": 107 },
+  "PlayerFinish": { "Name": "Chegada jogador", "X": 1275.354, "Y": 3143.735, "Z": 39.79876, "Heading": 107 },
+  "RivalFinish": { "Name": "Chegada adversario", "X": 1277.379, "Y": 3135.846, "Z": 39.6847, "Heading": 107 },
+  "CountdownSeconds": 3,
+  "StagingSeconds": 120,
+  "RaceSeconds": 90,
+  "AiSpeed": 45,
+  "Corridor": 20,
+  "Bets": [0, 250, 500, 1000],
+  "Rivals": ["dominator", "gauntlet", "sultan"]
+}

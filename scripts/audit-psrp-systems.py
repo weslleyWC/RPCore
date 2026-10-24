@@ -186,5 +186,22 @@ if streamer_source.exists() and streamer_phone.exists() and streamer_config.exis
         'scope_limits': 'No external Twitch connection or video recording; own bounded event economy and finite broadcast duration; detailed legacy contexts deferred to phase 9, full interface/mechanics review to phase 8.',
         'wallet_checkpoint': 'Wallet.json/Streamer + Bank; Phone.json history is secondary',
         'configuration_sha256': digest(streamer_config.read_bytes())}
+drag_source = a.reference_source / 'PSRP/_ACTIVITY__Drag_Racing.cs'
+drag_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Drag.json'
+if drag_source.exists() and drag_config.exists():
+    source = drag_source.read_text(); config = json.loads(drag_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    points = [config[k] for k in ['Entry','PlayerStart','RivalStart','PlayerFinish','RivalFinish']]
+    report['drag'] = {
+        'reference_source': 'PSRP/_ACTIVITY__Drag_Racing.cs',
+        'all_points_match_reference': all(tuple(p[k] for k in ['X','Y','Z']) in reference for p in points),
+        'reference_has_false_start': 'DISQUALIFED, FALSE START' in source,
+        'reference_has_double_bet_payout': 'IncreaseCashBalance(Vehicle1DragRace.Value * 2)' in source,
+        'reference_has_straight_line_ai': 'VehicleDrivingFlags.ForceStraightLine' in source,
+        'rpcore_cycle': 'Own one-vs-one event, own player car/manual alignment, native rival AI, countdown/false start, interpolated finish gates, optional bank escrow/result/recovery.',
+        'point_count': len(points), 'original_banner': 'PSRP_Banners/DragBanner',
+        'scope_limits': 'No spectator bets, multi-racer meet, flare starter, tire warmup/grip changes, nitro, cameras or global vehicle cleanup in this delivery; refinement phase 9.',
+        'wallet_checkpoint': 'Wallet.json/Drag + Bank; persisted result before settlement',
+        'configuration_sha256': digest(drag_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
