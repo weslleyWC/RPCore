@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmCompany : ISystem, IWorkContract
     {
-        public Action OpenCollection, OpenStaff, SyncStaff;
+        public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe;
         public Func<string,bool> DisplayStock;
         public Func<bool> ClearDisplay;
         public string Name => "pdm";
@@ -42,7 +42,7 @@ namespace RPCore
         internal bool OfficeAction()
         {
             SyncStaff?.Invoke();
-            if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null)
+            if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null)
             { Notify.Show("Va a pe ao escritorio externo PDM, sem procurado/missao/combate. Encerre/recupere a entrega pendente."); return false; } return true;
         }
         bool DataValid() { if (Wallet.Pdm.Valid) return true; Log.Write("Invalid Wallet.json/Pdm; original retained."); Notify.Show("Dados da empresa invalidos. Arquivo preservado."); return false; }
@@ -55,6 +55,7 @@ namespace RPCore
             else
             {
                 if (OpenStaff != null) Add("Equipe / salarios / melhorias", "Contratar, quitar salarios, demitir e melhorar oficina/divulgacao.", OpenStaff);
+                if (OpenSafe != null) Add("Coleta de valores / carro-forte", "Transferir caixa da empresa ao banco pessoal com coleta do seguranca.", OpenSafe);
                 Add("Caixa / aportar / sacar", "Saldo empresarial separado do banco pessoal; transferencias sao um checkpoint unico.", OpenFinance);
                 Add("Comprar estoque / fornecedor", "Pedido pago com caixa da empresa; retire no porto antes de vender.", OpenCatalog);
                 if (OpenCollection != null) Add("Coleta no porto / transportador", "Retirar um ou dois pedidos pagos com Packer e TRFlat.", OpenCollection);

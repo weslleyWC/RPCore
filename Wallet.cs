@@ -24,6 +24,10 @@ namespace RPCore
         public static bool PdmPay(string role,string id,out bool changed)=>PdmStaffTransactions.Pay(data,role,id,Save,out changed);
         public static bool PdmFire(string employee,string id,out bool changed)=>PdmStaffTransactions.Fire(data,employee,id,Save,out changed);
         public static bool PdmUpgrade(PdmStaffOptions c,string upgrade,string id,out bool changed)=>PdmStaffTransactions.Upgrade(data,c,upgrade,id,Save,out changed);
+        public static bool PdmSafeBegin(PdmSafeTransfer t,out bool changed)=>PdmSafeTransactions.Begin(data,t,Save,out changed);
+        public static bool PdmSafeHand(string id,out bool changed)=>PdmSafeTransactions.Hand(data,id,Save,out changed);
+        public static bool PdmSafeRefund(string id,out bool changed)=>PdmSafeTransactions.Refund(data,id,Save,out changed);
+        public static bool PdmSafeCredit(string id,out bool changed)=>PdmSafeTransactions.Credit(data,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

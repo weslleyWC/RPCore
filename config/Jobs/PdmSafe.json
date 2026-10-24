@@ -1,0 +1,12 @@
+{
+  "Spawn": { "Name": "PDM / carro-forte", "X": -53.67139, "Y": -994.5934, "Z": 28.82287, "Heading": 159.9931 },
+  "Parking": { "Name": "PDM / parada da coleta", "X": -77.51719, "Y": -1110.635, "Z": 25.44406, "Heading": 340.3833 },
+  "Handover": { "Name": "PDM / entrega de valores", "X": -63.2041, "Y": -1092.664, "Z": 26.53896, "Heading": 308.7447 },
+  "Bank": { "Name": "Banco / rota do carro-forte", "X": 1182.303, "Y": 2646.111, "Z": 37.81576, "Heading": 0 },
+  "VehicleModel": "stockade",
+  "CollectorModel": "s_m_m_armoured_01",
+  "CaseModel": "prop_security_case_01",
+  "HandoverSeconds": 3,
+  "ClearingSeconds": 10,
+  "ArrivalTimeoutSeconds": 120
+}

@@ -218,7 +218,7 @@ if pdm_source.exists() and pdm_config.exists():
         'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
         'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
         'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
-        'scope_limits': 'Port collection and one-car external display added in phase 6.1B; staff management/payroll and economic upgrades added in phase 6.1C; full showroom, remaining staff AI, finance/repossession, rentals and safe logistics remain subsequent subphases.',
+        'scope_limits': 'Port collection and one-car external display added in phase 6.1B; staff management/payroll and economic upgrades added in phase 6.1C; full showroom, remaining staff AI, safe cash collection added in phase 6.1D; finance/repossession, rentals and other safe mechanics remain subsequent subphases.',
         'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
         'configuration_sha256': digest(pdm_config.read_bytes())}
 logistics_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmLogistics.json'
@@ -250,7 +250,24 @@ if pdm_source.exists() and staff_config.exists():
         'period_seconds': config['PeriodSeconds'], 'roles': [r['Id'] for r in config['Roles']],
         'compatibility': 'Additive Pdm/Staff; absent field means no employees/upgrades/debt. No retroactive wages, no offline accrual, no changes to personal bank/vehicles/stock or logistics.',
         'intentional_differences': 'Own prices and 300-second gameplay payroll; bonus percentages and workshop discount are RPCore rules. No claim of identical legacy staff AI, automatic sales or weekly economy.',
-        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, finance/repossession/rentals/safe logistics. Phases 8/9 retained.',
+        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, safe cash collection added in phase 6.1D; finance/repossession/rentals and interior safe mechanics remain pending. Phases 8/9 retained.',
         'configuration_sha256': digest(staff_config.read_bytes())}
+safe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSafe.json'
+if pdm_source.exists() and safe_config.exists():
+    source = pdm_source.read_text(); config = json.loads(safe_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    report['pdm_safe'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_safe_collection': 'HandleSafeEvent' in source and 'SafeMoneyBeingCollected' in source,
+        'reference_has_stockade_and_case': 'CreateVehicle("stockade"' in source and 'prop_security_case_01' in source,
+        'reference_has_personal_bank_transfer': 'IncreaseBankBalance(safeMoneyToBeCollected)' in source,
+        'all_points_match_reference': all(tuple(config[n][k] for k in ['X','Y','Z']) in reference for n in ['Spawn','Parking','Handover','Bank']),
+        'rpcore_cycle': 'Own physical NPC collection: reserve company cash, Stockade arrival, collector walks to public desk, eligible timed handover, boarding/departure, bank clearing, durable refund-or-credit recovery.',
+        'wallet_checkpoint': 'Pdm.SafeTransfer reservation, Handed flag, then Bank + Withdrawn + close operation atomically. No revenue or reward generated.',
+        'compatibility': 'Additive state, old cash/stock/staff preserved. Cash headroom invariant permits refund even near integer limit. Shared physical work gate. Existing direct withdrawals retained.',
+        'identity': 'Van handle/model/unique plate; collector marker or exact remembered identity associated with authenticated van; case marker or attachment to authenticated collector.',
+        'intentional_differences': 'Reserve funds at request instead of spending unreserved balance at completion; no forced NPC/van teleports or invulnerability; arrival timeout refunds before handover. Handed funds remain payable across interruption.',
+        'scope_limits': 'Collection from existing company cash, not a new safe balance or interior safe/robbery/insurance simulation. Clearing follows confirmed departure, not a simulated full trip to the bank. Finance/repossession/rentals and remaining PDM subsystems still pending.',
+        'configuration_sha256': digest(safe_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

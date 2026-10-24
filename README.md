@@ -1,4 +1,10 @@
-# RPCore 0.21.0 — GTA V Legacy
+# RPCore 0.22.0 — GTA V Legacy
+
+## Fase 6.1D — coleta de valores PDM
+
+[Atualização 0.22.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.22.0.zip) · [Código-fonte 0.22.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.22.0.zip) · [Instalação e roteiro de teste](docs/FASE-6.1D-0.22.0.md)
+
+F10 → Trabalhos → PDM → Coleta de valores / carro-forte. Reserva parte do caixa, Stockade chega, segurança caminha à entrada, E entrega a maleta e saída/compensação transfere ao banco pessoal. Antes da entrega, cancelar devolve ao caixa; depois, recuperação conclui no banco uma vez. Sem bônus nem dinheiro novo. Caixa/estoque/pessoal/logística e saves anteriores preservados. 824 testes aprovados e build sem erros/avisos. Trânsito/NPC/maleta precisam de teste no GTA. Outros subsistemas PDM e fases 8/9 permanecem na sequência.
 
 ## Fase 6.1C — equipe, salários e melhorias PDM
 

@@ -1,0 +1,17 @@
+{
+  "version": "0.22.0",
+  "platform": "PowerShell 7 on Linux, simulated GTA directory; no gameplay",
+  "runs": 2,
+  "existing_files_preserved_byte_for_byte": 102,
+  "custom_pdm_safe_config_preserved_on_second_run": true,
+  "new_pdm_safe_default_installed_first_run": true,
+  "user_phone_F2_preserved": true,
+  "old_garage_F2_ini_preserved": true,
+  "old_dll_backed_up": true,
+  "new_dll_matches_build": true,
+  "new_interface_config_installed": true,
+  "old_settings_keys_visuals_saves_unchanged": true,
+  "oiv_rpf_not_touched": true,
+  "partial_catalog_preserved": true,
+  "invalid_bindings_preserved": true
+}
