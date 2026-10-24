@@ -1,0 +1,10 @@
+{
+  "Id": "eclipse",
+  "Name": "Eclipse Towers",
+  "Ipl": "apa_v_mp_h_01_c",
+  "Price": 1425000,
+  "LoadSeconds": 15,
+  "Entrance": { "Name": "Eclipse / entrada", "X": -773.2661, "Y": 311.4976, "Z": 85.6981, "Heading": 0 },
+  "Interior": { "Name": "Eclipse / apartamento", "X": -786.8663, "Y": 315.7642, "Z": 187.9136, "Heading": 269.61 },
+  "Exit": { "Name": "Eclipse / saida publica", "X": -773.6778, "Y": 308.4663, "Z": 85.69805, "Heading": 180.4528 }
+}

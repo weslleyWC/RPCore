@@ -18,6 +18,8 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static HousingData Housing => data.Housing ?? new HousingData();
+        public static bool HousingPurchase(HousingOptions c, string id, out bool changed) => HousingTransactions.Purchase(data, c, id, Save, out changed);
         public static PdmData Pdm => data.Pdm ?? new PdmData();
         public static bool PdmHire(PdmStaffOptions c,string role,string id,out bool changed)=>PdmStaffTransactions.Hire(data,c,role,id,Save,out changed);
         public static bool PdmWork(int seconds,string id,out bool changed)=>PdmStaffTransactions.Work(data,seconds,id,Save,out changed);

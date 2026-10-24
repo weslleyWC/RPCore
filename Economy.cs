@@ -17,6 +17,7 @@ namespace RPCore
         public StreamerData Streamer;
         public DragData Drag;
         public PdmData Pdm;
+        public HousingData Housing;
     }
 
     public class Portfolio : ExtensibleData

@@ -417,5 +417,23 @@ if pdm_source.exists() and risk_config.exists():
         'intentional_differences': 'Own 120-second consecutive exposure and 1800 active-second policy periods, no offline accrual. Initial premium paid immediately; stable roll instead of legacy reused random variable. Tier 5 uses displayed 80000 premium and explicit 2-million cap rather than legacy 85000 recurring fee/200-million internal cap. 30/35/35 rating drives own risk multiplier and requires guards paid, not just hired.',
         'scope_limits': 'Administrative open-safe risk only. No safe prop/interior animation, spawned robber, stock theft, general vehicle insurance or physical heist. No teleport, wanted manipulation or new police AI. Phases 8/9 and other PDM differences remain.',
         'configuration_sha256': digest(risk_config.read_bytes())}
+housing_source = a.reference_source / 'PSRP/Apartments.cs'
+housing_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Housing.json'
+if housing_source.exists() and housing_config.exists():
+    source = housing_source.read_text(); config = json.loads(housing_config.read_text())
+    points = {tuple(map(float, p)) for p in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)', source)}
+    report['housing_eclipse'] = {
+        'reference_source': 'PSRP/Apartments.cs',
+        'reference_has_purchase_and_bank_debit': 'DecreaseBankBalance(1425000)' in source and 'OwnEclipseApartment = true' in source,
+        'reference_has_entry_exit_and_ipl': 'insideEclipse = true' in source and 'insideEclipse = false' in source and 'apa_v_mp_h_01_c' in source,
+        'all_positions_match_reference': all(tuple(config[n][k] for k in ['X','Y','Z']) in points for n in ['Entrance','Interior','Exit']),
+        'reference_wiring': 'No external Apartments.Instance call found in the 75-file export. Class logic is static evidence; RPCore explicitly registers its own HousingSystem in Main.',
+        'rpcore_cycle': 'Own F10 housing menu and safehouse map icon, physical entrance interaction, optional atomic personal-bank purchase, profile ownership snapshot, asynchronous interior/floor probe, free entry/exit and public escape for non-owner profile.',
+        'wallet_checkpoint': 'Additive Housing.Properties and Receipts. Purchase debits Bank and ownership together, rollback on failed save; no changes to Pdm, personal vehicles, needs or installed visual resources.',
+        'defaults': config,
+        'compatibility': 'Missing Housing means unowned. Existing saves/configs retained. Only own blip removed on dispose. Requested IPL is not globally unloaded; no forced interior entity-set changes, invincibility or persistent player control changes.',
+        'intentional_differences': 'Reference purchase invokes IPL loader but does not automatically enter; RPCore requires a separate entry action and verifies floor readiness. Ownership checks prevent repeat charges. Exit remains available to a profile already inside, including with wanted level unchanged.',
+        'scope_limits': 'Eclipse ownership and access only. No wardrobe/editor, apartment storage, rental/hotels, furniture, garage ownership or needs changes. Native IPL/floor/framing and entry/exit require GTA testing. PDM differences and phases 8/9 remain.',
+        'configuration_sha256': digest(housing_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

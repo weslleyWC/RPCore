@@ -1,4 +1,10 @@
-# RPCore 0.30.0 — GTA V Legacy
+# RPCore 0.31.0 — GTA V Legacy
+
+## Fase 6.2A — moradia / Eclipse Towers
+
+[Atualização 0.31.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.31.0.zip) · [Código-fonte 0.31.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.31.0.zip) · [Instalação e teste](docs/FASE-6.2A-0.31.0.md)
+
+F10 → Moradia / Eclipse Towers → GPS; E na entrada. Compra única de $1425000 pelo banco RPCore e acesso ao apartamento com interior/piso verificados, saída pública e propriedade por perfil. Atualizar não compra imóvel nem cobra. 1125 testes aprovados e build sem erros/avisos. Saves/configurações/F2/F11 e PDM preservados; acesso/interior precisam de teste no GTA. Guardarroupa/storage/hotéis e demais diferenças continuam; fases 8/9 mantidas.
 
 ## Fase 6.1L — cofre administrativo e seguro PDM
 
