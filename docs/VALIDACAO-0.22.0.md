@@ -1,0 +1,17 @@
+# Validação — RPCore 0.22.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `e0f2977fc38a982f5f0ccafbc4164dd6551c7cec887241edb49ed887399de165`.
+
+824 testes aprovados, zero falhas/ignorados: 783 anteriores e 41 novos. Cobrem reserva/caixa/escrow/banco e conservação de valor, snapshots/identidades, confirmação antes de compensação, reembolso somente antes da entrega, replay/rollback/reload, limite do banco/contador e espaço para devolver ao caixa, recibo antigo diante de coleta nova, integração com estoque/entrega/coleta/pessoal, campos desconhecidos, duração/interrupção/pausa/retry/overflow de relógio. Relatórios DataTests.trx/DataTests-0.22.0.trx. Não executam GTA.
+
+Estado aditivo Pdm.SafeTransfer: ID/Amount/Handed e identidades de van/segurança/maleta. Reserva debita caixa/cria registro; confirmação grava Handed; compensação credita Bank/incrementa Withdrawn/fecha registro juntos. Antes da entrega, interrupção devolve ao caixa; depois, mantém obrigação de compensação. Exceção restaura estado/saldos. Não credita receita de venda nem bônus, não reutiliza reserva como dinheiro disponível. Caixa + reservado <= limite mantém espaço para devolução. Dados inválidos preservados e sem migração destrutiva.
+
+Integração física: Stockade e segurança próprios, busca de vaga segura, chegada/caminhada, maleta/animação, E a pé/desarmado/perto por três segundos, embarque/saída e dez segundos elegíveis de compensação. Antes da entrega, falha/timeout/cancelamento devolve; depois, falha mantém crédito pendente. Banco no limite repete sem apagar valor. Recuperação confere identidade do carro e marcador/vínculos dos atores; não apaga veículos ocupados. Recursos próprios são limpos/retirados pelo registro de trabalhos. Sem warps, invencibilidade, alteração de polícia ou limpeza global de ambiente.
+
+Gestão PDM aguarda coleta; salários continuam acumulando sem consumir reserva. Shared ShiftGate bloqueia outro trabalho físico; streamer permanece paralelo. Mantém saque direto anterior e ciclos de estoque/coleta/exposição/cliente/pessoal, configurações anteriores e recursos OpenIV. Apenas PdmSafe.json é novo padrão.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.22.0.json indexa 75 fontes, compara baseline 0.21.0 e registra identidade da DLL atual. HandleSafeEvent, Stockade/maleta, transferência ao banco e quatro pontos conferidos. Implementação própria; reserva antecipada e recuperação durável são diferenças deliberadas. Compensação não exige simular toda a viagem até o banco. Cofre interno/roubo/seguro, financiamento/repossessão/aluguel e demais subsistemas continuam pendentes; fases 8/9 mantidas.
+
+GTA não executado nesta nuvem. Roteiro FASE-6.1D-0.22.0.md: trânsito/chegada/caminhada/maleta/gesto, saída/compensação, cancelar/recuperar antes/depois da entrega, ocupantes/limite bancário e regressão de economia/empresa/pessoal/trabalhos/garagem/F2/F11. Pedido de avançar não é registrado como comprovação detalhada de testes do usuário nas versões anteriores.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.21.0: 102 arquivos existentes preservados byte a byte, incluindo saves/configurações/F2 e estado da empresa. PdmSafe.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.22.0.json. Não é teste de gameplay.

@@ -41,3 +41,5 @@ Núcleo PDM 0.19.0 testado/aprovado pelo usuário, com pedido explícito de refi
 Continuação 0.21.0: gestão de mecânico/divulgação, salários/acerto e melhorias econômicas. Incluir na fase 9 comparação da IA dos funcionários, calendário/dívidas/efeitos e serviços completos; esta subentrega não declara IA física ou paridade empresarial completa. Pedido de avançar após a 0.20.0 não substitui teste detalhado da logística.
 
 Continuação 0.22.0: coleta física de valores da empresa com Stockade, segurança/maleta, reserva/entrega/compensação e recuperação. Incluir chegada/embarque/navegação e diferenças de cofre/seguro/roubo na comparação da fase 9; não se declara a PDM inteira concluída.
+
+Continuação 0.23.0: entrega financiada para clientes adimplentes, entrada/parcelas por tempo ativo e livro de contratos. Inadimplência/retomada não são declaradas implementadas nesta subfase; são a próxima entrega prevista da PDM. Comparar economia/calendário/interações/risco ao aprofundar a fase 9, mantendo a fase 8 para interfaces e mecânicas.

@@ -1,0 +1,7 @@
+{
+  "DownPercent": 25,
+  "InterestPercent": 10,
+  "Installments": 4,
+  "PeriodSeconds": 120,
+  "MaxActive": 6
+}

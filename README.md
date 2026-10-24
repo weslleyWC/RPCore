@@ -1,4 +1,10 @@
-# RPCore 0.22.0 — GTA V Legacy
+# RPCore 0.23.0 — GTA V Legacy
+
+## Fase 6.1E — venda financiada PDM
+
+[Atualização 0.23.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.23.0.zip) · [Código-fonte 0.23.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.23.0.zip) · [Instalação e roteiro completo](docs/FASE-6.1E-0.23.0.md)
+
+F10 → Trabalhos → PDM → Estoque → carro pronto → Entregar financiado. Entrega física ao cliente confirma entrada e contrato; parcelas seguem no caixa, com consulta em Financiamentos / parcelas. Asea padrão sem danos/divulgação: total 12320, entrada 3080, quatro parcelas de 2310 a cada dois minutos ativos. Venda à vista e saves anteriores preservados. 860 testes aprovados, build sem erros/avisos; precisa testar no GTA. Esta subfase cobre clientes adimplentes; inadimplência/retomada ficam para a próxima entrega PDM. Fases 8/9 mantidas.
 
 ## Fase 6.1D — coleta de valores PDM
 

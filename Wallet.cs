@@ -28,6 +28,9 @@ namespace RPCore
         public static bool PdmSafeHand(string id,out bool changed)=>PdmSafeTransactions.Hand(data,id,Save,out changed);
         public static bool PdmSafeRefund(string id,out bool changed)=>PdmSafeTransactions.Refund(data,id,Save,out changed);
         public static bool PdmSafeCredit(string id,out bool changed)=>PdmSafeTransactions.Credit(data,id,Save,out changed);
+        public static bool PdmBeginFinanced(PdmOptions c,string stockId,string id,int destination,int handle,out bool changed)=>PdmTransactions.Begin(data,c,stockId,id,destination,handle,Save,out changed,true);
+        public static bool PdmFinanceOpen(PdmFinanceOptions c,string id,int engine,int body,out bool changed)=>PdmFinanceTransactions.Open(data,c,id,engine,body,Save,out changed);
+        public static bool PdmFinanceWork(int seconds,string id,out bool changed)=>PdmFinanceTransactions.Work(data,seconds,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

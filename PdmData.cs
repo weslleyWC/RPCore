@@ -39,6 +39,7 @@ namespace RPCore
     {
         public string Id, StockId;
         public int Destination, VehicleHandle;
+        public bool Financed;
         [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(StockId) && Destination >= 0 && Destination < 30 && VehicleHandle > 0;
     }
     public sealed class PdmEntry : ExtensibleData { public string Description; public int Amount, Balance; }
@@ -51,11 +52,12 @@ namespace RPCore
         public PdmOperation Active;
         public PdmCollection Collection;
         public PdmSafeTransfer SafeTransfer;
+        public List<PdmLoan> Loans = new List<PdmLoan>();
         public PdmStaffData Staff = new PdmStaffData();
         public List<PdmEntry> Ledger = new List<PdmEntry>();
         public List<string> Receipts = new List<string>();
         [JsonIgnore] public bool Valid => Cash >= 0 && AcquisitionPrice >= 0 && Bought >= 0 && Sold >= 0 && Invested >= 0 && Withdrawn >= 0 && StockSpent >= 0 && SoldCost >= 0 && Revenue >= 0 && Repairs >= 0 && Stock != null && Stock.Count <= 20 && Stock.All(s => s != null && s.Valid) && Stock.Select(s => s.Id).Distinct().Count() == Stock.Count && Stock.Select(s => s.Plate).Distinct().Count() == Stock.Count
-            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && (Collection == null || Active == null && Collection.Valid && Collection.StockIds.All(id => Stock.Any(s => s.Id == id && s.AwaitingCollection))) && (SafeTransfer == null || SafeTransfer.Valid && Owned && Active == null && Collection == null && (long)Cash + SafeTransfer.Amount <= int.MaxValue) && Staff != null && Staff.Valid && Ledger != null && Receipts != null;
+            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && (Collection == null || Active == null && Collection.Valid && Collection.StockIds.All(id => Stock.Any(s => s.Id == id && s.AwaitingCollection))) && (SafeTransfer == null || SafeTransfer.Valid && Owned && Active == null && Collection == null && (long)Cash + SafeTransfer.Amount <= int.MaxValue) && Loans != null && Loans.Count <= 42 && Loans.All(l => l != null && l.Valid) && Loans.Select(l => l.Id).Distinct().Count() == Loans.Count && Loans.Count(l => !l.Complete) <= 10 && Staff != null && Staff.Valid && Ledger != null && Receipts != null;
     }
     public static class PdmTransactions
     {
@@ -93,9 +95,9 @@ namespace RPCore
         {
             changed = false; if (c == null || !c.Valid || !Id(stockId)) return false; var p = c.Catalog.Find(x => x.Id == offerId); if (p == null) return false;
             return Apply(w, receipt, 0, d => {
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || d.Stock.Any(s => s.Id == stockId) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || (d.Stock.Any(s => s.Id == stockId) || d.Loans.Any(l => l.Asset.Id == stockId)) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
                 string plate = "PDM" + stockId.Replace("-", "").Substring(0, Math.Min(5, stockId.Replace("-", "").Length)).ToUpperInvariant();
-                if (d.Stock.Any(s => s.Plate == plate)) return false;
+                if (d.Stock.Any(s => s.Plate == plate) || d.Loans.Any(l => l.Asset.Plate == plate)) return false;
                 d.Stock.Add(new PdmStock { Id = stockId, Model = p.Model, Name = p.Name, Plate = plate, Cost = p.Cost, Price = p.Price, AwaitingCollection = awaitingCollection });
                 d.Cash -= p.Cost; d.StockSpent += p.Cost; d.Bought++; Entry(d, "Compra: " + p.Name, -p.Cost); return true;
             }, save, out changed);
@@ -110,11 +112,13 @@ namespace RPCore
             }, save, out changed);
         }
         public static bool Begin(WalletData w, PdmOptions c, string stockId, string operationId, int destination, int handle, Action save, out bool changed)
+            => Begin(w, c, stockId, operationId, destination, handle, save, out changed, false);
+        public static bool Begin(WalletData w, PdmOptions c, string stockId, string operationId, int destination, int handle, Action save, out bool changed, bool financed)
         {
             changed = false; if (c == null || !c.Valid || !Id(operationId) || destination < 0 || destination >= c.Customers.Count || handle <= 0) return false;
             return Apply(w, operationId + ":begin", 0, d => {
                 var v = d.Stock.Find(s => s.Id == stockId); if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || v == null || v.AwaitingCollection || v.Engine < 300 || v.Body < 300) return false;
-                d.Active = new PdmOperation { Id = operationId, StockId = stockId, Destination = destination, VehicleHandle = handle }; return true;
+                d.Active = new PdmOperation { Id = operationId, StockId = stockId, Destination = destination, VehicleHandle = handle, Financed = financed }; return true;
             }, save, out changed);
         }
         static bool Health(int engine, int body) => engine >= 0 && engine <= 1000 && body >= 0 && body <= 1000;
@@ -137,7 +141,7 @@ namespace RPCore
         {
             changed = false; if (!Id(operationId) || !Health(engine, body) || engine < 100) return false;
             return Apply(w, operationId + ":sale", 0, d => {
-                if (!d.Owned || d.Active == null || d.Active.Id != operationId) return false;
+                if (!d.Owned || d.Active == null || d.Active.Id != operationId || d.Active.Financed) return false;
                 var v = d.Stock.Find(s => s.Id == d.Active.StockId); int quote = PdmStaffTransactions.Quote(d, v, engine, body);
                 if (v == null || quote <= 0 || d.Cash > int.MaxValue - quote || d.Revenue > long.MaxValue - quote || d.SoldCost > long.MaxValue - v.Cost || d.Sold == int.MaxValue) return false;
                 d.Cash += quote; d.Revenue += quote; d.SoldCost += v.Cost; d.Sold++; d.Stock.Remove(v); d.Active = null; Entry(d, "Venda: " + v.Name, quote); return true;
