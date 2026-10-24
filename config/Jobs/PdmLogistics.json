@@ -1,0 +1,11 @@
+{
+  "Trailer": { "Name": "PDM / carreta de coleta", "X": -50.0, "Y": -1080.0, "Z": 26.9, "Heading": 70.04548 },
+  "Dock": { "Name": "Porto / pedidos PDM", "X": 1280.554, "Y": -3209.737, "Z": 5.489246, "Heading": 90 },
+  "Return": { "Name": "PDM / recebimento", "X": -48.12541, "Y": -1075.025, "Z": 26.7742, "Heading": 70.04548 },
+  "Showroom": { "Name": "PDM / exposicao externa", "X": -50.69996, "Y": -1116.535, "Z": 25.44, "Heading": 160 },
+  "TruckModel": "packer",
+  "TrailerModel": "trflat",
+  "UnloadSeconds": 5,
+  "TimeLimitSeconds": 1800,
+  "Slots": [{ "X": 0, "Y": 3, "Z": 1.055 }, { "X": 0, "Y": -3, "Z": 1.055 }]
+}

@@ -1,4 +1,10 @@
-# RPCore 0.19.0 — GTA V Legacy
+# RPCore 0.20.0 — GTA V Legacy
+
+## Fase 6.1B — coleta PDM no porto
+
+[Atualização 0.20.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.20.0.zip) · [Código-fonte 0.20.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.20.0.zip) · [Instalação e roteiro de teste](docs/FASE-6.1B-0.20.0.md)
+
+PDM 0.19.0 aprovada pelo usuário; refinamento posterior mantido. Novos pedidos pagos aguardam no porto: Packer + TRFlat, coleta de um/dois carros, carga assistida com E, retorno e recebimento. Estoque antigo continua pronto. Uma unidade pronta pode ser exposta no pátio externo. Sem nova cobrança/pagamento por transportar estoque próprio; venda/caixa/cliente anteriores preservados. 745 testes aprovados e build sem erros/avisos. Percurso físico precisa do teste no GTA. Próximas subentregas PDM: equipe/infraestrutura e demais subsistemas; fases 8/9 mantidas.
 
 ## Fase 6.1A — núcleo da empresa PDM
 
@@ -239,7 +245,7 @@ Altere as teclas em `Settings.ini` se conflitam com trainers ou outros mods. Use
 - **Retirada/recuperação:** usa a saída configurada e recusa saída bloqueada. Primeiro procura modelo/placa no mundo; se o veículo existir, marca GPS em vez de duplicar. Se não existir, recria o último snapshot salvo. Modelo de addon ausente não apaga o cadastro. Não há seguro nem recuperação de estado posterior ao último save. Placas repetidas não são suportadas para veículos diferentes do mesmo modelo.
 - **Personalização/danos:** preserva placa/estilo, cores normais e RGB, cores extras, roda, até 50 slots de mods disponíveis, variações, toggles, extras, neon, fumaça, película, livery, saúde de motor/carroceria/tanque, sujeira, combustível, pneus furados, vidros e portas quebrados. A forma exata de amassados, marcas de balas, ocupantes e flags/scripts de outros mods não é serializada. Guarde veículos parados sem ocupantes; veículos de missão são recusados por padrão. `AllowMissionVehicles = True` é uma opção explícita para veículos de seus mods/trainer; não muda a proibição durante missões ativas.
 - **Serviços:** na própria garagem, como motorista parado, reparar custa $500 e lavar $25. Reparar preserva o combustível. Não há reparo automático gratuito nem intervenção em veículos de missão protegidos.
-- **Concessionária:** F12 define GPS para o PDM; perto da entrada, permite comprar Faggio, Asea, Blista, Dominator e Sultan. `Dealership/Vehicles.json` aceita outros modelos/preços. É necessário ter vaga em uma garagem própria; a compra registra o carro, gera uma placa RP única e entrega na saída. Modelo ausente, saldo insuficiente ou saída bloqueada não devem cobrar. Isso implementa compra pessoal de veículos; a empresa PDM, funcionários e contabilidade empresarial do PSRP continuam pendentes.
+- **Concessionária:** F12 define GPS para o PDM; perto da entrada, permite comprar Faggio, Asea, Blista, Dominator e Sultan. `Dealership/Vehicles.json` aceita outros modelos/preços. É necessário ter vaga em uma garagem própria; a compra registra o carro, gera uma placa RP única e entrega na saída. Modelo ausente, saldo insuficiente ou saída bloqueada não devem cobrar. Isso implementa compra pessoal de veículos; a empresa PDM possui núcleo comercial e coleta nas fases 6.1A/B; funcionários e demais subsistemas empresariais continuam em próximas subentregas.
 - **Persistência:** garagem, veículos e combustível usam `Wallet.json` → `Transport`. Para peds MP, o pagamento e esses dados usam o mesmo checkpoint atômico da carteira. Nos protagonistas, o dinheiro nativo também depende do save GTA, como antes. A atualização lê saves 0.1 sem conversão destrutiva. As conquistas PSRP de primeiro carro, primeira garagem e primeiro abastecimento agora têm gatilhos.
 
 O checklist específico da nova DLL está em [TESTES-0.2.0.md](docs/TESTES-0.2.0.md). Configurações antigas são mantidas; as novas ficam em arquivos separados copiados pelo instalador.

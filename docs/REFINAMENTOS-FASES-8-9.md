@@ -33,3 +33,7 @@ Entregar em subfases por trabalho/grupo, com DLL compilada, testes pertinentes e
 - Registrar o que mudou, diferenças restantes e exatamente o que o usuário precisa testar.
 - Manter arquitetura, saves, configurações e recursos instalados; não reiniciar o progresso para viabilizar um ajuste.
 - O aceite do ciclo básico de uma fase anterior não remove seu trabalho da revisão da fase 9.
+
+## Aceite mais recente
+
+Núcleo PDM 0.19.0 testado/aprovado pelo usuário, com pedido explícito de refinamento posterior. A 0.20.0 acrescenta coleta de um/dois pedidos pagos e uma exposição externa; não conclui toda a empresa nem antecipa fases 8/9. Incluir logística/empresa/cliente no refinamento dos trabalhos da fase 9.

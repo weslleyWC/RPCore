@@ -32,6 +32,7 @@ namespace RPCore
     {
         public string Id, Model, Name, Plate;
         public int Cost, Price, Engine = 1000, Body = 1000;
+        public bool AwaitingCollection;
         [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(Model) && !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Plate) && Plate.Length <= 8 && Cost > 0 && Cost <= 1000000 && Price >= Cost && Price <= 2000000 && Engine >= 0 && Engine <= 1000 && Body >= 0 && Body <= 1000;
     }
     public sealed class PdmOperation : ExtensibleData
@@ -48,16 +49,17 @@ namespace RPCore
         public long Invested, Withdrawn, StockSpent, SoldCost, Revenue, Repairs;
         public List<PdmStock> Stock = new List<PdmStock>();
         public PdmOperation Active;
+        public PdmCollection Collection;
         public List<PdmEntry> Ledger = new List<PdmEntry>();
         public List<string> Receipts = new List<string>();
         [JsonIgnore] public bool Valid => Cash >= 0 && AcquisitionPrice >= 0 && Bought >= 0 && Sold >= 0 && Invested >= 0 && Withdrawn >= 0 && StockSpent >= 0 && SoldCost >= 0 && Revenue >= 0 && Repairs >= 0 && Stock != null && Stock.Count <= 20 && Stock.All(s => s != null && s.Valid) && Stock.Select(s => s.Id).Distinct().Count() == Stock.Count && Stock.Select(s => s.Plate).Distinct().Count() == Stock.Count
-            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && Ledger != null && Receipts != null;
+            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && (Collection == null || Active == null && Collection.Valid && Collection.StockIds.All(id => Stock.Any(s => s.Id == id && s.AwaitingCollection))) && Ledger != null && Receipts != null;
     }
     public static class PdmTransactions
     {
         static bool Id(string id) => !string.IsNullOrWhiteSpace(id) && id.Length <= 100;
         static void Entry(PdmData d, string text, int amount) { d.Ledger.Add(new PdmEntry { Description = text, Amount = amount, Balance = d.Cash }); if (d.Ledger.Count > 64) d.Ledger.RemoveRange(0, d.Ledger.Count - 64); }
-        static bool Apply(WalletData w, string id, int bankDelta, Func<PdmData, bool> mutate, Action save, out bool changed)
+        internal static bool Apply(WalletData w, string id, int bankDelta, Func<PdmData, bool> mutate, Action save, out bool changed)
         {
             changed = false;
             if (w == null || w.Bank < 0 || string.IsNullOrWhiteSpace(id) || id.Length > 160 || save == null || (w.Pdm != null && !w.Pdm.Valid)) return false;
@@ -85,14 +87,14 @@ namespace RPCore
                 Entry(d, deposit ? "Aporte de capital" : "Saque do caixa", deposit ? amount : -amount); return true;
             }, save, out changed);
         }
-        public static bool Buy(WalletData w, PdmOptions c, string offerId, string stockId, string receipt, Action save, out bool changed)
+        public static bool Buy(WalletData w, PdmOptions c, string offerId, string stockId, string receipt, Action save, out bool changed, bool awaitingCollection = false)
         {
             changed = false; if (c == null || !c.Valid || !Id(stockId)) return false; var p = c.Catalog.Find(x => x.Id == offerId); if (p == null) return false;
             return Apply(w, receipt, 0, d => {
-                if (!d.Owned || d.Active != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || d.Stock.Any(s => s.Id == stockId) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || d.Stock.Any(s => s.Id == stockId) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
                 string plate = "PDM" + stockId.Replace("-", "").Substring(0, Math.Min(5, stockId.Replace("-", "").Length)).ToUpperInvariant();
                 if (d.Stock.Any(s => s.Plate == plate)) return false;
-                d.Stock.Add(new PdmStock { Id = stockId, Model = p.Model, Name = p.Name, Plate = plate, Cost = p.Cost, Price = p.Price });
+                d.Stock.Add(new PdmStock { Id = stockId, Model = p.Model, Name = p.Name, Plate = plate, Cost = p.Cost, Price = p.Price, AwaitingCollection = awaitingCollection });
                 d.Cash -= p.Cost; d.StockSpent += p.Cost; d.Bought++; Entry(d, "Compra: " + p.Name, -p.Cost); return true;
             }, save, out changed);
         }
@@ -101,7 +103,7 @@ namespace RPCore
             changed = false; if (c == null || !c.Valid) return false;
             return Apply(w, receipt, 0, d => {
                 var v = d.Stock.Find(s => s.Id == stockId);
-                if (!d.Owned || d.Active != null || v == null || (v.Engine == 1000 && v.Body == 1000) || d.Cash < c.RepairPrice || d.Repairs > long.MaxValue - c.RepairPrice) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || v == null || (v.Engine == 1000 && v.Body == 1000) || d.Cash < c.RepairPrice || d.Repairs > long.MaxValue - c.RepairPrice) return false;
                 v.Engine = v.Body = 1000; d.Cash -= c.RepairPrice; d.Repairs += c.RepairPrice; Entry(d, "Reparo: " + v.Name, -c.RepairPrice); return true;
             }, save, out changed);
         }
@@ -109,7 +111,7 @@ namespace RPCore
         {
             changed = false; if (c == null || !c.Valid || !Id(operationId) || destination < 0 || destination >= c.Customers.Count || handle <= 0) return false;
             return Apply(w, operationId + ":begin", 0, d => {
-                var v = d.Stock.Find(s => s.Id == stockId); if (!d.Owned || d.Active != null || v == null || v.Engine < 300 || v.Body < 300) return false;
+                var v = d.Stock.Find(s => s.Id == stockId); if (!d.Owned || d.Active != null || d.Collection != null || v == null || v.AwaitingCollection || v.Engine < 300 || v.Body < 300) return false;
                 d.Active = new PdmOperation { Id = operationId, StockId = stockId, Destination = destination, VehicleHandle = handle }; return true;
             }, save, out changed);
         }

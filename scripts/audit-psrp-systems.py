@@ -218,8 +218,24 @@ if pdm_source.exists() and pdm_config.exists():
         'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
         'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
         'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
-        'scope_limits': 'No port collections/transporter, staffing/wages, showroom, finance/repossession, rentals or safe logistics in this first PDM subdelivery; those remain subsequent subphases.',
+        'scope_limits': 'Port collection and one-car external display added in phase 6.1B; full showroom, staffing/wages, finance/repossession, rentals and safe logistics remain subsequent subphases.',
         'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
         'configuration_sha256': digest(pdm_config.read_bytes())}
+logistics_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmLogistics.json'
+if pdm_source.exists() and logistics_config.exists():
+    source = pdm_source.read_text(); config = json.loads(logistics_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    report['pdm_logistics'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'all_points_match_reference': all(tuple(config[n][k] for k in ['X','Y','Z']) in reference for n in ['Trailer','Dock','Return','Showroom']),
+        'all_slots_match_reference': all(tuple(slot[k] for k in ['X','Y','Z']) in reference for slot in config['Slots']),
+        'reference_has_packer_trflat': 'VehicleHash.Packer' in source and 'VehicleHash.TRFlat' in source,
+        'reference_has_port_collection': 'SpawnOrderVehicles' in source and 'TwoCarCollectionStates.ReturnToPDM' in source,
+        'truck_model': config['TruckModel'], 'trailer_model': config['TrailerModel'], 'capacity': len(config['Slots']),
+        'rpcore_cycle': 'Own pending paid orders, Packer/TRFlat coupling, drive each of 1-2 exact stock cars to trailer and exit/E attach, return/stopped timed receiving, durable arrival then ready stock, one-car external display.',
+        'compatibility': 'Old stock defaults ready; existing customer deliveries unchanged. New UI orders pending. No extra collection payment or second purchase charge.',
+        'recovery': 'Persist handle/model/plate of rig and exact stock cargo; occupied/moving assets wait. Confirmed arrival receives, interrupted unconfirmed orders stay paid/pending.',
+        'scope_limits': 'No five-car TR2, manual ramps, full physical showroom, staffing, finance/repossession/rental/safe logistics; phases 8 and 9 retained.',
+        'configuration_sha256': digest(logistics_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

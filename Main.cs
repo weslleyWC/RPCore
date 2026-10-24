@@ -63,7 +63,9 @@ namespace RPCore
             var streamer = new StreamerJob(pool, ach, needs, shifts); systems.Add(streamer);
             var drag = new DragJob(pool, ach, shifts); systems.Add(drag);
             var pdm = new PdmCompany(pool, ach, shifts); systems.Add(pdm);
-            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm); systems.Add(jobs);
+            var haul = new PdmLogistics(pool, shifts, pdm.StartPosition); systems.Add(haul);
+            pdm.OpenCollection = haul.OpenMenu; pdm.DisplayStock = haul.Display; pdm.ClearDisplay = haul.ClearDisplay;
+            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
@@ -102,7 +104,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.19.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.20.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

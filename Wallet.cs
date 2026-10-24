@@ -22,6 +22,13 @@ namespace RPCore
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);
+        public static bool PdmOrder(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed,true);
+        public static bool PdmCollect(string id,System.Collections.Generic.List<string> ids,PdmEntityRef truck,PdmEntityRef trailer,out bool changed)=>PdmCollectionTransactions.Begin(data,id,ids,truck,trailer,Save,out changed);
+        public static bool PdmCargo(string id,string stockId,int handle,out bool changed)=>PdmCollectionTransactions.Register(data,id,stockId,handle,Save,out changed);
+        public static bool PdmCargoHealth(string id,System.Collections.Generic.Dictionary<string,int[]> health,out bool changed)=>PdmCollectionTransactions.Remember(data,id,health,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmArrive(string id,out bool changed)=>PdmCollectionTransactions.Arrive(data,id,Save,out changed);
+        public static bool PdmReceive(string id,out bool changed)=>PdmCollectionTransactions.Complete(data,id,Save,out changed);
+        public static bool PdmCollectCancel(string id,out bool changed)=>PdmCollectionTransactions.Cancel(data,id,Save,out changed);
         public static bool PdmRepair(PdmOptions c,string stockId,string receipt,out bool changed)=>PdmTransactions.Repair(data,c,stockId,receipt,Save,out changed);
         public static bool PdmBegin(PdmOptions c,string stockId,string operationId,int destination,int handle,out bool changed)=>PdmTransactions.Begin(data,c,stockId,operationId,destination,handle,Save,out changed);
         public static bool PdmRemember(string id,int engine,int body,string receipt,out bool changed)=>PdmTransactions.Remember(data,id,engine,body,receipt,Save,out changed);
