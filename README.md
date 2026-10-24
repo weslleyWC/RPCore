@@ -1,4 +1,10 @@
-# RPCore 0.24.0 — GTA V Legacy
+# RPCore 0.25.0 — GTA V Legacy
+
+## Fase 6.1G — pedidos da locadora
+
+[Atualização 0.25.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.25.0.zip) · [Código-fonte 0.25.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.25.0.zip) · [Instalação e roteiro](docs/FASE-6.1G-0.25.0.md)
+
+F10 → Trabalhos → PDM → Pedidos da locadora / dois carros. Duas unidades prontas do mesmo modelo: carregar Packer/TRFlat, entregar no pátio externo do aeroporto, buzinar para o funcionário, aguardar aceite e voltar à PDM para receber. Dois Asea intactos rendem 21280 no caixa no padrão. Estoque pago, danos e checkpoints impedem duplicação de venda/pagamento. 934 testes aprovados e build sem erros/avisos; percurso precisa de teste no GTA. Configurações/saves/F2/F11 e sistemas anteriores preservados; demais subentregas e fases 8/9 mantidas.
 
 ## Fase 6.1F — inadimplência e retomada PDM
 

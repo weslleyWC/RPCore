@@ -38,6 +38,13 @@ namespace RPCore
         public static bool PdmRepoArrive(string id,out bool changed)=>PdmRepoTransactions.Arrive(data,id,Save,out changed);
         public static bool PdmRepoReceive(PdmOptions c,string id,out bool changed)=>PdmRepoTransactions.Complete(data,c,id,Save,out changed);
         public static bool PdmRepoCancel(string id,out bool changed)=>PdmRepoTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmRentalBegin(PdmRentalOptions c,string id,System.Collections.Generic.List<string> ids,PdmEntityRef truck,PdmEntityRef trailer,out bool changed)=>PdmRentalTransactions.Begin(data,c,id,ids,truck,trailer,Save,out changed);
+        public static bool PdmRentalCar(string id,string stockId,int handle,out bool changed)=>PdmRentalTransactions.Register(data,id,stockId,handle,Save,out changed);
+        public static bool PdmRentalHealth(string id,System.Collections.Generic.Dictionary<string,int[]> health,out bool changed)=>PdmRentalTransactions.Remember(data,id,health,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmRentalDeliver(string id,out bool changed)=>PdmRentalTransactions.Deliver(data,id,Save,out changed);
+        public static bool PdmRentalReturn(string id,out bool changed)=>PdmRentalTransactions.Return(data,id,Save,out changed);
+        public static bool PdmRentalSettle(string id,bool recovery,out bool changed)=>PdmRentalTransactions.Settle(data,id,recovery,Save,out changed);
+        public static bool PdmRentalCancel(string id,out bool changed)=>PdmRentalTransactions.Cancel(data,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

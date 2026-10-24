@@ -1,0 +1,15 @@
+{
+  "Delivery": { "Name": "Locadora / recebimento externo", "X": -911.405, "Y": -2313.331, "Z": 5.8, "Heading": 0 },
+  "Worker": { "Name": "Locadora / funcionario", "X": -905.882, "Y": -2337.717, "Z": 6.709037, "Heading": 343.614 },
+  "Return": { "Name": "PDM / devolucao do conjunto", "X": -48.12541, "Y": -1075.025, "Z": 26.7742, "Heading": 70.04548 },
+  "Pickups": [
+    { "Name": "PDM / primeiro carro", "X": -20.6272, "Y": -1084.351, "Z": 25.5196, "Heading": 69.01015 },
+    { "Name": "PDM / segundo carro", "X": -14.3133, "Y": -1086.896, "Z": 26.26005, "Heading": 69.01015 }
+  ],
+  "Models": ["asea", "blista", "dominator"],
+  "WorkerModel": "cs_carbuyer",
+  "PricePercent": 95,
+  "UnloadSeconds": 5,
+  "ReturnSeconds": 3,
+  "TimeLimitSeconds": 1800
+}
