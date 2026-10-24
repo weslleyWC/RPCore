@@ -174,13 +174,15 @@ namespace RPCore
             if (!d.Containers.TryGetValue(id, out contents) || contents == null) d.Containers[id] = contents = new Dictionary<string, int>();
             return contents;
         }
-        public bool Transfer(string container, string id, bool deposit, float capacity)
+        public Dictionary<string,int> ContainerSnapshot(string id) => InventoryTransfers.Snapshot(d,id);
+        public double ContainerWeight(string id) => InventoryTransfers.Weight(ContainerSnapshot(id), key => Defs.ContainsKey(key)?Defs[key].Weight:.1f);
+        public bool Transfer(string container,string id,bool deposit,float capacity) => Transfer(container,id,deposit,capacity,1);
+        public bool Transfer(string container,string id,bool deposit,float capacity,int quantity)
         {
-            var box = Container(container);
-            bool moved = ItemTransfer.Move(deposit ? d.Items : box, deposit ? box : d.Items, id, 1,
-                key => Defs.ContainsKey(key) ? Defs[key].Weight : 0.1f, deposit ? capacity : Cfg.MaxWeight);
-            if (moved) { dirty = true; Save(); }
-            return moved;
+            var old=d;
+            bool moved=InventoryTransfers.Move(d,container,id,quantity,deposit,capacity,Cfg.MaxWeight,key=>Defs.ContainsKey(key)?Defs[key].Weight:.1f,
+                next=>{ try{d=next;Save();}catch{d=old;throw;} },out var result);
+            if(moved){d=result;dirty=true;}return moved;
         }
         public void Dispose() { grid.Close(false); menu.Visible = false; }
     }

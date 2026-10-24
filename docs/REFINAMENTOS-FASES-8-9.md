@@ -61,3 +61,5 @@ Continuação 0.30.0: cofre administrativo com abertura voluntária, exposição
 Continuação 0.31.0: fase 6.2A de moradia, aquisição/acesso Eclipse por perfil e verificação de interior/piso. Classe Apartments comparada; ausência de chamada externa na exportação registrada. Guardarroupa/storage/hotéis e outros imóveis permanecem; diferenças PDM não são apagadas ao avançar moradia. Fases 8/9 preservadas.
 
 Continuação 0.32.0: fase 6.2B com biblioteca por perfil/modelo e editor reversível no guardarroupa Eclipse. Métodos de outfits e ponto comparados na PSRP; sem auto-load/alteração de cabeça/cabelo/modelo. Validar roupa/texture/props/paleta/cancelamento no GTA; apresentação na fase 8. Storage/editor facial/hotéis e diferenças anteriores permanecem.
+
+Continuação 0.33.0: fase 6.2C com armazenamento privado Eclipse no Inventory.json existente e correção de rollback na transferência de itens, incluindo depósitos/porta-malas antigos. Manager/transferência de unidade/pilha comparados na PSRP; ponto/capacidade Eclipse próprios. Sem conversão automática de bolsas de jobs, móveis ou storage compartilhado; validar menus/acesso/regressões no GTA. Fases 8/9 mantidas.

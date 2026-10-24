@@ -1,4 +1,10 @@
-# RPCore 0.32.0 — GTA V Legacy
+# RPCore 0.33.0 — GTA V Legacy
+
+## Fase 6.2C — armazenamento privado do apartamento
+
+[Atualização 0.33.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.33.0.zip) · [Código-fonte 0.33.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.33.0.zip) · [Instalação e teste](docs/FASE-6.2C-0.33.0.md)
+
+Dentro do seu Eclipse: F10 → Moradia → Armazenamento do apartamento. Mesmo Inventory.json, depósito privado de 200kg e transferências de unidade/até cinco/pilha, sem parcial. Corrige rollback de falha de gravação também no stash/porta-malas antigo, mantendo F8. 1183 testes aprovados e build sem erros/avisos. Propriedade/roupas/itens/configs/F2/F11 preservados; menus/acesso precisam de teste no GTA. Demais diferenças e fases 8/9 mantidas.
 
 ## Fase 6.2B — guardarroupa e roupas
 

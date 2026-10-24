@@ -82,7 +82,7 @@ namespace RPCore
             var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
-            systems.Add(new StorageSystem(pool, inv, ach));
+            var storage = new StorageSystem(pool, inv, ach); systems.Add(storage);
             AddOptional(() => new StockMarketSystem(pool));
             FuelSystem fuel = null;
             if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach); return fuel; });
@@ -98,6 +98,7 @@ namespace RPCore
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer); systems.Add(phone);
             var housing = new HousingSystem(pool, shifts); systems.Add(housing);
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
+            var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
@@ -121,7 +122,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.32.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.33.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

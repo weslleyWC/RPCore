@@ -433,7 +433,7 @@ if housing_source.exists() and housing_config.exists():
         'defaults': config,
         'compatibility': 'Missing Housing means unowned. Existing saves/configs retained. Only own blip removed on dispose. Requested IPL is not globally unloaded; no forced interior entity-set changes, invincibility or persistent player control changes.',
         'intentional_differences': 'Reference purchase invokes IPL loader but does not automatically enter; RPCore requires a separate entry action and verifies floor readiness. Ownership checks prevent repeat charges. Exit remains available to a profile already inside, including with wanted level unchanged.',
-        'scope_limits': 'Eclipse ownership and access only. Wardrobe/clothing editor added in 6.2B. No apartment storage, rental/hotels, furniture, garage ownership or needs changes. Native IPL/floor/framing and entry/exit require GTA testing. PDM differences and phases 8/9 remain.',
+        'scope_limits': 'Eclipse ownership and access only. Wardrobe/clothing editor added in 6.2B. Apartment storage added in 6.2C. No rental/hotels, furniture, garage ownership or needs changes. Native IPL/floor/framing and entry/exit require GTA testing. PDM differences and phases 8/9 remain.',
         'configuration_sha256': digest(housing_config.read_bytes())}
 wardrobe_source = a.reference_source / 'PSRP/MultiplayerCharacter.cs'
 wardrobe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Wardrobe.json'
@@ -449,7 +449,24 @@ if wardrobe_source.exists() and wardrobe_config.exists():
         'compatibility': 'No automatic outfit application at startup/profile change. Never changes ped model, head component 0 or hair component 2. Keeps native palette, normalizes absent prop texture, preserves existing Housing/Pdm/needs/vehicles and configs.',
         'defaults': config,
         'intentional_differences': 'Reference captures 12 components and 8 prop slots and supports last-outfit auto-load. RPCore deliberately captures 10 clothing slots and 5 usable prop anchors, binds exact model and preflights every drawable/texture. Manual dressing only. Editor is own implementation using current ped variations.',
-        'scope_limits': 'No face/head-blend, hair, tattoos, ped replacement, camera rig, clothes store economy or apartment storage. Native clothing previews and cancellation require GTA tests; external scripts changing clothes can still conflict. Phases 8/9 retained.',
+        'scope_limits': 'No face/head-blend, hair, tattoos, ped replacement, camera rig or clothes store economy. Shared-inventory apartment storage added in 6.2C. Native clothing previews and cancellation require GTA tests; external scripts changing clothes can still conflict. Phases 8/9 retained.',
         'configuration_sha256': digest(wardrobe_config.read_bytes())}
+home_storage_config = Path(__file__).resolve().parents[1] / 'config/Jobs/HomeStorage.json'
+if home_storage_config.exists():
+    source = (a.reference_source / 'PSRP/NewStorageSystem.cs').read_text()
+    inventory_source = (a.reference_source / 'PSRP/NewInventorySystem.cs').read_text()
+    config = json.loads(home_storage_config.read_text())
+    report['home_storage'] = {
+        'reference_source': 'PSRP/NewStorageSystem.cs; PSRP/NewInventorySystem.cs',
+        'reference_has_persistent_storage_manager': 'StorageManager' in source and 'OpenStorage(string name)' in source and 'vehicle_storages.json' in source,
+        'reference_has_single_and_stack_transfer': 'MoveOneToStorage' in inventory_source and 'MoveStackToStorage' in inventory_source,
+        'reference_has_stash_house_storage': 'new NewStorageSystem("Stash House Storage", stashHouseStorage)' in inventory_source,
+        'rpcore_cycle': 'Owned Eclipse private container through existing StorageSystem/InventorySystem; one, up-to-five or full-stack transfer, capacities and profile/access guards, atomic candidate save with live rollback, same Inventory.json.',
+        'inventory_checkpoint': 'Inventory.Items, Containers and GridSlots committed together; save failure restores original live data. Opening an empty container does not create/save data. Existing trunk/stash transfer routes use the same rollback fix, quantity one UI retained.',
+        'defaults': config,
+        'compatibility': 'No parallel item bags, free items, money changes, furniture deletion or save migration. Existing container IDs and unknown item IDs/fields preserved. Private session closes on lost ownership/access/profile/modal and releases activity.',
+        'intentional_differences': 'PSRP stash house point is a separate interior, not Eclipse. RPCore adds its own Eclipse convenience marker and F10 access anywhere inside owned apartment, capacity 200kg and configurable home:eclipse ID. No claim that this point/capacity comes from PSRP.',
+        'scope_limits': 'No chest prop/animation, household furnishing, shared multi-character stash, hotel rental or automatic legacy stash migration. Native menus/access/quantities and old F8 regressions require GTA tests. Phases 8/9 retained.',
+        'configuration_sha256': digest(home_storage_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

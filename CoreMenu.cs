@@ -30,7 +30,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.32.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.33.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
             if (housing != null) Add("Moradia / Eclipse Towers", "Compra, GPS e acesso ao apartamento do perfil ativo.", () => { menu.Visible = false; housing(); });
             if (jobs != null) Add("Trabalhos / contratos", "Contratos de entregas e motoristas: GPS, contratar e cancelar.", () => { menu.Visible = false; jobs(); });
             if (diagnose != null) Add("Visual assets: diagnose", "Requests installed YTDs and checks every catalog texture's native dimensions. Writes VisualDiagnostics.json; does not verify rendered appearance.", diagnose);
