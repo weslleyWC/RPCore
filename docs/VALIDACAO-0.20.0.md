@@ -1,0 +1,15 @@
+# Validação — RPCore 0.20.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `60bb8f30d79ba67a5ef504cc230b1b00f951164ef9dc33073e562ad05f63374b`.
+
+745 testes aprovados, zero falhas/ignorados: 694 anteriores e 51 novos. Cobrem pedidos pagos pendentes, estoque antigo pronto, impedimento de venda antes de coleta, conjunto/carga com identidades exclusivas, coleta de 1/2 unidades, danos mínimos, chegada/recebimento/cancelamento, replay após reload, rollback em falha de gravação, preservação de campos desconhecidos, tempo/pausa/interrupção/retry/overflow. Relatórios DataTests.trx e DataTests-0.20.0.trx. Não executam GTA.
+
+Collection e AwaitingCollection são campos aditivos de Wallet.json/Pdm. Novas compras na interface exigem coleta; ausência do campo mantém estoque antigo pronto. Contrato de entrega anterior permanece. Coleta não altera dinheiro nem contabiliza venda. Chegada é salva antes de remover a carga; estoque pronto só depois da limpeza física e do checkpoint final. Cancelar mantém unidades pagas/pendentes e danos salvos. Recuperação compara handle/modelo/placa; espera ativos ocupados/em movimento e conexões alheias. Chegada confirmada recupera recebimento, operação interrompida sem chegada retorna pedidos ao porto.
+
+PdmLogistics integra menu/contrato/turno compartilhado; streamer continua paralelo. Spawn usa busca orientada/chão/colisão sem apagar ambiente. Veículos reservados são rejeitados pela garagem pessoal. Carga exige o próprio carro pago vazio, conjunto parado/engatado e E; descarga exige todos presos e tempo elegível. Exposição é uma unidade temporária externa, trancada/congelada/protegida, sem converter estoque em carro pessoal. Pdm.json anterior não muda; apenas novo PdmLogistics.json. Sistemas e recursos OpenIV anteriores preservados.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.20.0.json indexa 75 fontes e compara baseline 0.19.0 com a DLL atual. Packer/TRFlat, porto/carreta/retorno/exposição e offsets conferidos com PDMCompany.cs. Implementação própria; referência estática não comprova gameplay/paridade. Não inclui showroom inteiro, TR2/cinco carros, equipe/salários, financiamento/repossessão/aluguel/cofre. Fases 8/9 mantidas.
+
+PDM 0.19.0 aprovada pelo usuário. Nova logística/exposição não foi executada no GTA aqui. Testar roteiro de FASE-6.1B-0.20.0.md: vagas/engate/rota/acesso ao porto, carga/altura/segunda unidade, retorno/descarga, recebimento único, cancelamento/reload/ocupantes, exposição/retirada e entrega do item, regressão de caixa/estoque antigo/garagem/atividades/F2/F11.
+
+Instalador executado duas vezes via PowerShell 7/Linux em GTA simulado atualizado da 0.19.0: 100 arquivos existentes preservados byte a byte, incluindo saves/configurações/F2 e estoque PDM. Novo PdmLogistics.json instalado só na primeira execução; personalização mantida na segunda. Backup da DLL anterior e nova DLL idêntica ao build. Relatório installer-validation-0.20.0.json. Isso valida arquivos/instalação, não gameplay.

@@ -1,0 +1,12 @@
+{
+  "PeriodSeconds": 300,
+  "WorkshopCost": 5000,
+  "AdvertisingCost": 3000,
+  "Severance": 250,
+  "Roles": [
+    { "Id": "mechanic", "Name": "Mecanico", "HiringCost": 1500, "Wage": 250, "SaleBonusPercent": 0 },
+    { "Id": "junior", "Name": "Divulgacao junior", "HiringCost": 500, "Wage": 100, "SaleBonusPercent": 2 },
+    { "Id": "senior", "Name": "Divulgacao senior", "Requires": "junior", "HiringCost": 1000, "Wage": 200, "SaleBonusPercent": 4 },
+    { "Id": "director", "Name": "Diretor de divulgacao", "Requires": "senior", "HiringCost": 2500, "Wage": 500, "SaleBonusPercent": 6 }
+  ]
+}

@@ -218,7 +218,7 @@ if pdm_source.exists() and pdm_config.exists():
         'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
         'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
         'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
-        'scope_limits': 'Port collection and one-car external display added in phase 6.1B; full showroom, staffing/wages, finance/repossession, rentals and safe logistics remain subsequent subphases.',
+        'scope_limits': 'Port collection and one-car external display added in phase 6.1B; staff management/payroll and economic upgrades added in phase 6.1C; full showroom, remaining staff AI, finance/repossession, rentals and safe logistics remain subsequent subphases.',
         'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
         'configuration_sha256': digest(pdm_config.read_bytes())}
 logistics_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmLogistics.json'
@@ -237,5 +237,20 @@ if pdm_source.exists() and logistics_config.exists():
         'recovery': 'Persist handle/model/plate of rig and exact stock cargo; occupied/moving assets wait. Confirmed arrival receives, interrupted unconfirmed orders stay paid/pending.',
         'scope_limits': 'No five-car TR2, manual ramps, full physical showroom, staffing, finance/repossession/rental/safe logistics; phases 8 and 9 retained.',
         'configuration_sha256': digest(logistics_config.read_bytes())}
+staff_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmStaff.json'
+if pdm_source.exists() and staff_config.exists():
+    source = pdm_source.read_text(); config = json.loads(staff_config.read_text())
+    report['pdm_staff'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_staff_management': 'StaffManagement.Opening' in source,
+        'reference_has_mechanic_and_marketing': all(x in source for x in ['OwnsPDMMechanic','OwnsPDMJuniourSMManger','OwnsPDMSeniorSMManger','OwnsPDMDirectorSMManger']),
+        'reference_has_payroll_and_former_debt': 'RegisterWages' in source and 'PDMWagesOwedToFiredStaff' in source,
+        'reference_payroll': 'Accrual after seven employed game days; company cash pays wages; junior/senior/director hierarchy and former staff debt.',
+        'rpcore_cycle': 'Own four-role employment, snapshot terms, active-time payroll, company-cash payments, resignation accrual with proportional wage/severance, workshop discount and highest eligible marketing bonus on completed customer sale.',
+        'period_seconds': config['PeriodSeconds'], 'roles': [r['Id'] for r in config['Roles']],
+        'compatibility': 'Additive Pdm/Staff; absent field means no employees/upgrades/debt. No retroactive wages, no offline accrual, no changes to personal bank/vehicles/stock or logistics.',
+        'intentional_differences': 'Own prices and 300-second gameplay payroll; bonus percentages and workshop discount are RPCore rules. No claim of identical legacy staff AI, automatic sales or weekly economy.',
+        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, finance/repossession/rentals/safe logistics. Phases 8/9 retained.',
+        'configuration_sha256': digest(staff_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -1,4 +1,10 @@
-# RPCore 0.20.0 — GTA V Legacy
+# RPCore 0.21.0 — GTA V Legacy
+
+## Fase 6.1C — equipe, salários e melhorias PDM
+
+[Atualização 0.21.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.21.0.zip) · [Código-fonte 0.21.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.21.0.zip) · [Instalação e teste](docs/FASE-6.1C-0.21.0.md)
+
+F10 → Trabalhos → PDM → Equipe / salarios / melhorias. Mecânico e divulgação júnior/sênior/diretor; salários a cada cinco minutos ativos, pagamento com caixa empresarial, demissão com acerto proporcional/multa, oficina reduzindo reparos e divulgação bonificando vendas concluídas. Sem cobrança offline ou uso automático do banco pessoal. Caixa/estoque/coleta/exposição e saves anteriores preservados. 783 testes aprovados e build sem erros/avisos; funcionamento no GTA depende do roteiro de teste. Demais subsistemas PDM seguem em subentregas; fases 8/9 mantidas.
 
 ## Fase 6.1B — coleta PDM no porto
 

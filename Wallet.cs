@@ -19,6 +19,11 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static PdmData Pdm => data.Pdm ?? new PdmData();
+        public static bool PdmHire(PdmStaffOptions c,string role,string id,out bool changed)=>PdmStaffTransactions.Hire(data,c,role,id,Save,out changed);
+        public static bool PdmWork(int seconds,string id,out bool changed)=>PdmStaffTransactions.Work(data,seconds,id,Save,out changed);
+        public static bool PdmPay(string role,string id,out bool changed)=>PdmStaffTransactions.Pay(data,role,id,Save,out changed);
+        public static bool PdmFire(string employee,string id,out bool changed)=>PdmStaffTransactions.Fire(data,employee,id,Save,out changed);
+        public static bool PdmUpgrade(PdmStaffOptions c,string upgrade,string id,out bool changed)=>PdmStaffTransactions.Upgrade(data,c,upgrade,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);
