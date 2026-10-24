@@ -1,5 +1,12 @@
 # RPCore 0.35.0 — GTA V Legacy
 
+
+## Fase 6.3C — pele e maquiagem
+
+[Atualização 0.36.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.36.0.zip) · [Código-fonte 0.36.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.36.0.zip) · [Instalação e teste](docs/FASE-6.3C-0.36.0.md)
+
+F10 → Barbearias / cortes e olhos → Acabamento / pele e maquiagem: 11 grupos de pele/maquiagem/corpo no freemode existente, com estilo, remoção, opacidade e paletas adequadas. Mesmo atendimento padrão $120, confirmação apenas dos grupos escolhidos, retomada gratuita e compatibilidade com tintura/barba da 0.35. 1267 testes aprovados e build sem erros/avisos. Saves/configs/F2/F11 preservados; aparência exige GTA. Criador facial completo e fases 8/9 continuam.
+
 ## Fase 6.3B — tintura, barba e sobrancelhas
 
 [Atualização 0.35.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.35.0.zip) · [Código-fonte 0.35.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.35.0.zip) · [Instalação e teste](docs/FASE-6.3B-0.35.0.md)

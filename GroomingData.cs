@@ -14,12 +14,29 @@ namespace RPCore
         public static GroomingOptions Load()
         {using(var s=typeof(GroomingDefaults).Assembly.GetManifestResourceStream("RPCore.JobDefaults.Grooming.json"))using(var r=new System.IO.StreamReader(s))return JsonConvert.DeserializeObject<GroomingOptions>(r.ReadToEnd());}
     }
+    public sealed class CosmeticOverlay : ExtensibleData
+    {
+        public int Id,Style=255,Opacity=100,Color;
+        [JsonIgnore] public bool Valid => CosmeticRules.Allowed(Id) && Style>=0 && Style<=255 && Opacity>=0 && Opacity<=100 && Color>=0 && Color<=63;
+    }
+    public static class CosmeticRules
+    {
+        public static readonly int[] Ids={0,3,4,5,6,7,8,9,10,11,12};
+        public static bool Allowed(int id)=>Array.IndexOf(Ids,id)>=0;
+        public static int ColorType(int id)=>id==4 || id==5 || id==8?2:id==10?1:0;
+        public static string Label(int id)
+        {
+            switch(id){case 0:return "Marcas da pele";case 3:return "Envelhecimento";case 4:return "Maquiagem";case 5:return "Blush";case 6:return "Aspecto da pele";case 7:return "Danos solares";case 8:return "Batom";case 9:return "Pintas / sardas";case 10:return "Pelos do peito";case 11:return "Marcas do corpo";case 12:return "Marcas adicionais do corpo";default:throw new ArgumentOutOfRangeException(nameof(id));}
+        }
+        public static bool Same(CosmeticOverlay a,CosmeticOverlay b)=>a!=null && b!=null && a.Id==b.Id && a.Style==b.Style && a.Opacity==b.Opacity && (ColorType(a.Id)==0 || a.Color==b.Color);
+    }
     public sealed class GroomingLook : ExtensibleData
     {
         public int Model;
         public bool Hair,Beard,Brows;
+        public List<CosmeticOverlay> Overlays=new List<CosmeticOverlay>();
         public int HairColor,Highlight,BeardStyle=255,BeardOpacity=100,BeardColor,BrowsStyle=255,BrowsOpacity=100,BrowsColor;
-        [JsonIgnore] public bool Valid => Model!=0 && (Hair || Beard || Brows) && HairColor>=0 && HairColor<=63 && Highlight>=0 && Highlight<=63 && BeardStyle>=0 && BeardStyle<=255 && BeardOpacity>=0 && BeardOpacity<=100 && BeardColor>=0 && BeardColor<=63 && BrowsStyle>=0 && BrowsStyle<=255 && BrowsOpacity>=0 && BrowsOpacity<=100 && BrowsColor>=0 && BrowsColor<=63;
+        [JsonIgnore] public bool Valid => Model!=0 && (Hair || Beard || Brows || Overlays!=null && Overlays.Count>0) && Overlays!=null && Overlays.Count<=CosmeticRules.Ids.Length && Overlays.All(o=>o!=null && o.Valid) && Overlays.Select(o=>o.Id).Distinct().Count()==Overlays.Count && HairColor>=0 && HairColor<=63 && Highlight>=0 && Highlight<=63 && BeardStyle>=0 && BeardStyle<=255 && BeardOpacity>=0 && BeardOpacity<=100 && BeardColor>=0 && BeardColor<=63 && BrowsStyle>=0 && BrowsStyle<=255 && BrowsOpacity>=0 && BrowsOpacity<=100 && BrowsColor>=0 && BrowsColor<=63;
     }
     public sealed class GroomingOrder : ExtensibleData
     {
@@ -57,10 +74,16 @@ namespace RPCore
             if(patch.Hair){result.Hair=true;result.HairColor=patch.HairColor;result.Highlight=patch.Highlight;}
             if(patch.Beard){result.Beard=true;result.BeardStyle=patch.BeardStyle;result.BeardOpacity=patch.BeardOpacity;result.BeardColor=patch.BeardColor;}
             if(patch.Brows){result.Brows=true;result.BrowsStyle=patch.BrowsStyle;result.BrowsOpacity=patch.BrowsOpacity;result.BrowsColor=patch.BrowsColor;}
+            foreach(var overlay in patch.Overlays)
+            {
+                var previous=result.Overlays.Find(o=>o.Id==overlay.Id);
+                if(previous==null)result.Overlays.Add(Copy(overlay));
+                else{previous.Style=overlay.Style;previous.Opacity=overlay.Opacity;previous.Color=overlay.Color;}
+            }
             return result;
         }
         public static bool SameSelected(GroomingLook known,GroomingLook patch)
-        { return known!=null && patch!=null && known.Valid && patch.Valid && known.Model==patch.Model && (!patch.Hair || known.Hair && known.HairColor==patch.HairColor && known.Highlight==patch.Highlight) && (!patch.Beard || known.Beard && known.BeardStyle==patch.BeardStyle && known.BeardOpacity==patch.BeardOpacity && known.BeardColor==patch.BeardColor) && (!patch.Brows || known.Brows && known.BrowsStyle==patch.BrowsStyle && known.BrowsOpacity==patch.BrowsOpacity && known.BrowsColor==patch.BrowsColor); }
+        { return known!=null && patch!=null && known.Valid && patch.Valid && known.Model==patch.Model && (!patch.Hair || known.Hair && known.HairColor==patch.HairColor && known.Highlight==patch.Highlight) && (!patch.Beard || known.Beard && known.BeardStyle==patch.BeardStyle && known.BeardOpacity==patch.BeardOpacity && known.BeardColor==patch.BeardColor) && (!patch.Brows || known.Brows && known.BrowsStyle==patch.BrowsStyle && known.BrowsOpacity==patch.BrowsOpacity && known.BrowsColor==patch.BrowsColor) && patch.Overlays.All(o=>CosmeticRules.Same(known.Overlays.Find(k=>k.Id==o.Id),o)); }
         public static bool Begin(WalletData w,GroomingLook look,int price,string id,Action save,out bool changed)
         {
             changed=false;if(look==null || !look.Valid || price<0 || price>10000 || string.IsNullOrWhiteSpace(id) || id.Length>100)return false;

@@ -484,7 +484,7 @@ if barber_config.exists():
         'native_review': 'Pinned Enhanced Hash.GET_PED_HAIR_TINT_COLOR corresponds to 0x4852FC386E2E1BB5, a palette-index-to-RGB function, not a ped tint getter. GET_PED_HEAD_OVERLAY returns overlay index only. No guessed memory offsets or incorrect getter signatures used; tint/beard kept for later subphases.',
         'defaults': config,
         'intentional_differences': 'Reference offers brows/tints/beard and MP-only styling with camera/player control changes. RPCore 6.3A limits mutable fields to safely captured component 2 and valid freemode eye color, supports available protagonist hair variations, normal camera/rotation and own configurable 150 bank fee.',
-        'scope_limits': '6.3B adds confirmation-only tint/beard/brows. No genetic face editor, makeup, tattoo, created ped or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
+        'scope_limits': '6.3B adds confirmation-only tint/beard/brows; 6.3C extends the same service with skin/makeup overlays. No genetic face editor, tattoo, created ped or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(barber_config.read_bytes())}
 grooming_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Grooming.json'
 if grooming_config.exists():
@@ -498,7 +498,20 @@ if grooming_config.exists():
         'compatibility': 'Does not read RGB palette function as current ped tint. No memory offsets, forced default head blend, ped replacement, clothing or auto-load. Preserves unknown record fields and unselected live groups. Existing Barber.json and cuts/eyes service untouched.',
         'defaults': config,
         'intentional_differences': 'Reference live-preview overwrites character appearance fields. RPCore adds own 120 configurable bank fee and no live tint/overlay preview because Legacy natives do not provide complete reversible color/opacity capture. Exact previously recorded selected values are free to reapply.',
-        'scope_limits': 'No genetic face editor, makeup, tattoos, full ped creator or automatic startup appearance. Rendering/silent native setters cannot be verified in this cloud. Paid-started failure remains recoverable; never claims to refund and undo unknown colors. Phases 8/9 retained.',
+        'scope_limits': '6.3C adds skin/makeup overlays. No genetic face editor, tattoos, full ped creator or automatic startup appearance. Rendering/silent native setters cannot be verified in this cloud. Paid-started failure remains recoverable; never claims to refund and undo unknown colors. Phases 8/9 retained.',
+        'configuration_sha256': digest(grooming_config.read_bytes())}
+if grooming_config.exists():
+    source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text()
+    report['cosmetics'] = {
+        'reference_source': 'PSRP/MultiplayerCharacter.cs',
+        'reference_has_skin_and_makeup': all('private void ' + name + '()' in source for name in ['ApplyBlemishes','ApplyAgeing','ApplyComplexion','ApplySunDamage','ApplyMolesFreckles','ApplyMakeup','ApplyBlush']),
+        'rpcore_overlay_ids': [0,3,4,5,6,7,8,9,10,11,12],
+        'rpcore_cycle': 'Extends existing Grooming draft/fee/pending lifecycle; optional independent style, none, opacity, color. All groups start unselected; no live preview or automatic startup setters. Same-model saved groups merge without dropping previous hair/beard/brows or unknown fields.',
+        'palette_types': {'makeup_blush_lipstick': 2, 'chest_hair': 1, 'other_skin_overlays': 0},
+        'runtime_preflight': 'Freemode/ready blend, native per-overlay style count and palette count; cosmetics use makeup RGB getter instead of hair RGB. No default face, new model or guessed current opacity/color.',
+        'wallet_checkpoint': 'Existing single configurable 120 bank fee for any combination, no additional per-overlay charge. Durable begin/start/complete, free resume/reapply, unstarted refund only; old 0.35 paid orders remain readable.',
+        'intentional_differences': 'Own implementation uses confirmation-only selection. Lipstick, chest hair and body marks are additional native overlay controls; reference Apply methods above evidence the seven skin/makeup groups, not complete equivalence for all additions.',
+        'scope_limits': 'Freemode must already exist. No genetics/morph creator, ped switching, tattoos or dedicated camera. Body overlays can be hidden by clothes. No complete native opacity/color readback; rendered result needs GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(grooming_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

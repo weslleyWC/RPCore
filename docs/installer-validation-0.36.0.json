@@ -1,0 +1,18 @@
+{
+  "version": "0.36.0",
+  "platform": "PowerShell 7 on Linux, simulated GTA directory; no gameplay",
+  "runs": 2,
+  "existing_files_preserved_byte_for_byte": 116,
+  "existing_custom_grooming_config_preserved_both_runs": true,
+  "existing_grooming_look_and_unknown_fields_preserved": true,
+  "user_phone_F2_preserved": true,
+  "old_garage_F2_ini_preserved": true,
+  "old_dll_backed_up": true,
+  "new_dll_matches_build": true,
+  "existing_housing_and_outfits_preserved": true,
+  "existing_inventory_containers_grid_unknown_fields_preserved": true,
+  "old_settings_keys_visuals_saves_unchanged": true,
+  "oiv_rpf_not_touched": true,
+  "partial_catalog_preserved": true,
+  "invalid_bindings_preserved": true
+}

@@ -1,0 +1,17 @@
+# Validação — RPCore 0.35.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `eb7f4c8f5809febf93a7679765b50021e58daa8e9d56a6ac7f05de401971c767`.
+
+1233 testes aprovados, zero falhas/ignorados: 1208 anteriores e 25 novos. Cobrem save antigo sem cobrança/aparência, reserva/início/conclusão, rollback/replay/recarga, estorno antes do início, impedimento de estorno depois, encerramento explícito, limite de banco/contadores, snapshots, merge parcial/grupos inalterados, valores já registrados, campos desconhecidos e isolamento de perfis. Relatórios DataTests.trx/DataTests-0.35.0.trx. Não executam GTA.
+
+Novo Wallet.Grooming e Jobs/Grooming.json. Serviço separado padrão $120 do banco RPCore, aplicado apenas no freemode com head blend já pronto. Seleção começa com todos os grupos desativados; cabelo/mechas, barba e sobrancelhas independentes. Não faz prévia no personagem porque os natives Legacy não capturam com segurança cores/opacidades atuais. Mostra amostras RGB pelo getter correto de paleta. Não substitui valores de grupos não selecionados e não inicializa rosto genético padrão.
+
+Fluxo financeiro: Begin salva taxa/pedido; Start grava autorização antes de chamar setters; Complete mescla somente os grupos selecionados e encerra, sem novo débito. Falha/interrupção conserva pendência para retomar sem cobrar de novo no mesmo modelo. Pedido não iniciado pode ser estornado com reversão de contadores; banco cheio conserva pendência até liberar limite. Pedido iniciado não tem estorno nem restauração inventada das cores originais; oferece retomar ou encerramento explícito sem estorno. Valores selecionados já conhecidos e reaplicação manual são gratuitos. Sem autoaplicação no load/perfil.
+
+Native validation: modelo freemode, HAS_PED_HEAD_BLEND_FINISHED, faixa de paleta e estilos de overlays disponíveis. Aplica SET_PED_HAIR_TINT e overlays 1/2 apenas quando selecionados. Não usa GET_PED_HAIR_TINT_COLOR como getter de ped, não adivinha offsets e não altera modelo, cabeça, cortes, olhos, roupa ou tatuagens. Setters de cor/opacidade não têm leitura completa/retorno de renderização; este ambiente não prova aparência. Após autorização, falha pode ter aplicado parte do pedido; registro pago permite reaplicar os mesmos valores.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.35.0.json: 75 fontes, baseline 0.34.0, DLL atual; ApplyHair/ApplyFacialHair/ApplyBrows comparados. Referência possui prévia direta e campos completos do personagem; RPCore usa seleção sem alteração e confirmação recuperável. Configuração Barber.json anterior e cortes/olhos preservados. Editor genético, maquiagem/tatuagens e criador de ped continuam pendentes. Fases 8/9 mantidas.
+
+GTA não executado nesta nuvem. Roteiro FASE-6.3B-0.35.0.md: seleção/cancelamento sem mudança, aplicação de cada grupo/combinação, cor/mechas/estilo/opacidade/remoção, cobrança única, reaplicação/retomada e regressões de moradia/roupas/itens/trabalhos. Renderização de overlays e convivência com mods exigem teste real.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.34.0: 115 arquivos existentes preservados byte a byte, incluindo propriedade Eclipse, roupas, itens/containers/layout, configurações/F2 e empresa. Grooming.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.35.0.json. Não é teste de gameplay.

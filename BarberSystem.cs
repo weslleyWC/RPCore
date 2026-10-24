@@ -62,7 +62,7 @@ namespace RPCore
         {
             Cancel();pool.HideAll();menu.Clear();menu.Name="Barbearias / banco $"+Wallet.Bank;
             if(!Wallet.Barber.Valid){Notify.Show("Dados de barbearia invalidos; original preservado.");return;}
-            if(OpenDetails!=null)Add("Tintura / barba / sobrancelhas","Selecao sem alterar personagem; aplicacao apenas apos confirmar. Servico separado.",OpenDetails);
+            if(OpenDetails!=null)Add("Acabamento / pele e maquiagem","Selecao sem alterar personagem; aplicacao apenas apos confirmar. Servico separado.",OpenDetails);
             Add("Iniciar previa / confirmar por $"+options.Price,"Perto de uma barbearia, a pe e sem atividade. Cobranca unica pelo banco RPCore apenas ao confirmar mudancas.",Begin);
             if(Wallet.Barber.Looks.Any(l=>l.Model==Game.Player.Character.Model.Hash))Add("Reaplicar ultimo visual confirmado","Na barbearia, mesmo modelo. Sem nova cobranca nem aplicacao automatica no load.",RestoreSaved);
             foreach(var p in options.Shops){var point=p;Add("GPS: "+point.Name,"Use o menu F10 da barbearia ao chegar. A tecla E nativa do GTA permanece disponivel.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,point.X,point.Y);menu.Visible=false;});}
