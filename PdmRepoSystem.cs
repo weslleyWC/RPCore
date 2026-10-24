@@ -68,7 +68,7 @@ namespace RPCore
         { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? v : null; }
         void Begin(string loanId)
         {
-            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
+            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe no escritorio, sem procurado/missao e sem outra operacao PDM pendente."); return; }
             var loan = Wallet.Pdm.Loans.Find(l => l.Id == loanId); if (loan == null || !loan.Defaulted || loan.Settled || Wallet.Pdm.Stock.Count >= company.Capacity) { Notify.Show("Confira contrato em atraso e vaga livre no estoque."); return; }
             if (Exists(Match(loan.DeliveredHandle, loan.Asset.Model, loan.Asset.Plate))) { Notify.Show("O carro da entrega original ainda esta no mundo. Libere-o e aguarde a retirada antes de iniciar retomada."); return; }

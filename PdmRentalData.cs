@@ -45,9 +45,9 @@ namespace RPCore
         {
             changed = false; if (c == null || !c.Valid || string.IsNullOrWhiteSpace(id) || id.Length > 100 || ids == null || ids.Count != 2 || ids.Distinct().Count() != 2 || truck == null || !truck.Valid || trailer == null || !trailer.Valid || truck.Handle == trailer.Handle) return false;
             return PdmTransactions.Apply(w, id + ":rental", 0, d => {
-                if (!d.Owned || d.Active != null || d.Collection != null || d.Repo != null || d.SafeTransfer != null || d.Rental != null) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.Repo != null || d.SafeTransfer != null || d.Rental != null || d.ShowroomSale != null) return false;
                 var cars = ids.Select(x => d.Stock.Find(s => s.Id == x)).ToList();
-                if (cars.Any(s => s == null || s.AwaitingCollection || s.Engine < 300 || s.Body < 300 || !c.Models.Contains(s.Model, StringComparer.OrdinalIgnoreCase) || Quote(s, c.PricePercent) < 1) || !string.Equals(cars[0].Model, cars[1].Model, StringComparison.OrdinalIgnoreCase)) return false;
+                if (cars.Any(s => s == null || d.Showroom.Any(e => e.StockId == s.Id) || s.AwaitingCollection || s.Engine < 300 || s.Body < 300 || !c.Models.Contains(s.Model, StringComparer.OrdinalIgnoreCase) || Quote(s, c.PricePercent) < 1) || !string.Equals(cars[0].Model, cars[1].Model, StringComparison.OrdinalIgnoreCase)) return false;
                 d.Rental = new PdmRentalOperation { Id = id, PricePercent = c.PricePercent, Truck = truck, Trailer = trailer, Cars = cars.Select(s => new PdmRentalCar { StockId = s.Id, Price = Quote(s, c.PricePercent) }).ToList() };
                 d.Rental = JsonConvert.DeserializeObject<PdmRentalOperation>(JsonConvert.SerializeObject(d.Rental)); return true;
             }, save, out changed);

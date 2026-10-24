@@ -45,6 +45,12 @@ namespace RPCore
         public static bool PdmRentalReturn(string id,out bool changed)=>PdmRentalTransactions.Return(data,id,Save,out changed);
         public static bool PdmRentalSettle(string id,bool recovery,out bool changed)=>PdmRentalTransactions.Settle(data,id,recovery,Save,out changed);
         public static bool PdmRentalCancel(string id,out bool changed)=>PdmRentalTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmShowroomAssign(PdmShowroomOptions c,string stock,string slot,int handle,out bool changed)=>PdmShowroomTransactions.Assign(data,c,stock,slot,handle,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmShowroomTrack(string stock,int handle,out bool changed)=>PdmShowroomTransactions.Track(data,stock,handle,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmShowroomRemove(string stock,out bool changed)=>PdmShowroomTransactions.Remove(data,stock,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmShowroomBegin(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,Save,out changed);
+        public static bool PdmShowroomSell(string id,out bool changed)=>PdmShowroomTransactions.Sell(data,id,Save,out changed);
+        public static bool PdmShowroomCancel(string id,out bool changed)=>PdmShowroomTransactions.Cancel(data,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

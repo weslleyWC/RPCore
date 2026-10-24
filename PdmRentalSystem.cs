@@ -49,7 +49,7 @@ namespace RPCore
                 int offers = 0;
                 foreach (string model in options.Models)
                 {
-                    var stock = Wallet.Pdm.Stock.Where(s => !s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300 && string.Equals(s.Model, model, StringComparison.OrdinalIgnoreCase)).Take(2).ToList(); if (stock.Count != 2) continue;
+                    var stock = Wallet.Pdm.Stock.Where(s => !s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300 && !Wallet.Pdm.Showroom.Any(e => e.StockId == s.Id) && string.Equals(s.Model, model, StringComparison.OrdinalIgnoreCase)).Take(2).ToList(); if (stock.Count != 2) continue;
                     offers++; var ids = stock.Select(s => s.Id).ToList(); int quote = stock.Sum(s => PdmRentalTransactions.Quote(s, options.PricePercent));
                     Add("Fornecer 2x " + stock[0].Name + " / ate $" + quote, "Estoque proprio ja pago; desconto contratual " + options.PricePercent + "% da cotacao base apos danos. Carregue, entregue a locadora e devolva o conjunto para receber no caixa. Sem bonus de divulgacao.", () => Begin(ids));
                 }
@@ -87,7 +87,7 @@ namespace RPCore
         void Begin(List<string> ids)
         {
             var d = Wallet.Pdm;
-            if (Active || !d.Valid || !d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
+            if (Active || !d.Valid || !d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe na PDM, sem procurado/missao e sem outra operacao pendente."); return; }
             if (clearDisplay != null && !clearDisplay()) return;
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }

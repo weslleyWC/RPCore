@@ -1,4 +1,10 @@
-# RPCore 0.25.0 — GTA V Legacy
+# RPCore 0.26.0 — GTA V Legacy
+
+## Fase 6.1H — showroom e atendimento
+
+[Atualização 0.26.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.26.0.zip) · [Código-fonte 0.26.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.26.0.zip) · [Instalação e teste](docs/FASE-6.1H-0.26.0.md)
+
+F10 → Trabalhos → PDM → Showroom / vagas / compradores. Dezenove posições da referência, estoque atribuído persistentemente, temporários/preços, recolhimento seletivo e atendimento ao comprador na entrada externa com E. Venda credita caixa e baixa carro/vaga uma vez. Sem criar estoque grátis, apagar ambiente ou forçar portas/interior; comece testando vagas Patio. 965 testes aprovados e build sem erros/avisos. Saves/configurações/F2/F11 e sistemas anteriores preservados; posições/interiores/cliente precisam de teste no GTA. Demais subentregas e fases 8/9 mantidas.
 
 ## Fase 6.1G — pedidos da locadora
 

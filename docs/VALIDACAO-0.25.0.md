@@ -1,0 +1,17 @@
+# Validação — RPCore 0.25.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `a5d5de5ee1eeec814ba456a9399ff83c32bcf50a9358966da6fceaca43b70b91`.
+
+934 testes aprovados, zero falhas/ignorados: 898 anteriores e 36 novos. Cobrem reserva de duas unidades pagas/prontas do mesmo modelo, handles/rig/carga, snapshots/preço/dano, confirmação de entrega, retorno/pagamento, recuperação por recibo, cancelamento, rollback/replay/reload, limite de caixa/receita/custo e saque para liberar saldo, estoque extra/campos desconhecidos e máquina de estados/tempos/interrupção/overflow. Relatórios DataTests.trx/DataTests-0.25.0.trx. Não executam GTA.
+
+Estado aditivo Pdm.Rental com IDs de estoque, rig/carga, percentual/preços, Delivered/Returned. Ausência mantém saves antigos sem pedido. Não compra carros ao iniciar, não concede estoque grátis e não paga na reserva/descarga. Após aceite, não pode liberar os mesmos bens para outra venda. Pagamento normal somente depois do retorno salvo, junto de baixa exata dos dois itens/receita/custo/quantidade. Exceções restauram snapshot. Preço não aumenta acima do início; danos podem reduzir antes do aceite e depois ficam fixos.
+
+Interrupção anterior ao aceite libera reserva com danos, sem receita. Aceite durável preserva obrigação: conjunto reconhecido permite continuar retorno; sem conjunto utilizável após interrupção, recuperação liquida recibo de bens já entregues uma vez. Devolução já salva só repete pagamento pendente. Estoque permanece reservado até liquidar. Saque de saldo existente no escritório é permitido após aceite para liberar limite, sem liberar estoque/aporte/gestão conflitante. Pessoal/parcelas seguem; banco e Transport pessoal não recebem alterações automáticas.
+
+Integração física: Packer/TRFlat com engate/carga assistida vazia, dois carros reais do estoque, rota a pátio externo, buzina chama funcionário próprio, cinco segundos de conferência, retorno e três segundos de confirmação. Identidades por handle/modelo/placa; cleanup espera ocupantes/movimento/conexões alheias. Sem fades, bloqueio global de controles, invencibilidade, polícia alterada ou limpeza de ambiente. Mantém arquivos padrão anteriores e recursos OpenIV.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.25.0.json: 75 fontes, baseline 0.24.0 e identidade da DLL atual; GenerateRentalOrder/HandleRentalDelivery, duas unidades, funcionário/buzina/retorno/pagamento e cinco posições conferidos. Modelos/preços e ofertas condicionadas ao estoque são adaptações próprias; não declara fila diária aleatória, aluguel pessoal, áudio/diálogo ou toda a PDM concluídos. Demais subentregas e fases 8/9 permanecem.
+
+GTA não executado nesta nuvem. Roteiro FASE-6.1G-0.25.0.md: duas cargas/altura/acesso externo, NPC e buzina/aceite, volta/pagamento único, cancelar/suspender/reload antes/depois do aceite, ocupantes/danos/estoque extra e regressão de empresa/financiamentos/retomada/coletas/pessoal/garagem/F2/F11. “Continue” é orientação para concluir esta implementação, não comprovação de gameplay.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.24.0: 105 arquivos existentes preservados byte a byte, incluindo saves/configurações/F2 e estado da empresa. PdmRental.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.25.0.json. Não é teste de gameplay.

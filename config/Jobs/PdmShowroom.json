@@ -1,0 +1,253 @@
+{
+  "HandoverSeconds": 3,
+  "BuyerTimeoutSeconds": 120,
+  "Slots": [
+    {
+      "Id": "lot1",
+      "Name": "Patio 1",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 1",
+        "X": -45.05214,
+        "Y": -1116.349,
+        "Z": 25.44,
+        "Heading": 3.350951
+      }
+    },
+    {
+      "Id": "lot2",
+      "Name": "Patio 2",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 2",
+        "X": -47.78123,
+        "Y": -1116.517,
+        "Z": 25.44,
+        "Heading": 4.587791
+      }
+    },
+    {
+      "Id": "lot3",
+      "Name": "Patio 3",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 3",
+        "X": -50.69996,
+        "Y": -1116.535,
+        "Z": 25.44,
+        "Heading": 1.882045
+      }
+    },
+    {
+      "Id": "lot4",
+      "Name": "Patio 4",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 4",
+        "X": -53.50031,
+        "Y": -1116.866,
+        "Z": 25.44,
+        "Heading": 3.637932
+      }
+    },
+    {
+      "Id": "lot5",
+      "Name": "Patio 5",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 5",
+        "X": -56.31959,
+        "Y": -1116.884,
+        "Z": 25.44,
+        "Heading": 2.217242
+      }
+    },
+    {
+      "Id": "lot6",
+      "Name": "Patio 6",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 6",
+        "X": -59.08286,
+        "Y": -1117.038,
+        "Z": 25.44,
+        "Heading": 2.122469
+      }
+    },
+    {
+      "Id": "lot7",
+      "Name": "Patio 7",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Patio 7",
+        "X": -61.93115,
+        "Y": -1117.286,
+        "Z": 25.44,
+        "Heading": 183.5335
+      }
+    },
+    {
+      "Id": "room1",
+      "Name": "Salao 1",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 1",
+        "X": -36.24031,
+        "Y": -1103.779,
+        "Z": 25.43,
+        "Heading": 159.3543
+      }
+    },
+    {
+      "Id": "room2",
+      "Name": "Salao 2",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 2",
+        "X": -41.09735,
+        "Y": -1102.648,
+        "Z": 25.43,
+        "Heading": 69.93347
+      }
+    },
+    {
+      "Id": "room3",
+      "Name": "Salao 3",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 3",
+        "X": -46.397,
+        "Y": -1101.262,
+        "Z": 25.43,
+        "Heading": 134.9453
+      }
+    },
+    {
+      "Id": "room4",
+      "Name": "Salao 4",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 4",
+        "X": -55.59124,
+        "Y": -1096.556,
+        "Z": 25.43,
+        "Heading": 119.5847
+      }
+    },
+    {
+      "Id": "room5",
+      "Name": "Salao 5",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 5",
+        "X": -50.13591,
+        "Y": -1090.838,
+        "Z": 25.43,
+        "Heading": 69.58807
+      }
+    },
+    {
+      "Id": "room6",
+      "Name": "Salao 6",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 6",
+        "X": -43.21345,
+        "Y": -1094.605,
+        "Z": 25.43,
+        "Heading": 159.6455
+      }
+    },
+    {
+      "Id": "room7",
+      "Name": "Salao 7",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 7",
+        "X": -39.59222,
+        "Y": -1097.757,
+        "Z": 25.43,
+        "Heading": 118.0413
+      }
+    },
+    {
+      "Id": "room8",
+      "Name": "Salao 8",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 8",
+        "X": -50.16171,
+        "Y": -1095.194,
+        "Z": 25.43,
+        "Heading": 49.68578
+      }
+    },
+    {
+      "Id": "room9",
+      "Name": "Salao 9",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 9",
+        "X": -39.40639,
+        "Y": -1115.011,
+        "Z": 24.44,
+        "Heading": 159.2964
+      }
+    },
+    {
+      "Id": "room10",
+      "Name": "Salao 10",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 10",
+        "X": -44.00843,
+        "Y": -1109.797,
+        "Z": 24.44,
+        "Heading": 70.22356
+      }
+    },
+    {
+      "Id": "room11",
+      "Name": "Salao 11",
+      "Interior": false,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 11",
+        "X": -49.95773,
+        "Y": -1107.565,
+        "Z": 24.44,
+        "Heading": 69.27139
+      }
+    },
+    {
+      "Id": "room12",
+      "Name": "Salao 12",
+      "Interior": true,
+      "Enabled": true,
+      "Point": {
+        "Name": "Salao 12",
+        "X": -56.17204,
+        "Y": -1105.234,
+        "Z": 26.5,
+        "Heading": 69.37263
+      }
+    }
+  ]
+}

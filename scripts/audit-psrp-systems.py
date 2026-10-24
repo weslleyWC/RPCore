@@ -218,7 +218,7 @@ if pdm_source.exists() and pdm_config.exists():
         'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
         'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
         'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
-        'scope_limits': 'Port collection/external display in 6.1B, staff/payroll/upgrades in 6.1C, safe cash collection in 6.1D, regular-customer installment sales in 6.1E. Default and parked-car repossession added in 6.1F. Full showroom, remaining staff AI, driving/combat repo variants, rental supply orders added in 6.1G; interior safe mechanics and remaining systems stay pending.',
+        'scope_limits': 'Port collection/external display in 6.1B, staff/payroll/upgrades in 6.1C, safe cash collection in 6.1D, regular-customer installment sales in 6.1E. Default and parked-car repossession added in 6.1F. Showroom assignment/physical displays/onsite buyer added in 6.1H. Remaining staff AI, driving/combat repo variants, interior safe mechanics and other parity differences stay pending.',
         'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
         'configuration_sha256': digest(pdm_config.read_bytes())}
 logistics_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmLogistics.json'
@@ -323,5 +323,26 @@ if pdm_source.exists() and rental_config.exists():
         'intentional_differences': 'Own catalogue models/rate, always-available offers conditional on two matching paid ready stock instead of random legacy daily queue. No screen fades, disabled player controls, occupied cargo attachment, invincibility or global cleanup. Not consumer vehicle rental.',
         'scope_limits': 'One two-car fleet supply contract at a time; no consumer rental/deposit/return cycle, random daily order queue, custom dialogue/audio, detailed ramp physics or full remaining PDM parity. Phases 8/9 retained.',
         'configuration_sha256': digest(rental_config.read_bytes())}
+showroom_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmShowroom.json'
+if pdm_source.exists() and showroom_config.exists():
+    source = pdm_source.read_text(); config = json.loads(showroom_config.read_text())
+    reference = {}
+    for method, prefix in [('SpawnVehicleInSlot','room'), ('SpawnVehicleInParkingLot','lot')]:
+        block = source.split('private void ' + method + '(', 1)[1].split('Vehicle vehicle = World.CreateVehicle', 1)[0]
+        for row in re.findall(r'case (\d+):\s*position = new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\);\s*heading = ([-\d.]+)f;', block):
+            reference[prefix + row[0]] = tuple(map(float, row[1:]))
+    report['pdm_showroom'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'all_slot_positions_and_headings_match_reference': len(config['Slots']) == len(reference) and all(tuple(row['Point'][k] for k in ['X','Y','Z','Heading']) == reference.get(row['Id']) for row in config['Slots']),
+        'reference_has_slot_management': 'ShowroomSpots.Add(Slot12)' in source and 'slotIndex = 1' in source,
+        'reference_has_showroom_sales': 'SellRandomPDMVehicleOnShowroomFloor' in source,
+        'slot_count': len(config['Slots']), 'showroom_numbered_slots': 12, 'parking_slots': 7,
+        'rpcore_cycle': 'Persistent exact stock/slot/vehicle assignment, fixed collision/ground/interior checks, protected reserved temporary displays with price cards, selective recollection, own public-desk buyer/handover/sale and departure cleanup.',
+        'wallet_checkpoint': 'Pdm.Showroom and ShowroomSale; onsite sale credits cash/revenue/cost, removes exact stock/slot and closes intent together. No charge for assignment/removal and no free stock.',
+        'compatibility': 'Missing fields initialize empty. Existing cash/loans/repo/rental/staff/safe and personal Transport preserved. Delivery/repair recollect only selected displayed stock; rental supply excludes assigned stock.',
+        'recovery': 'Handle/model/plate authentication; nearby respawn only if old entity absent and bay free; far cleanup retains slot metadata. Interrupted unpaid buyer cancels intent and preserves inventory/assignment; paid sale cannot return to stock.',
+        'intentional_differences': 'No global showroom/parking generator deletion or forced doors/IPL activation. Numbered slots 9-11 use exterior checks per their lower reference level. Own explicit buyer event at public desk instead of random automatic showroom sale.',
+        'scope_limits': 'No preview cameras, cover-cloth system, automatic reputation/random sales, forced interior access or full building/staff upgrades. Interior/floor readiness and occupied bays can leave display pending; phases 8/9 retained.',
+        'configuration_sha256': digest(showroom_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

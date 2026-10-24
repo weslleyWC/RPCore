@@ -45,7 +45,7 @@ namespace RPCore
     }
     public static class PdmStaffTransactions
     {
-        static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null;
+        static bool Idle(PdmData d) => d.Owned && d.Active == null && d.Collection == null && d.SafeTransfer == null && d.Repo == null && d.Rental == null && d.ShowroomSale == null;
         static bool Working(PdmData d, string role) => d?.Staff != null && d.Staff.FormerDebt == 0 && d.Staff.Employees.Any(e => e.Role == role && e.Owed == 0);
         public static int RepairPrice(PdmData d, int price) => d?.Staff?.Workshop == true && Working(d, "mechanic") ? Math.Max(1, price / 2) : price;
         public static int BonusPercent(PdmData d)

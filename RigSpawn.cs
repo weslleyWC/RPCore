@@ -63,6 +63,33 @@ namespace RPCore
             }
             Log.Write(label+" spawn: no bay occupied="+occupied+" ground="+ground+" world="+world);return null;
         }
+        // Exact showroom bay: never search into another numbered slot or delete ambient vehicles.
+        public static JobPoint FindDisplayVehicle(JobPoint anchor, Model model, bool interior)
+        {
+            if (!model.Request(2500)) return null;
+            var p = new JobPoint { Name = anchor.Name, X = anchor.X, Y = anchor.Y, Z = anchor.Z, Heading = anchor.Heading };
+            if (interior)
+            {
+                int room = GTA.Native.Function.Call<int>(GTA.Native.Hash.GET_INTERIOR_AT_COORDS, p.X, p.Y, p.Z + 1);
+                if (room == 0 || !GTA.Native.Function.Call<bool>(GTA.Native.Hash.IS_INTERIOR_READY, room)) return null;
+                var probe = ShapeTest.StartExpensiveSyncTestLOSProbe(new Vector3(p.X, p.Y, p.Z + 1.5f), new Vector3(p.X, p.Y, p.Z - 1.5f), IntersectFlags.Map | IntersectFlags.Objects);
+                ShapeTestResult hit;
+                if (probe.GetResult(out hit) != ShapeTestStatus.Ready || !hit.DidHit || hit.SurfaceNormal.Z < .85f) return null;
+                Vector3 min, max; model.GetDimensions(out min, out max); p.Z = hit.HitPosition.Z - min.Z + .06f;
+            }
+            else if (!Ground(p, model)) return null;
+            var box = Bounds(p, model); var center = new Vector3(p.X, p.Y, p.Z);
+            foreach (var v in World.GetNearbyVehicles(center, 30)) if (v.Exists() && box.Overlaps(Bounds(Point(v), v.Model))) return null;
+            foreach (var ped in World.GetNearbyPeds(center, 15)) if (ped.Exists() && box.Overlaps(new SpawnBox(Point(ped), -.5, .5, -.5, .5, -1, 1))) return null;
+            double bottom = box.Z - box.HalfHeight;
+            foreach (double fraction in new[] { .25, .5, .8 })
+            {
+                double height = bottom + box.HalfHeight * 2 * fraction;
+                foreach (double side in new[] { -box.HalfWidth, 0, box.HalfWidth }) if (!ProbeClear(At(box, side, -box.HalfLength, height), At(box, side, box.HalfLength, height), IntersectFlags.Map | IntersectFlags.Objects)) return null;
+                foreach (double along in new[] { -box.HalfLength, 0, box.HalfLength }) if (!ProbeClear(At(box, -box.HalfWidth, along, height), At(box, box.HalfWidth, along, height), IntersectFlags.Map | IntersectFlags.Objects)) return null;
+            }
+            return p;
+        }
         public static bool ClearForTeleport(JobPoint point,Model model,Entity moving,Ped player)
         {
             var box=Bounds(point,model);var position=new Vector3(point.X,point.Y,point.Z);
