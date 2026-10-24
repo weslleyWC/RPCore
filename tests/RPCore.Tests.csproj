@@ -17,6 +17,7 @@
     <Compile Include="../PdmStaffData.cs" Link="PdmStaffData.cs" />
     <Compile Include="../PdmSafeData.cs" Link="PdmSafeData.cs" />
     <Compile Include="../PdmFinanceData.cs" Link="PdmFinanceData.cs" />
+    <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmData.cs" Link="PdmData.cs" />
     <Compile Include="../DragData.cs" Link="DragData.cs" />
     <Compile Include="../StreamerData.cs" Link="StreamerData.cs" />
@@ -41,6 +42,7 @@
     <EmbeddedResource Include="../config/Jobs/PdmStaff.json" LogicalName="RPCore.JobDefaults.PdmStaff.json" />
     <EmbeddedResource Include="../config/Jobs/PdmSafe.json" LogicalName="RPCore.JobDefaults.PdmSafe.json" />
     <EmbeddedResource Include="../config/Jobs/PdmFinance.json" LogicalName="RPCore.JobDefaults.PdmFinance.json" />
+    <EmbeddedResource Include="../config/Jobs/PdmRepo.json" LogicalName="RPCore.JobDefaults.PdmRepo.json" />
     <EmbeddedResource Include="../config/Jobs/Pdm.json" LogicalName="RPCore.JobDefaults.Pdm.json" />
     <EmbeddedResource Include="../config/Jobs/Drag.json" LogicalName="RPCore.JobDefaults.Drag.json" />
     <EmbeddedResource Include="../config/Jobs/Streamer.json" LogicalName="RPCore.JobDefaults.Streamer.json" />

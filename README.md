@@ -1,4 +1,10 @@
-# RPCore 0.23.0 — GTA V Legacy
+# RPCore 0.24.0 — GTA V Legacy
+
+## Fase 6.1F — inadimplência e retomada PDM
+
+[Atualização 0.24.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.24.0.zip) · [Código-fonte 0.24.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.24.0.zip) · [Instalação e teste](docs/FASE-6.1F-0.24.0.md)
+
+Novos financiamentos têm risco padrão de 20% por parcela; contratos da 0.23.0 continuam com risco zero. Financiamentos → contrato em atraso → Retomada: Packer/TRFlat, buscar o carro estacionado, E carrega vazio, voltar e descarregar. Retorna ao estoque com danos, encerra saldo a receber e preserva valores recebidos, sem bônus. Custo original volta ao estoque para não ser contado duas vezes na revenda. 898 testes aprovados e build sem erros/avisos; percurso físico precisa de teste no GTA. Guia inclui como testar com risco 100% em um contrato novo. Variantes dirigindo/confronto e demais subsistemas continuam em subentregas/refinamento; fases 8/9 mantidas.
 
 ## Fase 6.1E — venda financiada PDM
 

@@ -31,6 +31,13 @@ namespace RPCore
         public static bool PdmBeginFinanced(PdmOptions c,string stockId,string id,int destination,int handle,out bool changed)=>PdmTransactions.Begin(data,c,stockId,id,destination,handle,Save,out changed,true);
         public static bool PdmFinanceOpen(PdmFinanceOptions c,string id,int engine,int body,out bool changed)=>PdmFinanceTransactions.Open(data,c,id,engine,body,Save,out changed);
         public static bool PdmFinanceWork(int seconds,string id,out bool changed)=>PdmFinanceTransactions.Work(data,seconds,id,Save,out changed);
+        public static bool PdmFinanceOpenRisky(PdmFinanceOptions c,string id,int engine,int body,int risk,out bool changed)=>PdmFinanceTransactions.OpenRisky(data,c,id,engine,body,risk,Save,out changed);
+        public static bool PdmRepoBegin(PdmOptions c,PdmRepoOptions r,PdmRepoOperation a,out bool changed)=>PdmRepoTransactions.Begin(data,c,r,a,Save,out changed);
+        public static bool PdmRepoCar(string id,int handle,out bool changed)=>PdmRepoTransactions.Register(data,id,handle,Save,out changed);
+        public static bool PdmRepoHealth(string id,int engine,int body,out bool changed)=>PdmRepoTransactions.Remember(data,id,engine,body,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmRepoArrive(string id,out bool changed)=>PdmRepoTransactions.Arrive(data,id,Save,out changed);
+        public static bool PdmRepoReceive(PdmOptions c,string id,out bool changed)=>PdmRepoTransactions.Complete(data,c,id,Save,out changed);
+        public static bool PdmRepoCancel(string id,out bool changed)=>PdmRepoTransactions.Cancel(data,id,Save,out changed);
         public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
         public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
         public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);

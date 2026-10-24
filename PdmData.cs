@@ -52,12 +52,14 @@ namespace RPCore
         public PdmOperation Active;
         public PdmCollection Collection;
         public PdmSafeTransfer SafeTransfer;
+        public PdmRepoOperation Repo;
+        public long FinanceWriteOff;
         public List<PdmLoan> Loans = new List<PdmLoan>();
         public PdmStaffData Staff = new PdmStaffData();
         public List<PdmEntry> Ledger = new List<PdmEntry>();
         public List<string> Receipts = new List<string>();
         [JsonIgnore] public bool Valid => Cash >= 0 && AcquisitionPrice >= 0 && Bought >= 0 && Sold >= 0 && Invested >= 0 && Withdrawn >= 0 && StockSpent >= 0 && SoldCost >= 0 && Revenue >= 0 && Repairs >= 0 && Stock != null && Stock.Count <= 20 && Stock.All(s => s != null && s.Valid) && Stock.Select(s => s.Id).Distinct().Count() == Stock.Count && Stock.Select(s => s.Plate).Distinct().Count() == Stock.Count
-            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && (Collection == null || Active == null && Collection.Valid && Collection.StockIds.All(id => Stock.Any(s => s.Id == id && s.AwaitingCollection))) && (SafeTransfer == null || SafeTransfer.Valid && Owned && Active == null && Collection == null && (long)Cash + SafeTransfer.Amount <= int.MaxValue) && Loans != null && Loans.Count <= 42 && Loans.All(l => l != null && l.Valid) && Loans.Select(l => l.Id).Distinct().Count() == Loans.Count && Loans.Count(l => !l.Complete) <= 10 && Staff != null && Staff.Valid && Ledger != null && Receipts != null;
+            && (Active == null || Active.Valid && Stock.Any(s => s.Id == Active.StockId)) && (Collection == null || Active == null && Collection.Valid && Collection.StockIds.All(id => Stock.Any(s => s.Id == id && s.AwaitingCollection))) && (SafeTransfer == null || SafeTransfer.Valid && Owned && Active == null && Collection == null && (long)Cash + SafeTransfer.Amount <= int.MaxValue) && FinanceWriteOff >= 0 && (Repo == null || Repo.Valid && Owned && Active == null && Collection == null && SafeTransfer == null && Loans != null && Loans.Any(l => l != null && l.Id == Repo.LoanId && l.Defaulted && !l.Settled)) && Loans != null && Loans.Count <= 42 && Loans.All(l => l != null && l.Valid) && Loans.Select(l => l.Id).Distinct().Count() == Loans.Count && Loans.Count(l => !l.Settled) <= 10 && Staff != null && Staff.Valid && Ledger != null && Receipts != null;
     }
     public static class PdmTransactions
     {
@@ -95,7 +97,7 @@ namespace RPCore
         {
             changed = false; if (c == null || !c.Valid || !Id(stockId)) return false; var p = c.Catalog.Find(x => x.Id == offerId); if (p == null) return false;
             return Apply(w, receipt, 0, d => {
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || (d.Stock.Any(s => s.Id == stockId) || d.Loans.Any(l => l.Asset.Id == stockId)) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Cash < p.Cost || d.Stock.Count >= c.Capacity || (d.Stock.Any(s => s.Id == stockId) || d.Loans.Any(l => l.Asset.Id == stockId)) || d.Bought == int.MaxValue || d.StockSpent > long.MaxValue - p.Cost) return false;
                 string plate = "PDM" + stockId.Replace("-", "").Substring(0, Math.Min(5, stockId.Replace("-", "").Length)).ToUpperInvariant();
                 if (d.Stock.Any(s => s.Plate == plate) || d.Loans.Any(l => l.Asset.Plate == plate)) return false;
                 d.Stock.Add(new PdmStock { Id = stockId, Model = p.Model, Name = p.Name, Plate = plate, Cost = p.Cost, Price = p.Price, AwaitingCollection = awaitingCollection });
@@ -107,7 +109,7 @@ namespace RPCore
             changed = false; if (c == null || !c.Valid) return false;
             return Apply(w, receipt, 0, d => {
                 var v = d.Stock.Find(s => s.Id == stockId); int repairPrice = PdmStaffTransactions.RepairPrice(d, c.RepairPrice);
-                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || v == null || (v.Engine == 1000 && v.Body == 1000) || d.Cash < repairPrice || d.Repairs > long.MaxValue - repairPrice) return false;
+                if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || v == null || (v.Engine == 1000 && v.Body == 1000) || d.Cash < repairPrice || d.Repairs > long.MaxValue - repairPrice) return false;
                 v.Engine = v.Body = 1000; d.Cash -= repairPrice; d.Repairs += repairPrice; Entry(d, "Reparo: " + v.Name, -repairPrice); return true;
             }, save, out changed);
         }
@@ -117,7 +119,7 @@ namespace RPCore
         {
             changed = false; if (c == null || !c.Valid || !Id(operationId) || destination < 0 || destination >= c.Customers.Count || handle <= 0) return false;
             return Apply(w, operationId + ":begin", 0, d => {
-                var v = d.Stock.Find(s => s.Id == stockId); if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || v == null || v.AwaitingCollection || v.Engine < 300 || v.Body < 300) return false;
+                var v = d.Stock.Find(s => s.Id == stockId); if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || v == null || v.AwaitingCollection || v.Engine < 300 || v.Body < 300) return false;
                 d.Active = new PdmOperation { Id = operationId, StockId = stockId, Destination = destination, VehicleHandle = handle, Financed = financed }; return true;
             }, save, out changed);
         }

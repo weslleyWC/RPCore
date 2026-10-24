@@ -43,3 +43,5 @@ Continuação 0.21.0: gestão de mecânico/divulgação, salários/acerto e melh
 Continuação 0.22.0: coleta física de valores da empresa com Stockade, segurança/maleta, reserva/entrega/compensação e recuperação. Incluir chegada/embarque/navegação e diferenças de cofre/seguro/roubo na comparação da fase 9; não se declara a PDM inteira concluída.
 
 Continuação 0.23.0: entrega financiada para clientes adimplentes, entrada/parcelas por tempo ativo e livro de contratos. Inadimplência/retomada não são declaradas implementadas nesta subfase; são a próxima entrega prevista da PDM. Comparar economia/calendário/interações/risco ao aprofundar a fase 9, mantendo a fase 8 para interfaces e mecânicas.
+
+Continuação 0.24.0: risco apenas em novos financiamentos e retomada da variante estacionada, com Packer/TRFlat e retorno do bem ao estoque. Preserva risco zero da 0.23.0. Variantes com devedor dirigindo/confronto, negociação/cobrança e física detalhada de guincho/rampas ficam pendentes para subentregas/refinamento; não são declaradas concluídas. Incluir acesso aos locais, contabilidade de custo/saldo encerrado e danos na fase 9; interfaces na fase 8.

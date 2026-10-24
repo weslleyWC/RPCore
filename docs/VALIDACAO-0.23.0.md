@@ -1,0 +1,17 @@
+# Validação — RPCore 0.23.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `1c3f6f5303c4c5c4b2d8d4bd730f2f83b983ecff9fd3231cf6debd0f3592fb0d`.
+
+860 testes aprovados, zero falhas/ignorados: 824 anteriores e 36 novos. Cobrem entrada/contrato/baixa do estoque atômicos, distinção de venda à vista, tempo/vencimento/quitação/último resto, replay/rollback/reload, juros/termos/condição como snapshot, limite de caixa/receita e reserva do cofre, múltiplos contratos/histórico, identidade/campos desconhecidos, margem e preservação do banco/Transport/pessoal. Relatórios DataTests.trx/DataTests-0.23.0.trx. Não executam GTA.
+
+Campos aditivos Pdm.Loans e Active.Financed: ausência mantém livro vazio e entrega à vista. Financiamento só abre após entrega física confirmada, no mesmo checkpoint de entrada/estoque/custo/venda. Recebimento incrementa caixa/Revenue/Paid/Payments junto do tempo; última parcela recebe o resto. Sem antecipar recebível como dinheiro disponível, sem alterar banco pessoal ou conceder empréstimo ao jogador. Exceções restauram estado; recibos idempotentes impedem duplicar entrada/parcela. Progresso/termos são do perfil e não dependem de tempo offline.
+
+Limites de caixa/receita conservam parcela pendente, incluindo espaço de devolução do reservado do carro-forte. Históricos limitados a 42 contratos, podando apenas quitados ao abrir novo e preservando acumulados. Limite padrão de seis ativos e teto de validação dez. Alterar padrões não reescreve contratos. Fonte/cotação usam dados já existentes; ativo financiado não é liquidado pelo ramo à vista por engano. Mantém assinatura anterior do helper Begin e seus testes.
+
+Integração PdmCompany/Wallet/Main: novo ramo na entrega de cliente existente, consulta de contratos e relógio financeiro independente de turno físico após venda. Mantém spawn/cliente/chaves/saída/cancelamento anteriores. Cancelamento antes das chaves devolve estoque/danos sem criar empréstimo. Pessoal/coleta/exposição/carro-forte e padrões anteriores permanecem. Nenhuma alteração de recursos OpenIV, atalhos ou garagem pessoal.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.23.0.json: 75 fontes, baseline 0.22.0 e identidade da DLL atual. Evidência de GenerateCarFinance, crédito de parcelas/Finance e inadimplência/HandleRepoEvent. Diferença explícita: referência usa resolução por dias com sorteios; 6.1E usa amortização de clientes adimplentes, juros/entrada próprios e tempo ativo. Não declara inadimplência, retomada, locadora ou toda a PDM concluídos. Próxima subentrega prevista: inadimplência/retomada. Fases 8/9 mantidas.
+
+Roteiro GTA em FASE-6.1E-0.23.0.md: entregar financiado, entrada de Asea padrão 3080, quatro parcelas de 2310/120s, quitação total12320; cancelamento anterior, reload/perfil, venda à vista e regressão de empresa/coletas/pessoal/garagem/F2/F11. Valores exigem ausência de danos/divulgação. Jogo não executado nesta nuvem; pedido de avançar não é prova de teste detalhado das versões anteriores.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.22.0: 103 arquivos existentes preservados byte a byte, incluindo saves/configurações/F2 e estado da empresa. PdmFinance.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.23.0.json. Não é teste de gameplay.

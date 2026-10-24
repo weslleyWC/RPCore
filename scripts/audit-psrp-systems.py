@@ -218,7 +218,7 @@ if pdm_source.exists() and pdm_config.exists():
         'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
         'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
         'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
-        'scope_limits': 'Port collection/external display in 6.1B, staff/payroll/upgrades in 6.1C, safe cash collection in 6.1D, regular-customer installment sales in 6.1E. Full showroom, remaining staff AI, delinquency/repossession, rentals and interior safe mechanics remain pending.',
+        'scope_limits': 'Port collection/external display in 6.1B, staff/payroll/upgrades in 6.1C, safe cash collection in 6.1D, regular-customer installment sales in 6.1E. Default and parked-car repossession added in 6.1F. Full showroom, remaining staff AI, driving/combat repo variants, rentals and interior safe mechanics remain pending.',
         'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
         'configuration_sha256': digest(pdm_config.read_bytes())}
 logistics_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmLogistics.json'
@@ -235,7 +235,7 @@ if pdm_source.exists() and logistics_config.exists():
         'rpcore_cycle': 'Own pending paid orders, Packer/TRFlat coupling, drive each of 1-2 exact stock cars to trailer and exit/E attach, return/stopped timed receiving, durable arrival then ready stock, one-car external display.',
         'compatibility': 'Old stock defaults ready; existing customer deliveries unchanged. New UI orders pending. No extra collection payment or second purchase charge.',
         'recovery': 'Persist handle/model/plate of rig and exact stock cargo; occupied/moving assets wait. Confirmed arrival receives, interrupted unconfirmed orders stay paid/pending.',
-        'scope_limits': 'This class covers two-car port collection. No five-car TR2, manual ramps or full physical showroom. Staff, safe cash collection and regular finance are separate modules; delinquency/repossession and rentals remain pending. Phases 8/9 retained.',
+        'scope_limits': 'This class covers two-car port collection. No five-car TR2, manual ramps or full physical showroom. Staff, safe cash collection and regular finance are separate modules; parked-car repossession is a separate 6.1F module; driving/combat variants and rentals remain pending. Phases 8/9 retained.',
         'configuration_sha256': digest(logistics_config.read_bytes())}
 staff_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmStaff.json'
 if pdm_source.exists() and staff_config.exists():
@@ -250,7 +250,7 @@ if pdm_source.exists() and staff_config.exists():
         'period_seconds': config['PeriodSeconds'], 'roles': [r['Id'] for r in config['Roles']],
         'compatibility': 'Additive Pdm/Staff; absent field means no employees/upgrades/debt. No retroactive wages, no offline accrual, no changes to personal bank/vehicles/stock or logistics.',
         'intentional_differences': 'Own prices and 300-second gameplay payroll; bonus percentages and workshop discount are RPCore rules. No claim of identical legacy staff AI, automatic sales or weekly economy.',
-        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; delinquency/repossession/rentals and interior safe mechanics remain pending. Phases 8/9 retained.',
+        'scope_limits': 'No cleaner/security/collection staff AI, visual building modifications, automatic sales, transport ownership gates, safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; parked-car repossession added in 6.1F; driving/combat variants, rentals and interior safe mechanics remain pending. Phases 8/9 retained.',
         'configuration_sha256': digest(staff_config.read_bytes())}
 safe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSafe.json'
 if pdm_source.exists() and safe_config.exists():
@@ -267,7 +267,7 @@ if pdm_source.exists() and safe_config.exists():
         'compatibility': 'Additive state, old cash/stock/staff preserved. Cash headroom invariant permits refund even near integer limit. Shared physical work gate. Existing direct withdrawals retained.',
         'identity': 'Van handle/model/unique plate; collector marker or exact remembered identity associated with authenticated van; case marker or attachment to authenticated collector.',
         'intentional_differences': 'Reserve funds at request instead of spending unreserved balance at completion; no forced NPC/van teleports or invulnerability; arrival timeout refunds before handover. Handed funds remain payable across interruption.',
-        'scope_limits': 'Collection from existing company cash, not a new safe balance or interior safe/robbery/insurance simulation. Clearing follows confirmed departure, not a simulated full trip to the bank. Regular-customer installment sales added in phase 6.1E; delinquency/repossession/rentals and remaining PDM subsystems still pending.',
+        'scope_limits': 'Collection from existing company cash, not a new safe balance or interior safe/robbery/insurance simulation. Clearing follows confirmed departure, not a simulated full trip to the bank. Regular-customer installment sales added in phase 6.1E; default/parked-car repossession added in 6.1F; rentals and other variants/subsystems remain pending.',
         'configuration_sha256': digest(safe_config.read_bytes())}
 finance_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmFinance.json'
 if pdm_source.exists() and finance_config.exists():
@@ -282,7 +282,27 @@ if pdm_source.exists() and finance_config.exists():
         'wallet_checkpoint': 'Pdm.Active.Financed and Pdm.Loans. Only cash received increases Revenue; loan opening counts one sale and full stock cost. Each time/receipt checkpoint is atomic and idempotent.',
         'compatibility': 'Absent Loans means empty book; absent Financed means existing cash sale. Regular cash sales, stock/logistics/staff/safe and personal Transport retained. Installments preserve safe-refund cash headroom.',
         'intentional_differences': 'Reference finance increases outstanding amounts and randomly resolves payment/default by game-day logic. RPCore 6.1E implements amortizing regular customers with own interest/downpayment and active-time periods, no offline accrual.',
-        'scope_limits': 'No borrower default, debt collection encounters, repossession, early payoff, personal player loans or rentals in this subphase. Default/repo explicitly left for next PDM delivery; global refinement remains phases 8/9.',
+        'scope_limits': '6.1F adds deterministic per-installment risk only for new contracts and physical parked-car repossession. Old 6.1E contracts remain zero-risk. No negotiation, early payoff, personal player loans or rentals; global refinement remains phases 8/9.',
         'configuration_sha256': digest(finance_config.read_bytes())}
+repo_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmRepo.json'
+if pdm_source.exists() and repo_config.exists():
+    source = pdm_source.read_text(); config = json.loads(repo_config.read_text())
+    block = source.split('private Dictionary<Vector3, float> NormalRepoLocations =', 1)[1].split('\n\t};', 1)[0]
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\),\s*([-\d.]+)f', block)}
+    points = [tuple(row[k] for k in ['X','Y','Z','Heading']) for row in config['Locations']]
+    report['pdm_repossession'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'all_locations_and_headings_match_reference': all(row in reference for row in points) and len(points) == len(reference),
+        'reference_has_normal_repo': 'if (onNormalRepo)' in source and 'HandleRepoEvent' in source,
+        'reference_has_truck_trailer_attachment': 'repoVehicle.AttachTo(repoTrailer, offsetFront' in source and 'VehicleHash.Packer' in source and 'VehicleHash.TRFlat' in source,
+        'reference_has_return_to_pdm': 'repoIndex = 0' in source,
+        'locations': len(points), 'default_percent_per_installment': config['DefaultPercent'],
+        'rpcore_cycle': 'New loan risk snapshots; stable per-contract/payment default at maturity, payments stop, reserved recovery operation, Packer/TRFlat coupling, exact collateral spawn, empty stopped assisted loading, return/timed receiving, durable stock restoration and receivable closure.',
+        'wallet_checkpoint': 'Pdm.Repo + loan Asset condition; return adds original-cost inventory, reverses that cost from SoldCost, marks Repossessed, adds unpaid nominal amount to FinanceWriteOff, closes Repo. No extra cash/bonus.',
+        'compatibility': 'Old missing DefaultPercent remains zero; regular finance API retained. New risk-enabled native sales only. Existing Pdm/Finance/Logistics/Staff/Safe JSON defaults unchanged. No personal Transport conversion.',
+        'recovery': 'Handle/model/plate on rig and collateral. Occupied/moving/foreign-connected assets wait. Confirmed arrival receives stock; earlier interruption leaves default open, condition saved before own cleanup.',
+        'intentional_differences': 'No invincibility, teleporting, arbitrary world vehicle retrieval, global cleanup or occupied loading. Own deterministic risk and stock-cost accounting; damaged cargo supports assisted winch-style attachment.',
+        'scope_limits': 'Normal parked-car variant only; driving borrowers, combat encounters, negotiable collections, precise ramp/winch physics, rental and other PDM systems remain subsequent work/refinement. Phases 8/9 retained.',
+        'configuration_sha256': digest(repo_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
