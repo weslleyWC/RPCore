@@ -10,7 +10,8 @@ namespace RPCore
     public sealed class PdmStaffSystem : ISystem
     {
         public PdmPremisesOptions Premises { get; }
-        public Action OpenServices;
+        public PdmSecurityOptions Security { get; }
+        public Action OpenServices, OpenSecurity;
         public string Name => "pdmstaff";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly Func<bool> office; readonly Action back;
         readonly PdmStaffOptions options;
@@ -23,6 +24,9 @@ namespace RPCore
             var premisesDefaults = PdmPremisesDefaults.Load(); Premises = Store.LoadDef("Jobs/PdmPremises.json", () => premisesDefaults);
             if (Premises == null || !Premises.Valid) { Log.Write("Invalid PdmPremises.json; embedded defaults used, original retained."); Premises = premisesDefaults; }
             options = PdmPremisesDefaults.Merge(options, Premises);
+            var securityDefaults = PdmSecurityDefaults.Load(); Security = Store.LoadDef("Jobs/PdmSecurity.json", () => securityDefaults);
+            if (Security == null || !Security.Valid) { Log.Write("Invalid PdmSecurity.json; embedded defaults used, original retained."); Security = securityDefaults; }
+            options = PdmSecurityDefaults.Merge(options, Security);
             menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
@@ -70,7 +74,7 @@ namespace RPCore
             foreach (var offer in options.Roles)
             {
                 var role = offer; var employee = s.Employees.Find(e => e.Role == role.Id);
-                if (employee == null) Add("Contratar " + role.Name + ": $" + role.HiringCost, "Salario $" + role.Wage + " a cada " + options.PeriodSeconds + " segundos ativos. " + (role.Requires == null ? "" : "Requer " + role.Requires + ". ") + (role.Id == "mechanic" ? "Com oficina, reparos do estoque pela metade." : role.Id == "cleaner" ? "Limpeza presencial dos carros expostos, sem taxa adicional por servico." : "Bonus de venda: " + role.SaleBonusPercent + "% (maior nivel, sem somar)."), () => Change(() => Wallet.PdmHire(options, role.Id, Guid.NewGuid().ToString("N"), out _)));
+                if (employee == null) Add("Contratar " + role.Name + ": $" + role.HiringCost, "Salario $" + role.Wage + " a cada " + options.PeriodSeconds + " segundos ativos. " + (role.Requires == null ? "" : "Requer " + role.Requires + ". ") + (role.Id == "mechanic" ? "Com oficina, reparos do estoque pela metade." : PdmSecurityPolicy.IsGuard(role.Id) ? "Posto presencial e defesa local; salario atrasado suspende o atendimento." : role.Id == "cleaner" ? "Limpeza presencial dos carros expostos, sem taxa adicional por servico." : "Bonus de venda: " + role.SaleBonusPercent + "% (maior nivel, sem somar)."), () => Change(() => Wallet.PdmHire(options, role.Id, Guid.NewGuid().ToString("N"), out _)));
                 else
                 {
                     string id = employee.Id;
@@ -79,6 +83,7 @@ namespace RPCore
                     Add("Demitir " + employee.Name, "Transfere salarios devidos, proporcional do periodo e multa de $" + employee.Severance + " ao acerto pendente. Divulgacao: demita do maior nivel para o menor.", () => Change(() => Wallet.PdmFire(id, Guid.NewGuid().ToString("N"), out _)));
                 }
             }
+            if (OpenSecurity != null) Add("Seguranca / postos presenciais", "Consultar efetivo e retornar os guardas aos postos.", OpenSecurity);
             if (OpenServices != null) Add("Equipe presencial / servicos do showroom", "Solicitar mecanico/zeladoria nos carros expostos.", OpenServices);
             Add("Quitar ex-funcionarios: $" + s.FormerDebt, "Acerto pendente bloqueia novas contratacoes e beneficios ate o pagamento integral.", () => Change(() => PayExpected("former", s.FormerDebt)));
             Add(s.Workshop ? "Oficina: adquirida" : "Melhorar oficina: $" + options.WorkshopCost, "Mecanico contratado e sem atraso + oficina = metade do custo de reparar estoque. Nao repara carro pessoal.", () => Change(() => Wallet.PdmUpgrade(options, "workshop", Guid.NewGuid().ToString("N"), out _)));

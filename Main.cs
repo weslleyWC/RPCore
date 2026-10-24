@@ -75,6 +75,8 @@ namespace RPCore
             pdm.OpenShowroom = showroom.OpenMenu; pdm.DisplayStock = showroom.DisplayDefault; pdm.PrepareStock = showroom.Prepare; pdm.ClearDisplay = showroom.ClearAll;
             var premises = new PdmPremisesSystem(pool, shifts, pdm.CompanyOptions, staff.Premises, pdm.OfficeAction, showroom.GetDisplayVehicle, pdm.OpenMenu); systems.Add(premises);
             pdm.OpenServices = premises.OpenMenu; pdm.SyncPremises = premises.Flush; staff.OpenServices = premises.OpenMenu;
+            var security = new PdmSecuritySystem(pool, staff.Security, pdm.StartPosition, () => premises.StaffPeds, staff.Flush, staff.OpenMenu, pdm.OpenMenu); systems.Add(security);
+            pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
@@ -114,7 +116,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.27.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.28.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

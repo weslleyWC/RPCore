@@ -250,7 +250,7 @@ if pdm_source.exists() and staff_config.exists():
         'period_seconds': config['PeriodSeconds'], 'roles': [r['Id'] for r in config['Roles']],
         'compatibility': 'Additive Pdm/Staff; absent field means no employees/upgrades/debt. No retroactive wages, no offline accrual, no changes to personal bank/vehicles/stock or logistics.',
         'intentional_differences': 'Own prices and 300-second gameplay payroll; bonus percentages and workshop discount are RPCore rules. No claim of identical legacy staff AI, automatic sales or weekly economy.',
-        'scope_limits': 'Physical mechanic/cleaner services added in 6.1I; security staff AI, visual building modifications, automatic sales and transport ownership gates remain pending. Safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; parked-car repossession added in 6.1F; driving/combat variants, rental supply orders added in 6.1G; interior safe mechanics and remaining systems stay pending. Phases 8/9 retained.',
+        'scope_limits': 'Physical mechanic/cleaner services added in 6.1I; Local defensive security posts added in 6.1J; visual building modifications, automatic sales and transport ownership gates remain pending. Safe cash collection added in phase 6.1D; regular-customer finance added in phase 6.1E; parked-car repossession added in 6.1F; driving/combat variants, rental supply orders added in 6.1G; interior safe mechanics and remaining systems stay pending. Phases 8/9 retained.',
         'configuration_sha256': digest(staff_config.read_bytes())}
 safe_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSafe.json'
 if pdm_source.exists() and safe_config.exists():
@@ -359,7 +359,27 @@ if pdm_source.exists() and premises_config.exists():
         'compatibility': 'Old stock defaults to zero dirt; prior contracts retain saved prices. Existing four-role staff config is cloned and cleaner offer merged in memory; no rewrite/reset of custom wages, saves or visual resources.',
         'defaults': config,
         'intentional_differences': 'Own active-time dirt: +1 per 60 seconds to displayed units, max 15, 0.5 percent quote penalty per level. Explicit car cleaning/repair requests, not a port of legacy floor/trash chore AI. Paid cleaner salary but no per-clean fee. Reference points/models/cleaner animation guide own code; no copying source.',
-        'scope_limits': 'No guard AI, global relationship changes, forced interiors, arbitrary pedestrian removal, automatic floor/bin cleaning or full staff parity. Native paths/animations and interior access require GTA testing. Phases 8/9 retained.',
+        'scope_limits': 'Defensive guards added in 6.1J. No global relationship changes, forced interiors, arbitrary pedestrian removal, automatic floor/bin cleaning or full staff parity. Native paths/animations and interior access require GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(premises_config.read_bytes())}
+security_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSecurity.json'
+if pdm_source.exists() and security_config.exists():
+    source = pdm_source.read_text(); config = json.loads(security_config.read_text())
+    reference = {}
+    for n in [1, 2]:
+        block = source.split('public void SpawnSecurity' + str(n) + 'Ped()', 1)[1].split('catch (', 1)[0]
+        m = re.search(r'World.CreatePed\(PedHash.(\w+), new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\), ([-\d.]+)f\)', block)
+        if m: reference['security' + str(n)] = tuple(map(float, m.groups()[1:]))
+    report['pdm_security'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_two_guard_posts': 'SpawnSecurity1Ped' in source and 'SpawnSecurity2Ped' in source,
+        'reference_has_armed_area_defense': 'TASK_COMBAT_HATED_TARGETS_IN_AREA' in source and 'WeaponHash.CarbineRifle' in source,
+        'reference_has_guard_payroll': 'PDMSecurity1WagesOwed += 1300' in source and 'PDMSecurity2WagesOwed += 1300' in source,
+        'all_points_and_headings_match_reference': len(reference) == 2 and all(tuple(p['Point'][k] for k in ['X','Y','Z','Heading']) == reference.get(p['Offer']['Id']) for p in config['Posts']),
+        'rpcore_cycle': 'Two optional staff contracts, own NPC guard posts, paid-duty weapon state, visible local ambient attackers only, bounded engagement and walking return, recall from menu, delayed own replacement after death.',
+        'compatibility': 'No new wallet operation or automatic guard hire; existing staff payroll/checkpoints/severance reused. Old staff configuration cloned and missing offers merged in memory. No rewriting old wages, sales or stock.',
+        'defaults': config,
+        'intentional_differences': 'Own hire price 1300 and wage 260 per default active 300 seconds. Finite 120-round rifle, no dropped weapon, no invincibility, no arbitrary pedestrian deletion or global relationship groups. Stops on wanted/mission/cutscene/death, no police/SWAT/army/player/script-mission targets and no pursuit outside per-post radius.',
+        'scope_limits': 'Does not spawn attackers or simulate theft/insurance/CCTV. Does not clear wanted or replace police. Combat, line of sight, safe spawn and navmesh require GTA testing. No claim of complete PDM parity; phases 8/9 retained.',
+        'configuration_sha256': digest(security_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

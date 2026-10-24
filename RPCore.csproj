@@ -22,6 +22,7 @@
     <EmbeddedResource Include="config/Jobs/PdmRepo.json" LogicalName="RPCore.JobDefaults.PdmRepo.json" />
     <EmbeddedResource Include="config/Jobs/PdmRental.json" LogicalName="RPCore.JobDefaults.PdmRental.json" />
     <EmbeddedResource Include="config/Jobs/PdmShowroom.json" LogicalName="RPCore.JobDefaults.PdmShowroom.json" />
+    <EmbeddedResource Include="config/Jobs/PdmSecurity.json" LogicalName="RPCore.JobDefaults.PdmSecurity.json" />
     <EmbeddedResource Include="config/Jobs/PdmPremises.json" LogicalName="RPCore.JobDefaults.PdmPremises.json" />
     <EmbeddedResource Include="config/Jobs/Pdm.json" LogicalName="RPCore.JobDefaults.Pdm.json" />
     <EmbeddedResource Include="config/Jobs/Drag.json" LogicalName="RPCore.JobDefaults.Drag.json" />

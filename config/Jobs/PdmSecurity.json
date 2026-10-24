@@ -1,0 +1,18 @@
+{
+  "Posts": [
+    {
+      "Offer": { "Id": "security1", "Name": "Seguranca 1", "HiringCost": 1300, "Wage": 260, "SaleBonusPercent": 0 },
+      "Point": { "Name": "PDM / seguranca 1", "X": -36.68868, "Y": -1109.76, "Z": 26.43722, "Heading": 147.7108 },
+      "Model": "s_m_m_highsec_02"
+    },
+    {
+      "Offer": { "Id": "security2", "Name": "Seguranca 2", "HiringCost": 1300, "Wage": 260, "SaleBonusPercent": 0 },
+      "Point": { "Name": "PDM / seguranca 2", "X": -60.66545, "Y": -1091.188, "Z": 26.57865, "Heading": 89.74267 },
+      "Model": "s_m_m_highsec_01"
+    }
+  ],
+  "DefenseRadius": 20,
+  "RespawnSeconds": 60,
+  "EngagementSeconds": 20,
+  "EnableDefense": true
+}

@@ -1,4 +1,10 @@
-# RPCore 0.27.0 — GTA V Legacy
+# RPCore 0.28.0 — GTA V Legacy
+
+## Fase 6.1J — segurança presencial PDM
+
+[Atualização 0.28.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.28.0.zip) · [Código-fonte 0.28.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.28.0.zip) · [Instalação e teste](docs/FASE-6.1J-0.28.0.md)
+
+F10 → Trabalhos → PDM → Seguranca / postos presenciais. Dois guardas contratados/pagos no menu de equipe, postos da referência, defesa contra NPCs ambientes atacando jogador/equipe dentro de 20m e retorno a pé. Dívida desarma; procurado/missão suspende. Não gera ataques nem altera polícia/relações globais. Padrão $1300 contratação e $260 por 300s ativos por guarda. 1035 testes aprovados e build sem erros/avisos; combate/caminhos precisam de teste no GTA. Saves/configurações/F2/F11 preservados. Seguros/roubos/CCTV e outras diferenças permanecem; fases 8/9 mantidas.
 
 ## Fase 6.1I — equipe presencial e manutenção
 

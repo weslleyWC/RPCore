@@ -16,6 +16,7 @@ namespace RPCore
         public string Name => "pdmpremises";
         public string Label => "PDM / equipe presencial e servicos";
         public bool Active => run != null;
+        public IEnumerable<Ped> StaffPeds => actors.Values.Select(a => a.Ped);
         public Vector3 StartPosition { get; }
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Func<bool> office; readonly Func<string, Vehicle> display; readonly Action back;
         readonly PdmOptions company; readonly PdmPremisesOptions options; readonly NativeMenu menu;
