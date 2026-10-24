@@ -133,13 +133,13 @@ namespace RPCore
         }
         void EditOverlay(int id,Action change){if(!Selecting)return;change();SelectOverlay(id);}
         static int OverlayColors(int id)=>Math.Min(64,Function.Call<int>(CosmeticRules.ColorType(id)==2?Hash.GET_NUM_PED_MAKEUP_TINTS:Hash.GET_NUM_PED_HAIR_TINTS));
-        static bool Compatible(GroomingLook look)
+        internal static bool Compatible(GroomingLook look)
         {
             if(look==null || !look.Valid || !Freemode(look.Model) || Game.Player.Character.Model.Hash!=look.Model || !Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,Game.Player.Character))return false;
             int colors=Function.Call<int>(Hash.GET_NUM_PED_HAIR_TINTS);
             return (!look.Hair || look.HairColor<colors && look.Highlight<colors) && (!look.Beard || (look.BeardStyle==255 || look.BeardStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,1)) && look.BeardColor<colors) && (!look.Brows || (look.BrowsStyle==255 || look.BrowsStyle<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,2)) && look.BrowsColor<colors) && (look.Heritage==null || FaceRules.Compatible(look.Heritage,NativeParents())) && look.Overlays.TrueForAll(o=>(o.Style==255 || o.Style<Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,o.Id)) && (CosmeticRules.ColorType(o.Id)==0 || o.Color<OverlayColors(o.Id)));
         }
-        static void ApplySurface(GroomingLook look)
+        internal static void ApplySurface(GroomingLook look)
         {
             if(!Compatible(look))throw new InvalidOperationException("Unsupported grooming target/model.");var ped=Game.Player.Character;
             foreach(var morph in look.Morphs)Function.Call(Hash.SET_PED_MICRO_MORPH,ped,morph.Index,morph.Value/100f);

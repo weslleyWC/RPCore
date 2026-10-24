@@ -73,3 +73,6 @@ Atualização 0.36.0 / fase 6.3C: acabamento ampliado com pele/maquiagem e overl
 
 
 Atualização 0.37.0 / fase 6.3D: herança e 20 traços implementados no freemode existente, com consulta de origens nativas, valores negativos/positivos e espera de head blend antes dos detalhes. Aplicação somente após confirmação; comparação PSRP registrada. Fase 8 ainda refinará menus/câmera/ergonomia e verificará recomposição/paletas no GTA. Criação/troca de ped e tatuagens não foram declaradas concluídas. Fase 9 continua para todos os trabalhos.
+
+
+Atualização 0.38.0 / fase 6.3E: criação de cadastro e carregamento explícito de freemode M/F, com corpo/equipamento, rosto confirmado no RPCore e retorno ao protagonista. Comparação de Gender/BuildMenu/LoadCharacterToPed PSRP registrada. Falhas protegem snapshots pendentes. Refinamento de câmera/prévia/ergonomia e confirmação visual/recursos externos no GTA continuam na fase 8; não se declarou cópia completa de estados de outros mods ou aparência PSRP. Fase 9 dos trabalhos preservada.

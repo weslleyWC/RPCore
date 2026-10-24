@@ -14,7 +14,7 @@ namespace RPCore
             public int Started;
         }
         FaceApplication application;
-        static int[] NativeParents()
+        internal static int[] NativeParents()
         {
             var ranges=new FaceHeadRange[4];
             for(int i=0;i<ranges.Length;i++)ranges[i]=new FaceHeadRange(Function.Call<int>(Hash.GET_PED_HEAD_BLEND_FIRST_INDEX,i),Function.Call<int>(Hash.GET_PED_HEAD_BLEND_NUM_HEADS,i));

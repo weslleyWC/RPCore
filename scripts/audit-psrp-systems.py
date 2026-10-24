@@ -484,7 +484,7 @@ if barber_config.exists():
         'native_review': 'Pinned Enhanced Hash.GET_PED_HAIR_TINT_COLOR corresponds to 0x4852FC386E2E1BB5, a palette-index-to-RGB function, not a ped tint getter. GET_PED_HEAD_OVERLAY returns overlay index only. No guessed memory offsets or incorrect getter signatures used; tint/beard kept for later subphases.',
         'defaults': config,
         'intentional_differences': 'Reference offers brows/tints/beard and MP-only styling with camera/player control changes. RPCore 6.3A limits mutable fields to safely captured component 2 and valid freemode eye color, supports available protagonist hair variations, normal camera/rotation and own configurable 150 bank fee.',
-        'scope_limits': '6.3B adds confirmation-only tint/beard/brows; 6.3C extends the same service with skin/makeup overlays. 6.3D adds optional heritage and 20 facial morphs. No created ped, tattoo or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
+        'scope_limits': '6.3B adds confirmation-only tint/beard/brows; 6.3C extends the same service with skin/makeup overlays. 6.3D adds optional heritage and 20 facial morphs. 6.3E adds explicit freemode creation/loading in isolated slots. No tattoo library or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(barber_config.read_bytes())}
 grooming_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Grooming.json'
 if grooming_config.exists():
@@ -498,7 +498,7 @@ if grooming_config.exists():
         'compatibility': 'Does not read RGB palette function as current ped tint. No memory offsets, forced default head blend, ped replacement, clothing or auto-load. Preserves unknown record fields and unselected live groups. Existing Barber.json and cuts/eyes service untouched.',
         'defaults': config,
         'intentional_differences': 'Reference live-preview overwrites character appearance fields. RPCore adds own 120 configurable bank fee and no live tint/overlay preview because Legacy natives do not provide complete reversible color/opacity capture. Exact previously recorded selected values are free to reapply.',
-        'scope_limits': '6.3C adds skin/makeup overlays; 6.3D adds optional heritage and 20 facial morphs. No tattoos, full ped creator or automatic startup appearance. Rendering/silent native setters cannot be verified in this cloud. Paid-started failure remains recoverable; never claims to refund and undo unknown colors. Phases 8/9 retained.',
+        'scope_limits': '6.3C adds skin/makeup overlays; 6.3D adds optional heritage and 20 facial morphs. 6.3E adds explicit freemode creation/loading in isolated slots; no tattoos or automatic startup appearance. Rendering/silent native setters cannot be verified in this cloud. Paid-started failure remains recoverable; never claims to refund and undo unknown colors. Phases 8/9 retained.',
         'configuration_sha256': digest(grooming_config.read_bytes())}
 if grooming_config.exists():
     source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text()
@@ -511,7 +511,7 @@ if grooming_config.exists():
         'runtime_preflight': 'Freemode/ready blend, native per-overlay style count and palette count; cosmetics use makeup RGB getter instead of hair RGB. No default face, new model or guessed current opacity/color.',
         'wallet_checkpoint': 'Existing single configurable 120 bank fee for any combination, no additional per-overlay charge. Durable begin/start/complete, free resume/reapply, unstarted refund only; old 0.35 paid orders remain readable.',
         'intentional_differences': 'Own implementation uses confirmation-only selection. Lipstick, chest hair and body marks are additional native overlay controls; reference Apply methods above evidence the seven skin/makeup groups, not complete equivalence for all additions.',
-        'scope_limits': 'Freemode must already exist. Heritage and facial morph controls added in 6.3D. No ped switching, tattoos or dedicated camera. Body overlays can be hidden by clothes. No complete native opacity/color readback; rendered result needs GTA testing. Phases 8/9 retained.',
+        'scope_limits': 'Freemode must already exist. Heritage and facial morph controls added in 6.3D. 6.3E adds explicit profile/model loading; no tattoos or dedicated camera. Body overlays can be hidden by clothes. No complete native opacity/color readback; rendered result needs GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(grooming_config.read_bytes())}
 if grooming_config.exists():
     source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text()
@@ -523,7 +523,19 @@ if grooming_config.exists():
         'runtime': 'Native parent first/count ranges for all four base/DLC groups; no guessed fixed 45 maximum. After durable Start, SET_PED_HEAD_BLEND_DATA with third contribution zero, then tick-driven HAS_PED_HEAD_BLEND_FINISHED wait (at least next tick, max 10s), selected morph setters and surface overlays, then durable Complete. Keeps ShiftGate lease until finish/interruption, without blocking/freeze/camera.',
         'compatibility': 'Old look/pending deserialization adds empty Morphs and null Heritage without setters or migration; preserves previous cosmetics, unknown fields, profiles and configuration. No face capture by guessed offsets. No model or profile switching. Interrupted started order stays paid and resumable.',
         'intentional_differences': 'Reference creates a male freemode and previews face directly; RPCore requires an existing freemode and makes changes explicit. Independent shape/skin origin pairs, signed native morph range and native parent catalog replace reference fixed 0..45 sliders and 0..1 morph clamp.',
-        'scope_limits': 'No live reversible preview, full current morph readback, third-parent contribution, ped creator/switching, tattoo library or dedicated camera. Heritage explicitly replaces the base face/skin blend; resulting native detail composition needs GTA testing. Phases 8/9 and full creator remain pending.',
+        'scope_limits': '6.3E adds explicit freemode creation/loading. No live reversible preview, full current morph readback, third-parent contribution, tattoo library or dedicated camera. Heritage explicitly replaces the base face/skin blend; resulting native detail composition needs GTA testing. Full creator parity/refinement and phases 8/9 remain pending.',
         'configuration_sha256': digest(grooming_config.read_bytes())}
+if grooming_config.exists():
+    source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text()
+    report['characters'] = {
+        'reference_source': 'PSRP/MultiplayerCharacter.cs',
+        'reference_has_model_gender_and_name': 'Gender_ItemChanged' in source and 'mp_f_freemode_01' in source and 'PlayerNameOption_Activated' in source,
+        'reference_has_character_load': 'public void LoadCharacterToPed' in source and 'Game.Player.ChangeModel(model)' in source,
+        'rpcore_cycle': 'F10 create named male/female freemode slot with zero balances, atomic new directory and no overwrite; separate explicit load confirmation. Nonblocking model/head-blend wait with shared lease, flush old systems/wallet and persist selected profile before native model change, then reload new profile exactly once.',
+        'appearance': 'Default two-parent base plus own confirmed Grooming groups and saved eye color. All 12 component slots and 5 props saved with body. External unknown face state is not captured or claimed reversible. Loading is explicit, never on startup or profile selection alone.',
+        'equipment': 'Per-character health/armor/weapons/active components/tints/clips and one count per shared ammo type. Native resource preflight and post-restore readback. Pending card blocks autosave replacement on failure; explicit retry. Separate durable protagonist return snapshot with pending/retry flag.',
+        'compatibility': 'New RP_ plus 16 lowercase hex slot IDs cannot address old profile names or escape the save root. Existing profile files never imported/copied into a new slot. Unknown card/body/component/weapon metadata retained. No starting money grant, teleport destination, map cleanup, forced camera or .oiv/.rpf changes.',
+        'intentional_differences': 'Reference creator previews/replaces ped while selecting and initializes starting money/gang/location. RPCore separates profile creation from confirmed loading, uses current position, zero balances and protected equipment snapshots; no automatic load or forced gang/property/vehicle changes.',
+        'scope_limits': 'No complete external ped/face/stat/movement-state capture, protagonist mission task restoration, creation camera, arbitrary add-on ped catalog, default gang/start-money choices or automatic PSRP appearance import. Model/weapon restoration and story scripts must be tested in GTA. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -101,7 +101,8 @@ namespace RPCore
             var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
             var barber = new BarberSystem(pool, shifts); systems.Add(barber);
             var grooming = new GroomingSystem(pool, shifts, () => barber.CanUseService, barber.OpenMenu); systems.Add(grooming); barber.OpenDetails = grooming.OpenMenu;
-            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu); systems.Add(core);
+            var characters = new CharacterSystem(pool, shifts, SwitchCharacter); systems.Add(characters);
+            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
@@ -124,7 +125,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.37.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.38.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -240,6 +241,30 @@ namespace RPCore
                 try { s.OnKey(e); }
                 catch (Exception ex) { faulted.Add(s); Log.Error(s.Name + ".key", ex); try { s.Dispose(); } catch { } }
             }
+        }
+
+        void SwitchCharacter(string target,int model)
+        {
+            if(!CharacterRules.CanTransition(target,model))throw new InvalidOperationException("Invalid character model/profile transition.");
+            // Unlike routine autosave, a failed flush aborts an explicit model/profile transition.
+            foreach(var system in systems)if(!faulted.Contains(system))system.Save();
+            Wallet.Save();
+            bool custom=CharacterRules.ProtagonistHash(target)==0;
+            string previous=Cfg.CustomProfile,activePath=System.IO.Path.Combine(Cfg.Dir,"ActiveProfile.json");
+            // Prove the selected profile can be persisted before replacing the player ped.
+            if(custom)new JsonFiles().Write(activePath,target);
+            try{
+                GTA.Native.Function.Call(GTA.Native.Hash.SET_PLAYER_MODEL,Game.Player,model);
+                if(Game.Player.Character.Model.Hash!=model)throw new InvalidOperationException("Player model did not change.");
+            }
+            catch{
+                if(custom)try{new JsonFiles().Write(activePath,previous);}catch(Exception ex){Log.Error("active character rollback",ex);}
+                throw;
+            }
+            if(custom)Cfg.CustomProfile=target;
+            Profile.Id=target;Wallet.Reload();
+            foreach(var system in systems){try{system.Reload();}catch(Exception ex){faulted.Add(system);Log.Error(system.Name+".character.reload",ex);}}
+            Log.Write("character model/profile -> "+target);
         }
 
         void SaveAll()

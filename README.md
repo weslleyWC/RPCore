@@ -1,6 +1,13 @@
 # RPCore 0.35.0 — GTA V Legacy
 
 
+## Fase 6.3E — criar e carregar personagens
+
+[Atualização 0.38.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.38.0.zip) · [Código-fonte 0.38.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.38.0.zip) · [Instalação e teste](docs/FASE-6.3E-0.38.0.md)
+
+F10 → Personagens / criar e carregar: nome, freemode masculino/feminino e perfil próprio de saldo zero. Confirmação antes de trocar, restauração de roupa/equipamento e aparência confirmada no RPCore, volta ao protagonista de origem e pendências protegidas. Nenhuma troca automática ao atualizar/reiniciar. Build sem erros/avisos e 1374 testes aprovados. Preserva saves/configs/F2/F11; modelos/equipamentos precisam de teste no GTA. Câmera/prévia completa e demais diferenças continuam; fases 8/9 mantidas.
+
+
 ## Fase 6.3D — herança e traços faciais
 
 [Atualização 0.37.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.37.0.zip) · [Código-fonte 0.37.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.37.0.zip) · [Instalação e teste](docs/FASE-6.3D-0.37.0.md)
