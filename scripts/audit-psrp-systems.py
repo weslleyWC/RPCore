@@ -468,5 +468,23 @@ if home_storage_config.exists():
         'intentional_differences': 'PSRP stash house point is a separate interior, not Eclipse. RPCore adds its own Eclipse convenience marker and F10 access anywhere inside owned apartment, capacity 200kg and configurable home:eclipse ID. No claim that this point/capacity comes from PSRP.',
         'scope_limits': 'No chest prop/animation, household furnishing, shared multi-character stash, hotel rental or automatic legacy stash migration. Native menus/access/quantities and old F8 regressions require GTA tests. Phases 8/9 retained.',
         'configuration_sha256': digest(home_storage_config.read_bytes())}
+barber_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Barber.json'
+if barber_config.exists():
+    source = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text(); config = json.loads(barber_config.read_text())
+    block = source.split('public List<Vector3> BarberMarkers =',1)[1].split('\n\t};',1)[0]
+    reference = {tuple(map(float,p)) for p in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',block)}
+    report['barber'] = {
+        'reference_source': 'PSRP/MultiplayerCharacter.cs',
+        'reference_has_barber_menu_and_hair_application': 'BuildBarberMenu' in source and 'private void ApplyHair()' in source and 'SET_PED_COMPONENT_VARIATION, Game.Player.Character, 2' in source,
+        'reference_has_tint_and_beard': 'SET_PED_HAIR_TINT' in source and 'ApplyFacialHair' in source,
+        'all_shop_positions_match_reference': len(config['Shops']) == len(reference) and all(tuple(p[k] for k in ['X','Y','Z']) in reference for p in config['Shops']),
+        'rpcore_cycle': 'Seven physical barbers, F10 GPS/access, model-compatible hair/texture preview plus freemode eyes, optional heading rotation, explicit one-fee bank confirmation with saved last-look record, cancellation restoration and manual free reapply at shop.',
+        'wallet_checkpoint': 'Additive Wallet.Barber Looks/Spent/Services/Receipts; bank and appearance record committed together, rollback/replay guards. Preview itself has no money or save mutations.',
+        'compatibility': 'Never replaces ped, head blend, beard, tint, tattoo or clothing. Hair component 2 is independent of existing Wardrobe slots. No automatic appearance on load/profile; no persistent control/camera changes and no override of vanilla E barber interaction.',
+        'native_review': 'Pinned Enhanced Hash.GET_PED_HAIR_TINT_COLOR corresponds to 0x4852FC386E2E1BB5, a palette-index-to-RGB function, not a ped tint getter. GET_PED_HEAD_OVERLAY returns overlay index only. No guessed memory offsets or incorrect getter signatures used; tint/beard kept for later subphases.',
+        'defaults': config,
+        'intentional_differences': 'Reference offers brows/tints/beard and MP-only styling with camera/player control changes. RPCore 6.3A limits mutable fields to safely captured component 2 and valid freemode eye color, supports available protagonist hair variations, normal camera/rotation and own configurable 150 bank fee.',
+        'scope_limits': 'No tint, beard, eyebrows, genetic face editor, makeup, tattoo, created ped or dedicated camera. Native appearance/texture/cancellation and coexistence with vanilla barbers need GTA testing. Phases 8/9 retained.',
+        'configuration_sha256': digest(barber_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

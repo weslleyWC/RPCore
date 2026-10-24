@@ -1,0 +1,12 @@
+{
+  "Price": 150,
+  "Shops": [
+    { "Name": "Barbearia / Davis", "X": 137.8555, "Y": -1706.912, "Z": 29.29163 },
+    { "Name": "Barbearia / Rockford", "X": -813.2672, "Y": -183.4082, "Z": 37.56888 },
+    { "Name": "Barbearia / Vespucci", "X": -1281.729, "Y": -1116.646, "Z": 6.990111 },
+    { "Name": "Barbearia / Sandy Shores", "X": 1931.087, "Y": 3730.421, "Z": 32.84448 },
+    { "Name": "Barbearia / Mirror Park", "X": 1213.087, "Y": -472.6517, "Z": 66.20811 },
+    { "Name": "Barbearia / Hawick", "X": -32.88901, "Y": -152.1925, "Z": 57.07648 },
+    { "Name": "Barbearia / Paleto", "X": -277.2849, "Y": 6227.073, "Z": 31.69555 }
+  ]
+}

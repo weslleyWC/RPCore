@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.34.0: [fase 6.3A — barbearias/cortes/olhos](FASE-6.3A-0.34.0.md). Sete pontos PSRP, prévia reversível, confirmação paga e último visual por perfil/modelo, sem troca de ped/roupas ou auto-load. Cores/barba/editor facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.
+
 Andamento 0.33.0: [fase 6.2C — armazenamento privado Eclipse](FASE-6.2C-0.33.0.md), integrado ao inventário e com rollback de transferências também nos depósitos/porta-malas existentes. Propriedade/roupas preservadas. Hotéis/editor facial e demais diferenças continuam; fases 8/9 mantidas. Teste real pendente.
 
 Andamento 0.32.0: [fase 6.2B — guardarroupa/roupas](FASE-6.2B-0.32.0.md), com biblioteca por perfil/modelo e editor de peças/acessórios reversível no Eclipse. Preserva aquisição e sistemas anteriores. Storage/editor facial/hotéis e outras diferenças continuam em subentregas; fases 8/9 mantidas. Teste real de roupas pendente.

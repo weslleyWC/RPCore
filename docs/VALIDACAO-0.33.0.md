@@ -1,0 +1,15 @@
+# Validação — RPCore 0.33.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `2832ecbebbd73fd71e1572999863e5c18aa279856b3f04ea0204a453f066cfaa`.
+
+1183 testes aprovados, zero falhas/ignorados: 1153 anteriores e 30 novos. Cobrem opções privadas, leitura sem criar container, candidato completo/rollback de gravação, transferência 1/5/pilha, conservação/recarga, limite exato/falta de espaço sem parcial, peso de inventário, retirada de depósito acima da capacidade reduzida, itens desconhecidos, campos/layout/containers anteriores, contagens/pesos inválidos/overflow, isolamento de perfis e uso do mesmo fluxo nos stashes/porta-malas. Relatórios DataTests.trx/DataTests-0.33.0.trx. Não executam GTA.
+
+Armazenamento integrado ao Inventory.json do perfil, Containers[home:eclipse]. Sem bolsa paralela, migração, itens gratuitos ou novo saldo. Configuração Jobs/HomeStorage.json; Housing.json/Wardrobe.json anteriores não regravados. F10 Moradia dentro do apartamento ou E no ponto de conveniência próprio. Propriedade/interior/estado seguro e perfil são reavaliados em cada ação. Ao sair/morrer/pausar/abrir modal/trocar perfil, fecha acesso e libera atividade. Fora do apartamento/perfil não proprietário não abre o depósito privado.
+
+StorageSystem e InventorySystem existentes reutilizados. Private UI oferece unidade, até cinco e pilha inteira, sem duplicar alternativas iguais. Depósito verifica sua capacidade e retirada o peso da mochila. Transferência monta candidato completo de Items/Containers/GridSlots com metadados preservados; só publica depois de gravar. Falha retorna estado em memória anterior e mantém arquivo protegido/atômico do JsonFiles. Corrige o fluxo antigo que movia itens em memória antes de Save sem rollback. F8/stash/trunk mantêm chaves/UI de uma unidade e passam pelo mesmo fluxo corrigido. Abrir menu não cria depósito vazio no save.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.33.0.json: 75 fontes, baseline 0.32.0, identidade da DLL atual; NewStorageSystem.StorageManager e NewInventorySystem.MoveOneToStorage/MoveStackToStorage/CreateStorages comparados. Stash da referência é outro interior; ponto Eclipse/capacidade 200kg/acesso F10 são escolhas próprias. Não se declara baú físico animado, storage compartilhado entre perfis, aluguel/hotéis ou conversão de bolsas especializadas dos trabalhos. Fases 8/9 mantidas.
+
+GTA não executado nesta nuvem. Roteiro FASE-6.2C-0.33.0.md: propriedade/acesso/menu/ponto, transferências/limites/reload, sem cobrança, perda de acesso/perfil/modal, guarda-roupa/entrada/saída e regressão F8/stash/trunk/trabalhos. Posicionamento/menus com os recursos instalados exigem teste real.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.32.0: 113 arquivos existentes preservados byte a byte, incluindo propriedade Eclipse, roupas salvas, itens/containers/layout, configurações/F2 e empresa. HomeStorage.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.33.0.json. Não é teste de gameplay.

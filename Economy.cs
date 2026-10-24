@@ -19,6 +19,7 @@ namespace RPCore
         public PdmData Pdm;
         public HousingData Housing;
         public WardrobeData Wardrobe;
+        public BarberData Barber;
     }
 
     public class Portfolio : ExtensibleData

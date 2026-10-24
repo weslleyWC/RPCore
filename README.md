@@ -1,4 +1,10 @@
-# RPCore 0.33.0 — GTA V Legacy
+# RPCore 0.34.0 — GTA V Legacy
+
+## Fase 6.3A — barbearias / cortes e olhos
+
+[Atualização 0.34.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.34.0.zip) · [Código-fonte 0.34.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.34.0.zip) · [Instalação e teste](docs/FASE-6.3A-0.34.0.md)
+
+F10 → Barbearias / cortes e olhos: GPS de sete lojas, prévia de corte/textura e olhos freemode, cancelamento/restauração, confirmação de $150 pelo banco e último visual por perfil/modelo. Reaplicação manual sem cobrar de novo. E vanilla, tintura/barba/rosto/modelo/roupas preservados. 1208 testes aprovados e build sem erros/avisos; aparência precisa de teste no GTA. Saves/configurações e sistemas anteriores mantidos; cores/barba/editor facial e fases 8/9 continuam pendentes.
 
 ## Fase 6.2C — armazenamento privado do apartamento
 
