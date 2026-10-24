@@ -379,7 +379,7 @@ if pdm_source.exists() and security_config.exists():
         'compatibility': 'No new wallet operation or automatic guard hire; existing staff payroll/checkpoints/severance reused. Old staff configuration cloned and missing offers merged in memory. No rewriting old wages, sales or stock.',
         'defaults': config,
         'intentional_differences': 'Own hire price 1300 and wage 260 per default active 300 seconds. Finite 120-round rifle, no dropped weapon, no invincibility, no arbitrary pedestrian deletion or global relationship groups. Stops on wanted/mission/cutscene/death, no police/SWAT/army/player/script-mission targets and no pursuit outside per-post radius.',
-        'scope_limits': 'Does not spawn attackers or simulate theft/insurance. Physical CCTV/own live viewer added in 6.1K. Does not clear wanted or replace police. Combat, line of sight, safe spawn and navmesh require GTA testing. No claim of complete PDM parity; phases 8/9 retained.',
+        'scope_limits': 'Does not spawn attackers or simulate theft/insurance. Physical CCTV/own live viewer added in 6.1K; administrative safe exposure and business insurance added in 6.1L. Does not clear wanted or replace police. Combat, line of sight, safe spawn and navmesh require GTA testing. No claim of complete PDM parity; phases 8/9 retained.',
         'configuration_sha256': digest(security_config.read_bytes())}
 surveillance_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSurveillance.json'
 if pdm_source.exists() and surveillance_config.exists():
@@ -398,7 +398,24 @@ if pdm_source.exists() and surveillance_config.exists():
         'compatibility': 'Missing state means unpurchased. New configuration only; previous staff/security/showroom configs unchanged. Only owned props/camera removed. Refuses opening over another camera and does not stop another identified rendering camera on exit.',
         'defaults': config,
         'intentional_differences': 'Reference camera purchase/props/preview used as static evidence. Multi-feed live viewer and framing are own additions; no claim that legacy preview was a CCTV gameplay viewer. No world prop sweep, forced player relocation, invincibility, timecycle effects or persistent control changes.',
-        'scope_limits': 'No recording/playback, remote phone access, theft/insurance or automatic guards benefit. Native render transitions, framing and interaction with other camera mods require GTA testing. Phases 8/9 retained.',
+        'scope_limits': 'No recording/playback or remote phone access. 6.1L adds explicit administrative safe exposure, insurance and contractual guard/camera risk reduction; no physical theft mission. Native render transitions, framing and interaction with other camera mods require GTA testing. Phases 8/9 retained.',
         'configuration_sha256': digest(surveillance_config.read_bytes())}
+risk_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmRisk.json'
+if pdm_source.exists() and risk_config.exists():
+    source = pdm_source.read_text(); config = json.loads(risk_config.read_text())
+    report['pdm_risk_insurance'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_open_safe_away_risk': 'if (safeOpen && Game.Player.Character.Position.DistanceTo(PDMCenterSpot) >= 150f)' in source and 'TransactionType.SafeRobbery' in source,
+        'reference_has_twenty_percent_loss_and_threshold': 'num18 > 50000' in source and '(double)num18 * 0.2' in source,
+        'reference_has_full_loss_payout_only_if_covered': 'num20 >= (int)num19' in source and 'TransactionType.InsurancePayout' in source,
+        'reference_has_renewal_and_insufficient_cash_lapse': 'TransactionType.InsurancePayment' in source and 'Insurance Cancelled due to lack of funds for payment.' in source,
+        'reference_has_security_30_35_35': 'securityRating += 30' in source and source.count('securityRating += 35') == 2,
+        'rpcore_cycle': 'Optional open/close administrative safe, consecutive active away exposure, stable per-check roll, contractual CCTV/paid-guard risk reduction, real loss and covered reimbursement atomically, safe closes after event, bounded history. Optional paid policy snapshots, active-time renewal, cancellation and lapse.',
+        'wallet_checkpoint': 'Additive Pdm.Risk; same existing company cash, no second safe balance. Premiums, Stolen/Reimbursed totals and policy/incident/check receipt checkpoint together. Claim cannot create profit or be requested without a loss.',
+        'compatibility': 'Old state means safe closed and no policy, with no new risk or auto-premium. Unknown fields retained. Old staff/security/surveillance/finance/stock configs unchanged; PdmRisk.json only new config.',
+        'defaults': config,
+        'intentional_differences': 'Own 120-second consecutive exposure and 1800 active-second policy periods, no offline accrual. Initial premium paid immediately; stable roll instead of legacy reused random variable. Tier 5 uses displayed 80000 premium and explicit 2-million cap rather than legacy 85000 recurring fee/200-million internal cap. 30/35/35 rating drives own risk multiplier and requires guards paid, not just hired.',
+        'scope_limits': 'Administrative open-safe risk only. No safe prop/interior animation, spawned robber, stock theft, general vehicle insurance or physical heist. No teleport, wanted manipulation or new police AI. Phases 8/9 and other PDM differences remain.',
+        'configuration_sha256': digest(risk_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

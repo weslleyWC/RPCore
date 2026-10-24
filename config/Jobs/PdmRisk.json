@@ -1,0 +1,14 @@
+{
+  "PeriodSeconds": 1800,
+  "ExposureSeconds": 120,
+  "RiskPercent": 15,
+  "LossPercent": 20,
+  "MinimumCash": 50000,
+  "Plans": [
+    { "Id": "tier1", "Name": "Nivel 1", "Premium": 10000, "Limit": 100000 },
+    { "Id": "tier2", "Name": "Nivel 2", "Premium": 20000, "Limit": 200000 },
+    { "Id": "tier3", "Name": "Nivel 3", "Premium": 35000, "Limit": 500000 },
+    { "Id": "tier4", "Name": "Nivel 4", "Premium": 55000, "Limit": 1000000 },
+    { "Id": "tier5", "Name": "Nivel 5", "Premium": 80000, "Limit": 2000000 }
+  ]
+}

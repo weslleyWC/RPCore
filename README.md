@@ -1,4 +1,10 @@
-# RPCore 0.29.0 — GTA V Legacy
+# RPCore 0.30.0 — GTA V Legacy
+
+## Fase 6.1L — cofre administrativo e seguro PDM
+
+[Atualização 0.30.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.30.0.zip) · [Código-fonte 0.30.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.30.0.zip) · [Instalação e teste](docs/FASE-6.1L-0.30.0.md)
+
+F10 → Trabalhos → PDM → Cofre / seguro / ocorrencias. Cofre fechado e sem apólice por padrão: atualização não habilita perdas/cobranças. Abertura voluntária permite exposição ao se afastar; câmeras/guardas pagos reduzem risco. Seguro opcional tem prêmio inicial/renovação, restitui somente perda coberta e encerra sem caixa. 1099 testes aprovados e build sem erros/avisos. Saves/configurações/F2/F11 preservados; teste no GTA necessário. Sem missão física de roubo ou seguro de veículo pessoal; demais diferenças e fases 8/9 mantidas.
 
 ## Fase 6.1K — câmeras e monitoramento PDM
 

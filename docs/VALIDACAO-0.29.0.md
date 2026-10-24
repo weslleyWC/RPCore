@@ -1,0 +1,17 @@
+# Validação — RPCore 0.29.0
+
+Build Release net48 com SHVDN Enhanced 1.1.0.6/LemonUI 2.2: zero erros/avisos. DLL SHA256 `ff4eb79346b1028a81831ef52d0d4f25313ae1d7a6de2005f60906fe9676a88a`.
+
+1063 testes aprovados, zero falhas/ignorados: 1035 anteriores e 28 novos. Cobrem três posições/rotações/modelo/preço, estado antigo sem compra automática, débito empresarial/contabilidade, compra única/rollback/replay, caixa/limites/contratos concorrentes, preservação de estoque/equipe/campos desconhecidos, validação de configurações, troca circular de canais, timeout/overflow, interrupção e espera inicial de renderização sem aceitar tomada da câmera por outro sistema. Relatórios DataTests.trx/DataTests-0.29.0.trx. Não executam GTA.
+
+Campo aditivo Pdm.Surveillance: Purchased/Paid, padrão não adquirido. Compra de $15000 padrão debita caixa e incrementa UpgradeSpent existente com uma única confirmação e recibo, sem mensalidade, receita, indenização ou bônus. Salários/contratos antigos, estoque, vagas, perfis e veículos pessoais conservados. Configuração nova Jobs/PdmSurveillance.json; anteriores intactas.
+
+Props próprios nos três mounts/rotações da referência. Reconhece equivalente próximo de mesmo modelo e o preserva; não varre nem remove objetos do mapa. Props próprios congelados sem colisão; afastamento/troca de perfil/encerramento recolhem somente os próprios. Falha de streaming aguarda nova tentativa sem perder compra nem cobrar novamente.
+
+Monitor ao vivo no escritório externo, personagem a pé/sem procurado/combate/missão e sem contrato físico concorrente. Câmera script própria, setas circulam canais, Backspace/Esc/End fecha, limite 120 segundos. F2/F11/J fecham a visualização; pressione novamente para abrir o menu correspondente. Main publica modal antes de outros sistemas e encaminha teclas somente ao monitor durante a sessão. Bloqueio de controles dura apenas o frame de visualização, pausa permitida; sem congelar/teleportar personagem, invulnerabilidade ou mudança persistente de controle. Dano/perda de armadura, pausa, missão/cutscene, morte, distância, menu inesperado, câmera/equipamento indisponíveis e troca de perfil encerram. Libera atividade mesmo em erro de exclusão da câmera. Recusa entrada sobre câmera externa; saída não manda parar outra câmera script identificada.
+
+Auditoria PSRP-SYSTEMS-AUDIT-0.29.0.json: 75 fontes indexadas, baseline 0.28.0, identidade da DLL atual; PurchasePDMCamera, SpawnPDMCamerasOnLoad, camSpawnpos e preview conferidos. Preview de compra da referência não foi declarado monitor CCTV pronto: visualização ao vivo e enquadramentos são implementação própria. Sem gravação/replay, telefone remoto, seguro/roubo ou toda PDM concluída. Fases 8/9 mantidas.
+
+GTA não executado nesta nuvem. Roteiro FASE-6.1K-0.29.0.md: compra/caixa, props, três enquadramentos, troca/saída/timeout, câmera/controles restaurados, pausas/dano/morte/missão/perfis e regressão dos sistemas anteriores. Renderização, visibilidade de paredes/props e convivência com mods de câmera exigem teste real.
+
+Instalador executado duas vezes via PowerShell 7/Linux sobre instalação simulada da 0.28.0: 109 arquivos existentes preservados byte a byte, incluindo saves/configurações/F2 e empresa. PdmSurveillance.json acrescentado só na primeira execução; personalização conservada na segunda. Backup da DLL anterior e DLL instalada idêntica ao build. Relatório installer-validation-0.29.0.json. Não é teste de gameplay.

@@ -20,6 +20,7 @@
     <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmRentalData.cs" Link="PdmRentalData.cs" />
     <Compile Include="../PdmShowroomData.cs" Link="PdmShowroomData.cs" />
+    <Compile Include="../PdmRiskData.cs" Link="PdmRiskData.cs" />
     <Compile Include="../PdmSurveillanceData.cs" Link="PdmSurveillanceData.cs" />
     <Compile Include="../PdmSecurityData.cs" Link="PdmSecurityData.cs" />
     <Compile Include="../PdmPremisesData.cs" Link="PdmPremisesData.cs" />
@@ -50,6 +51,7 @@
     <EmbeddedResource Include="../config/Jobs/PdmRepo.json" LogicalName="RPCore.JobDefaults.PdmRepo.json" />
     <EmbeddedResource Include="../config/Jobs/PdmRental.json" LogicalName="RPCore.JobDefaults.PdmRental.json" />
     <EmbeddedResource Include="../config/Jobs/PdmShowroom.json" LogicalName="RPCore.JobDefaults.PdmShowroom.json" />
+    <EmbeddedResource Include="../config/Jobs/PdmRisk.json" LogicalName="RPCore.JobDefaults.PdmRisk.json" />
     <EmbeddedResource Include="../config/Jobs/PdmSurveillance.json" LogicalName="RPCore.JobDefaults.PdmSurveillance.json" />
     <EmbeddedResource Include="../config/Jobs/PdmSecurity.json" LogicalName="RPCore.JobDefaults.PdmSecurity.json" />
     <EmbeddedResource Include="../config/Jobs/PdmPremises.json" LogicalName="RPCore.JobDefaults.PdmPremises.json" />

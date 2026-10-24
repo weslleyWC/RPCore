@@ -51,6 +51,11 @@ namespace RPCore
         public static bool PdmShowroomBegin(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,Save,out changed);
         public static bool PdmShowroomSell(string id,out bool changed)=>PdmShowroomTransactions.Sell(data,id,Save,out changed);
         public static bool PdmShowroomCancel(string id,out bool changed)=>PdmShowroomTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmRiskReturn(string id, out bool changed) => PdmRiskTransactions.ReturnToPremises(data, id, Save, out changed);
+        public static bool PdmSetSafe(bool open, string id, out bool changed) => PdmRiskTransactions.SetSafe(data, open, id, Save, out changed);
+        public static bool PdmInsure(PdmRiskOptions c, string plan, string id, out bool changed) => PdmRiskTransactions.Insure(data, c, plan, id, Save, out changed);
+        public static bool PdmCancelInsurance(string id, out bool changed) => PdmRiskTransactions.Cancel(data, id, Save, out changed);
+        public static bool PdmRiskWork(PdmRiskOptions c, int seconds, bool away, string id, out bool changed) => PdmRiskTransactions.Work(data, c, seconds, away, id, Save, out changed);
         public static bool PdmSurveillancePurchase(PdmSurveillanceOptions c, string id, out bool changed) => PdmSurveillanceTransactions.Purchase(data, c, id, Save, out changed);
         public static bool PdmServiceBegin(PdmOptions c,string stock,string kind,string id,out bool changed)=>PdmPremisesTransactions.Begin(data,c,stock,kind,id,Save,out changed);
         public static bool PdmServiceComplete(string id,out bool changed)=>PdmPremisesTransactions.Complete(data,id,Save,out changed);
