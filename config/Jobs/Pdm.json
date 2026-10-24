@@ -1,0 +1,116 @@
+{
+  "Office": {
+    "Name": "PDM / escritorio externo",
+    "X": -63.2041,
+    "Y": -1092.664,
+    "Z": 26.53896,
+    "Heading": 0
+  },
+  "Spawn": {
+    "Name": "PDM / retirada de entrega",
+    "X": -25.2498,
+    "Y": -1082.469,
+    "Z": 25.97876,
+    "Heading": 71.01229
+  },
+  "PurchasePrice": 25000,
+  "Capacity": 6,
+  "RepairPrice": 1000,
+  "HandoverSeconds": 3,
+  "TimeLimitSeconds": 600,
+  "Catalog": [
+    {
+      "Id": "asea",
+      "Model": "asea",
+      "Name": "Declasse Asea",
+      "Cost": 8000,
+      "Price": 11200
+    },
+    {
+      "Id": "blista",
+      "Model": "blista",
+      "Name": "Dinka Blista",
+      "Cost": 12000,
+      "Price": 16800
+    },
+    {
+      "Id": "dominator",
+      "Model": "dominator",
+      "Name": "Vapid Dominator",
+      "Cost": 30000,
+      "Price": 42000
+    }
+  ],
+  "Customers": [
+    {
+      "Name": "Cliente PDM 1",
+      "X": 176.7044,
+      "Y": 483.3178,
+      "Z": 141.7375,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 2",
+      "X": 205.0273,
+      "Y": 779.713,
+      "Z": 205.1688,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 3",
+      "X": 322.5005,
+      "Y": 495.2206,
+      "Z": 151.8115,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 4",
+      "X": -824.6132,
+      "Y": 272.2489,
+      "Z": 85.78342,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 5",
+      "X": -1094.491,
+      "Y": 595.9744,
+      "Z": 102.5807,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 6",
+      "X": -1414.876,
+      "Y": 535.5526,
+      "Z": 121.4605,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 7",
+      "X": -1540.106,
+      "Y": 428.2452,
+      "Z": 108.8841,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 8",
+      "X": -1937.796,
+      "Y": 359.9265,
+      "Z": 93.09468,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 9",
+      "X": 981.6929,
+      "Y": -709.8844,
+      "Z": 57.14534,
+      "Heading": 0
+    },
+    {
+      "Name": "Cliente PDM 10",
+      "X": 850.7748,
+      "Y": -566.6342,
+      "Z": 57.22385,
+      "Heading": 0
+    }
+  ]
+}

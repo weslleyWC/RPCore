@@ -18,6 +18,15 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static PdmData Pdm => data.Pdm ?? new PdmData();
+        public static bool PdmPurchase(PdmOptions c,string id,out bool changed)=>PdmTransactions.Purchase(data,c,id,Save,out changed);
+        public static bool PdmTransfer(int amount,bool deposit,string id,out bool changed)=>PdmTransactions.Transfer(data,amount,deposit,id,Save,out changed);
+        public static bool PdmBuy(PdmOptions c,string offer,string stockId,string receipt,out bool changed)=>PdmTransactions.Buy(data,c,offer,stockId,receipt,Save,out changed);
+        public static bool PdmRepair(PdmOptions c,string stockId,string receipt,out bool changed)=>PdmTransactions.Repair(data,c,stockId,receipt,Save,out changed);
+        public static bool PdmBegin(PdmOptions c,string stockId,string operationId,int destination,int handle,out bool changed)=>PdmTransactions.Begin(data,c,stockId,operationId,destination,handle,Save,out changed);
+        public static bool PdmRemember(string id,int engine,int body,string receipt,out bool changed)=>PdmTransactions.Remember(data,id,engine,body,receipt,Save,out changed);
+        public static bool PdmCancel(string id,int engine,int body,out bool changed)=>PdmTransactions.Cancel(data,id,engine,body,Save,out changed);
+        public static bool PdmSell(string id,int engine,int body,out bool changed)=>PdmTransactions.Sell(data,id,engine,body,Save,out changed);
         public static DragData Drag => data.Drag ?? new DragData();
         public static bool DragEnter(DragOptions c,int stake,string id,out bool changed)=>DragTransactions.Enter(data,c,stake,id,Save,out changed);
         public static bool DragGreen(string id,out bool changed)=>DragTransactions.Green(data,id,Save,out changed);

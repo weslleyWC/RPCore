@@ -1,5 +1,9 @@
 # Alterações — RPCore
 
+## 0.19.0 — fase 6.1A: núcleo PDM
+
+Aquisição da empresa, caixa empresarial/capital/saque, estoque virtual pago, contrato de entrega com carro/NPC/chaves/saída, receita no caixa, danos/desconto/reparo e recuperação. Preserva carros pessoais/concessionária/garagens e saves. 694 testes e build sem erros/avisos. Logística/equipe/financiamento e demais sistemas PDM seguem em subentregas; fases 8/9 mantidas. [Arquivos alterados e teste](FASE-6.1-0.19.0.md).
+
 ## 0.18.0 — fase 5.6: arrancada
 
 Corrida um contra um em Sandy Shores, carro próprio/alinhamento manual, NPC rival, contagem/queima, chegada interpolada e aposta opcional com reserva/resultado/liquidação/recovery persistentes. Pontos e DragBanner da referência; preserva carro do jogador e streamer paralelo. 653 testes e build sem erros/avisos. Fases 8/9 mantidas. [Arquivos alterados e teste](FASE-5.6-0.18.0.md).

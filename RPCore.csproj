@@ -15,6 +15,7 @@
     <GTAV Condition="'$(GTAV)'==''">C:\Program Files\Rockstar Games\Grand Theft Auto V</GTAV>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="config/Jobs/Pdm.json" LogicalName="RPCore.JobDefaults.Pdm.json" />
     <EmbeddedResource Include="config/Jobs/Drag.json" LogicalName="RPCore.JobDefaults.Drag.json" />
     <EmbeddedResource Include="config/Jobs/Streamer.json" LogicalName="RPCore.JobDefaults.Streamer.json" />
     <EmbeddedResource Include="config/Jobs/Dealer.json" LogicalName="RPCore.JobDefaults.Dealer.json" />

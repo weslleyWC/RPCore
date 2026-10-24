@@ -24,7 +24,8 @@
     "crafting": "ShopBanner",
     "dealer": "DrugDealingBanner",
     "streamer": "PSRPBANNER1",
-    "drag": "DragBanner"
+    "drag": "DragBanner",
+    "pdm": "PSRPBANNER2"
   },
   "ItemIcons": {
     "water": "water",

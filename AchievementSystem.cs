@@ -54,6 +54,8 @@ namespace RPCore
         {
             this.pool = pool;
             defs = Store.LoadDef("AchievementDefs.json", DefaultDefs).Where(a => a != null && !string.IsNullOrEmpty(a.Id) && a.Target > 0).GroupBy(a => a.Id).Select(g => g.First()).ToList();
+            if (!defs.Any(d => d.Id == "pdm_owner")) defs.Add(new AchDef { Id="pdm_owner",Name="Minha empresa",Desc="Adquira a empresa PDM.",Stat="pdm_owned",Target=1 });
+            if (!defs.Any(d => d.Id == "pdm_sale")) defs.Add(new AchDef { Id="pdm_sale",Name="Primeiro cliente",Desc="Conclua uma entrega com venda PDM.",Stat="pdm_sales",Target=1 });
             if (!defs.Any(d => d.Id == "drag_first")) defs.Add(new AchDef { Id="drag_first",Name="Na pista",Desc="Resolva uma corrida de arrancada.",Stat="drag_finished",Target=1 });
             if (!defs.Any(d => d.Id == "drag_win")) defs.Add(new AchDef { Id="drag_win",Name="Primeiro na chegada",Desc="Venca uma arrancada.",Stat="drag_wins",Target=1 });
             if (!defs.Any(d => d.Id == "stream_first")) defs.Add(new AchDef { Id="stream_first",Name="Ao vivo",Desc="Confirme o primeiro bloco da live.",Stat="stream_blocks",Target=1 });

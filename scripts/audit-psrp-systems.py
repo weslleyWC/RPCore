@@ -203,5 +203,23 @@ if drag_source.exists() and drag_config.exists():
         'scope_limits': 'No spectator bets, multi-racer meet, flare starter, tire warmup/grip changes, nitro, cameras or global vehicle cleanup in this delivery; refinement phase 9.',
         'wallet_checkpoint': 'Wallet.json/Drag + Bank; persisted result before settlement',
         'configuration_sha256': digest(drag_config.read_bytes())}
+pdm_source = a.reference_source / 'PSRP/PDMCompany.cs'
+pdm_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Pdm.json'
+if pdm_source.exists() and pdm_config.exists():
+    source = pdm_source.read_text(); config = json.loads(pdm_config.read_text())
+    reference = {tuple(map(float, point)) for point in re.findall(r'new Vector3\(([-\d.]+)f?, ([-\d.]+)f?, ([-\d.]+)f?\)', source)}
+    points = [config['Office'], config['Spawn']] + config['Customers']
+    report['pdm'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'all_points_match_reference': all(tuple(p[k] for k in ['X','Y','Z']) in reference for p in points),
+        'office_origin': 'Reference safe-collection NPC external point used as RPCore public company desk.',
+        'reference_has_stock_delivery': 'UpdateDeliveryState' in source and 'PDMSavedStockVehicles' in source,
+        'reference_has_business_cash': 'PDMBusinessBankCurrency' in source,
+        'reference_purchase_price': 3200000, 'rpcore_purchase_price': config['PurchasePrice'],
+        'rpcore_cycle': 'Own company acquisition, separate business cash, capital/withdrawals, paid virtual stock, physical NPC delivery/keys/sale, damage/repairs, recovery with handle/model/plate checks.',
+        'customer_count': len(config['Customers']), 'catalog_count': len(config['Catalog']),
+        'scope_limits': 'No port collections/transporter, staffing/wages, showroom, finance/repossession, rentals or safe logistics in this first PDM subdelivery; those remain subsequent subphases.',
+        'wallet_checkpoint': 'Wallet.json/Pdm + Bank, personal Transport retained',
+        'configuration_sha256': digest(pdm_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

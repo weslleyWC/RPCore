@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.19.0: arrancada aprovada pelo usuário. Iniciada [fase 6.1A — núcleo da empresa PDM](FASE-6.1-0.19.0.md): aquisição/caixa/estoque/entrega/venda/danos/reparo/recovery, aguardando teste real. PDM continua em subentregas: logística/coleta/showroom; equipe/salários/gestão/infraestrutura; financiamento/repossessão/aluguel/cofre. Depois seguem moradia/personagem/seguros/licenças/gangues/polícia e fase 7. Fases 8 (interface e mecânicas) e 9 (todos os trabalhos com estudo PSRP.dll) mantidas.
+
 Andamento 0.18.0: [fase 5.6 — arrancada](FASE-5.6-0.18.0.md) implementada como última atividade base da fase 5, aguardando teste de pista/IA/resultado no GTA. Próxima fase principal: 6 (PDM/moradia/personagem/seguros/licenças/gangues/polícia), em subentregas. Não se declara paridade completa; diferenças e fases 8/9 continuam registradas.
 
 Andamento 0.17.0: [fase 5.5 — streamer](FASE-5.5-0.17.0.md) implementada: app Twitch, chat/audiência contextual, eventos/estatísticas e checkpoint bancário, transmissão paralela a trabalhos. Precisa de teste real. Arrancada segue na fase 5. Fases 8 (interface e mecânicas associadas) e 9 (refinamento de todos os trabalhos com varredura PSRP.dll) mantidas.

@@ -191,7 +191,7 @@ namespace RPCore
             try
             {
                 string banner;
-                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "drag" ? "DragBanner" : key == "streamer" ? "PSRPBANNER1" : key == "dealer" ? "DrugDealingBanner" : key == "crafting" ? "ShopBanner" : key == "fishing" ? "ShopBanner" : key == "hunting" ? "ButcherBanner" : key == "pilot" ? "PSRPBANNER1" : key == "prison" ? "PSRPBANNER1" : key == "tanker" ? "PlaceholderBanner" : key == "supply" ? "PostOpBanner" : key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
+                if (Bindings.Banners == null || !Bindings.Banners.TryGetValue(key, out banner)) banner = key == "pdm" ? "PSRPBANNER2" : key == "drag" ? "DragBanner" : key == "streamer" ? "PSRPBANNER1" : key == "dealer" ? "DrugDealingBanner" : key == "crafting" ? "ShopBanner" : key == "fishing" ? "ShopBanner" : key == "hunting" ? "ButcherBanner" : key == "pilot" ? "PSRPBANNER1" : key == "prison" ? "PSRPBANNER1" : key == "tanker" ? "PlaceholderBanner" : key == "supply" ? "PostOpBanner" : key == "postop" ? "PostOpBanner" : key == "uber" ? "BoltBanner" : key == "valet" ? "Valet" : "PizzaBanner";
                 if (!Active || !MenuBanners || !Has("PSRP_Banners", banner)) return false;
                 float w = 320 * Scale, x = (Width - w) / 2, y = InsetY + 8;
                 Sprite("PSRP_Banners", banner, x, y, w, w / 4, Color.White);

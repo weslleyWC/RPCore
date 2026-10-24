@@ -1,6 +1,12 @@
-# RPCore 0.18.0 — GTA V Legacy
+# RPCore 0.19.0 — GTA V Legacy
 
-## Fase 5.6 — arrancada
+## Fase 6.1A — núcleo da empresa PDM
+
+[Atualização 0.19.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.19.0.zip) · [Código-fonte 0.19.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.19.0.zip) · [Instalação, alterações e teste](docs/FASE-6.1-0.19.0.md)
+
+Arrancada confirmada funcionando pelo usuário. Nova empresa: F10 → Trabalhos → PDM / empresa e entregas → GPS. Adquira por 25000 do banco, aporte 10000, compre Asea por 8000 do caixa, entregue ao cliente e passe as chaves com E. Venda sem danos credita 11200 no caixa da empresa; saque depois no escritório. Estoque/danos/reparo/recuperação persistentes, caixa separado e carros pessoais preservados. 694 testes e build sem erros/avisos; ciclo físico precisa de teste no GTA. Logística/showroom, equipe e financiamento/aluguel seguem em subentregas PDM. Fases 8/9 mantidas.
+
+## Histórico — fase 5.6: arrancada
 
 [Atualização 0.18.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.18.0.zip) · [Código-fonte 0.18.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.18.0.zip) · [Instalação, alterações e teste](docs/FASE-5.6-0.18.0.md)
 

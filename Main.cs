@@ -62,7 +62,8 @@ namespace RPCore
             var dealer = new DealerJob(pool, ach, shifts); systems.Add(dealer);
             var streamer = new StreamerJob(pool, ach, needs, shifts); systems.Add(streamer);
             var drag = new DragJob(pool, ach, shifts); systems.Add(drag);
-            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag); systems.Add(jobs);
+            var pdm = new PdmCompany(pool, ach, shifts); systems.Add(pdm);
+            var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
             AddOptional(() => new StockMarketSystem(pool));
@@ -79,7 +80,7 @@ namespace RPCore
             var props = new PropPresentation(inv); systems.Add(props);
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer); systems.Add(phone);
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open); systems.Add(core);
-            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition); systems.Add(settings);
+            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -101,7 +102,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.18.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.19.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

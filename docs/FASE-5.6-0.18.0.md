@@ -1,5 +1,7 @@
 # Fase 5.6 — RPCore 0.18.0: arrancada
 
+Atualização: usuário confirmou a corrida funcionando e pediu seguir à [fase 6.1A — empresa PDM](FASE-6.1-0.19.0.md). Refinamento da arrancada continua previsto para a fase 9. Texto abaixo registra a entrega original.
+
 Última atividade base prevista na fase 5: arrancada um contra um na pista de Sandy Shores, com carro do jogador, adversário NPC, alinhamento manual, contagem, queima de largada, chegada cronometrada, aposta opcional e recuperação de valores pendentes. Caça, pesca, crafting, tráfico e streamer continuam incluídos. Não se declara paridade completa de todos os sistemas da PSRP: as diferenças e os refinamentos permanecem no roteiro.
 
 Depois do teste, a sequência principal segue à fase 6 (empresa PDM/moradia/personagem/seguros/licenças/gangues/polícia, em subentregas), depois fase 7. A **fase 8** continua reservada a toda a interface e mecânicas associadas ao HUD/menus, inclusive fome/sede; a **fase 9**, ao refinamento de todos os trabalhos com varredura aprofundada da PSRP.dll. Esta entrega não antecipa essas revisões.
