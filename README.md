@@ -1,4 +1,10 @@
-# RPCore 0.28.0 — GTA V Legacy
+# RPCore 0.29.0 — GTA V Legacy
+
+## Fase 6.1K — câmeras e monitoramento PDM
+
+[Atualização 0.29.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.29.0.zip) · [Código-fonte 0.29.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.29.0.zip) · [Instalação e teste](docs/FASE-6.1K-0.29.0.md)
+
+F10 → Trabalhos → PDM → Cameras / monitoramento. Compra única padrão $15000 do caixa, três equipamentos nas posições da referência e monitor ao vivo no escritório externo. Setas trocam canais; Backspace/Esc sai. Sem teleporte/invulnerabilidade, cobrança repetida ou remoção de props externos. 1063 testes aprovados e build sem erros/avisos. Saves/configurações/F2/F11 preservados; enquadramentos/renderização precisam de teste no GTA. Sem gravação, seguro/roubo ou PDM completa; fases 8/9 mantidas.
 
 ## Fase 6.1J — segurança presencial PDM
 

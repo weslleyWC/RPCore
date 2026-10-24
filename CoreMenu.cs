@@ -29,7 +29,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.28.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.29.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
             if (jobs != null) Add("Trabalhos / contratos", "Contratos de entregas e motoristas: GPS, contratar e cancelar.", () => { menu.Visible = false; jobs(); });
             if (diagnose != null) Add("Visual assets: diagnose", "Requests installed YTDs and checks every catalog texture's native dimensions. Writes VisualDiagnostics.json; does not verify rendered appearance.", diagnose);
             Add("Save now", "Writes the active profile; keeps previous versions as .bak.", () => { save(); Notify.Show("Save requested. Check RPCore.log for any write errors."); });

@@ -29,6 +29,7 @@ namespace RPCore
         readonly PhoneSystem phone;
         readonly RadialSystem radial;
         readonly SettingsSystem settings;
+        readonly PdmSurveillanceSystem surveillance;
         readonly InventorySystem inventory;
 
         public Main()
@@ -77,6 +78,7 @@ namespace RPCore
             pdm.OpenServices = premises.OpenMenu; pdm.SyncPremises = premises.Flush; staff.OpenServices = premises.OpenMenu;
             var security = new PdmSecuritySystem(pool, staff.Security, pdm.StartPosition, () => premises.StaffPeds, staff.Flush, staff.OpenMenu, pdm.OpenMenu); systems.Add(security);
             pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
+            surveillance = new PdmSurveillanceSystem(pool, shifts, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(surveillance); pdm.OpenSurveillance = surveillance.OpenMenu;
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             systems.Add(new StorageSystem(pool, inv, ach));
@@ -116,7 +118,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.28.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.29.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -152,7 +154,7 @@ namespace RPCore
 
             // World Context is polled by shops before the late radial/phone draw ticks.
             // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
-            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible;
+            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             try { pool.Process(); }
             catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
@@ -182,6 +184,7 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if (surveillance.Viewing) { surveillance.OnKey(e); return; }
             if (inventory.GridVisible && !faulted.Contains(inventory))
             {
                 try { inventory.OnKey(e); }

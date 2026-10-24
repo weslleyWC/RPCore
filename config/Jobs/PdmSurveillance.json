@@ -1,0 +1,77 @@
+{
+  "Price": 15000,
+  "Model": "prop_cctv_cam_04c",
+  "FieldOfView": 65,
+  "MaxViewSeconds": 120,
+  "Cameras": [
+    {
+      "Id": "front",
+      "Name": "Fachada / entrada",
+      "Mount": {
+        "X": -39.0766,
+        "Y": -1119.456,
+        "Z": 29.3445,
+        "Heading": -108.5868,
+        "Name": "Fachada / entrada / Mount"
+      },
+      "View": {
+        "X": -39.85,
+        "Y": -1119.15,
+        "Z": 29.2,
+        "Name": "Fachada / entrada / View"
+      },
+      "LookAt": {
+        "X": -49.1,
+        "Y": -1105.7,
+        "Z": 26.4,
+        "Name": "Fachada / entrada / LookAt"
+      }
+    },
+    {
+      "Id": "side",
+      "Name": "Lateral / patio",
+      "Mount": {
+        "X": -56.6277,
+        "Y": -1081.885,
+        "Z": 29.4098,
+        "Heading": -111.5288,
+        "Name": "Lateral / patio / Mount"
+      },
+      "View": {
+        "X": -57.4,
+        "Y": -1082.2,
+        "Z": 29.25,
+        "Name": "Lateral / patio / View"
+      },
+      "LookAt": {
+        "X": -65.2,
+        "Y": -1090.5,
+        "Z": 26.5,
+        "Name": "Lateral / patio / LookAt"
+      }
+    },
+    {
+      "Id": "loading",
+      "Name": "Retirada / acesso",
+      "Mount": {
+        "X": -23.2955,
+        "Y": -1086.04,
+        "Z": 28.4994,
+        "Heading": 155.1891,
+        "Name": "Retirada / acesso / Mount"
+      },
+      "View": {
+        "X": -23.6,
+        "Y": -1086.75,
+        "Z": 28.4,
+        "Name": "Retirada / acesso / View"
+      },
+      "LookAt": {
+        "X": -29.5,
+        "Y": -1095.5,
+        "Z": 26.3,
+        "Name": "Retirada / acesso / LookAt"
+      }
+    }
+  ]
+}

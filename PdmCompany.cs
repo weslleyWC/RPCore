@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmCompany : ISystem, IWorkContract
     {
-        public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises, OpenSecurity;
+        public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises, OpenSecurity, OpenSurveillance;
         public Func<string,bool> PrepareStock;
         internal PdmOptions CompanyOptions => options;
         public PdmRepoOptions Repossession { get; }
@@ -62,6 +62,7 @@ namespace RPCore
             if (!d.Owned) Add("Adquirir empresa: $" + options.PurchasePrice, "Debita o banco pessoal; nao inclui capital nem estoque. Valor proprio do RPCore.", () => { if (OfficeAction()) { if (!Wallet.PdmPurchase(options, Guid.NewGuid().ToString("N"), out bool changed)) Notify.Show("Saldo bancario insuficiente ou empresa ja adquirida."); else if (changed) Bump("pdm_owned"); OpenMenu(); } });
             else
             {
+                if (OpenSurveillance != null) Add("Cameras / monitoramento", "Equipamentos externos e imagens ao vivo dos tres pontos.", OpenSurveillance);
                 if (OpenSecurity != null) Add("Seguranca / postos presenciais", "Dois postos contratados; defesa local com salarios em dia.", OpenSecurity);
                 if (OpenServices != null) Add("Equipe presencial / manutencao", "Mecanico e zeladoria atendem os carros expostos.", OpenServices);
                 if (OpenShowroom != null) Add("Showroom / vagas / compradores", "Expor estoque em vagas persistentes e atender comprador na PDM.", OpenShowroom);

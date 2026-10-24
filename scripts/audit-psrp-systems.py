@@ -379,7 +379,26 @@ if pdm_source.exists() and security_config.exists():
         'compatibility': 'No new wallet operation or automatic guard hire; existing staff payroll/checkpoints/severance reused. Old staff configuration cloned and missing offers merged in memory. No rewriting old wages, sales or stock.',
         'defaults': config,
         'intentional_differences': 'Own hire price 1300 and wage 260 per default active 300 seconds. Finite 120-round rifle, no dropped weapon, no invincibility, no arbitrary pedestrian deletion or global relationship groups. Stops on wanted/mission/cutscene/death, no police/SWAT/army/player/script-mission targets and no pursuit outside per-post radius.',
-        'scope_limits': 'Does not spawn attackers or simulate theft/insurance/CCTV. Does not clear wanted or replace police. Combat, line of sight, safe spawn and navmesh require GTA testing. No claim of complete PDM parity; phases 8/9 retained.',
+        'scope_limits': 'Does not spawn attackers or simulate theft/insurance. Physical CCTV/own live viewer added in 6.1K. Does not clear wanted or replace police. Combat, line of sight, safe spawn and navmesh require GTA testing. No claim of complete PDM parity; phases 8/9 retained.',
         'configuration_sha256': digest(security_config.read_bytes())}
+surveillance_config = Path(__file__).resolve().parents[1] / 'config/Jobs/PdmSurveillance.json'
+if pdm_source.exists() and surveillance_config.exists():
+    source = pdm_source.read_text(); config = json.loads(surveillance_config.read_text())
+    block = source.split('private Dictionary<Vector3, Vector3> camSpawnpos =', 1)[1].split('\n\t};', 1)[0]
+    vectors = [tuple(map(float, m)) for m in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)', block)]
+    reference = [(vectors[n][0], vectors[n][1], vectors[n][2], vectors[n+1][2]) for n in range(0,len(vectors),2)]
+    report['pdm_surveillance'] = {
+        'reference_source': 'PSRP/PDMCompany.cs',
+        'reference_has_camera_purchase_and_props': 'PurchasePDMCamera' in source and 'SpawnPDMCamerasOnLoad' in source and 'prop_cctv_cam_04c' in source,
+        'reference_has_15000_company_purchase': 'PDMBusinessBankCurrency -= 15000L' in source,
+        'reference_has_preview_camera': 'OwnsPDMCameras.Selected' in source and 'SlotCamera.PointAt' in source,
+        'all_mount_positions_and_rotations_match_reference': len(config['Cameras']) == len(reference) and all(tuple(c['Mount'][k] for k in ['X','Y','Z','Heading']) == r for c,r in zip(config['Cameras'],reference)),
+        'rpcore_cycle': 'One-time optional company purchase, three own physical CCTV props, preservation of existing equivalent map props, office-only live scripted camera viewer, feed cycling and bounded modal session with cleanup.',
+        'wallet_checkpoint': 'Additive Pdm.Surveillance Purchased/Paid; company cash, existing staff UpgradeSpent and receipt committed atomically. No monthly charge, insurance payout, stock change or financial bonus.',
+        'compatibility': 'Missing state means unpurchased. New configuration only; previous staff/security/showroom configs unchanged. Only owned props/camera removed. Refuses opening over another camera and does not stop another identified rendering camera on exit.',
+        'defaults': config,
+        'intentional_differences': 'Reference camera purchase/props/preview used as static evidence. Multi-feed live viewer and framing are own additions; no claim that legacy preview was a CCTV gameplay viewer. No world prop sweep, forced player relocation, invincibility, timecycle effects or persistent control changes.',
+        'scope_limits': 'No recording/playback, remote phone access, theft/insurance or automatic guards benefit. Native render transitions, framing and interaction with other camera mods require GTA testing. Phases 8/9 retained.',
+        'configuration_sha256': digest(surveillance_config.read_bytes())}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -51,6 +51,7 @@ namespace RPCore
         public static bool PdmShowroomBegin(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,Save,out changed);
         public static bool PdmShowroomSell(string id,out bool changed)=>PdmShowroomTransactions.Sell(data,id,Save,out changed);
         public static bool PdmShowroomCancel(string id,out bool changed)=>PdmShowroomTransactions.Cancel(data,id,Save,out changed);
+        public static bool PdmSurveillancePurchase(PdmSurveillanceOptions c, string id, out bool changed) => PdmSurveillanceTransactions.Purchase(data, c, id, Save, out changed);
         public static bool PdmServiceBegin(PdmOptions c,string stock,string kind,string id,out bool changed)=>PdmPremisesTransactions.Begin(data,c,stock,kind,id,Save,out changed);
         public static bool PdmServiceComplete(string id,out bool changed)=>PdmPremisesTransactions.Complete(data,id,Save,out changed);
         public static bool PdmServiceCancel(string id,out bool changed)=>PdmPremisesTransactions.Cancel(data,id,Save,out changed);

@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.29.0: [fase 6.1K — câmeras/monitoramento PDM](FASE-6.1K-0.29.0.md). Compra empresarial, três props da referência e monitor ao vivo com código próprio. Precisa de teste de enquadramento/renderização no GTA; seguro/roubo e outras diferenças PDM continuam pendentes. Sem antecipar fases 8/9.
+
 Andamento 0.28.0: [fase 6.1J — segurança presencial PDM](FASE-6.1J-0.28.0.md), após núcleo, logística, equipe, coletas, financiamento, retomada, locadora, showroom e manutenção presencial. Dois guardas opcionais e defesa local seletiva com salários; precisa de teste no GTA. Roubo/seguro/CCTV e outras diferenças PDM continuam pendentes. Fases 8/9 preservadas; não se declara empresa inteira concluída.
 
 Andamento 0.19.0: arrancada aprovada pelo usuário. Iniciada [fase 6.1A — núcleo da empresa PDM](FASE-6.1-0.19.0.md): aquisição/caixa/estoque/entrega/venda/danos/reparo/recovery, aguardando teste real. PDM continua em subentregas: logística/coleta/showroom; equipe/salários/gestão/infraestrutura; financiamento/repossessão/aluguel/cofre. Depois seguem moradia/personagem/seguros/licenças/gangues/polícia e fase 7. Fases 8 (interface e mecânicas) e 9 (todos os trabalhos com estudo PSRP.dll) mantidas.
