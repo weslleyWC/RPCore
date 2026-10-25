@@ -31,7 +31,7 @@ namespace RPCore
             }finally{if(!active)gate.Release(Owner);}
         }
         public bool Resume()
-        {if(active || Pending==null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
+        {if(active || Pending==null || state().Strength?.Pending!=null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
         public bool Cancel(){if(Pending==null)return false;if(!GangLoyaltyTransactions.Cancel(state(),Pending.Id,save,out _))return false;Suspend();return true;}
         void ClearContact(){StopHandover();if(contact!=null && contact.Exists())contact.Delete();contact=null;if(model.Hash!=0)model.MarkAsNoLongerNeeded();model=default(Model);loading=false;}
         void StopHandover(){if(handing && handoverPed!=null && handoverPed.Exists())Function.Call(Hash.STOP_ANIM_TASK,handoverPed,"mp_common","givetake1_a",-4f);handing=false;handoverPed=null;}

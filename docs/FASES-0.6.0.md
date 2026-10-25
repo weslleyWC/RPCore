@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.46.0: [fase 6.5D — iniciação por força](FASE-6.5D-0.46.0.md), três desafiantes próprios, combate desarmado/limites/derrotas distintas, aprovação persistente e confirmação no líder. Guarda de atividade, retomada parcial com novas provas físicas e exclusão mútua com lealdade; sistemas anteriores preservados. Combate/flags/IA precisam de GTA. Direção/diálogo completo/territórios/guerras/economia/polícia e demais diferenças continuam; fases 8/9 mantidas.
+
+
 Andamento 0.45.0: [fase 6.5C — iniciação por lealdade](FASE-6.5C-0.45.0.md), dois contatos/pacotes entre 15 pontos PSRP, interação cronometrada, checkpoints/retomada e filiação na volta ao líder. Opção nova sem substituir Join; presença/equipe anteriores e demais saves preservados. Teste de contato/piso/animação/entrada no GTA pendente; força/direção/diálogo completo, territórios/guerras/economia/polícia e demais diferenças continuam. Fases 8/9 mantidas.
 
 

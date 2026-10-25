@@ -97,3 +97,6 @@ Atualização 0.44.0 / fase 6.5B: equipe de até 3 membros da gangue, ordens e p
 
 
 Atualização 0.45.0 / fase 6.5C: iniciação por lealdade opcional no líder, dois pacotes em contatos/posições da PSRP, interação cronometrada e filiação persistida ao voltar. Guarda de atividade/recibos/retomada próprios; sem cutscene forçada ou substituição retroativa de Join. Força/direção/diálogo completo e territórios continuam pendentes. Piso/animação/input precisam de GTA; apresentação e ergonomia continuam na fase 8, refinamento de todos os trabalhos na fase 9.
+
+
+Atualização 0.46.0 / fase 6.5D: iniciação por força com três desafiantes, após comparar estados/vida/área/derrotas PSRP. Sem forçar arma/cutscene, com aprovação e filiação separadas e retomada física própria. Flags de dano/rendição e luta exigem GTA; apresentação/ergonomia continuam na fase 8. Refinamento de todos os trabalhos permanece na fase 9; direção/territórios/guerras/economia/polícia continuam pendentes.

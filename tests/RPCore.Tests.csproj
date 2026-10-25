@@ -45,6 +45,7 @@
     <Compile Include="../JobData.cs" Link="JobData.cs" />
     <Compile Include="../GangCrewData.cs" Link="GangCrewData.cs" />
     <Compile Include="../GangLoyaltyData.cs" Link="GangLoyaltyData.cs" />
+    <Compile Include="../GangStrengthData.cs" Link="GangStrengthData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />

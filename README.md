@@ -1,4 +1,11 @@
-# RPCore 0.45.0 — GTA V Legacy
+# RPCore 0.46.0 — GTA V Legacy
+
+## Fase 6.5D — iniciação por força
+
+[Atualização 0.46.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.46.0.zip) · [Código-fonte 0.46.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.46.0.zip) · [Instalação e teste](docs/FASE-6.5D-0.46.0.md)
+
+F4 → presença ligada → sem filiação, perto do líder e com punhos → Iniciacao por forca. Três desafiantes preparados antes de iniciar, combate físico com regras/dano e derrotas distintas, aprovação salva e E no líder para filiação única. Suspender luta parcial exige vencer três novos na retomada, sem tentativa/taxa extra; aprovação completa permanece emitível após reload. Lealdade/presença/equipe/saves/configs/F2/F11 mantidos. 1683 testes aprovados e build sem erros/avisos. Luta/flags de dano/rendição precisam de GTA; direção/territórios/guerras/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5C — iniciação por lealdade
 

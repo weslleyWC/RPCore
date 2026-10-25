@@ -26,7 +26,8 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         readonly AchievementSystem ach;
         GangState state;
-        readonly GangLoyalty loyalty;
+        readonly GangLoyalty loyalty;readonly GangStrength strength;
+        bool InitiationPending=>loyalty.HasPending || strength.HasPending;
         void SaveState(GangState next){Store.Write("GangState.json",next);state=next;dirty=true;}
         bool dirty;NativeItem presenceStatus;
         readonly GangPresence presence=new GangPresence();
@@ -45,7 +46,7 @@ namespace RPCore
                 b.Color = gang.GangColor == "Purple" ? BlipColor.Purple : gang.GangColor == "Green" ? BlipColor.Green : BlipColor.Yellow;
                 blips.Add(b);
             }
-            ach.Progress += Progress; Reload();loyalty=new GangLoyalty(gate??new ShiftGate(),pool,presence,()=>state,SaveState);
+            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);
         }
 
         public void Create(string name)
@@ -79,6 +80,10 @@ namespace RPCore
                 AddLoyaltyAction((loyalty.Active?"Suspender":"Retomar")+" iniciacao: "+p.Gang+" / "+p.Collected+"/2", "Retome a pe junto ao lider com presenca ligada. Sem taxa; conserva pacotes confirmados.",()=>{if(loyalty.Active){loyalty.Suspend();return true;}return loyalty.Resume();});
                 AddLoyaltyAction("Cancelar iniciacao pendente", "Descarta pacotes desta tentativa, sem mudar filiacao ou reputacao.",()=>loyalty.Cancel());
             }
+            if(state.Strength?.Pending!=null){var p=state.Strength.Pending;
+                AddStrengthAction((strength.Active?"Suspender":"Retomar")+" prova de forca: "+p.Gang+" / "+(p.Report?"aprovada":p.Defeated?.Count+"/3"),"Junto ao lider, sem filiacao. Luta parcial reinicia os tres; aprovacao completa fica salva para confirmar.",()=>{if(strength.Active){strength.Suspend();return true;}return strength.Resume();});
+                AddStrengthAction("Cancelar prova de forca pendente","Sem taxa; descarta apenas esta tentativa.",()=>strength.Cancel());
+            }
             AddCrewAction("Recrutar membro mais proximo", "A pe, a ate 3m de um membro da sua gangue. Presenca ligada; equipe de ate 3. Lideres e NPCs alheios nao podem ser recrutados.",()=>presence.RecruitNearest(state.Gang));
             AddCrewAction("Equipe: seguir", "Segue a pe e embarca como passageiro quando voce dirige um carro parado com lugar livre. Nao usa veiculos reservados de trabalho.",()=>presence.Order(false));
             AddCrewAction("Equipe: aguardar aqui", "Pare os veiculos. Desembarca e aguarda no local; use seguir para continuar.",()=>presence.Order(true));
@@ -92,12 +97,13 @@ namespace RPCore
                 var route = new NativeItem("GPS: " + gang.Name, (gang.Description ?? "")+" / postos disponiveis: "+presence.Posts(gang));
                 route.Activated += (s, e) => { Function.Call(Hash.SET_NEW_WAYPOINT, gang.HQX, gang.HQY); menu.Visible = false; };
                 menu.Add(route);
+                AddStrengthAction("Iniciacao por forca: "+gang.Name,"Junto ao lider, sem filiacao, desarmado e com vida acima de 100. Tres desafiantes, apenas punhos. Nao restaura sua vida ou armadura.",()=>strength.Begin(gang));
                 AddLoyaltyAction("Iniciacao por lealdade: "+gang.Name,"Sem filiacao, a pe a ate 3m do lider vivo e com presenca ligada. Busque dois pacotes e retorne. Nao substitui Join legado.",()=>loyalty.Begin(gang));
                 var join = new NativeItem("Join " + gang.Name, "Visit the HQ on foot. Complete pizza deliveries to earn reputation in RPCore.");
                 join.Activated += (s, e) => {
                     var p = Game.Player.Character;
                     if (p.IsDead || p.IsInVehicle() || p.Position.DistanceTo(gang.Position) > 5) { Notify.Show("Visit the gang HQ on foot to join."); return; }
-                    if(loyalty.HasPending){Notify.Show("Cancele/conclua a iniciacao antes de usar Join.");return;}
+                    if(InitiationPending){Notify.Show("Cancele/conclua a iniciacao antes de usar Join.");return;}
                     if (state.Gang == gang.Name) return;
                     var next=CharacterRules.Copy(state);next.Gang=gang.Name;next.Reputation=0;SaveState(next);
                     Notify.Show("Joined " + gang.Name);
@@ -109,6 +115,9 @@ namespace RPCore
             dirty = false;
         }
 
+        void AddStrengthAction(string label,string description,Func<bool> action)
+        {var item=new NativeItem(label,description);item.Activated+=(s,e)=>{try{if(!action())Notify.Show("Confira lider, vida, punhos, filiacao, pendencia e atividade atual.");else{dirty=true;menu.Visible=false;}}catch(Exception ex){strength.Suspend();Log.Error("gang strength menu",ex);Notify.Show("Prova suspensa; dados confirmados conservados.");}};menu.Add(item);}
+
         void AddLoyaltyAction(string label,string description,Func<bool> action)
         {var item=new NativeItem(label,description);item.Activated+=(s,e)=>{try{if(!action())Notify.Show("Confira filiacao, lider proximo, presenca, tentativa e atividade atual.");else{dirty=true;menu.Visible=false;}}catch(Exception ex){loyalty.Suspend();Log.Error("gang loyalty menu",ex);Notify.Show("Acao nao confirmada; dados persistidos preservados.");}};menu.Add(item);}
 
@@ -119,7 +128,7 @@ namespace RPCore
         {
             var item=new NativeItem(label,"Somente sua gangue criada no RPCoreCreated.json. A pe a ate 70m da HQ, sem combate/procurado/missao. Postos a pelo menos 2m; limite 20. Modelos existentes preservados.");
             item.Activated+=(s,e)=>{try{
-                if(loyalty.HasPending){Notify.Show("Conclua/cancele a iniciacao antes de editar postos.");return;}
+                if(InitiationPending){Notify.Show("Conclua/cancele a iniciacao antes de editar postos.");return;}
                 var p=Game.Player.Character;
                 if(p.IsDead || p.IsInVehicle() || p.IsInCombat || Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || InterfaceOptions.ModalOpen || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)){Notify.Show("Configure a pe, em seguranca.");return;}
                 var source=definitions.Read(CreatedPath,()=>new List<GangDefinition>());
@@ -138,6 +147,7 @@ namespace RPCore
         {
             try{presence.Tick(gangs,state.PresenceEnabled,state.Gang);}catch(Exception ex){presence.Clear();Log.Error("gang presence",ex);}
             try{loyalty.Tick();}catch(Exception ex){loyalty.Suspend();Log.Error("gang loyalty tick",ex);Notify.Show("Iniciacao suspensa; progresso confirmado preservado.");}
+            try{strength.Tick();}catch(Exception ex){strength.Suspend();Log.Error("gang strength tick",ex);Notify.Show("Prova suspensa; retome no lider. Dados confirmados conservados.");}
             if (menu.Visible && dirty) Rebuild();
             if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count+" / equipe "+presence.CrewCount+"/3";
             var p = Game.Player.Character;
@@ -147,14 +157,15 @@ namespace RPCore
         }
         public void OnKey(KeyEventArgs e)
         {
+            if(e.KeyCode==Keys.End && strength.Active){strength.Suspend();dirty=true;Notify.Show("Prova suspensa. Retomada parcial reinicia os tres desafiantes.");return;}
             if(e.KeyCode==Keys.End && loyalty.Active){loyalty.Suspend();dirty=true;Notify.Show("Iniciacao suspensa. Retome junto ao lider pelo F4.");return;}
-            if(e.KeyCode==Keys.E){try{loyalty.Interact();}catch(Exception ex){loyalty.Suspend();Log.Error("gang loyalty handover",ex);Notify.Show("Entrega nao confirmada; retome pelo F4.");}return;}
+            if(e.KeyCode==Keys.E){try{strength.Interact();loyalty.Interact();}catch(Exception ex){strength.Suspend();loyalty.Suspend();Log.Error("gang initiation interaction",ex);Notify.Show("Entrega nao confirmada; retome pelo F4.");}return;}
             if (e.KeyCode != Cfg.GangsKey) return;
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
+        public void Reload() { strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }

@@ -1,0 +1,6 @@
+{
+  "FighterHealth": 150,
+  "YieldHealth": 100,
+  "ArenaRadius": 35,
+  "SecondsLimit": 300
+}

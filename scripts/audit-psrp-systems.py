@@ -652,5 +652,20 @@ if loyalty_config.exists():
         'intentional_differences':'Reference routes return to HQ and uses victory cutscene plus invincible contact. RPCore returns to real leader, keeps contact mortal, has no forced camera/control/cutscene, persists receipts/resume and uses optional F4 for any gang with a configured leader. It does not enforce the reference Strength/Driving initiation type or replace legacy Join.',
         'configuration_sha256':digest(loyalty_config.read_bytes()),
         'scope_limits':'Native contact floor/space/animation, leader availability/input and coexistence with mods need GTA testing. No Strength/Driving initiation, full leader dialogue, gang territories/war/economy or police changes. Phases 8/9 retained.'}
+strength_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Strength.json'
+if strength_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_strength']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_three_unarmed_fighters':'for (int i = 0; i < 3; i++)' in source and 'ped.Health = 150' in source and 'REMOVE_ALL_PED_WEAPONS' in source,
+        'reference_has_health_and_arena_limits':'character.Health <= 100' in source and 'position) > 35f' in source,
+        'reference_has_distinct_defeats':'_strengthDefeatedFighters.Add(i)' in source and '_strengthDefeatedFighters.Count >= 3' in source,
+        'reference_has_final_membership':'private void CompleteStrengthInitiation()' in source and 'PlayerGangAffiliation = _strengthGang.Name' in source,
+        'rpcore_cycle':'F4 optional Strength near live owned leader, unaffiliated, fists/health>100. Shared ShiftGate. Asynchronous model preparation and floor/space search before durable attempt and combat. Three own mortal unarmed challengers, no money/weapon drops or global relations. Distinct player-attributed knockouts, 35m center/rules, 300 active seconds, persisted approved report then explicit E at live leader to award membership once.',
+        'persistence':'Optional GangState.Strength book, attempt/options/models/center/proof snapshots and bounded receipts. Clone/save-before-publish, no duplicate slot, rollback, mutually exclusive pending with loyalty, other affiliation never overwritten. Partial suspension restarts all three physical opponents on resume, no extra attempt; approved report persists for issue without respawning opponents. Failure/cancel changes only its book.',
+        'intentional_differences':'Source forces unarmed selection and victory cutscene and measures 35m from HQ. RPCore preserves player weapons/controls, fails if player switches weapon, uses start position as arena center, own 300s limit and explicit leader confirmation. No forced camera/health/armor reset, native police/wanted unchanged. Damage attribution uses native recent damage flags, not a complete forensic record against third-party scripts.',
+        'configuration_sha256':digest(strength_config.read_bytes()),
+        'defaults':json.loads(strength_config.read_text()),
+        'scope_limits':'Native hand combat/health thresholds/surrender/damage flag attribution, ped paths/floor and NPC interactions need GTA tests. No Driving initiation, full leader dialogue/territories/war/economy or police integration. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
