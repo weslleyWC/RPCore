@@ -605,5 +605,21 @@ if a_config.exists():
         'defaults': json.loads(a_config.read_text()),
         'configuration_sha256': digest(a_config.read_bytes()),
         'scope_limits': 'No traffic-sign/light recognition, physical license inventory/import, police enforcement, cone course, mirror camera or collision-free route guarantee. No subagent/game execution. Coupling, industrial road nodes/clearance/traffic, reverse/bay and mods coexistence require GTA testing. Phases 8/9 retained.'}
+presence_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Presence.json'
+if presence_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    creator=(a.reference_source / 'PSRP/GangCreators.cs').read_text()
+    report['gang_presence']={
+        'reference_source':['PSRP/GangSpawner.cs','PSRP/GangCreators.cs'],
+        'reference_has_hq_distance_streaming':'if (num <= 80f)' in source and 'num > 160f' in source and 'BeginSpawn(customGang, vector)' in source,
+        'reference_has_leader_and_member_queue':'SpawnPed(active, leaderModel' in source and 'foreach (GangCreators.SpawnPointData pedSpawnSpot in gang.PedSpawnSpots)' in source and 'private void ProcessQueue()' in source,
+        'reference_has_post_editor':'Set As Ped Spawn Spot' in creator and 'Leader Spawn Position' in creator,
+        'reference_wired_in_main':'GangSpawner.Instance.Update();' in main,
+        'rpcore_cycle':'F4 explicit per-profile presence, off by default for old saves. Shared existing HQ/model/post definitions; leader and deterministic member slots, 80m start/160m retire, caps 6 per HQ/12 total, asynchronous model request and conservative floor/space checks. Owned NPCs return on foot after straying, death cooldown, leader blip and live count. Cleanup on profile/reload/disable/distance/death/mission. New spawns pause during wanted/combat; existing actors keep native responses. Owned NPCs are explicitly unarmed and do not drop weapons.',
+        'created_gang_editor':'Affiliated gang in RPCoreCreated.json only; set leader, append member or remove last member in F4, on foot within 70m. Atomic definition write before replacing runtime data; clone preserves unknown gang/spot/model/vehicle/relationship metadata. Existing fields and CustomGangs.json not rewritten.',
+        'intentional_differences':'Owned human pedestrians use per-ped civilian relationship group without global hostility/weapon grants. No gang war, capture/economy, initiation, convoy/dogs, recruitment follower AI, dialogue or police integration in 6.5A. This is an initial HQ presence delivery, not complete GangSpawner parity.',
+        'configuration_sha256':digest(presence_config.read_bytes()),
+        'defaults':json.loads(presence_config.read_text()),
+        'scope_limits':'Native model/ground/props/path/ambient response and mods coexistence require GTA tests. Definition files are shared across profiles; presence preference is per-profile. No automatic conversion of reference turf ownership or spawning in uncertain interiors. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

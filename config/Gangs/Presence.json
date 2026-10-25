@@ -1,0 +1,7 @@
+{
+  "MaxActors": 12,
+  "PerHQ": 6,
+  "SpawnRadius": 80,
+  "DespawnRadius": 160,
+  "RespawnSeconds": 120
+}

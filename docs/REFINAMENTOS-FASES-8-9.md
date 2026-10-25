@@ -88,3 +88,6 @@ Atualização 0.41.0 / fase 6.4C: M1 com livro/questões próprios, PCJ/examinad
 
 
 Atualização 0.42.0 / fase 6.4D: A com teoria própria, Phantom/carreta, engate manual, rota industrial, ré/alinhamento/desengate e documento por perfil. Referência anuncia A como futura; não se declara exame A pronto na PSRP. Rota, manobras, tráfego e ergonomia precisam de GTA; interface/mecânicas continuam na fase 8, refinamento de TODOS os trabalhos na fase 9. C/M1 e empregos antigos sem novos bloqueios. Fiscalização e demais diferenças seguem.
+
+
+Atualização 0.43.0 / fase 6.5A: presença opcional de gangues nas HQs, líder/membros e editor mínimo de postos, após comparar GangSpawner/GangCreators. Sem matriz global hostil, guerras/economia ou mudança de filiação/reputação. Chão/modelos/retorno nativo precisam de GTA. Ergonomia e apresentação continuam na fase 8; refinamento de todos os trabalhos na fase 9. Territórios, recrutamento e polícia permanecem posteriores.

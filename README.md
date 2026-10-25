@@ -1,4 +1,11 @@
-# RPCore 0.42.0 — GTA V Legacy
+# RPCore 0.43.0 — GTA V Legacy
+
+## Fase 6.5A — presença de gangues nas HQs
+
+[Atualização 0.43.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.43.0.zip) · [Código-fonte 0.43.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.43.0.zip) · [Instalação e teste](docs/FASE-6.5A-0.43.0.md)
+
+F4 → Presenca nas HQs → LIGADA → GPS da gangue. Líder/membros nos postos existentes, limites 6/HQ e 12 no total, geração/retirada 80/160 m, retorno a pé, cooldown e limpeza própria. F4 também define líder/adiciona/remove postos da gangue criada no RPCore à qual está filiado. Preferência por perfil, desligada em saves antigos; definições/filiação/metadados e DMV C/M1/A preservados. 1575 testes aprovados e build sem erros/avisos. Modelos/chão/navegação precisam de GTA. Territórios/guerras/economia/polícia e demais diferenças continuam, com fases 8/9 mantidas.
+
 
 ## Fase 6.4D — DMV / habilitação A para caminhões
 

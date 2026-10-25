@@ -12,17 +12,10 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public class GangDefinition : ExtensibleData
+    public partial class GangDefinition
     {
-        public string Name, Description, GangColor, LeaderModel;
-        public float HQX, HQY, HQZ, LeaderSpawnHeading;
-        public GangSpot LeaderSpawnPostion;
-        public string[] PedModels;
-        public List<GangSpot> PedSpawnSpots;
-        public Vector3 Position { get { return new Vector3(HQX, HQY, HQZ); } }
+        [Newtonsoft.Json.JsonIgnore] public Vector3 Position=>new Vector3(HQX,HQY,HQZ);
     }
-    public class GangSpot { public float X, Y, Z, Heading; }
-    public class GangState : ExtensibleData { public string Gang; public int Reputation; }
 
     public class GangSystem : ISystem
     {
@@ -33,7 +26,10 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         readonly AchievementSystem ach;
         GangState state;
-        bool dirty;
+        bool dirty;NativeItem presenceStatus;
+        readonly GangPresence presence=new GangPresence();
+        readonly JsonFiles definitions=new JsonFiles();
+        string CreatedPath=>System.IO.Path.Combine(Cfg.Dir,"Gangs","RPCoreCreated.json");
 
         public GangSystem(ObjectPool pool, AchievementSystem ach)
         {
@@ -53,11 +49,11 @@ namespace RPCore
         {
             if (gangs.Any(g => string.Equals(g.Name, name, StringComparison.OrdinalIgnoreCase))) { Notify.Show("Ja existe uma gangue com este nome."); return; }
             string path = System.IO.Path.Combine(Cfg.Dir, "Gangs", "RPCoreCreated.json");
-            var created = new JsonFiles().Read(path, () => new List<GangDefinition>());
+            var created = definitions.Read(path, () => new List<GangDefinition>());
             if (created.Count >= 50) { Notify.Show("Limite de 50 gangues criadas."); return; }
             var p = Game.Player.Character.Position;
             var gang = new GangDefinition { Name = name, Description = "Gangue criada no RPCore", HQX = p.X, HQY = p.Y, HQZ = p.Z, GangColor = "Purple" };
-            created.Add(gang); new JsonFiles().Write(path, created); gangs.Add(gang);
+            created.Add(gang); definitions.Write(path, created); gangs.Add(gang);
             var b = MapBlips.Create(gang.Position, "RPCore Gang HQ: " + name, BlipSprite.GangHighlight, BlipColor.Purple, .75f); blips.Add(b); dirty = true;
             Notify.Show("Gangue cadastrada. F4: HQ e afiliacao.");
         }
@@ -72,10 +68,16 @@ namespace RPCore
         void Rebuild()
         {
             menu.Clear(); menu.Name = (state.Gang ?? "Unaffiliated") + " / rep " + state.Reputation;
+            var enabled=new NativeItem("Presenca nas HQs: "+(state.PresenceEnabled?"LIGADA":"DESLIGADA"),"Lideres/membros nos postos configurados. Opcional por perfil; no maximo 12 NPCs com limites configuraveis.");
+            enabled.Activated+=(s,e)=>{try{var copy=CharacterRules.Copy(state);copy.PresenceEnabled=!copy.PresenceEnabled;Store.Write("GangState.json",copy);state=copy;presence.Clear();dirty=true;}catch(Exception ex){Log.Error("gang presence toggle",ex);Notify.Show("Preferencia nao salva; estado anterior conservado.");}};menu.Add(enabled);
+            presenceStatus=new NativeItem("NPCs ativos: "+presence.Count,"Ativacao proxima da HQ; modelo, piso e espaco precisam estar disponiveis. Sem guerras/fiscalizacao nesta etapa.");menu.Add(presenceStatus);
+            AddPostAction("Definir posto do lider aqui",true,false);
+            AddPostAction("Adicionar posto de membro aqui",false,false);
+            AddPostAction("Remover ultimo posto de membro",false,true);
             foreach (var g in gangs)
             {
                 var gang = g;
-                var route = new NativeItem("GPS: " + gang.Name, gang.Description ?? "");
+                var route = new NativeItem("GPS: " + gang.Name, (gang.Description ?? "")+" / postos disponiveis: "+presence.Posts(gang));
                 route.Activated += (s, e) => { Function.Call(Hash.SET_NEW_WAYPOINT, gang.HQX, gang.HQY); menu.Visible = false; };
                 menu.Add(route);
                 var join = new NativeItem("Join " + gang.Name, "Visit the HQ on foot. Complete pizza deliveries to earn reputation in RPCore.");
@@ -93,9 +95,29 @@ namespace RPCore
             dirty = false;
         }
 
+        void AddPostAction(string label,bool leader,bool remove)
+        {
+            var item=new NativeItem(label,"Somente sua gangue criada no RPCoreCreated.json. A pe a ate 70m da HQ, sem combate/procurado/missao. Postos a pelo menos 2m; limite 20. Modelos existentes preservados.");
+            item.Activated+=(s,e)=>{try{
+                var p=Game.Player.Character;
+                if(p.IsDead || p.IsInVehicle() || p.IsInCombat || Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || InterfaceOptions.ModalOpen || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)){Notify.Show("Configure a pe, em seguranca.");return;}
+                var source=definitions.Read(CreatedPath,()=>new List<GangDefinition>());
+                var own=source.Find(g=>g!=null && string.Equals(g.Name,state.Gang,StringComparison.OrdinalIgnoreCase));
+                var point=new GangSpot{X=p.Position.X,Y=p.Position.Y,Z=p.Position.Z,Heading=p.Heading};
+                if(own==null || !GangPresenceRules.AtHQ(own,point)){Notify.Show("Filiacao a uma gangue criada por voce e proximidade da HQ necessarias.");return;}
+                var next=GangPresenceRules.Edit(source,state.Gang,point,leader,remove);
+                if(next==null){Notify.Show("Posto muito proximo, limite atingido ou nada para remover.");return;}
+                definitions.Write(CreatedPath,next);var replacement=next.Find(g=>g!=null && string.Equals(g.Name,state.Gang,StringComparison.OrdinalIgnoreCase));
+                int index=gangs.FindIndex(g=>string.Equals(g.Name,state.Gang,StringComparison.OrdinalIgnoreCase));if(index>=0)gangs[index]=replacement;
+                presence.Clear();dirty=true;Notify.Show("Postos salvos. Afaste-se alguns metros para liberar o spawn.");
+            }catch(Exception ex){Log.Error("gang post edit",ex);Notify.Show("Postos nao alterados; confira arquivo e backup.");}};menu.Add(item);
+        }
+
         public void Tick()
         {
+            try{presence.Tick(gangs,state.PresenceEnabled);}catch(Exception ex){presence.Clear();Log.Error("gang presence",ex);}
             if (menu.Visible && dirty) Rebuild();
+            if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count;
             var p = Game.Player.Character;
             if (p.IsDead) return;
             foreach (var g in gangs.Where(g => p.Position.DistanceTo(g.Position) < 35))
@@ -107,8 +129,8 @@ namespace RPCore
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
+        public void Reload() { presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }

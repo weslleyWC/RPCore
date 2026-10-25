@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.43.0: [fase 6.5A — presença nas HQs de gangues](FASE-6.5A-0.43.0.md), líder/membros nos postos, limites/distâncias/cooldown e edição de postos das gangues criadas. Comparação de GangSpawner/GangCreators registrada. Ativação explícita por perfil, documentos e sistemas anteriores preservados. Precisa de teste no GTA; territórios/guerras/economia/polícia e demais diferenças continuam. Fases 8/9 mantidas.
+
+
 Andamento 0.42.0: [fase 6.4D — A/caminhões](FASE-6.4D-0.42.0.md), livro próprio, teoria e exame articulado com engate, rota industrial, ré/alinhamento/desengate e emissão. PSRP apenas anuncia A futura; código/regras/rota próprios. C/M1 e trabalhos antigos preservados; retomada sem nova taxa. Engate/física/rota precisam de GTA. Fiscalização e demais diferenças continuam; fases 8/9 mantidas.
 
 
