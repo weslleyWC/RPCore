@@ -18,6 +18,9 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static GangWarehouseData GangWarehouse=>data.GangWarehouse;
+        public static bool GangWarehouseTransfer(GangState s,GangTurfDefinition a,DealerOptions c,GangWarehouseOptions o,string product,int count,bool deposit,string id,out bool changed)=>GangWarehouseTransactions.Transfer(data,s,a,c,o,product,count,deposit,id,Save,out changed);
+        public static bool GangWarehouseSale(GangState s,GangTurfDefinition a,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,out bool changed)=>GangWarehouseTransactions.Sale(data,s,a,c,product,count,zone,premium,unit,last,id,Save,out changed);
         public static GangIllicitData GangIllicit=>data.GangIllicit;
         public static bool DealerTerritorySale(GangState s,GangTurfDefinition a,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,out bool changed)=>GangIllicitTransactions.Sale(data,s,a,c,product,count,zone,premium,unit,last,id,Save,out changed);
         public static bool GangLaunder(GangState s,GangTurfDefinition a,GangLaunderingOptions c,int amount,DateTime now,string id,out bool changed)=>GangIllicitTransactions.Process(data,s,a,c,amount,now,id,Save,out changed);

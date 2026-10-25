@@ -24,17 +24,21 @@ namespace RPCore
         readonly NativeMenu menu, offerMenu;
         readonly Blip supplierBlip;
         readonly Random random = new Random();
-        DealerRun run;
+        bool disposed;DealerRun run;GangWarehouseOptions warehouseMode;
+        internal DealerOptions Catalog=>disposed?null:options;
+        int KnownUnits=>warehouseMode==null?DealerTransactions.KnownUnits(Wallet.Dealer,options):GangWarehouseTransactions.KnownUnits(Wallet.GangWarehouse,territoryGang,territory.Id,options);
+        Dictionary<string,int> CurrentStock=>warehouseMode==null?Wallet.Dealer.Stock:GangWarehouseTransactions.Account(Wallet.GangWarehouse,territoryGang,territory.Id)?.Stock??new Dictionary<string,int>();
         GangTurfDefinition territory;Func<GangState> territoryState;string territoryGang,territoryProfile;int territoryRadius,territoryPlayer;
-        bool TerritoryValid=>!Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && territory!=null && territoryState!=null && territoryProfile==Profile.Id && territoryPlayer==Game.Player.Character.Handle && GangCrewRules.SameGang(territoryGang,territoryState().Gang) && GangBusinessTransactions.Owns(territoryState(),territory) && Wallet.GangBusiness?.Supply==null && Game.Player.Character.Position.DistanceTo(new Vector3(territory.Center.X,territory.Center.Y,territory.Center.Z))<=territoryRadius;
+        bool TerritoryValid=>!Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && territory!=null && territoryState!=null && territoryProfile==Profile.Id && territoryPlayer==Game.Player.Character.Handle && GangCrewRules.SameGang(territoryGang,territoryState().Gang) && GangBusinessTransactions.Owns(territoryState(),territory) && Wallet.GangBusiness?.Supply==null && (warehouseMode==null || Wallet.GangWarehouse?.Valid==true) && Game.Player.Character.Position.DistanceTo(new Vector3(territory.Center.X,territory.Center.Y,territory.Center.Z))<=territoryRadius;
         void TerritoryContext(){if(territory==null || !Active)return;var p=Game.Player.Character.Position;WorkContext.ShopDelivery.Set("dealer_territory",new JobPoint{Name="territorial buyer",X=p.X,Y=p.Y,Z=p.Z},5);}
-        void ClearTerritory(){WorkContext.ShopDelivery.Clear("dealer_territory");territory=null;territoryState=null;territoryGang=territoryProfile=null;}
-        public bool BeginTerritory(Func<GangState> current,GangTurfDefinition area,int radius)
+        void ClearTerritory(){WorkContext.ShopDelivery.Clear("dealer_territory");territory=null;territoryState=null;territoryGang=territoryProfile=null;warehouseMode=null;}
+        public bool BeginTerritory(Func<GangState> current,GangTurfDefinition area,int radius,GangWarehouseOptions warehouse=null)
         {
-            if(Active || current==null || radius<20 || radius>100 || !GangBusinessTransactions.Owns(current(),area) || Wallet.GangBusiness?.Supply!=null || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid)return false;
-            territory=CharacterRules.Copy(area);territoryState=current;territoryGang=current().Gang;territoryRadius=radius;territoryProfile=Profile.Id;territoryPlayer=Game.Player.Character.Handle;
+            if(warehouse!=null && !warehouse.Valid)return false;
+            if(disposed || Active || current==null || radius<20 || radius>100 || !GangBusinessTransactions.Owns(current(),area) || Wallet.GangBusiness?.Supply!=null || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid)return false;
+            warehouseMode=warehouse==null?null:CharacterRules.Copy(warehouse);territory=CharacterRules.Copy(area);territoryState=current;territoryGang=current().Gang;territoryRadius=radius;territoryProfile=Profile.Id;territoryPlayer=Game.Player.Character.Handle;
             if(!TerritoryValid){ClearTerritory();return false;}Begin();if(!Active){ClearTerritory();return false;}
-            pool.HideAll();TerritoryContext();Notify.Show("Modo territorial: receita vai ao dinheiro sujo da area. F4 > Comercio para processar85% ao caixa.");return true;
+            pool.HideAll();TerritoryContext();Notify.Show(warehouseMode!=null?"Vendas do armazem: pacotes saem do estoque local; receita suja fica na area.":"Vendas territoriais: pacotes saem do estoque pessoal.");Notify.Show("Modo territorial: receita vai ao dinheiro sujo da area. F4 > Comercio para processar85% ao caixa.");return true;
         }
         Ped buyer, animationOwner;
         Blip buyerBlip;
@@ -92,7 +96,7 @@ namespace RPCore
         void Begin()
         {
             if (Active) return;
-            if (!SafeSale || !Wallet.Dealer.Valid || DealerTransactions.KnownUnits(Wallet.Dealer, options) < options.SalesPerSession) { Notify.Show("Requer estoque para o turno e personagem a pe/desarmado, sem procurado/missao/combate."); return; }
+            if (!SafeSale || !Wallet.Dealer.Valid || KnownUnits < options.SalesPerSession) { Notify.Show("Requer estoque para o turno e personagem a pe/desarmado, sem procurado/missao/combate."); return; }
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + " antes de iniciar."); return; }
             run = new DealerRun(options.SalesPerSession, options.BuyerSeconds, options.HandoverSeconds); nextBuyer = spawnSince = Game.GameTime; nextSave = Game.GameTime; cancelSince = -1; menu.Visible = false;
             Notify.Show("Vendas iniciadas. Aguarde a pe e parado em uma calcada. Comprador laranja se aproxima; E negocia.");
@@ -107,7 +111,7 @@ namespace RPCore
                 var p = JobActors.Sidewalk(origin);
                 if (p == Vector3.Zero || p.DistanceTo(player.Position) < 8 || p.DistanceTo(player.Position) > 40 || !JobActors.Free(p, 2.5f)) continue;
                 buyer = JobActors.Create(p, random); if (buyer == null || !buyer.Exists()) continue;
-                var available = options.Products.Where(m => Wallet.Dealer.Stock.TryGetValue(m.Id, out int n) && n > 0).ToList();
+                var available = options.Products.Where(m => CurrentStock.TryGetValue(m.Id, out int n) && n > 0).ToList();
                 if (available.Count == 0) { CleanupBuyer(); return false; }
                 var product = available[random.Next(available.Count)]; string zone = Zone();
                 if (!run.Offer(product.Id, zone, DealerRules.Reputation(Wallet.Dealer, zone), Game.GameTime, random.Next(100), random.Next(100))) { CleanupBuyer(); return false; }
@@ -121,7 +125,7 @@ namespace RPCore
             if (run == null || run.Stage != DealerStage.Offer || !BuyerNear || !SafeSale) return;
             pool.HideAll(); offerMenu.Clear(); var p = options.Products.Find(m => m.Id == run.Product);
             int regular = DealerRules.UnitPrice(p, run.Reputation, false), premium = DealerRules.UnitPrice(p, run.Reputation, true);
-            offerMenu.Name = "1 pacote / " + p.Name+(territory==null?" / banco":" / dinheiro sujo");
+            offerMenu.Name = "1 pacote / " + p.Name+(warehouseMode!=null?" / armazem":territory==null?" / banco":" / dinheiro sujo");
             Add(offerMenu, "Vender pelo preco normal: $" + regular, "Risco base de recusa/denuncia. Entrega de " + options.HandoverSeconds + " segundos junto do comprador.", () => Choose(false));
             Add(offerMenu, "Pedir mais: $" + premium, "Aumenta o preco em 20%, com maior chance de recusa/denuncia. Reabrir menu nao sorteia novo resultado.", () => Choose(true));
             Add(offerMenu, "Dispensar comprador", "Nao retira estoque nem paga; outro contato em alguns segundos.", () => Next("Comprador dispensado. Estoque preservado.")); offerMenu.Visible = true;
@@ -159,7 +163,7 @@ namespace RPCore
             {
                 Status("aguarde parado em uma calcada");
                 if (!InputAllowed || !SafeSale || player.Speed > 1.2f || unchecked(Game.GameTime - nextBuyer) < 0) return;
-                if (run.Sold >= run.Total || run.Offers >= 12 || DealerTransactions.KnownUnits(Wallet.Dealer, options) == 0) { End("Turno encerrado. Consulte estoque e vendas salvas."); return; }
+                if (run.Sold >= run.Total || run.Offers >= 12 || KnownUnits == 0) { End("Turno encerrado. Consulte estoque e vendas salvas."); return; }
                 if (!SpawnBuyer())
                 {
                     nextBuyer = Game.GameTime + 5000;
@@ -193,7 +197,9 @@ namespace RPCore
         bool Sell(bool last)
         {
             var p = options.Products.Find(m => m.Id == run.Product); int unit = DealerRules.UnitPrice(p, run.Reputation, run.Premium);
-            bool changed=false;bool accepted=territory==null?Wallet.DealerSale(options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed):TerritoryValid && Wallet.DealerTerritorySale(territoryState(),territory,options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed);
+            bool changed=false;bool accepted;
+            if(warehouseMode!=null)accepted=TerritoryValid && Wallet.GangWarehouseSale(territoryState(),territory,options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed);
+            else accepted=territory==null?Wallet.DealerSale(options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed):TerritoryValid && Wallet.DealerTerritorySale(territoryState(),territory,options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed);
             if (!accepted) { nextSave = Game.GameTime + 3000; Notify.Show("Venda nao confirmada: estoque/saldo/dados no limite. Pode encerrar com End."); return false; }
             if (changed) { Notify.Show("~g~+$" + unit + (territory==null?" no banco":" sujo no territorio")+"~s~ / um pacote vendido"); Bump("dealer_sales"); if(territory==null)Bump("cash_earned", unit); if (last) Bump("dealer_sessions"); } return true;
         }
@@ -223,6 +229,6 @@ namespace RPCore
         public void OnKey(KeyEventArgs e) { }
         public void Reload() { if (Active) End("Vendas encerradas na troca de perfil."); menu.Visible = offerMenu.Visible = false; }
         public void Save() { }
-        public void Dispose() { try { CleanupBuyer(); } finally { run = null;ClearTerritory(); gate.Release(Name); menu.Visible = offerMenu.Visible = false; if (supplierBlip != null && supplierBlip.Exists()) supplierBlip.Delete(); } }
+        public void Dispose() { disposed=true;try { CleanupBuyer(); } finally { run = null;ClearTerritory(); gate.Release(Name); menu.Visible = offerMenu.Visible = false; if (supplierBlip != null && supplierBlip.Exists()) supplierBlip.Delete(); } }
     }
 }

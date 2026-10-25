@@ -124,3 +124,7 @@ Reposição ativa com três fornecedores/coletas da PSRP, caixas em mão pelo De
 ## Base0.53.0 — receita territorial e lavagem (6.5K)
 
 Vendas ilegais optativas usam o Dealer existente na área sob posse; receita suja não entra diretamente no banco. Processamento próprio presencial gera85% ao caixa com taxa15% e arredondamento cumulativo. Refinar integração de trabalhadores/clientes/instalações, estoque criminal separado por território, logística e eventos/boosts após validação; não declara paridade com automação UTC/CleanCash/coleta da PSRP. Fases8/9 mantidas.
+
+## Base0.54.0 — armazém criminal (6.5L)
+
+Estoque criminal local com transferências reais entre Dealer pessoal e conta da área; modo de venda usa somente estoque local e receita suja existente. Refinar pontos/embalagens/logística/trabalhadores e catálogo criminal/armas/automação nas próximas entregas adequadas. Não importa inventário PSRP nem altera modos antigos. Interface/mecânicas e realismo dos trabalhos continuam fases8/9.

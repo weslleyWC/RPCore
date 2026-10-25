@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento0.54.0: [fase6.5L — armazém criminal](FASE-6.5L-0.54.0.md). Estoque por gangue/área/perfil, guardar/retirar pacotes existentes e vender do armazém sem consumir estoque pessoal; receita suja/85%/tesouraria anteriores integradas. Modos de venda anteriores e saves mantidos. Logística criminal, armas/automação, café/boost, guerras/diálogo/polícia e fases8/9 continuam pendentes.
+
 Andamento 0.53.0: [fase 6.5K — venda territorial/processamento](FASE-6.5K-0.53.0.md). Tráfico optativo na área: receita suja em vez de pagamento bancário, com estoque/compradores existentes; processamento presencial85% ao caixa, taxa15%, sem offline. Modo anterior permanece. Finanças/recibos/rollback e dados antigos conservados. Estoque criminal territorial separado, simulação automática/boost do café, guerras/diálogo/polícia e fases8/9 continuam pendentes.
 
 Andamento 0.52.0: [fase 6.5J — frete territorial](FASE-6.5J-0.52.0.md). Reserva bancária com desconto, três coletas/carregamentos, retorno dirigindo e três descargas antes do lote no estoque. Veículo do jogador apenas reservado durante atividade; suspensão/retomada/estorno explícitos sem duplicação. Compras/vendas bloqueadas enquanto houver frete reservado; saldos antigos preservados. Logística específica do café, comércio criminal/lavagem, guerras/diálogo/polícia e fases8/9 continuam pendentes.

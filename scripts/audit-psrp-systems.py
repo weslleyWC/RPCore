@@ -782,5 +782,20 @@ if laundering_config.exists():
         'configuration_sha256':digest(laundering_config.read_bytes()),
         'defaults':json.loads(laundering_config.read_text()),
         'scope_limits':'Real buyer paths/offer/input/animation, safety/area/native clock, police encounters and compatibility require GTA validation. Full automatic turf economy, separate criminal warehouse/convoys, war/dialogue/police and phases8/9 remain pending.'}
+warehouse_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Warehouse.json'
+if warehouse_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_criminal_warehouse']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_per_turf_drug_stock':'public Dictionary<DrugTypes, int> Drugs' in source,
+        'reference_deposit_checks_inventory_and_removes_items':'private bool DepositDrugIntoTurf' in source and 'int inventoryAmountForDrug = GetInventoryAmountForDrug(drug)' in source and '!RemoveDrugFromInventory(drug, amount)' in source and 'turfData.Drugs[drug] += amount' in source,
+        'reference_street_sale_debits_local_stock':'private bool CompleteStreetDrugSale' in source and 'turfData.Drugs[drug] -= quantity' in source and 'turfData.Cash += earnings' in source,
+        'rpcore_cycle':'F4 Commerce > Criminal warehouse for owned area. Optional per gang/area/profile storage; deposit/withdraw1 or5 packages moves actual existing Dealer stock with no cash/reputation/income. Default30kg warehouse, fixed999/product and20/API transfer limit,40 keys, personal weight/stock caps checked on withdrawal. Unknown IDs preserved and weighted conservatively, need matching catalog to move. Shared gate/safe foot12m/known gang/current owner/no supply reservation for physical actions; remote consultation/GPS.',
+        'warehouse_sale':'Explicit Sell from warehouse reuses Dealer buyers/quote/reputation/refusal/police/handover, checks local stock for start/offers/commit and never fills shortage from personal stock. Accounting composes validated territorial dirty sale in temporary view then commits warehouse+Dealer stats+dirty proceeds in one real Wallet save, restores personal Stock reference unchanged. Normal bank mode and previous personal-stock territorial mode preserved; mode resets on end/reload and disposed Dealer cannot restart through callback.',
+        'persistence':'Optional Wallet.GangWarehouse accounts with Stock/Deposited/Withdrawn/Sold per product, exact deposited-withdrawn-sold=stock using decimal counters. Bounded receipts, case-insensitive gang+area keys, no automatic stock migration/grant/confiscation. Losing ownership locks old account until same gang regains it. Transfer rollback restores both original books; sale rollback restores all three references and never changes Bank/Cash/treasury/legal business/freight. Global Dealer receipts prevent cross-mode double payout.',
+        'intentional_differences':'Reference uses main inventory drug types for turf deposit, fixed turf stock and separate NPC systems. RPCore uses Dealer product catalog/stock, adds explicit withdrawal and optional warehouse-sale mode while preserving old sale modes. No automatic cargo resupply, weapons, rival confiscation or automated sales. Money laundering remains the previous active85% cycle, not PSRP UTC simulation/boost.',
+        'configuration_sha256':digest(warehouse_config.read_bytes()),
+        'defaults':json.loads(warehouse_config.read_text()),
+        'scope_limits':'Actual UI/GPS/area/ownership/native buyers/police/input and coexistence with mods need GTA tests. Criminal logistics/weapons/auto trading, cafe boost, wars/dialogue/police and phases8/9 remain pending.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

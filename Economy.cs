@@ -28,6 +28,7 @@ namespace RPCore
         public GangTreasuryData GangTreasury;
         public GangBusinessData GangBusiness;
         public GangIllicitData GangIllicit;
+        public GangWarehouseData GangWarehouse;
     }
 
     public class Portfolio : ExtensibleData

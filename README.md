@@ -1,4 +1,10 @@
-# RPCore 0.53.0 — GTA V Legacy
+# RPCore 0.54.0 — GTA V Legacy
+
+## Fase6.5L — armazém criminal territorial
+
+[Atualização0.54.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.54.0.zip) · [Código-fonte0.54.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.54.0.zip) · [Instalação e teste](docs/FASE-6.5L-0.54.0.md)
+
+F4 → Comercio dos territorios → Armazem criminal: guardar/retirar1 ou5 pacotes entre estoque pessoal do tráfico e estoque local, sem dinheiro. Capacidade30kg e999/un por produto, com peso pessoal respeitado ao retirar. Vender do armazem usa apenas estoque da área, mantendo pacotes pessoais; receita suja alimenta processamento85% e tesouraria existentes. Modo bancário e venda territorial do estoque pessoal permanecem disponíveis. Contas por gangue/área/perfil, conservação/recibos/rollback e perda de posse sem apagar estoque. 1934 testes aprovados, build sem erros/avisos; saves/configs/F2/F11 preservados. Logística criminal/armas/automação, café/boost, guerras/diálogo/polícia e fases8/9 seguem pendentes.
 
 ## Fase 6.5K — vendas territoriais e processamento de receita
 
