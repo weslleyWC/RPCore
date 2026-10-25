@@ -128,3 +128,7 @@ Vendas ilegais optativas usam o Dealer existente na área sob posse; receita suj
 ## Base0.54.0 — armazém criminal (6.5L)
 
 Estoque criminal local com transferências reais entre Dealer pessoal e conta da área; modo de venda usa somente estoque local e receita suja existente. Refinar pontos/embalagens/logística/trabalhadores e catálogo criminal/armas/automação nas próximas entregas adequadas. Não importa inventário PSRP nem altera modos antigos. Interface/mecânicas e realismo dos trabalhos continuam fases8/9.
+
+## Base0.55.0 — abastecimento criminal (6.5M)
+
+Rota paga com SKU escolhido, três pontos de supply da referência e ciclo de carga/descarga próprio; entrega só no armazém criminal. Snapshot financeiro e recuperação sem cobrar novamente, separado do frete legal por enum compatível. Roubo de rivais, guardas/relacionamentos/loot e logística específica permanecem diferenças, não implementadas por esta compra com desconto. Refinar locais/traseiras/props e realismo nas etapas adequadas; fases8/9 mantidas.

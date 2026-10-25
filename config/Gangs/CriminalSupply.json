@@ -1,0 +1,31 @@
+{
+  "Units": 10,
+  "DiscountPercent": 10,
+  "Route": {
+    "DiscountPercent": 0,
+    "TimeLimitSeconds": 1800,
+    "Suppliers": [
+      {
+        "Name": "Carga criminal / La Mesa",
+        "X": 887.2639,
+        "Y": -991.1592,
+        "Z": 32.74689,
+        "Heading": 0
+      },
+      {
+        "Name": "Carga criminal / centro",
+        "X": 400.9214,
+        "Y": -354.4539,
+        "Z": 46.81522,
+        "Heading": 0
+      },
+      {
+        "Name": "Carga criminal / oeste",
+        "X": -1631.082,
+        "Y": -124.8462,
+        "Z": 57.98261,
+        "Heading": 0
+      }
+    ]
+  }
+}

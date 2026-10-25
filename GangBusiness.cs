@@ -15,7 +15,7 @@ namespace RPCore
         readonly ShiftGate gate; readonly ObjectPool pool; readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs; readonly GangTurfOptions territories;
         readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;readonly GangWarehouse warehouse;
-        public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;warehouse.Dealer=dealer;}
+        public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;warehouse.Dealer=dealer;supply.Dealer=dealer;}
         GangBusinessService service; GangTurfDefinition area; string profile,gang,id; int player;
         public bool Active=>service!=null || supply.Active || laundering.Active;
         static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
@@ -26,9 +26,9 @@ namespace RPCore
             if(territories==null || !territories.Valid)territories=GangTurfOptions.Defaults();
             options=Store.LoadDef("Gangs/Business.json",()=>new GangBusinessOptions());
             if(options==null || !options.Valid){options=new GangBusinessOptions();Log.Write("Invalid gang business config; original retained, defaults used.");}
-            warehouse=new GangWarehouse(gate,pool,state,gangs);
-            laundering=new GangLaundering(gate,pool,state,gangs);
+                        laundering=new GangLaundering(gate,pool,state,gangs);
             supply=new GangSupply(gate,pool,state,gangs,()=>territories.Areas,options);
+            warehouse=new GangWarehouse(gate,pool,state,gangs,supply);
             menu=new NativeMenu("Comercio territorial","ESTOQUE / ATENDIMENTO / RECEITA");pool.Add(menu);Visuals.Register(menu,"gangs");
         }
         bool Safe(GangTurfDefinition a)

@@ -13,9 +13,9 @@ namespace RPCore
     {
         public string Gang;public int Area;
         public Dictionary<string,int> Stock=new Dictionary<string,int>();
-        public Dictionary<string,long> Deposited=new Dictionary<string,long>(),Withdrawn=new Dictionary<string,long>(),Sold=new Dictionary<string,long>();
+        public Dictionary<string,long> Deposited=new Dictionary<string,long>(),Withdrawn=new Dictionary<string,long>(),Sold=new Dictionary<string,long>(),Supplied=new Dictionary<string,long>();
         static bool Keys<T>(Dictionary<string,T> d)=>d!=null && d.Count<=40 && d.Keys.All(k=>!string.IsNullOrWhiteSpace(k) && k.Length<=80);
-        [JsonIgnore] public bool Valid=>!GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area>0 && Keys(Stock) && Keys(Deposited) && Keys(Withdrawn) && Keys(Sold) && Stock.Values.All(n=>n>=0 && n<=999) && Deposited.Values.All(n=>n>=0) && Withdrawn.Values.All(n=>n>=0) && Sold.Values.All(n=>n>=0) && Stock.Keys.Concat(Deposited.Keys).Concat(Withdrawn.Keys).Concat(Sold.Keys).Distinct().All(k=>(decimal)Get(Deposited,k)-Get(Withdrawn,k)-Get(Sold,k)==Get(Stock,k));
+        [JsonIgnore] public bool Valid=>!GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area>0 && Keys(Stock) && Keys(Deposited) && Keys(Withdrawn) && Keys(Sold) && Keys(Supplied) && Stock.Values.All(n=>n>=0 && n<=999) && Deposited.Values.All(n=>n>=0) && Withdrawn.Values.All(n=>n>=0) && Sold.Values.All(n=>n>=0) && Supplied.Values.All(n=>n>=0) && Stock.Keys.Concat(Supplied.Keys).Concat(Deposited.Keys).Concat(Withdrawn.Keys).Concat(Sold.Keys).Distinct().All(k=>(decimal)Get(Deposited,k)+Get(Supplied,k)-Get(Withdrawn,k)-Get(Sold,k)==Get(Stock,k));
         public static long Get(Dictionary<string,long> d,string k)=>d.TryGetValue(k,out var n)?n:0;
         public static int Get(Dictionary<string,int> d,string k)=>d.TryGetValue(k,out var n)?n:0;
     }

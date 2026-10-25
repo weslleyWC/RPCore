@@ -26,10 +26,12 @@ namespace RPCore
         public static bool GangLaunder(GangState s,GangTurfDefinition a,GangLaunderingOptions c,int amount,DateTime now,string id,out bool changed)=>GangIllicitTransactions.Process(data,s,a,c,amount,now,id,Save,out changed);
         public static GangBusinessData GangBusiness=>data.GangBusiness;
         public static bool GangSupplyBegin(GangState s,GangTurfDefinition a,GangBusinessOptions b,GangSupplyOptions c,string id,out bool changed)=>GangSupplyTransactions.Begin(data,s,a,b,c,id,Save,out changed);
+        public static bool GangSupplyBeginCriminal(GangState s,GangTurfDefinition a,DealerOptions c,GangWarehouseOptions o,GangCriminalSupplyOptions r,string product,string id,out bool changed)=>GangSupplyTransactions.BeginCriminal(data,s,a,c,o,r,product,id,Save,out changed);
         public static bool GangSupplyLoad(string id,int index,out bool changed)=>GangSupplyTransactions.Load(data,id,index,Save,out changed);
         public static bool GangSupplyDeliver(string id,int number,out bool changed)=>GangSupplyTransactions.Deliver(data,id,number,Save,out changed);
         public static bool GangSupplyRestart(string id,out bool changed)=>GangSupplyTransactions.Restart(data,id,Save,out changed);
-        public static bool GangSupplyComplete(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangSupplyTransactions.Complete(data,s,a,id,Save,out changed);
+        public static bool GangSupplyComplete(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangSupplyComplete(s,a,id,out changed,null);
+        public static bool GangSupplyComplete(GangState s,GangTurfDefinition a,string id,out bool changed,DealerOptions catalog)=>GangSupplyTransactions.Complete(data,s,a,id,Save,out changed,catalog);
         public static bool GangSupplyRefund(string id,out bool changed)=>GangSupplyTransactions.Refund(data,id,Save,out changed);
         public static bool GangTrade(GangState s,GangTurfDefinition area,GangBusinessOptions c,bool sale,DateTime now,string id,out bool changed)=>GangBusinessTransactions.Trade(data,s,area,c,sale,now,id,Save,out changed);
         public static GangTreasuryData GangTreasury=>data.GangTreasury;

@@ -1,4 +1,10 @@
-# RPCore 0.54.0 — GTA V Legacy
+# RPCore 0.55.0 — GTA V Legacy
+
+## Fase6.5M — frete para o armazém criminal
+
+[Atualização0.55.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.55.0.zip) · [Código-fonte0.55.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.55.0.zip) · [Instalação e teste](docs/FASE-6.5M-0.55.0.md)
+
+No armazém criminal do F4, escolha Frete criminal do produto desejado a bordo de seu carro/van parado na área. Lote padrão10 pacotes com10% desconto sobre preço de compra Dealer (maconha$360). Três coletas/carregamentos, retorno dirigindo, três descargas e E final abastecem só o armazém criminal. Mesma reserva persistente/retomada/estorno do frete legal, sem cobrar duas vezes; estoque pessoal e mercadorias legais não recebem esse lote. Supplied separado no histórico do armazém; receita só nasce de vendas posteriores. 1967 testes aprovados e build sem erros/avisos. Preserva saves/configs/F2/F11. Rota paga própria; roubo de rivais/combate e demais diferenças PSRP continuam pendentes, assim como fases8/9.
 
 ## Fase6.5L — armazém criminal territorial
 

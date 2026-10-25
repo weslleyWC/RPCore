@@ -14,7 +14,7 @@ namespace RPCore
         const string OwnerKey="gang_supply";
         readonly ShiftGate gate;readonly ObjectPool pool;readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs;readonly Func<IEnumerable<GangTurfDefinition>> areas;
-        readonly GangBusinessOptions business;readonly GangSupplyOptions options;
+        readonly GangBusinessOptions business;readonly GangSupplyOptions options;readonly GangCriminalSupplyOptions criminal;public DealerJob Dealer;
         readonly DeliveryCargo cargo=new DeliveryCargo();
         Vehicle vehicle;int model,player,last,elapsed,picked=-1;string plate,profile,orderId;bool carrying,arrived,reserved;
         Blip objective;public bool Active { get; private set; }
@@ -31,13 +31,14 @@ namespace RPCore
         public GangSupply(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,Func<IEnumerable<GangTurfDefinition>> areas,GangBusinessOptions business)
         {
             this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;this.areas=areas;this.business=business;
+            criminal=Store.LoadDef("Gangs/CriminalSupply.json",()=>new GangCriminalSupplyOptions());if(criminal==null || !criminal.Valid){criminal=new GangCriminalSupplyOptions();Log.Write("Invalid criminal supply config; original retained, defaults used.");}
             options=Store.LoadDef("Gangs/Supply.json",()=>new GangSupplyOptions());
             if(options==null || !options.Valid){options=new GangSupplyOptions();Log.Write("Invalid gang supply config; original retained, defaults used.");}
         }
         public void Append(Action<string,string,Action> add,Action reopen)
         {
             var p=Pending;if(p==null)return;
-            add("Frete reservado: "+p.Area.Name+" / $"+p.Cost,"Carga "+p.Loaded.Count+"/3, descarga "+p.Delivered+"/3. Lote de "+p.Units+" unidades. Conclua ou estorne antes de comprar/vender outro lote.",null);
+            add((p.CargoKind==GangSupplyCargo.Criminal?"Frete criminal / "+p.ProductId+": ":"Frete reservado: ")+p.Area.Name+" / $"+p.Cost,"Carga "+p.Loaded.Count+"/3, descarga "+p.Delivered+"/3. Lote de "+p.Units+" unidades. Conclua ou estorne antes de comprar/vender outro lote.",null);
             add(Active?"Suspender frete":"Retomar frete reservado",p.Ready?"A pe no destino, E confirma estoque. Carga pronta permanece pronta apos reload.":"A bordo de carro/van proprio parado no territorio de destino. Retomada refaz as tres caixas, sem pagar novamente.",()=>{if(Active){Suspend();reopen();}else if(!Resume())Notify.Show("Confira posse, carro proprio parado no destino, atividade e pendencias.");});
             add("Cancelar frete e estornar $"+p.Cost,"Sem estoque parcial. Estorna somente o custo reservado ao banco; pode cancelar mesmo depois de perder filiacao/posse. Sem combate/procurado/missao.",()=>{if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null && gate.Owner!=OwnerKey || !Wallet.GangSupplyRefund(p.Id,out _)){Notify.Show("Estorno recusado; confira seguranca e limite do banco. Reserva conservada.");return;}Suspend();reopen();});
         }
@@ -46,10 +47,22 @@ namespace RPCore
             int cost=Math.Max(1,business.PurchaseUnits*business.UnitCost*(100-options.DiscountPercent)/100);
             add("Frete: "+business.PurchaseUnits+" unidades / $"+cost,"Carro/van proprio parado no territorio. Busque/carregue tres caixas, retorne e descarregue. "+options.DiscountPercent+"% desconto; sem estoque antes da entrega. Usa seu veiculo sem apaga-lo.",()=>{if(!Begin(area))Notify.Show("Confira posse, capacidade, banco, reserva/atividade e carro proprio parado no territorio.");});
         }
-        bool Bind(GangTurfDefinition target)
+        public void AddCriminal(GangTurfDefinition area,DealerOptions catalog,GangWarehouseOptions warehouse,string product,Action<string,string,Action> add)
+        {
+            var item=catalog.Products.Find(p=>p.Id==product);if(item==null)return;
+            int cost=Math.Max(1,item.Buy*criminal.Units*(100-criminal.DiscountPercent)/100);
+            add("Frete criminal: "+criminal.Units+" / "+item.Name+" / $"+cost,"A bordo do seu carro/van parado na area. Tres coletas/carregamentos e tres descargas abastecem apenas o armazem criminal. Desconto "+criminal.DiscountPercent+"%; usa fornecedores proprios desta rota.",()=>{if(!BeginCriminal(area,catalog,warehouse,product))Notify.Show("Confira carro/van proprio parado na area, banco, capacidade, posse e reserva/atividade.");});
+        }
+        bool BeginCriminal(GangTurfDefinition target,DealerOptions catalog,GangWarehouseOptions warehouse,string product)
+        {
+            if(Dealer?.Catalog==null)return false;
+            if(Active || gate.Owner!=null || Pending!=null || !GangBusinessTransactions.Owns(state(),target) || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !Bind(target,warehouse.Radius) || !gate.Acquire(OwnerKey))return false;
+            try{if(!Wallet.GangSupplyBeginCriminal(state(),target,catalog,warehouse,criminal,product,Guid.NewGuid().ToString("N"),out bool changed) || !changed){Suspend();return false;}Activate();return true;}catch{Suspend();throw;}
+        }
+        bool Bind(GangTurfDefinition target,int radius=0)
         {
             var p=Game.Player.Character;var v=p.CurrentVehicle;
-            if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || v==null || !v.Exists() || !v.Model.IsCar || v.Driver!=p || v.Speed>=.5f || v.IsDead || !v.IsDriveable || JobVehicles.Contains(v) || p.Position.DistanceTo(Pos(target))>business.Radius+5)return false;
+            if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || v==null || !v.Exists() || !v.Model.IsCar || v.Driver!=p || v.Speed>=.5f || v.IsDead || !v.IsDriveable || JobVehicles.Contains(v) || p.Position.DistanceTo(Pos(target))>(radius==0?business.Radius:radius)+5)return false;
             vehicle=v;model=v.Model.Hash;plate=v.Mods.LicensePlate;return true;
         }
         void Activate()
@@ -68,8 +81,8 @@ namespace RPCore
         {
             if(Active || gate.Owner!=null || Pending==null || Wallet.GangBusiness?.Valid!=true || !Owns || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen)return false;
             bool ready=Pending.Ready;
-            if(ready){vehicle=null;if(!Game.Player.Character.IsOnFoot || Game.Player.Character.Position.DistanceTo(Pos(Pending.Area))>business.Radius)return false;}
-            else if(!Bind(Pending.Area))return false;
+            if(ready){vehicle=null;if(!Game.Player.Character.IsOnFoot || Game.Player.Character.Position.DistanceTo(Pos(Pending.Area))>(Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;}
+            else if(!Bind(Pending.Area,Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;
             if(!gate.Acquire(OwnerKey))return false;
             try{if(!ready && !Wallet.GangSupplyRestart(Pending.Id,out _)){Suspend();return false;}Activate();return true;}
             catch{Suspend();throw;}
@@ -107,7 +120,7 @@ namespace RPCore
             if(p.Ready)
             {
                 if(character.Position.DistanceTo(Pos(p.Area))>3)return;
-                if(Wallet.GangSupplyComplete(state(),CurrentArea,p.Id,out bool changed)){Suspend();Notify.Show(changed?"Frete entregue. Lote acrescentado ao estoque; sem nova cobranca.":"Frete ja confirmado; nenhum lote repetido.");}return;
+                if(Wallet.GangSupplyComplete(state(),CurrentArea,p.Id,out bool changed,Dealer?.Catalog)){Suspend();Notify.Show(changed?(p.CargoKind==GangSupplyCargo.Criminal?"Frete criminal entregue no armazem da area; sem nova cobranca.":"Frete entregue. Lote acrescentado ao estoque; sem nova cobranca."):"Frete ja confirmado; nenhum lote repetido.");}return;
             }
             if(!Car || !Stopped || character.Position.DistanceTo(vehicle.Position)>40)return;
             if(carrying)
