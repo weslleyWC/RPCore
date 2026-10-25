@@ -13,7 +13,7 @@ namespace RPCore
         readonly GangRaidOptions options;readonly GangWarehouseOptions warehouse;readonly Random random=new Random();readonly List<Ped> actors=new List<Ped>();readonly List<Blip> blips=new List<Blip>();readonly GangRaidSearch search=new GangRaidSearch();
         const string SearchDict="anim@gangops@facility@servers@bodysearch@",SearchClip="player_search";Ped animationOwner;bool animRequested,animPlaying;
         Model[] models;Blip objective;string profile,id;int player,last,elapsed,prepareAt;bool preparing,spawned;public DealerJob Dealer;public bool Active {get;private set;}
-        GangRaidAttempt Pending=>Wallet.GangRaid?.Pending;
+        GangRaidAttempt Pending=>Wallet.GangRaid?.Pending?.Kind==GangRaidKind.Drugs?Wallet.GangRaid.Pending:null;
         GangTurfDefinition CurrentArea=>Pending==null?null:areas().FirstOrDefault(a=>a.Id==Pending.Area.Id);
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
         bool WorldSafe=>Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
@@ -34,7 +34,7 @@ namespace RPCore
         bool AtHome(GangTurfDefinition area)=>WorldSafe && !Game.IsPaused && !InterfaceOptions.ModalOpen && Game.Player.Character.IsOnFoot && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0 && Game.Player.Character.Position.DistanceTo(Pos(area))<=warehouse.Radius;
         bool Begin(GangTurfDefinition area)
         {
-            var c=Dealer?.Catalog;if(Active || Pending!=null || gate.Owner!=null || Wallet.GangBusiness?.Supply!=null || !GangBusinessTransactions.Owns(state(),area) || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !AtHome(area) || c==null || !c.Valid)return false;
+            var c=Dealer?.Catalog;if(Active || Wallet.GangRaid?.Pending!=null || gate.Owner!=null || Wallet.GangBusiness?.Supply!=null || !GangBusinessTransactions.Owns(state(),area) || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !AtHome(area) || c==null || !c.Valid)return false;
             var rival=gangs().Where(g=>!GangCrewRules.SameGang(g.Name,state().Gang)).OrderBy(g=>GangCrewRules.SameGang(g.Name,area.DefaultOwner)?0:1).FirstOrDefault(g=>(g.PedModels??Array.Empty<string>()).Any(ValidModel));
             var products=c.Products.Where(p=>p.Id.Length<=80).ToList();if(rival==null || products.Count<2)return false;
             var names=rival.PedModels.Where(ValidModel).ToArray();var loot=products.OrderBy(p=>random.Next()).Take(2).ToDictionary(p=>p.Id,p=>random.Next(options.MinLoot,options.MaxLoot+1));

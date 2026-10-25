@@ -1,4 +1,10 @@
-# RPCore 0.59.0 — GTA V Legacy
+# RPCore 0.60.0 — GTA V Legacy
+
+## Fase 6.5R — roubo de van de armas
+
+[Atualização 0.60.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.60.0.zip) · [Código-fonte 0.60.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.60.0.zip) · [Instalação e teste](docs/FASE-6.5R-0.60.0.md)
+
+F4 → Comercio dos territorios → Roubar van de armas: missão gratuita, GBurrito2 própria parada com3 guardas, elimine os três e tome o volante. Volte dirigindo/parado≤15m da área sem procurado; saia/E≤3m confirma arsenal/Recovered. Carga base PSRP sorteada uma vez, sem dinheiro/armas pessoais/reputação ou relação. Retomada parcial refaz encontro com mesma carga; devolução pronta salva dispensa van. Kind0 legado/Kind1 van, crédito atômico Raid+Arms, conservação e limpeza só de entidades marcadas/van vazia e parada. 2172 testes aprovados, build sem erros/avisos; gameplay pendente. Convoys móveis/escala de carga/automação/refinamento e fases8/9 continuam futuros. Saves/configs/F2/F11 preservados.
 
 ## Fase 6.5Q — arsenal comercial e entrega de armas
 

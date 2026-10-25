@@ -73,7 +73,7 @@ namespace RPCore
             foreach(var product in arms.Products)
             {
                 var p=product;int stock=a==null?0:GangWarehouseAccount.Get(a.Stock,p.Id);
-                Add(p.Name+": "+stock+"/"+arms.MaxStock,"Comprado "+(a==null?0:GangWarehouseAccount.Get(a.Purchased,p.Id))+" / vendido "+(a==null?0:GangWarehouseAccount.Get(a.Sold,p.Id))+". Compra $"+p.Buy+"/un, venda $"+p.Sell+"/un sem multiplicador.");
+                Add(p.Name+": "+stock+"/"+arms.MaxStock,"Comprado "+(a==null?0:GangWarehouseAccount.Get(a.Purchased,p.Id))+" / recuperado "+(a==null?0:GangWarehouseAccount.Get(a.Recovered,p.Id))+" / vendido "+(a==null?0:GangWarehouseAccount.Get(a.Sold,p.Id))+". Compra $"+p.Buy+"/un, venda $"+p.Sell+"/un sem multiplicador.");
                 foreach(int amount in arms.Delivery.Quantities)
                 {
                     int units=amount;string receipt=Guid.NewGuid().ToString("N");

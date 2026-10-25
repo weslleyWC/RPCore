@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.60.0: [fase 6.5R — roubo de van de armas](FASE-6.5R-0.60.0.md). GBurrito2 parada própria+3 guardas, prova dos abates/motorista/retorno≤15m e E final no arsenal. Snapshot de carga/veículo/opções, retomada parcial sem rerrolar, devolução pronta persistida, Recovered+Stock e Raid na mesma Wallet, limpeza própria adiada enquanto ocupada/móvel. LegadoKind0 e compras/vendas anteriores preservados. Convoy móvel/prop/escala por rival/MissionWin/automação/boost/diálogo/guerras/polícia e fases8/9 pendentes.
+
 Andamento 0.59.0: [fase 6.5Q — arsenal e entrega de armas](FASE-6.5Q-0.59.0.md). Cinco categorias comerciais separadas; compra bancária própria na área e entrega física no fluxo compartilhado com Kind1/arsenal/receita suja, sem relação/armas nativas. Preços/quantidades/vagas PSRP, snapshot/ready/retomada/rollback e legadoKind0 mantidos. Roubo de van/convoys/automação/crew/dano/emboscada/perda definitiva/MissionWin, boost/diálogo/guerras/polícia e fases8/9 pendentes.
 
 Andamento 0.58.0: [fase 6.5P — venda em lote](FASE-6.5P-0.58.0.md). Um SKU local, comprador explícito, caixa/traseira/viagem/entrega3s/E final. Débito de estoque, receita suja e melhoria30% na mesma Wallet; sorteio e preço capturados, retomada/ready/cancelamento e bloqueio de operações territoriais. Seis pontos PSRP, veículo emprestado e um comprador próprio. Mix de SKUs/van/crew/emboscada/dano/perda definitiva/MissionWin, convoys/armas/boost/diálogo/guerras/polícia e fases8/9 continuam pendentes.

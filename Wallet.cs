@@ -19,6 +19,11 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static GangRaidData GangRaid=>data.GangRaid;
+        public static bool GangWeaponRaidBegin(GangState s,GangRaidAttempt p,GangArmsOptions c,out bool changed)=>GangWeaponRaidTransactions.Begin(data,s,p,c,Save,out changed);
+        public static bool GangWeaponRaidCapture(string id,out bool changed)=>GangWeaponRaidTransactions.Capture(data,id,Save,out changed);
+        public static bool GangWeaponRaidDeliver(string id,out bool changed)=>GangWeaponRaidTransactions.Deliver(data,id,Save,out changed);
+        public static bool GangWeaponRaidRestart(string id,out bool changed)=>GangWeaponRaidTransactions.Restart(data,id,Save,out changed);
+        public static bool GangWeaponRaidComplete(GangState s,GangTurfDefinition area,GangArmsOptions c,string id,out bool changed)=>GangWeaponRaidTransactions.Complete(data,s,area,c,id,Save,out changed);
         public static bool GangRaidBegin(GangState s,GangRaidAttempt p,DealerOptions c,out bool changed)=>GangRaidTransactions.Begin(data,s,p,c,Save,out changed);
         public static bool GangRaidDefeat(string id,int index,out bool changed)=>GangRaidTransactions.Defeat(data,id,index,Save,out changed);
         public static bool GangRaidCollect(string id,out bool changed)=>GangRaidCollect(id,out changed,"Neutral");

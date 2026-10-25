@@ -186,6 +186,6 @@ namespace RPCore
         }
         public void Reload() { diplomacy?.Close();business?.Close();treasury?.Close();turf?.Reload();driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, state.Reputation); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { diplomacy.Close();business.Close();treasury.Close();turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { diplomacy.Close();business.Dispose();treasury.Close();turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }

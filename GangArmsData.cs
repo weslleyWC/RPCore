@@ -21,10 +21,10 @@ namespace RPCore
     {
         public string Gang;public int Area;
         public Dictionary<string,int> Stock=new Dictionary<string,int>();
-        public Dictionary<string,long> Purchased=new Dictionary<string,long>(),Sold=new Dictionary<string,long>();
+        public Dictionary<string,long> Purchased=new Dictionary<string,long>(),Recovered=new Dictionary<string,long>(),Sold=new Dictionary<string,long>();
         public long Spent,Revenue;
         static bool Keys<T>(Dictionary<string,T> d)=>d!=null && d.Count<=40 && d.Keys.All(k=>!string.IsNullOrWhiteSpace(k) && k.Length<=80);
-        [JsonIgnore] public bool Valid=>!GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area>0 && Keys(Stock) && Keys(Purchased) && Keys(Sold) && Stock.Values.All(n=>n>=0 && n<=999) && Purchased.Values.All(n=>n>=0) && Sold.Values.All(n=>n>=0) && Spent>=0 && Revenue>=0 && Stock.Keys.Concat(Purchased.Keys).Concat(Sold.Keys).Distinct().All(k=>(decimal)GangWarehouseAccount.Get(Purchased,k)-GangWarehouseAccount.Get(Sold,k)==GangWarehouseAccount.Get(Stock,k));
+        [JsonIgnore] public bool Valid=>!GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area>0 && Keys(Stock) && Keys(Purchased) && Keys(Recovered) && Keys(Sold) && Stock.Values.All(n=>n>=0 && n<=999) && Purchased.Values.All(n=>n>=0) && Recovered.Values.All(n=>n>=0) && Sold.Values.All(n=>n>=0) && Spent>=0 && Revenue>=0 && Stock.Keys.Concat(Purchased.Keys).Concat(Recovered.Keys).Concat(Sold.Keys).Distinct().All(k=>(decimal)GangWarehouseAccount.Get(Purchased,k)+GangWarehouseAccount.Get(Recovered,k)-GangWarehouseAccount.Get(Sold,k)==GangWarehouseAccount.Get(Stock,k));
     }
     public sealed class GangArmsData : ExtensibleData
     {

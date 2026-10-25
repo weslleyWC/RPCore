@@ -148,3 +148,7 @@ Entrega física de um SKU em caixa no veículo atual e um comprador próprio; E 
 ## Base 0.59.0 — arsenal comercial (6.5Q)
 
 Compra paga própria abastece estoque comercial separado; entrega Kind1 compartilha caixa/carro/um comprador e grava Bulk+Arms+Illicit, sem bônus diplomático/equipar armas nativas. Valores e vagas inspirados em GetWeaponSalePrice/MaxAmount; PSRP rouba van e usa crew/dano/emboscada/automação/MissionWin, ainda pendentes. Na8 refinar clareza de estoque comercial vs armas pessoais; na9 refinar logística/diálogo/animação e todos os trabalhos preservando snapshot/rollback. Fases8/9 permanecem futuras.
+
+## Base 0.60.0 — roubo de van de armas (6.5R)
+
+Van própria parada com3 guardas de pistola e abates com prova; volante/retorno seguro15m/E final creditam Recovered. Fonte tem comboio motorista+3 passageiros/armas de gangue/fuga por mira-tiro/caixa de madeira/escala por territórios/MissionWin: ainda diferenças para refinamento. Na8 melhorar feedback das etapas/provas e na9 estudar/refinar condução/combate/logística de todos os trabalhos, mantendo snapshots, rollback e limpeza sem apagar veículos ocupados. Fases8/9 permanecem futuras.

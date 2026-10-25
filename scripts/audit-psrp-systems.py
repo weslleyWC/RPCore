@@ -905,5 +905,32 @@ if arms_config.exists():
         'scope_limits':'GTA access/ground/vehicle identity/rear/props/buyer tag/input/GPS/AI/coexistence still need real testing. Arms van theft/convoys/automatic trade/boost/dialogue/automatic wars/police and phases8/9 remain pending.'}
     if 'gang_bulk_sale' in report:
         report['gang_bulk_sale']['persistence']+=' From0.59 Kind0 explicitly selects drugs; Kind1 arms shares runtime/checkpoints but uses separate Arms transactions and no diplomacy bonus. Missing Kind stays0.'
+weapon_raid_config=Path(__file__).resolve().parents[1] / 'config/Gangs/WeaponRaids.json'
+if weapon_raid_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    loot=source.split('private void GenerateWeaponSupplyLoot(string targetGang)',1)[1].split('private void SpawnWeaponSupplyCrates()',1)[0]
+    delivery=source.split('private void UpdateWeaponSupplyVanDelivery()',1)[1].split('private void KeepWeaponSupplyVanMoving()',1)[0]
+    completion=source.split('private void CompleteWeaponSupplyRun()',1)[1].split('private void FailWeaponSupplyRun()',1)[0]
+    block=source.split('DrugSupplyRunLocations = new List<Vector3>',1)[1].split('WorkVanSpawnPosition',1)[0]
+    points=[[float(v) for v in m] for m in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',block)]
+    config=json.loads(weapon_raid_config.read_text())
+    report['gang_weapon_van_raid']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_gburrito2_and_guard_crew':'private void SpawnWeaponSupplyRunEncounter()' in source and 'new Model("gburrito2")' in source and 'private void SpawnWeaponSupplyVanCrew' in source and 'ped.Armor = 50' in source and 'ped.Accuracy = 35' in source,
+        'reference_base_loot_ranges_and_optional_chances':all(s in loot for s in ['turfRandom.Next(2, 7)','turfRandom.Next(100) < 75','turfRandom.Next(100) < 55','turfRandom.Next(100) < 50','turfRandom.Next(100, 251)']),
+        'all_three_sites_match_first_turf_supply_candidates':len(points)==len(config['Sites'])==3 and all(all(abs(a-b)<0.00001 for a,b in zip(p,[c['X'],c['Y'],c['Z']])) for p,c in zip(points,config['Sites'])),
+        'reference_delivery_requires_driver_within_15m':'num > 15f' in delivery and 'driver.Handle == character.Handle' in delivery,
+        'reference_completion_credits_weapon_stock_without_worsen':'turfData.Weapons[item.Key] += item.Value' in completion and 'WorsenGangRelationship' not in completion,
+        'reference_uses_moving_driver_and_four_seats':'VehicleSeat[] array = new VehicleSeat[4]' in source and 'TASK_VEHICLE_DRIVE_WANDER' in source,
+        'rpcore_cycle':'F4 owned-area rival weapon van raid: free slot shared with existing drug raid, explicit Kind1 vs missing/Kind0 legacy drugs. One own parked GBurrito2 at nearby source street and exactly3 tagged pistol guards, armor50 accuracy35. Three distinct player-damaged deaths before capture; player must take actual own-tagged van driver seat, evade native police, stop within15m of owned origin safe/wanted0 and then final foot E within3m. Vehicle return checkpoint persists before atomic arsenal credit. No personal/native weapons, bank/cash/dirty proceeds or reputation/diplomacy reward.',
+        'persistence':'Captured rival/models/site/vehicle options/capacity and base-range loot: pistol2..6 plus ammo100..250, optionalSMG75%1..4/rifle55%1..3/shotgun50%1..3. Partial reload/resume even after stolen-but-not-returned resets all physical proofs/capture with same loot and attempt; returned VanDelivered resumes foot at home without van/guard respawn. Final save clones Raid+Arms, adds Stock+Recovered and completed/clears pending; rollback/replay/capacity/catalog/overflow/ownership guards. Arms law Purchased+Recovered-Sold=Stock, legacy Recovered missing0. Death/van destruction/encounter abandonment/active timeout fail unissued cargo; technical/profile/ownership/mission/cancel/suspend preserve old stock. Shared pending guards prevent concurrent territorial economy/contracts.',
+        'entity_ownership':'Token decorator on each own NPC/vehicle; no saved handles restored, no deleting ambient actors or player cars. Own van reserved from other jobs. Cleanup deletes tagged guards, queues own van until empty/stopped; detached/recycled/tag-lost handles are not deleted. Queue capped8 for activation; profile reload continues cleanup, script dispose releases occupied resources without forced ejection. Model/ground/space/tag loss suspends, no loot.',
+        'configuration_sha256':digest(weapon_raid_config.read_bytes()),
+        'defaults':config,
+        'intentional_differences':'Reference moves a van with driver+three passengers and gang weapon pool, reacts to aiming/shooting/hijack, adds wood crate prop, scales loot35% per extra rival territory and awards MissionWin. RPCore fixed parked van with3 outside pistol guards/immediate attack/all3 attributable defeats, no crate attached/no pursuit/scaling/global relationship changes/reputation reward. Return additionally requires stopped/safe/wanted0 plus explicit foot final confirmation, saved logical proof and recovery. Fixed first-turf candidate set rather than all turf-specific lists. No complete PSRP parity claim.',
+        'scope_limits':'Street/ground/space at three source locations, native combat/damage flags/decorator, actual driver/van/parking/return and deferred empty-vehicle cleanup require GTA gameplay tests. Moving convoy/refinement, automatic sales/boost/dialogue/wars/police and phases8/9 remain pending.'}
+    if 'gang_arms_commerce' in report:
+        report['gang_arms_commerce']['persistence']+=' From0.60 free weapon-van raid credits optional Recovered history atomically; conservation becomes Purchased+Recovered-Sold=Stock.'
+        report['gang_arms_commerce']['intentional_differences']=report['gang_arms_commerce']['intentional_differences'].replace('rival weapon-van theft is still pending','weapon-van theft base is delivered in0.60; moving convoy/refinement remains pending')
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
