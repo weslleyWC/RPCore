@@ -1,4 +1,10 @@
-# RPCore 0.56.0 — GTA V Legacy
+# RPCore 0.57.0 — GTA V Legacy
+
+## Fase 6.5O — relações e acordos
+
+[Atualização 0.57.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.57.0.zip) · [Código-fonte 0.57.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.57.0.zip) · [Instalação e teste](docs/FASE-6.5O-0.57.0.md)
+
+F4 → Relacoes / acordos: consulta por perfil/par de gangues e negociação presencial na sua HQ. A revista de carga rival piora a relação uma vez, seguindo Respeito → Neutro → Hostilidade → Guerra; pacote e consequência são salvos juntos. Acordo próprio do RPCore custa $1000 do banco por nível melhor e exige intervalo de 24h do jogo por par. Sem cobrança em Respeito, débito repetido ou recompensa/estoque. Guerra é estado diplomático, sem ataques automáticos. Saves/configs e F2/F11 preservados. 2047 testes aprovados, build sem erros/avisos; teste no GTA pendente. Venda em lote, guerras/convoys/armas/boost/diálogo/polícia e fases 8/9 seguem pendentes.
 
 ## Fase6.5N — roubo de suprimentos rivais
 

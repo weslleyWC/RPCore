@@ -136,3 +136,7 @@ Rota paga com SKU escolhido, três pontos de supply da referência e ciclo de ca
 ## Base0.56.0 — roubo rival (6.5N)
 
 Missão própria de combate/revista/retorno, três NPCs identificados com token e dois SKUs ao armazém apenas na confirmação final. Refinar comportamento de aproximação/aggro, armas/guardas, animações/carga visual, relações/reputação, escala e logística nas próximas etapas adequadas. Diferenças registradas frente ao DrugSupplyRun PSRP; não concede polícia amiga ou guerra automática. Fases8/9 mantidas.
+
+## Base 0.57.0 — relações e acordos (6.5O)
+
+Revista rival agora piora atitude uma vez com carga; menu F4 consulta e compra melhora na HQ por $1000/24h do jogo. Negociação é própria, não corresponde à venda em lote PSRP com30% de melhoria. Na fase8 revisar feedback/clareza do cooldown e estado Guerra; na9 integrar/refinar contextos físicos de trabalhos sem alterar contabilidade. Bulk deals, IA global/guerras, convoys/armas/boost/diálogo/polícia e recompensa MissionWin ainda não concluídos. Preserva fases8/9 como etapas futuras.

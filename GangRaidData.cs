@@ -56,8 +56,17 @@ namespace RPCore
         }
         public static bool Defeat(WalletData w,string id,int index,Action save,out bool changed)
         {changed=false;if(!Id(id) || index<0 || index>=3)return false;return Apply(w,id+":raid-defeat:"+index,b=>{var p=b.Pending;if(p==null || p.Id!=id || p.Package || p.Defeated.Contains(index))return false;p.Defeated.Add(index);return true;},save,out changed);}
-        public static bool Collect(WalletData w,string id,Action save,out bool changed)
-        {changed=false;if(!Id(id))return false;return Apply(w,id+":raid-package",b=>{var p=b.Pending;if(p==null || p.Id!=id || p.Package || p.Defeated.Count!=3)return false;p.Package=true;return true;},save,out changed);}
+        public static bool Collect(WalletData w,string id,Action save,out bool changed)=>Collect(w,id,save,out changed,"Neutral");
+        public static bool Collect(WalletData w,string id,Action save,out bool changed,string initial)
+        {
+            changed=false;if(!Id(id) || w==null || w.Bank<0 || save==null || w.GangRaid?.Valid!=true || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || !GangDiplomacyRules.Known(initial))return false;
+            string receipt=id+":raid-package";if(w.GangRaid.Receipts.Contains(receipt))return true;
+            var original=w.GangRaid;var old=w.GangDiplomacy;var book=Copy(original);var p=book.Pending;
+            if(p==null || p.Id!=id || p.Package || p.Defeated.Count!=3)return false;
+            var diplomacy=GangDiplomacyRules.Stolen(old,p.Gang,p.Rival,initial);if(diplomacy==null)return false;
+            p.Package=true;book.Receipts.Add(receipt);if(book.Receipts.Count>256)book.Receipts.RemoveAt(0);GangDiplomacyRules.Receipt(diplomacy,receipt);
+            try{w.GangRaid=book;w.GangDiplomacy=diplomacy;save();changed=true;return true;}catch{w.GangRaid=original;w.GangDiplomacy=old;throw;}
+        }
         public static bool Restart(WalletData w,string id,Action save,out bool changed)
         {changed=false;if(!Id(id))return false;return Apply(w,Guid.NewGuid().ToString("N")+":raid-restart",b=>{var p=b.Pending;if(p==null || p.Id!=id || p.Package)return false;p.Defeated.Clear();b.Receipts.RemoveAll(r=>r.StartsWith(id+":raid-defeat:",StringComparison.Ordinal));return true;},save,out changed);}
         public static bool End(WalletData w,string id,bool failed,Action save,out bool changed)

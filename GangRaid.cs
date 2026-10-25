@@ -89,7 +89,7 @@ namespace RPCore
             if(Pending.Defeated.Count==3)
             {
                 if(search.Searching && SearchEligible && animRequested && !animPlaying && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED,SearchDict)){Function.Call(Hash.TASK_PLAY_ANIM,animationOwner,SearchDict,SearchClip,4f,-4f,Pending.Options.SearchSeconds*1000,49,0f,false,false,false);animPlaying=true;}
-                if(search.Step(Game.GameTime,SearchEligible,Pending.Options.SearchSeconds)){if(!Wallet.GangRaidCollect(id,out _))throw new InvalidOperationException("Raid package not saved");StopAnimation();ClearActors();Route(Pos(Pending.Area),"Devolver carga roubada");Notify.Show("Carga recuperada: "+string.Join(", ",Pending.Loot.Select(p=>p.Value+"x "+p.Key))+". Despiste a policia e volte a sua area.");return;}
+                if(search.Step(Game.GameTime,SearchEligible,Pending.Options.SearchSeconds)){if(!Wallet.GangRaidCollect(id,out _,GangDiplomacyRules.Initial(gangs().FirstOrDefault(g=>GangCrewRules.SameGang(g.Name,Pending.Rival)),Pending.Gang)))throw new InvalidOperationException("Raid package not saved");StopAnimation();ClearActors();Route(Pos(Pending.Area),"Devolver carga roubada");Notify.Show("Carga recuperada: "+string.Join(", ",Pending.Loot.Select(p=>p.Value+"x "+p.Key))+". Relacao rival piorou; despiste a policia e volte a sua area.");return;}
                 if(!search.Searching)StopAnimation();
                 if(SearchEligible)GTA.UI.Screen.ShowHelpTextThisFrame(search.Searching?"Revistando... permaneca junto do corpo":"E: revistar traficante e recuperar suprimentos");
             }

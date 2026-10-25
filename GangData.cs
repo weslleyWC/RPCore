@@ -11,6 +11,7 @@ namespace RPCore
         public GangSpot LeaderSpawnPostion;
         public string[] PedModels;
         public List<GangSpot> PedSpawnSpots;
+        public Dictionary<string,string> Relationships;
     }
     public class GangSpot : ExtensibleData { public float X,Y,Z,Heading; }
     public class GangState : ExtensibleData { public string Gang;public int Reputation,Rank;public bool PresenceEnabled;public GangLoyaltyData Loyalty;public GangStrengthData Strength;public GangDrivingData Driving;public bool TerritoriesEnabled;public GangTurfData Turf; }

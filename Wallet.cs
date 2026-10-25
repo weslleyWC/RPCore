@@ -21,7 +21,10 @@ namespace RPCore
         public static GangRaidData GangRaid=>data.GangRaid;
         public static bool GangRaidBegin(GangState s,GangRaidAttempt p,DealerOptions c,out bool changed)=>GangRaidTransactions.Begin(data,s,p,c,Save,out changed);
         public static bool GangRaidDefeat(string id,int index,out bool changed)=>GangRaidTransactions.Defeat(data,id,index,Save,out changed);
-        public static bool GangRaidCollect(string id,out bool changed)=>GangRaidTransactions.Collect(data,id,Save,out changed);
+        public static bool GangRaidCollect(string id,out bool changed)=>GangRaidCollect(id,out changed,"Neutral");
+        public static bool GangRaidCollect(string id,out bool changed,string initial)=>GangRaidTransactions.Collect(data,id,Save,out changed,initial);
+        public static GangDiplomacyData GangDiplomacy=>data.GangDiplomacy;
+        public static bool GangNegotiate(GangState state,string rival,string initial,GangDiplomacyOptions c,DateTime now,string id,out bool changed)=>GangDiplomacyTransactions.Negotiate(data,state,rival,initial,c,now,id,Save,out changed);
         public static bool GangRaidRestart(string id,out bool changed)=>GangRaidTransactions.Restart(data,id,Save,out changed);
         public static bool GangRaidEnd(string id,bool failed,out bool changed)=>GangRaidTransactions.End(data,id,failed,Save,out changed);
         public static bool GangRaidComplete(GangState s,GangTurfDefinition a,DealerOptions c,string id,out bool changed)=>GangRaidTransactions.Complete(data,s,a,c,id,Save,out changed);

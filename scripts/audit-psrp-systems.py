@@ -836,5 +836,28 @@ if raid_config.exists():
         'configuration_sha256':digest(raid_config.read_bytes()),
         'defaults':config,
         'scope_limits':'Actual coordinates/ground/AI/combat attribution/decor registration/body access/animation/input/wanted behavior and coexistence require GTA tests. Automatic wars/convoys/weapons/cafe boost/full leader dialogue/police and phases8/9 remain pending.'}
+diplomacy_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Diplomacy.json'
+if diplomacy_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    worsen=source.split('private void WorsenGangRelationship(string gangName)',1)[1].split('private void ImproveGangRelationship',1)[0]
+    improve=source.split('private void ImproveGangRelationship(string gangName)',1)[1].split('private static string GroupName',1)[0]
+    search=source.split('private void CompleteDrugSupplyRunDealerSearch()',1)[1].split('private void ',1)[0]
+    report['gang_diplomacy']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_worsens_after_body_search':'WorsenGangRelationship(activeSupplyRunGang)' in search,
+        'reference_worsen_chain':all(t in worsen for t in ['"Respect" => "Neutral"','"Neutral" => "Hate"','"Hate" => "War"','"War" => "War"']),
+        'reference_improve_chain':all(t in improve for t in ['"War" => "Hate"','"Hate" => "Neutral"','"Neutral" => "Respect"','"Respect" => "Respect"']),
+        'reference_directed_rival_attitude':'customGang.Relationships[playerGangAffiliation] = text2' in worsen,
+        'reference_bulk_sale_improvement_chance_30':'bulkDrugRelationshipRandom.Next(100) < 30' in source,
+        'rpcore_cycle':'F4 relationships query; per-profile directed rival attitude toward own gang, initialized from rival Relationships field or Neutral. Three defeats do not penalize; confirmed body search atomically saves quest cargo plus one deterioration, capped at War, once per raid. Cancellation/failure after theft does not undo offense; existing collected legacy cargo is not retroactively penalized. Original gang definitions, global AI and police are untouched.',
+        'rpcore_own_negotiation':'Explicit paid agreement at own HQ within5m, human on foot/safe/no wanted/activity/pending raid or freight. Default bank1000 buys exactly one upward tier per pair per24game hours, no payment at Respect, no offline compounding or clock rewind bypass. Stable receipt and book+bank rollback in one Wallet save. No treasury, cash, stock or gang reputation changes.',
+        'persistence':'Optional Wallet.GangDiplomacy accounts/receipts with bounded pair uniqueness/history and overflow protection; unknown fields survive copy/save, legacy absence stays absent until action. Existing attitude overrides later definition edits. Directed pairs remain distinct across affiliations and profiles; configs never overwrite installed definitions.',
+        'configuration_sha256':digest(diplomacy_config.read_bytes()),
+        'defaults':json.loads(diplomacy_config.read_text()),
+        'intentional_differences':'Paid negotiation/cooldown is an RPCore mechanic, not a PSRP feature. PSRP improves relation with30% chance after bulk drug deal and applies native relationship groups. Bulk deals, automatic war/peace/AI hostility, alliances blocking raids and mission reputation reward are not implemented here. War is a ledger status only. Interface phase8 and jobs phase9 remain pending.',
+        'scope_limits':'HQ input/GPS, native clock/safe conditions, combat/body-search integration and coexistence need real GTA testing; static tests cannot prove gameplay.'}
+    if 'gang_rival_supply_raid' in report:
+        report['gang_rival_supply_raid']['persistence']+=' From0.57 body-search checkpoint also atomically worsens the directed rival attitude, with rollback of both books.'
+        report['gang_rival_supply_raid']['intentional_differences']=report['gang_rival_supply_raid']['intentional_differences'].replace('permanent relationship penalty/reputation reward','reputation reward')
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
