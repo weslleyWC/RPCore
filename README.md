@@ -1,4 +1,11 @@
-# RPCore 0.48.0 — GTA V Legacy
+# RPCore 0.49.0 — GTA V Legacy
+
+## Fase 6.5G — defesa de territórios
+
+[Atualização 0.49.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.49.0.zip) · [Código-fonte 0.49.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.49.0.zip) · [Instalação e teste](docs/FASE-6.5G-0.49.0.md)
+
+F4 → Territorios → Defender área própria: padrão duas ondas de três atacantes, confirmação E da vitória e contadores de defesa/perda. Morte/veículo/abandono/timeout em defesa ativa transferem posse ao atacante, com aviso no menu; suspender/cancelar/falha técnica conservam dono. Sem ataques automáticos nesta etapa. Save 0.48 continua Attack por padrão, capturas/configs/sistemas anteriores preservados. 1771 testes aprovados e build sem erros/avisos. Ondas/piso/IA precisam de GTA; guerra automática/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5F — mapa e captura de territórios
 

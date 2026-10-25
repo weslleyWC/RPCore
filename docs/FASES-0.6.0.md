@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.49.0: [fase 6.5G — defesa de territórios](FASE-6.5G-0.49.0.md), defesa explícita em duas ondas, vitória mantendo posse e derrota ativa transferindo ao rival, com save/recibos/retomada e contadores. Capturas 0.48 e dados antigos preservados. Sem ataques automáticos/offline; guerra completa/economia/rank/diálogo/polícia continuam pendentes. Ondas/combate/piso exigem GTA; fases 8/9 mantidas.
+
+
 Andamento 0.48.0: [fase 6.5F — mapa e captura de territórios](FASE-6.5F-0.48.0.md), 15 centros/postos/donos PSRP, mapa opcional, GPS, três defensores e posse confirmada após vitória. Overrides por perfil, recibos/retomada e guarda de dono anterior. Não declara guerra/economia completa: reforços/contra-ataques/comércio/renda, diálogo e polícia continuam. Teste de combate/piso/acesso no GTA pendente; fases 8/9 mantidas.
 
 

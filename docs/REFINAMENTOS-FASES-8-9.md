@@ -106,3 +106,6 @@ Atualização 0.47.0 / fase 6.5E: iniciação de direção após comparar passag
 
 
 Atualização 0.48.0 / fase 6.5F: base de captura com 15 áreas/postos/donos PSRP, mapa opcional e posse por perfil após combate/confirmar. Não declara reforços/guerras/economia/renda ou polícia completos. Combate/piso/acesso nativo precisam de GTA. Ergonomia/leitura de área e apresentação continuam na fase 8; refinamento de todos os trabalhos na fase 9.
+
+
+Atualização 0.49.0 / fase 6.5G: defesa manual em ondas e resultado de posse, após comparar atacantes/vitória/derrota PSRP. Mantém capturas antigas; falhas técnicas suspendem sem penalidade. Não declara IA de guerras/veículos/guarnição/economia/salários concluídos. Ondas, piso, combate e perda precisam de GTA; ergonomia e mecânicas permanecem para fase 8, refinamento de todos os trabalhos para fase 9.

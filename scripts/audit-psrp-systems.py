@@ -706,5 +706,19 @@ if turf_config.exists():
         'intentional_differences':'Initial capture module only: default three pistol defenders versus full PSRP ambient forces/weapons/reinforcements. Explicit F4 attack and E capture, own 600s limit, on-foot45m center, optional map; no automatic attack trigger/cutscene/relations changes. Combat deaths of all owned defenders count, disappearance does not. No money/reputation award, turf stock/commerce, gang AI battles or automatic counterattack.',
         'configuration_sha256':digest(turf_config.read_bytes()),
         'scope_limits':'Native combat, paths/floor, airport/restricted access, wanted, coexistence with crew/police/mods require GTA tests. No automatic PSRP TurfOwnership import, complete gang economy, reinforcement/convoy or police integration. Phases 8/9 retained.'}
+defense_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Defense.json'
+if defense_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_defense']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_incoming_attackers':'public void StartGangTurfAttack' in source and 'private void SpawnGangTurfAttackers' in source,
+        'reference_has_defense_win_and_loss':'TURF DEFENDED' in source and 'DefenseWin' in source and 'TURF LOST' in source and 'DefenseFail' in source,
+        'reference_transfers_ownership_to_attacker':'TurfOwnership[turf.ID] = attackingGang.Name' in source,
+        'rpcore_cycle':'Explicit F4 Defend owned area only, known affiliated gang/map/safe foot/area/shared gate. Choose valid rival models, prefer original owner if different. Own configurable two waves x three on-foot attackers from outer ring, existing pistol/mortal/no-loot combat. Next wave only after current batch dead, distinct indices/checkpoints, E confirms defense and ownership remains same. Death/vehicle/abandonment/timer during active defense transfer expected-owned area to snapshot attacker atomically.',
+        'persistence':'Append-only Attack=0/Defense=1 mode, attacker/wave-size and Defenses/LostDefenses counters. Legacy pending remains Attack without fields. Snapshot preserves counts/models/radius/attacker; partial restart repeats all waves without extra attempt, ready result reload confirms without actors. Cancellation/suspension/technical model/slot/save failure, mission/cutscene/ped switch preserve owner. Changed owner/affiliation blocks loss overwrite; success/loss replay cannot recount.',
+        'intentional_differences':'Reference schedules AI attacks, vehicles, allied defenders and gang-vs-gang war. RPCore 6.5G is manually requested player defense, own 1-2 waves capped at six actors, no automatic attacks/offline simulation/convoy or armed allied garrison. Loss conditions explicit in menu. No salary, cash, reputation grant, police changes or old-state migration.',
+        'configuration_sha256':digest(defense_config.read_bytes()),
+        'defaults':json.loads(defense_config.read_text()),
+        'scope_limits':'Native perimeter floor/path/combat/wave transition, actual death timing and coexistence with police/mods require GTA tests. Full automatic wars, territory economy/rank/payday, leader dialogue/police remain pending. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

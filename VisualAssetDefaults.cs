@@ -69,7 +69,7 @@ namespace RPCore
     }
     public class VisualDiagnosticReport
     {
-        public string Version = "0.48.0", Archive = VisualAssetDefaults.GameArchive;
+        public string Version = "0.49.0", Archive = VisualAssetDefaults.GameArchive;
         public bool Enabled, Active, NeedsHud, WalletHud, VehicleHud, PhoneEnabled, MenuBanners;
         public float AspectRatio;
         public List<TextureProbe> Textures = new List<TextureProbe>();
