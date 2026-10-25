@@ -79,3 +79,6 @@ Atualização 0.38.0 / fase 6.3E: criação de cadastro e carregamento explícit
 
 
 Atualização 0.39.0 / fase 6.4A: seguro pessoal com apólices opcionais e recuperação física de destruído no local por franquia, comparação Vehicle_Insurance PSRP registrada. Sem entrega/guincho/reposição automática; garagens/fuel/storage mantidos. Fase 8 refinará menu/banner/mecânicas veiculares e conferirá reparo/recursos com mods no GTA. Licenças e demais sistemas da fase 6 continuam; fase 9 dos trabalhos preservada.
+
+
+Atualização 0.40.0 / fase 6.4B: DMV C com questões próprias, prático/36 pontos e avaliação/emissão persistentes. Fonte TheoryTests tem botão vazio e progressão incompleta; diferenças documentadas na auditoria. Refinamento de leitura/menus, áudio/câmera e reconhecimento de trânsito continua na fase 8; nenhum job/veículo anterior recebeu novo bloqueio por licença. Classes A/M1 e fiscalização permanecem posteriores. Fase 9 dos trabalhos mantida.

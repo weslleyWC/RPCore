@@ -553,5 +553,25 @@ if insurance_config.exists():
         'configuration_sha256': digest(insurance_config.read_bytes()),
         'intentional_differences': 'Reference permits registering current vehicle persistence and moves/repares wreck into fixed free parking. RPCore only covers garage-owned road vehicles and repairs at current position; deliberately no deletion of nearby cars, no arbitrary persistence/duplicate replacement or forced delivery.',
         'scope_limits': 'Missing/despawned vehicle has no new replacement claim in this module. Existing garage locate/recover behavior remains. No towing actor, remote delivery, insurance payments, full policy expiry/renewal, automatic PSRP policy import, oil mechanics or general license/police changes. Native burned-wreck repair/fuel/customization needs GTA tests. Phases 8/9 retained.'}
+dmv_config = Path(__file__).resolve().parents[1] / 'config/Jobs/Dmv.json'
+if dmv_config.exists():
+    source = (a.reference_source / 'PSRP/TheoryTests.cs').read_text(); config = json.loads(dmv_config.read_text())
+    block = source.split('private List<Vector3> ClassCPracticalTestPoints',1)[1].split('private int waitTimerTest',1)[0]
+    points = [[float(v) for v in match] for match in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',block)]
+    report['dmv'] = {
+        'reference_source': 'PSRP/TheoryTests.cs',
+        'reference_has_theory_30_threshold_12': 'DecreaseBankBalance(30)' in source and 'correctAnswers >= 12' in source,
+        'reference_has_practical_60_and_examiner': 'Cost: $60' in source and 'VehicleHash.Asterope' in source and 'PedHash.Bevhills01AFY' in source,
+        'reference_practical_handler_empty': bool(re.search(r'ClassCPracticalTest.Activated \+= delegate\s*\{\s*\};',source)),
+        'reference_practical_start_has_no_callers_in_class': source.count('StartClassCPracticalTest(')==1,
+        'reference_route_points': len(points),
+        'all_route_positions_match_reference': len(points)==len(config['Route']) and all(all(abs(a-b)<0.00001 for a,b in zip(p,[c['X'],c['Y'],c['Z']])) for p,c in zip(points,config['Route'])),
+        'rpcore_cycle': 'F10 physical DMV class C: own 15-question Portuguese theory, 12/15 pass, persistent answer receipts and theory certificate. Prepared Asterope/non-invincible examiner before practical fee, belt/right-left indicators, all 36 ordered points, three required stops, speed/belt/damage/time assessment, return/park/exit and explicit desk license issue.',
+        'wallet_checkpoint': 'Additive Dmv book. Bank fee/counters/pending/config snapshot atomic, start authorization before exam, every answer/progress saved with rollback; paid resume has no new charge and keeps points/faults/time. Before start refund, after start explicit abandonment without refund. Theory certificate survives practical failure. Final license requires report/all points/within limits.',
+        'compatibility': 'Advisory document: no new gating of existing jobs/garage/insurance/pilot qualification. Shared activity lease. No teleport/freeze/player control lock/police ignore/global relationship changes. Own temporary test car reserved against garage/insurance and retired only empty/stopped; own examiner cleanup. No automatic resume, paid attempt result or license on load.',
+        'intentional_differences': 'Reference practical button is empty, starter has no call in class, and route switch stalls at point 2. RPCore implements own complete assessment/finish. Uses own questions instead of source texture pages, no invincible car/examiner or forced end teleport. A/M1 remain future in reference and are not exposed as empty tests.',
+        'defaults': config,
+        'configuration_sha256': digest(dmv_config.read_bytes()),
+        'scope_limits': 'Class C only, no automatic PSRP document import, physical document inventory item, traffic-light AI/sign recognition or new enforcement. Native route/parking/examiner/seatbelt/indicator gameplay needs GTA tests; UI phase 8 and work refinement phase 9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

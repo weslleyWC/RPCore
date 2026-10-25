@@ -1,6 +1,13 @@
 # RPCore 0.35.0 — GTA V Legacy
 
 
+## Fase 6.4B — DMV / habilitação classe C
+
+[Atualização 0.40.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.40.0.zip) · [Código-fonte 0.40.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.40.0.zip) · [Instalação e teste](docs/FASE-6.4B-0.40.0.md)
+
+F10 → DMV / habilitacao C: teoria própria de 15 questões ($30/12 acertos), prático com Asterope/examinadora ($60), setas/cinto, 36 pontos PSRP, paradas/avaliação/estacionamento e emissão por perfil. Retomada paga sem nova taxa, dados e recursos anteriores preservados. Não bloqueia os trabalhos existentes por falta de licença. 1450 testes aprovados e build sem erros/avisos. Percurso/atores precisam de GTA; classes A/M1/fiscalização e fases 8/9 seguem.
+
+
 ## Fase 6.4A — seguro de veículos pessoais
 
 [Atualização 0.39.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.39.0.zip) · [Código-fonte 0.39.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.39.0.zip) · [Instalação e teste](docs/FASE-6.4A-0.39.0.md)

@@ -22,6 +22,7 @@ namespace RPCore
         public BarberData Barber;
         public GroomingData Grooming;
         public VehicleInsuranceData VehicleInsurance;
+        public DmvData Dmv;
     }
 
     public class Portfolio : ExtensibleData
