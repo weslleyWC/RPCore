@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.45.0: [fase 6.5C — iniciação por lealdade](FASE-6.5C-0.45.0.md), dois contatos/pacotes entre 15 pontos PSRP, interação cronometrada, checkpoints/retomada e filiação na volta ao líder. Opção nova sem substituir Join; presença/equipe anteriores e demais saves preservados. Teste de contato/piso/animação/entrada no GTA pendente; força/direção/diálogo completo, territórios/guerras/economia/polícia e demais diferenças continuam. Fases 8/9 mantidas.
+
+
 Andamento 0.44.0: [fase 6.5B — equipe da gangue](FASE-6.5B-0.44.0.md), até 3 membros próprios recrutados, Seguir/Aguardar/Dispensar, acompanhamento fora da HQ e embarque/desembarque físico com reserva de passageiros. Comparação com recrutamento PSRP registrada; sem grupo nativo/armas/teleporte ou novos dados obrigatórios nos saves. Teste de navegação/assentos no GTA pendente; iniciações, territórios/guerras/economia/polícia e demais diferenças continuam. Fases 8/9 mantidas.
 
 

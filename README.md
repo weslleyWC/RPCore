@@ -1,4 +1,11 @@
-# RPCore 0.44.0 — GTA V Legacy
+# RPCore 0.45.0 — GTA V Legacy
+
+## Fase 6.5C — iniciação por lealdade
+
+[Atualização 0.45.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.45.0.zip) · [Código-fonte 0.45.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.45.0.zip) · [Instalação e teste](docs/FASE-6.5C-0.45.0.md)
+
+F4 → presença ligada → sem filiação, perto do líder → Iniciacao por lealdade. Dois contatos diferentes entre 15 posições PSRP, E a pé/2,5s, confirmação persistente dos pacotes e volta ao líder para gravar filiação. Suspensão/retomada com recibos, sem taxa/recompensa ou cutscene forçada; trava compartilhada impede conflito com trabalhos/exames. Join anterior preservado sem pendência; presença/equipe/saves/configs/F2/F11 mantidos. 1650 testes aprovados e build sem erros/avisos. Contatos/piso/animação precisam de GTA; outras iniciações/territórios/guerras/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5B — equipe da gangue / recrutamento e ordens
 

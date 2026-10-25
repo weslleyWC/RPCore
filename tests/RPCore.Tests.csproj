@@ -44,6 +44,7 @@
     <Compile Include="../FreightData.cs" Link="FreightData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />
     <Compile Include="../GangCrewData.cs" Link="GangCrewData.cs" />
+    <Compile Include="../GangLoyaltyData.cs" Link="GangLoyaltyData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
+    <EmbeddedResource Include="../config/Gangs/Loyalty.json" LogicalName="RPCore.JobDefaults.GangLoyalty.json" />
     <EmbeddedResource Include="../config/Jobs/PdmLogistics.json" LogicalName="RPCore.JobDefaults.PdmLogistics.json" />
     <EmbeddedResource Include="../config/Jobs/PdmStaff.json" LogicalName="RPCore.JobDefaults.PdmStaff.json" />
     <EmbeddedResource Include="../config/Jobs/PdmSafe.json" LogicalName="RPCore.JobDefaults.PdmSafe.json" />

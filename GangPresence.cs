@@ -13,11 +13,12 @@ namespace RPCore
         readonly GangPresenceOptions options;Model model;GangPost pending;string pendingKey,pendingGang;int requested,next;string profile;
         public GangPresence(){options=Store.LoadDef("Gangs/Presence.json",()=>new GangPresenceOptions());if(options==null || !options.Valid){Log.Write("Invalid Gangs/Presence.json; original retained, defaults used.");options=new GangPresenceOptions();}profile=Profile.Id;}
         static Vector3 Pos(GangSpot p)=>new Vector3(p.X,p.Y,p.Z);
+        public Ped Leader(string gang)=>actors.Values.Where(a=>a.Leader && string.Equals(a.Gang,gang,StringComparison.OrdinalIgnoreCase) && a.Ped!=null && a.Ped.Exists() && !a.Ped.IsDead && a.Ped.IsOnFoot).Select(a=>a.Ped).FirstOrDefault();
         public int Count=>actors.Count;
         public int Posts(GangDefinition g)=>GangPresenceRules.Plan(g,options.PerHQ).Count;
         void ReleasePending(){if(model.Hash!=0)model.MarkAsNoLongerNeeded();model=default(Model);pending=null;pendingKey=pendingGang=null;}
         static void Delete(Actor a){if(a.Blip!=null && a.Blip.Exists())a.Blip.Delete();if(a.Ped!=null && a.Ped.Exists())a.Ped.Delete();}
-        static bool Space(Vector3 pos)
+        internal static bool Space(Vector3 pos)
         {
             foreach(float height in new[]{.5f,1.3f})foreach(var axis in new[]{new Vector3(.45f,0,0),new Vector3(0,.45f,0)}){
                 var center=pos+new Vector3(0,0,height);var probe=ShapeTest.StartExpensiveSyncTestLOSProbe(center-axis,center+axis,IntersectFlags.Map|IntersectFlags.Objects);

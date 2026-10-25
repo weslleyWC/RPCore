@@ -13,7 +13,7 @@ namespace RPCore
         public List<GangSpot> PedSpawnSpots;
     }
     public class GangSpot : ExtensibleData { public float X,Y,Z,Heading; }
-    public class GangState : ExtensibleData { public string Gang;public int Reputation;public bool PresenceEnabled; }
+    public class GangState : ExtensibleData { public string Gang;public int Reputation;public bool PresenceEnabled;public GangLoyaltyData Loyalty; }
     public sealed class GangPresenceOptions : ExtensibleData
     {
         public int MaxActors=12,PerHQ=6,SpawnRadius=80,DespawnRadius=160,RespawnSeconds=120;

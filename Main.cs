@@ -91,7 +91,7 @@ namespace RPCore
             if (Cfg.EnableGarages) AddOptional(() => new GarageSystem(pool, ach));
             if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
             GangSystem gangs = null;
-            if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach); return gangs; });
+            if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach, shifts); return gangs; });
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
@@ -127,7 +127,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.44.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.45.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

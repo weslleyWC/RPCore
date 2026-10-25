@@ -94,3 +94,6 @@ Atualização 0.43.0 / fase 6.5A: presença opcional de gangues nas HQs, líder/
 
 
 Atualização 0.44.0 / fase 6.5B: equipe de até 3 membros da gangue, ordens e passageiros, após comparar recrutamento/dispensa da PSRP. Preserva NPC/posto e usa tarefas locais; não toma grupo nativo nem concede armamento. Não declara escolta armada, iniciação ou territórios completos. Formação, ergonomia e navegação/assentos devem ser conferidos no GTA e refinados na fase 8; refinamento de todos os trabalhos permanece na fase 9.
+
+
+Atualização 0.45.0 / fase 6.5C: iniciação por lealdade opcional no líder, dois pacotes em contatos/posições da PSRP, interação cronometrada e filiação persistida ao voltar. Guarda de atividade/recibos/retomada próprios; sem cutscene forçada ou substituição retroativa de Join. Força/direção/diálogo completo e territórios continuam pendentes. Piso/animação/input precisam de GTA; apresentação e ergonomia continuam na fase 8, refinamento de todos os trabalhos na fase 9.

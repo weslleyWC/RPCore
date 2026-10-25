@@ -635,5 +635,22 @@ if crew_source.exists():
         'persistence':'No saved ped/vehicle handles, crew membership or new monetary ledger. Existing affiliation/reputation/presence options/metadata unchanged. Crew ends on reload/profile switch/disable/death/mission/cutscene, affiliation mismatch or >180m; no teleport or auto-respawn into crew. Existing source post becomes eligible only as ordinary HQ member afterward.',
         'intentional_differences':'PSRP uses player native group, separation 9999 and combat attributes. RPCore uses scoped tasks on its own existing unarmed HQ NPCs, no takeover of player group or armed escort orders. Waiting/passenger seat allocation/exit are own additions. Driver shuffle prevention flag is documented MP-only, so no claim of game-level prevention of every native/third-party AI shuffle in Legacy.',
         'scope_limits':'No gang wars/territory/economy, armed protection, initiation/leader dialogue or individual command wheel. Native paths, doors, moving seat changes and coexistence with other followers/mods require GTA testing. Phases 8/9 retained.'}
+loyalty_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Loyalty.json'
+if loyalty_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    points=[[float(v) for v in m] for m in re.findall(r'AddLoyaltyPickupLocation\(new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\), ([-\d.]+)f\)',source)]
+    config=json.loads(loyalty_config.read_text())
+    report['gang_loyalty']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_two_packages_handover':'_loyaltyPackagesCollected < 2' in source and 'num >= 2500' in source and 'private void StartLoyaltyHandover()' in source,
+        'reference_awards_affiliation_on_return':'PlayerGangAffiliation = _loyaltyGang.Name' in source and 'private void CompleteLoyaltyInitiation()' in source,
+        'reference_contact_count':len(points),
+        'all_contact_positions_headings_match_reference':len(points)==len(config['Contacts']) and all(all(abs(a-b)<0.00001 for a,b in zip(p,[c['X'],c['Y'],c['Z'],c['Heading']])) for p,c in zip(points,config['Contacts'])),
+        'rpcore_cycle':'F4 optional loyalty initiation near live owned HQ leader while unaffiliated. Shared ShiftGate, two different reference contacts, own mortal unarmed contact spawned near route, E on foot within 2.5m and continuous eligible 2.5s handover, both durable pickups, return to live leader and explicit E atomic affiliation. No cash, inventory item or forced cutscene.',
+        'persistence':'Optional GangState.Loyalty book with pending immutable coordinate snapshots, count 0..2 and bounded receipts. Clone/save-before-publish transaction, wrong attempt/index rejected, completion replay cannot rejoin after leaving. Suspend/END/reload/death/wanted/mission keeps confirmed packages; resume near same leader. Contact death explicitly cancels; failed save suspends preserving last persisted state.',
+        'compatibility':'Legacy Join/Leave remains available when no initiation pending; no retroactive prerequisite on existing affiliation. Active/pending attempt blocks Join and post edits until complete/cancel. New Loyalty.json only copied if missing; old presence/crew/configs and all jobs/DMV retained.',
+        'intentional_differences':'Reference routes return to HQ and uses victory cutscene plus invincible contact. RPCore returns to real leader, keeps contact mortal, has no forced camera/control/cutscene, persists receipts/resume and uses optional F4 for any gang with a configured leader. It does not enforce the reference Strength/Driving initiation type or replace legacy Join.',
+        'configuration_sha256':digest(loyalty_config.read_bytes()),
+        'scope_limits':'Native contact floor/space/animation, leader availability/input and coexistence with mods need GTA testing. No Strength/Driving initiation, full leader dialogue, gang territories/war/economy or police changes. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
