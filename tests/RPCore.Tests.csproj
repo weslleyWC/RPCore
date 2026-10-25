@@ -44,6 +44,7 @@
     <Compile Include="../FreightData.cs" Link="FreightData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
+    <Compile Include="../VehicleInsuranceData.cs" Link="VehicleInsuranceData.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
     <Compile Include="../VisualData.cs" Link="VisualData.cs" />
     <Compile Include="../NeedsData.cs" Link="NeedsData.cs" />
@@ -58,6 +59,7 @@
     <EmbeddedResource Include="../config/Jobs/PdmRepo.json" LogicalName="RPCore.JobDefaults.PdmRepo.json" />
     <EmbeddedResource Include="../config/Jobs/PdmRental.json" LogicalName="RPCore.JobDefaults.PdmRental.json" />
     <EmbeddedResource Include="../config/Jobs/PdmShowroom.json" LogicalName="RPCore.JobDefaults.PdmShowroom.json" />
+    <EmbeddedResource Include="../config/Jobs/VehicleInsurance.json" LogicalName="RPCore.JobDefaults.VehicleInsurance.json" />
     <EmbeddedResource Include="../config/Jobs/Grooming.json" LogicalName="RPCore.JobDefaults.Grooming.json" />
     <EmbeddedResource Include="../config/Jobs/Barber.json" LogicalName="RPCore.JobDefaults.Barber.json" />
     <EmbeddedResource Include="../config/Jobs/HomeStorage.json" LogicalName="RPCore.JobDefaults.HomeStorage.json" />

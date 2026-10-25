@@ -20,10 +20,11 @@ namespace RPCore
         readonly Action housing;
         readonly Action barber;
         readonly Action characters;
+        readonly Action insurance;
         readonly NativeMenu menu = new NativeMenu("RPCore", "");
         public string RequestedProfile;
         bool dirty;
-        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null) { this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null) { this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
 
         void Add(string title, string description, Action action)
         {
@@ -32,7 +33,8 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.38.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.39.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            if (insurance != null) Add("Seguro veicular / recuperacao", "Cadastro gratuito, GPS e recuperacao de destruido por franquia. Veiculos pessoais registrados nas garagens.", () => { menu.Visible = false; insurance(); });
             if (characters != null) Add("Personagens / criar e carregar", "Freemode masculino/feminino com perfil proprio; confirmacao antes de trocar o ped.", () => { menu.Visible = false; characters(); });
             if (barber != null) Add("Barbearias / cortes e olhos", "GPS, previa reversivel e confirmacao do atendimento.", () => { menu.Visible = false; barber(); });
             if (housing != null) Add("Moradia / Eclipse Towers", "Compra, GPS e acesso ao apartamento do perfil ativo.", () => { menu.Visible = false; housing(); });

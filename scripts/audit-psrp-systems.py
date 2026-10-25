@@ -537,5 +537,21 @@ if grooming_config.exists():
         'compatibility': 'New RP_ plus 16 lowercase hex slot IDs cannot address old profile names or escape the save root. Existing profile files never imported/copied into a new slot. Unknown card/body/component/weapon metadata retained. No starting money grant, teleport destination, map cleanup, forced camera or .oiv/.rpf changes.',
         'intentional_differences': 'Reference creator previews/replaces ped while selecting and initializes starting money/gang/location. RPCore separates profile creation from confirmed loading, uses current position, zero balances and protected equipment snapshots; no automatic load or forced gang/property/vehicle changes.',
         'scope_limits': 'No complete external ped/face/stat/movement-state capture, protagonist mission task restoration, creation camera, arbitrary add-on ped catalog, default gang/start-money choices or automatic PSRP appearance import. Model/weapon restoration and story scripts must be tested in GTA. Phases 8/9 retained.'}
+insurance_config = Path(__file__).resolve().parents[1] / 'config/Jobs/VehicleInsurance.json'
+if insurance_config.exists():
+    source = (a.reference_source / 'PSRP/Vehicle_Insurance.cs').read_text()
+    report['vehicle_insurance'] = {
+        'reference_source': 'PSRP/Vehicle_Insurance.cs',
+        'reference_has_enroll_cancel_management': 'SaveVehicleToPersistence' in source and 'Cancel Insurance' in source and 'InsuredVehiclesMenu' in source,
+        'reference_has_10000_bank_recovery': 'DecreaseBankBalance(10000)' in source and 'IsConsideredDestroyed' in source and 'vehicle.Repair();' in source,
+        'reference_preserves_fuel_oil': 'float fuelLevel = vehicle.FuelLevel;' in source and 'float oilLevel = vehicle.OilLevel;' in source and 'vehicle.FuelLevel = fuelLevel;' in source and 'vehicle.OilLevel = oilLevel;' in source,
+        'rpcore_cycle': 'Optional free insurance for owned registered garage road vehicles, per-policy excess snapshot default 10000 bank, GPS, explicit policy cancellation, existing destroyed vehicle repair in place. No spawn, deletion, towing, cash payout or enrollment on update.',
+        'wallet_checkpoint': 'Additive VehicleInsurance. Begin reserves excess/pending; Start saved before repair; Complete atomically updates existing Transport.Vehicles entry and claim count while retaining Transport root reference. Resume has no second debit, unstarted refund only, explicit started abandonment without refund. All save failures roll back record/book/bank.',
+        'compatibility': 'Requires road/model/plate/registered ownership, unique loaded identity, empty stopped detached non-job vehicle nearby on foot. Resume also exact original handle. Garage storage/retrieval/autosave skip that pending vehicle to prevent overwrite/duplicate. Other vehicles retain old behavior. Policy cancellation never deletes garage/car/fuel/storage.',
+        'resources': 'RPCore tank is authoritative when present; otherwise native fuel is snapshotted. Reapply capped by current tank, completion refuses fuel increase. Oil preserved. Existing vehicle mods/paint remain on same entity, fresh snapshot with old unknown metadata saved. InsuranceBanner already exists in installed PSRP_Banners; fallback in memory without rewriting old bindings.',
+        'defaults': json.loads(insurance_config.read_text()),
+        'configuration_sha256': digest(insurance_config.read_bytes()),
+        'intentional_differences': 'Reference permits registering current vehicle persistence and moves/repares wreck into fixed free parking. RPCore only covers garage-owned road vehicles and repairs at current position; deliberately no deletion of nearby cars, no arbitrary persistence/duplicate replacement or forced delivery.',
+        'scope_limits': 'Missing/despawned vehicle has no new replacement claim in this module. Existing garage locate/recover behavior remains. No towing actor, remote delivery, insurance payments, full policy expiry/renewal, automatic PSRP policy import, oil mechanics or general license/police changes. Native burned-wreck repair/fuel/customization needs GTA tests. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

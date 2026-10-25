@@ -144,6 +144,7 @@ namespace RPCore
                 }
                 string texture = skin.Key=="reference-actions" ? ReferenceInterface.SettingsBanner : skin.Key == "reference-settings" ? (animate ? ReferenceInterface.AnimatedSettingsBanner(unchecked(Game.GameTime-bannerStarted)) : ReferenceInterface.SettingsBanner) : null;
                 if (texture == null && Bindings.Banners != null) Bindings.Banners.TryGetValue(skin.Key, out texture);
+                if(texture==null && skin.Key=="insurance" && (Bindings.Banners==null || !Bindings.Banners.ContainsKey("insurance")))texture="InsuranceBanner";
                 bool use = Active && MenuBanners && Has("PSRP_Banners", texture);
                 if (use && (!skin.Applied || skin.AppliedTexture != texture))
                 {

@@ -76,3 +76,6 @@ Atualização 0.37.0 / fase 6.3D: herança e 20 traços implementados no freemod
 
 
 Atualização 0.38.0 / fase 6.3E: criação de cadastro e carregamento explícito de freemode M/F, com corpo/equipamento, rosto confirmado no RPCore e retorno ao protagonista. Comparação de Gender/BuildMenu/LoadCharacterToPed PSRP registrada. Falhas protegem snapshots pendentes. Refinamento de câmera/prévia/ergonomia e confirmação visual/recursos externos no GTA continuam na fase 8; não se declarou cópia completa de estados de outros mods ou aparência PSRP. Fase 9 dos trabalhos preservada.
+
+
+Atualização 0.39.0 / fase 6.4A: seguro pessoal com apólices opcionais e recuperação física de destruído no local por franquia, comparação Vehicle_Insurance PSRP registrada. Sem entrega/guincho/reposição automática; garagens/fuel/storage mantidos. Fase 8 refinará menu/banner/mecânicas veiculares e conferirá reparo/recursos com mods no GTA. Licenças e demais sistemas da fase 6 continuam; fase 9 dos trabalhos preservada.

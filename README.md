@@ -1,6 +1,13 @@
 # RPCore 0.35.0 — GTA V Legacy
 
 
+## Fase 6.4A — seguro de veículos pessoais
+
+[Atualização 0.39.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.39.0.zip) · [Código-fonte 0.39.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.39.0.zip) · [Instalação e teste](docs/FASE-6.4A-0.39.0.md)
+
+F10 → Seguro veicular / recuperacao: cadastro gratuito de carro/moto registrado na garagem, GPS, cancelamento e reparo do mesmo veículo destruído no local, com franquia padrão $10.000 do banco. Pedido persistente/retomada sem cobrar novamente, preservação de combustível/óleo e proteção da garagem enquanto pendente. 1412 testes aprovados e build sem erros/avisos. Saves/configs/personagens/F2/F11 preservados; reparo e aparência exigem GTA. Entrega/guincho/licenças e demais diferenças continuam; fases 8/9 mantidas.
+
+
 ## Fase 6.3E — criar e carregar personagens
 
 [Atualização 0.38.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.38.0.zip) · [Código-fonte 0.38.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.38.0.zip) · [Instalação e teste](docs/FASE-6.3E-0.38.0.md)

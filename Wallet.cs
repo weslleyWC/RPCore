@@ -18,6 +18,14 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static VehicleInsuranceData VehicleInsurance=>data.VehicleInsurance??new VehicleInsuranceData();
+        public static bool VehicleInsure(VehicleInsuranceOptions c,string vehicle,out bool changed)=>VehicleInsuranceTransactions.Enroll(data,c,vehicle,Save,out changed);
+        public static bool VehicleInsuranceCancel(string vehicle,out bool changed)=>VehicleInsuranceTransactions.Cancel(data,vehicle,Save,out changed);
+        public static bool VehicleRecoveryBegin(string vehicle,SavedVehicle original,int handle,float oil,bool destroyed,string id,out bool changed)=>VehicleInsuranceTransactions.Begin(data,vehicle,original,handle,oil,destroyed,id,Save,out changed);
+        public static bool VehicleRecoveryStart(string id,out bool changed)=>VehicleInsuranceTransactions.Start(data,id,Save,out changed);
+        public static bool VehicleRecoveryComplete(string id,SavedVehicle repaired,out bool changed)=>VehicleInsuranceTransactions.Complete(data,id,repaired,Save,out changed);
+        public static bool VehicleRecoveryRefund(string id,out bool changed)=>VehicleInsuranceTransactions.Refund(data,id,Save,out changed);
+        public static bool VehicleRecoveryAbandon(string id,out bool changed)=>VehicleInsuranceTransactions.Abandon(data,id,Save,out changed);
         public static GroomingData Grooming => data.Grooming ?? new GroomingData();
         public static bool GroomingBegin(GroomingLook look,int price,string id,out bool changed)=>GroomingTransactions.Begin(data,look,price,id,Save,out changed);
         public static bool GroomingStart(string id,out bool changed)=>GroomingTransactions.Start(data,id,Save,out changed);

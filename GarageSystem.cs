@@ -118,6 +118,8 @@ namespace RPCore
             if (!Nearby(garage) || !data.Garages.Contains(garage.Id) || v == null || !v.Exists() || v.IsDead || v.Speed > .5f || v.Position.DistanceTo(garage.Position) > 15 || !(v.Model.IsCar || v.Model.IsBike || v.Model.IsQuadBike) || v.Model.IsBicycle) return false;
             if (driverRequired && v.Driver != p) return false;
             if (v.PassengerCount > 0 || (v.Driver != null && v.Driver.Exists() && v.Driver != p) || Function.Call<bool>(Hash.IS_ENTITY_ATTACHED, v)) return false;
+            var insuredRecord=data.FindIdentity(v.Model.Hash, Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT,v));
+            if(Wallet.VehicleInsurance.Pending!=null && insuredRecord?.Id==Wallet.VehicleInsurance.Pending.VehicleId)return false;
             bool owned = data.FindIdentity(v.Model.Hash, Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)) != null;
             if (!owned && !Cfg.AllowMissionStorage && Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, v)) return false;
             return true;
@@ -172,6 +174,7 @@ namespace RPCore
         }
         void Retrieve(GarageDefinition garage, SavedVehicle record)
         {
+            if(Wallet.VehicleInsurance.Pending?.VehicleId==record.Id){Notify.Show("Conclua ou encerre o pedido de seguro antes de retirar este veiculo.");return;}
             if (!Nearby(garage) || !data.Garages.Contains(garage.Id) || pending != null) return;
             var existing = FindLive(record);
             if (existing != null)
@@ -243,7 +246,7 @@ namespace RPCore
         public void Save()
         {
             if (pending != null) return;
-            foreach (var record in data.Vehicles.Where(v => !v.Stored && !v.PendingRemoval).ToList())
+            foreach (var record in data.Vehicles.Where(v => !v.Stored && !v.PendingRemoval && Wallet.VehicleInsurance.Pending?.VehicleId!=v.Id).ToList())
             {
                 var v = FindLive(record); if (v == null || v.IsDead) continue;
                 var snapshot = VehicleSnapshot.Capture(v); snapshot.Id = record.Id; snapshot.GarageId = record.GarageId; snapshot.Extra = record.Extra;

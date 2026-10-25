@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.39.0: [fase 6.4A — seguro veicular](FASE-6.4A-0.39.0.md), após moradia/personagem: apólices opcionais, GPS/cancelamento e recuperação de destruído no local por franquia bancária, sem duplicar carro. Integração com garagens preserva registros pendentes. Licenças, entrega/guincho e demais diferenças seguem; fases 8/9 mantidas. Teste real pendente.
+
 Andamento 0.38.0: [fase 6.3E — criação/carregamento de personagens](FASE-6.3E-0.38.0.md), freemode M/F com nome/perfil próprio, confirmação separada, corpo/equipamento e volta ao protagonista de origem. Nenhum cadastro sobrescreve saves antigos; falhas mantêm snapshot pendente. Sem troca automática. Câmera/prévia/importação completa e demais diferenças seguem; fases 8/9 mantidas. Teste no GTA pendente.
 
 Andamento 0.37.0: [fase 6.3D — herança e 20 traços faciais](FASE-6.3D-0.37.0.md), controles opcionais de rosto integrados ao Grooming, confirmação recuperável e espera assíncrona do head blend. Não cria/troca ped. Registros anteriores preservados; criador completo e demais diferenças seguem. Fases 8/9 mantidas, teste real pendente.
