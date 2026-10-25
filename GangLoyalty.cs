@@ -21,7 +21,7 @@ namespace RPCore
         bool AtLeader(string gang){var leader=presence.Leader(gang);return Calm && !InterfaceOptions.ModalOpen && Game.Player.Character.IsOnFoot && leader!=null && Game.Player.Character.Position.DistanceTo(leader.Position)<=3;}
         public bool Begin(GangDefinition gang)
         {
-            if(active || HasPending || !AtLeader(gang.Name) || !GangLoyaltyRules.Unaffiliated(state().Gang) || !gate.Acquire(Owner))return false;
+            if(active || HasPending || state().Driving?.Pending!=null || !AtLeader(gang.Name) || !GangLoyaltyRules.Unaffiliated(state().Gang) || !gate.Acquire(Owner))return false;
             try{
                 var candidates=options.Contacts.Where(a=>options.Contacts.Any(b=>GangPresenceRules.Distance(a,b)>=3)).ToArray();if(candidates.Length==0)return false;var first=candidates[random.Next(candidates.Length)];var others=options.Contacts.Where(p=>GangPresenceRules.Distance(p,first)>=3).ToArray();
                 var leader=presence.Leader(gang.Name);var p=leader.Position;
@@ -31,7 +31,7 @@ namespace RPCore
             }finally{if(!active)gate.Release(Owner);}
         }
         public bool Resume()
-        {if(active || Pending==null || state().Strength?.Pending!=null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
+        {if(active || Pending==null || state().Driving?.Pending!=null || state().Strength?.Pending!=null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
         public bool Cancel(){if(Pending==null)return false;if(!GangLoyaltyTransactions.Cancel(state(),Pending.Id,save,out _))return false;Suspend();return true;}
         void ClearContact(){StopHandover();if(contact!=null && contact.Exists())contact.Delete();contact=null;if(model.Hash!=0)model.MarkAsNoLongerNeeded();model=default(Model);loading=false;}
         void StopHandover(){if(handing && handoverPed!=null && handoverPed.Exists())Function.Call(Hash.STOP_ANIM_TASK,handoverPed,"mp_common","givetake1_a",-4f);handing=false;handoverPed=null;}

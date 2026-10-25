@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.47.0: [fase 6.5E — iniciação de direção](FASE-6.5E-0.47.0.md), passageiro próprio/tiro em alvo rival, 25 pontos PSRP, autoria nativa, fuga150m, retorno e filiação persistida no líder. Carro emprestado do jogador preservado; trava/retomada/exclusão mútua entre as três iniciações. Embarque/visada/autoria precisam de GTA. Diálogo/territórios/guerras/economia/polícia e demais diferenças continuam; fases 8/9 mantidas.
+
+
 Andamento 0.46.0: [fase 6.5D — iniciação por força](FASE-6.5D-0.46.0.md), três desafiantes próprios, combate desarmado/limites/derrotas distintas, aprovação persistente e confirmação no líder. Guarda de atividade, retomada parcial com novas provas físicas e exclusão mútua com lealdade; sistemas anteriores preservados. Combate/flags/IA precisam de GTA. Direção/diálogo completo/territórios/guerras/economia/polícia e demais diferenças continuam; fases 8/9 mantidas.
 
 

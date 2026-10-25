@@ -100,3 +100,6 @@ Atualização 0.45.0 / fase 6.5C: iniciação por lealdade opcional no líder, d
 
 
 Atualização 0.46.0 / fase 6.5D: iniciação por força com três desafiantes, após comparar estados/vida/área/derrotas PSRP. Sem forçar arma/cutscene, com aprovação e filiação separadas e retomada física própria. Flags de dano/rendição e luta exigem GTA; apresentação/ergonomia continuam na fase 8. Refinamento de todos os trabalhos permanece na fase 9; direção/territórios/guerras/economia/polícia continuam pendentes.
+
+
+Atualização 0.47.0 / fase 6.5E: iniciação de direção após comparar passageiro/alvo/autoria/fuga/retorno PSRP. Carro do jogador somente referenciado, grupos próprios temporários e aprovação/retomada persistentes, sem alterar polícia/relações nativas. Tiros/visada/portas/autoria precisam de GTA e refinamento de interface/mecânicas na fase 8; refinamento de todos os trabalhos permanece na fase 9. Territórios/guerras/economia/polícia e diálogo completo continuam pendentes.

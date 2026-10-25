@@ -667,5 +667,24 @@ if strength_config.exists():
         'configuration_sha256':digest(strength_config.read_bytes()),
         'defaults':json.loads(strength_config.read_text()),
         'scope_limits':'Native hand combat/health thresholds/surrender/damage flag attribution, ped paths/floor and NPC interactions need GTA tests. No Driving initiation, full leader dialogue/territories/war/economy or police integration. Phases 8/9 retained.'}
+driving_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Driving.json'
+if driving_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    block=source.split('private readonly Dictionary<string, Vector3> drivingInitiationLocations',1)[1].split('private ',1)[0]
+    points=[[float(v) for v in m] for m in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',block)]
+    config=json.loads(driving_config.read_text())
+    report['gang_driving']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_target_count':len(points),
+        'all_target_positions_match_reference':len(points)==len(config['Targets']) and all(all(abs(a-b)<0.00001 for a,b in zip(p,[c['X'],c['Y'],c['Z']])) for p,c in zip(points,config['Targets'])),
+        'reference_has_armed_passenger':'WeaponHash.MicroSMG, 1500' in source and 'private void UpdateDrivingCrewBoarding()' in source,
+        'reference_requires_crew_kill':'GET_PED_SOURCE_OF_DEATH' in source and 'private bool WasDrivingTargetKilledByCrew' in source and 'You attacked or hit the target.' in source,
+        'reference_has_escape_and_return':'DistanceTo(_drivingTargetPosition) < 150f' in source and 'DistanceTo(_drivingHQPosition) > 20f' in source and 'private void CompleteDrivingInitiation()' in source,
+        'rpcore_cycle':'F4 optional driving initiation near live leader while unaffiliated. Borrow player current car without ownership/mutation/deletion; own gang passenger boards front seat physically, 25 reference target locations and rival-model target, passenger MicroSMG only against owned target. Exact killer handle plus rejection of player/car damage, escape >=150m, driver/passenger return home stopped and no wanted, durable report then E at leader membership.',
+        'vehicle_and_actor_safety':'DontJackAnyone/BlockSeatShuffling, no warp/unlock/driver seat or company JobVehicles. Pin car after actual boarding; same driver/car/front passenger required until physical return. Only own NPCs/blips/models and two unique temporary relationship groups cleaned. Hostility only between private crew/target groups; no native group matrix/police manipulation. No player car reservation/deletion, player weapon grant, money or loot drop.',
+        'persistence':'Optional GangState.Driving book and sequential Boarding/Target/Escape/Return/Report, clone/save-before-publish, bounded receipts/attempts/completions, immutable rules/models/home/target. Partial resume replays all physical stages with new actors and same attempt; approved report reload issues without actors. Mutual exclusion with loyalty/strength and shared jobs/DMV gate.',
+        'intentional_differences':'Reference permits some exits and uses victory cutscene. RPCore requires same driver/passenger vehicle until home, parked home return, wanted cleared naturally before report, 1200 active seconds and explicit E at leader. No forced camera/cutscene or police immunity. Attribution relies on native damage/death fields and requires GTA tests with other scripts.',
+        'configuration_sha256':digest(driving_config.read_bytes()),
+        'scope_limits':'Native passenger doors/window fire/aim, target floor/streaming/clearance and exact kill attribution need GTA validation. No full leader dialogue, territories/war/economy or police integration. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -26,8 +26,8 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         readonly AchievementSystem ach;
         GangState state;
-        readonly GangLoyalty loyalty;readonly GangStrength strength;
-        bool InitiationPending=>loyalty.HasPending || strength.HasPending;
+        readonly GangLoyalty loyalty;readonly GangStrength strength;readonly GangDriving driving;
+        bool InitiationPending=>loyalty.HasPending || strength.HasPending || driving.HasPending;
         void SaveState(GangState next){Store.Write("GangState.json",next);state=next;dirty=true;}
         bool dirty;NativeItem presenceStatus;
         readonly GangPresence presence=new GangPresence();
@@ -46,7 +46,7 @@ namespace RPCore
                 b.Color = gang.GangColor == "Purple" ? BlipColor.Purple : gang.GangColor == "Green" ? BlipColor.Green : BlipColor.Yellow;
                 blips.Add(b);
             }
-            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);
+            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);
         }
 
         public void Create(string name)
@@ -84,6 +84,10 @@ namespace RPCore
                 AddStrengthAction((strength.Active?"Suspender":"Retomar")+" prova de forca: "+p.Gang+" / "+(p.Report?"aprovada":p.Defeated?.Count+"/3"),"Junto ao lider, sem filiacao. Luta parcial reinicia os tres; aprovacao completa fica salva para confirmar.",()=>{if(strength.Active){strength.Suspend();return true;}return strength.Resume();});
                 AddStrengthAction("Cancelar prova de forca pendente","Sem taxa; descarta apenas esta tentativa.",()=>strength.Cancel());
             }
+            if(state.Driving?.Pending!=null){var p=state.Driving.Pending;
+                AddDrivingAction((driving.Active?"Suspender":"Retomar")+" iniciacao de direcao: "+p.Gang+" / "+p.Stage,"Junto ao lider, sem filiacao. Retomada parcial reinicia embarque/alvo/fuga/retorno; aprovacao completa fica emitivel.",()=>{if(driving.Active){driving.Suspend();return true;}return driving.Resume();});
+                AddDrivingAction("Cancelar iniciacao de direcao pendente","Sem taxa; descarta somente esta tentativa.",()=>driving.Cancel());
+            }
             AddCrewAction("Recrutar membro mais proximo", "A pe, a ate 3m de um membro da sua gangue. Presenca ligada; equipe de ate 3. Lideres e NPCs alheios nao podem ser recrutados.",()=>presence.RecruitNearest(state.Gang));
             AddCrewAction("Equipe: seguir", "Segue a pe e embarca como passageiro quando voce dirige um carro parado com lugar livre. Nao usa veiculos reservados de trabalho.",()=>presence.Order(false));
             AddCrewAction("Equipe: aguardar aqui", "Pare os veiculos. Desembarca e aguarda no local; use seguir para continuar.",()=>presence.Order(true));
@@ -97,6 +101,7 @@ namespace RPCore
                 var route = new NativeItem("GPS: " + gang.Name, (gang.Description ?? "")+" / postos disponiveis: "+presence.Posts(gang));
                 route.Activated += (s, e) => { Function.Call(Hash.SET_NEW_WAYPOINT, gang.HQX, gang.HQY); menu.Visible = false; };
                 menu.Add(route);
+                AddDrivingAction("Iniciacao por direcao: "+gang.Name,"Junto ao lider e sem filiacao. Voce dirige um carro; integrante elimina alvo rival, fuga de 150m e retorno juntos. Sem alterar seu carro ou armas.",()=>driving.Begin(gang,gangs));
                 AddStrengthAction("Iniciacao por forca: "+gang.Name,"Junto ao lider, sem filiacao, desarmado e com vida acima de 100. Tres desafiantes, apenas punhos. Nao restaura sua vida ou armadura.",()=>strength.Begin(gang));
                 AddLoyaltyAction("Iniciacao por lealdade: "+gang.Name,"Sem filiacao, a pe a ate 3m do lider vivo e com presenca ligada. Busque dois pacotes e retorne. Nao substitui Join legado.",()=>loyalty.Begin(gang));
                 var join = new NativeItem("Join " + gang.Name, "Visit the HQ on foot. Complete pizza deliveries to earn reputation in RPCore.");
@@ -114,6 +119,9 @@ namespace RPCore
             leave.Activated += (s, e) => { var next=CharacterRules.Copy(state);next.Gang=null;next.Reputation=0;SaveState(next); }; menu.Add(leave);
             dirty = false;
         }
+
+        void AddDrivingAction(string label,string description,Func<bool> action)
+        {var item=new NativeItem(label,description);item.Activated+=(s,e)=>{try{if(!action())Notify.Show("Confira lider, filiacao, modelos rivais, pendencia e atividade atual.");else{dirty=true;menu.Visible=false;}}catch(Exception ex){driving.Suspend();Log.Error("gang driving menu",ex);Notify.Show("Iniciacao suspensa; dados confirmados conservados.");}};menu.Add(item);}
 
         void AddStrengthAction(string label,string description,Func<bool> action)
         {var item=new NativeItem(label,description);item.Activated+=(s,e)=>{try{if(!action())Notify.Show("Confira lider, vida, punhos, filiacao, pendencia e atividade atual.");else{dirty=true;menu.Visible=false;}}catch(Exception ex){strength.Suspend();Log.Error("gang strength menu",ex);Notify.Show("Prova suspensa; dados confirmados conservados.");}};menu.Add(item);}
@@ -148,6 +156,7 @@ namespace RPCore
             try{presence.Tick(gangs,state.PresenceEnabled,state.Gang);}catch(Exception ex){presence.Clear();Log.Error("gang presence",ex);}
             try{loyalty.Tick();}catch(Exception ex){loyalty.Suspend();Log.Error("gang loyalty tick",ex);Notify.Show("Iniciacao suspensa; progresso confirmado preservado.");}
             try{strength.Tick();}catch(Exception ex){strength.Suspend();Log.Error("gang strength tick",ex);Notify.Show("Prova suspensa; retome no lider. Dados confirmados conservados.");}
+            try{driving.Tick();}catch(Exception ex){driving.Suspend();Log.Error("gang driving tick",ex);Notify.Show("Iniciacao de direcao suspensa; retome junto ao lider.");}
             if (menu.Visible && dirty) Rebuild();
             if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count+" / equipe "+presence.CrewCount+"/3";
             var p = Game.Player.Character;
@@ -157,15 +166,16 @@ namespace RPCore
         }
         public void OnKey(KeyEventArgs e)
         {
+            if(e.KeyCode==Keys.End && driving.Active){driving.Suspend();dirty=true;Notify.Show("Iniciacao suspensa. Retomada parcial reinicia a missao de direcao.");return;}
             if(e.KeyCode==Keys.End && strength.Active){strength.Suspend();dirty=true;Notify.Show("Prova suspensa. Retomada parcial reinicia os tres desafiantes.");return;}
             if(e.KeyCode==Keys.End && loyalty.Active){loyalty.Suspend();dirty=true;Notify.Show("Iniciacao suspensa. Retome junto ao lider pelo F4.");return;}
-            if(e.KeyCode==Keys.E){try{strength.Interact();loyalty.Interact();}catch(Exception ex){strength.Suspend();loyalty.Suspend();Log.Error("gang initiation interaction",ex);Notify.Show("Entrega nao confirmada; retome pelo F4.");}return;}
+            if(e.KeyCode==Keys.E){try{driving.Interact();strength.Interact();loyalty.Interact();}catch(Exception ex){driving.Suspend();strength.Suspend();loyalty.Suspend();Log.Error("gang initiation interaction",ex);Notify.Show("Entrega nao confirmada; retome pelo F4.");}return;}
             if (e.KeyCode != Cfg.GangsKey) return;
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
+        public void Reload() { driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }

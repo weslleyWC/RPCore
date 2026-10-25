@@ -1,4 +1,11 @@
-# RPCore 0.46.0 — GTA V Legacy
+# RPCore 0.47.0 — GTA V Legacy
+
+## Fase 6.5E — iniciação de direção
+
+[Atualização 0.47.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.47.0.zip) · [Código-fonte 0.47.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.47.0.zip) · [Instalação e teste](docs/FASE-6.5E-0.47.0.md)
+
+F4 → presença ligada → sem filiação, perto do líder → Iniciacao por direcao. Integrante embarca no banco dianteiro, jogador dirige até alvo rival em um de 25 pontos PSRP, só morte pelo integrante aprova ataque, fuga150m e retorno juntos na HQ. Aprovação salva, E no líder e retomada sem tentativa/taxa extra; carro do jogador e dados antigos preservados. 1720 testes aprovados e build sem erros/avisos. Embarque/tiro pela janela/autoria/piso precisam de GTA. Diálogo/territórios/guerras/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5D — iniciação por força
 

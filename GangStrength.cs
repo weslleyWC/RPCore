@@ -22,14 +22,14 @@ namespace RPCore
         {this.gate=gate;this.pool=pool;this.presence=presence;this.state=state;this.save=save;options=Store.LoadDef("Gangs/Strength.json",()=>new GangStrengthOptions());if(options==null || !options.Valid){options=new GangStrengthOptions();Log.Write("Invalid strength options; original retained, defaults used.");}}
         public bool Begin(GangDefinition gang)
         {
-            if(Active || HasPending || state().Loyalty?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(gang.Name) || !Unarmed || Game.Player.Character.Health<=100)return false;
+            if(Active || HasPending || state().Driving?.Pending!=null || state().Loyalty?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(gang.Name) || !Unarmed || Game.Player.Character.Health<=100)return false;
             var choices=(gang.PedModels??Array.Empty<string>()).Where(GangPresenceRules.ModelName).ToArray();if(choices.Length==0)return false;
             var p=Game.Player.Character.Position;var attempt=new GangStrengthAttempt{Id=Guid.NewGuid().ToString("N"),Gang=gang.Name,Center=new GangSpot{X=p.X,Y=p.Y,Z=p.Z},Models=Enumerable.Range(0,3).Select(i=>choices[i%choices.Length]).ToArray(),Options=CharacterRules.Copy(options)};
             return Prepare(attempt);
         }
         public bool Resume()
         {
-            if(Active || Pending==null || state().Strength.Valid!=true || state().Loyalty?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang))return false;
+            if(Active || Pending==null || state().Driving?.Pending!=null || state().Strength.Valid!=true || state().Loyalty?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang))return false;
             if(Pending.Report){if(!gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();ReportRoute();return true;}
             if(!Unarmed || Game.Player.Character.Health<=100 || Game.Player.Character.Position.DistanceTo(Pos(Pending.Center))>Pending.Options.ArenaRadius-8)return false;
             return Prepare(CharacterRules.Copy(Pending));
