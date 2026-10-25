@@ -1,6 +1,13 @@
 # RPCore 0.35.0 — GTA V Legacy
 
 
+## Fase 6.4C — DMV / habilitação M1 para motos
+
+[Atualização 0.41.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.41.0.zip) · [Código-fonte 0.41.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.41.0.zip) · [Instalação e teste](docs/FASE-6.4C-0.41.0.md)
+
+F10 → DMV / habilitacoes C e M1 → Trocar para M1: teoria própria ($30/12 acertos), prático PCJ 600/examinadora ($60), capacete/setas, três trechos a 15 km/h e demais a 40, paradas/estacionamento e emissão por perfil. Documentos/recibos/tentativas M1 separados da C, com retomada sem nova taxa; capacete do atendimento protegido contra gravação como roupa permanente. 1490 testes aprovados e build sem erros/avisos. C/saves/configs/F2/F11 preservados; física/capacete precisam de GTA. Classe A/fiscalização e fases 8/9 seguem.
+
+
 ## Fase 6.4B — DMV / habilitação classe C
 
 [Atualização 0.40.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.40.0.zip) · [Código-fonte 0.40.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.40.0.zip) · [Instalação e teste](docs/FASE-6.4B-0.40.0.md)

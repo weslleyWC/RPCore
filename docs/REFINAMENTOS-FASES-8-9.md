@@ -82,3 +82,6 @@ Atualização 0.39.0 / fase 6.4A: seguro pessoal com apólices opcionais e recup
 
 
 Atualização 0.40.0 / fase 6.4B: DMV C com questões próprias, prático/36 pontos e avaliação/emissão persistentes. Fonte TheoryTests tem botão vazio e progressão incompleta; diferenças documentadas na auditoria. Refinamento de leitura/menus, áudio/câmera e reconhecimento de trânsito continua na fase 8; nenhum job/veículo anterior recebeu novo bloqueio por licença. Classes A/M1 e fiscalização permanecem posteriores. Fase 9 dos trabalhos mantida.
+
+
+Atualização 0.41.0 / fase 6.4C: M1 com livro/questões próprios, PCJ/examinadora na garupa, capacete e limites por trecho. Referência só anuncia M1 futura; adaptação do circuito C e escolha de garupa são implementação própria. C preservada. Refinamento de física/rota/UI/capacete e avaliação de trânsito continua na fase 8; classe A e fiscalização não declaradas concluídas. Fase 9 dos trabalhos mantida.

@@ -18,15 +18,16 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static DmvData DmvM1=>data.DmvM1??new DmvData();
         public static DmvData Dmv=>data.Dmv??new DmvData();
-        public static bool DmvBegin(DmvOptions c,bool practical,string id,out bool changed)=>DmvTransactions.Begin(data,c,practical,id,Save,out changed);
-        public static bool DmvStart(string id,out bool changed)=>DmvTransactions.Start(data,id,Save,out changed);
-        public static bool DmvAnswer(string id,int question,int answer,out bool changed)=>DmvTransactions.Answer(data,id,question,answer,Save,out changed);
-        public static bool DmvProgress(string id,DmvDrive state,out bool changed)=>DmvTransactions.Progress(data,id,state,Save,out changed);
-        public static bool DmvRestart(string id,out bool changed)=>DmvTransactions.Restart(data,id,Save,out changed);
-        public static bool DmvFinish(string id,bool passed,out bool changed)=>DmvTransactions.Finish(data,id,passed,Save,out changed);
-        public static bool DmvCancel(string id,out bool changed)=>DmvTransactions.Cancel(data,id,Save,out changed);
-        public static bool DmvAbandon(string id,out bool changed)=>DmvTransactions.Abandon(data,id,Save,out changed);
+        public static bool DmvBegin(DmvOptions c,bool practical,string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Begin(data,c,practical,id,Save,out changed,category);
+        public static bool DmvStart(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Start(data,id,Save,out changed,category);
+        public static bool DmvAnswer(string id,int question,int answer,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Answer(data,id,question,answer,Save,out changed,category);
+        public static bool DmvProgress(string id,DmvDrive state,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Progress(data,id,state,Save,out changed,category);
+        public static bool DmvRestart(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Restart(data,id,Save,out changed,category);
+        public static bool DmvFinish(string id,bool passed,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Finish(data,id,passed,Save,out changed,category);
+        public static bool DmvCancel(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Cancel(data,id,Save,out changed,category);
+        public static bool DmvAbandon(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Abandon(data,id,Save,out changed,category);
         public static VehicleInsuranceData VehicleInsurance=>data.VehicleInsurance??new VehicleInsuranceData();
         public static bool VehicleInsure(VehicleInsuranceOptions c,string vehicle,out bool changed)=>VehicleInsuranceTransactions.Enroll(data,c,vehicle,Save,out changed);
         public static bool VehicleInsuranceCancel(string vehicle,out bool changed)=>VehicleInsuranceTransactions.Cancel(data,vehicle,Save,out changed);

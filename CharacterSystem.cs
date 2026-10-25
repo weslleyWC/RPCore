@@ -13,6 +13,7 @@ namespace RPCore
     {
         public string Name=>"characters";
         readonly ObjectPool pool;readonly ShiftGate gate;readonly Action<string,int> transition;readonly CharacterFiles files;readonly JsonFiles json=new JsonFiles();readonly NativeMenu menu;
+        public Func<CharacterBody,CharacterBody> SnapshotFilter;
         CharacterCard current;Operation operation;bool switching,lease;
         string newName="Novo personagem",newModel="mp_m_freemode_01";
         sealed class Operation
@@ -139,7 +140,9 @@ namespace RPCore
         void SaveBody(bool beforeSwap)
         {
             if(current==null || !CharacterRules.CanCapture(current,Profile.Id,Game.Player.Character.Model.Hash,!Game.Player.Character.IsDead,!beforeSwap && operation!=null))return;
-            var next=CharacterRules.Copy(current);next.Body=CharacterRules.MergeBody(next.Body,CharacterBodyRuntime.Capture(Game.Player.Character));files.Write(next);current=next;
+            var next=CharacterRules.Copy(current);var snapshot=CharacterBodyRuntime.Capture(Game.Player.Character);
+            if(SnapshotFilter!=null)snapshot=SnapshotFilter(snapshot);
+            next.Body=CharacterRules.MergeBody(next.Body,snapshot);files.Write(next);current=next;
         }
         public void Reload()
         {

@@ -569,9 +569,26 @@ if dmv_config.exists():
         'rpcore_cycle': 'F10 physical DMV class C: own 15-question Portuguese theory, 12/15 pass, persistent answer receipts and theory certificate. Prepared Asterope/non-invincible examiner before practical fee, belt/right-left indicators, all 36 ordered points, three required stops, speed/belt/damage/time assessment, return/park/exit and explicit desk license issue.',
         'wallet_checkpoint': 'Additive Dmv book. Bank fee/counters/pending/config snapshot atomic, start authorization before exam, every answer/progress saved with rollback; paid resume has no new charge and keeps points/faults/time. Before start refund, after start explicit abandonment without refund. Theory certificate survives practical failure. Final license requires report/all points/within limits.',
         'compatibility': 'Advisory document: no new gating of existing jobs/garage/insurance/pilot qualification. Shared activity lease. No teleport/freeze/player control lock/police ignore/global relationship changes. Own temporary test car reserved against garage/insurance and retired only empty/stopped; own examiner cleanup. No automatic resume, paid attempt result or license on load.',
-        'intentional_differences': 'Reference practical button is empty, starter has no call in class, and route switch stalls at point 2. RPCore implements own complete assessment/finish. Uses own questions instead of source texture pages, no invincible car/examiner or forced end teleport. A/M1 remain future in reference and are not exposed as empty tests.',
+        'intentional_differences': 'Reference practical button is empty, starter has no call in class, and route switch stalls at point 2. RPCore implements own complete assessment/finish. Uses own questions instead of source texture pages, no invincible car/examiner or forced end teleport. A/M1 remain future in reference; 6.4C implements M1 independently, not as an empty menu.',
         'defaults': config,
         'configuration_sha256': digest(dmv_config.read_bytes()),
-        'scope_limits': 'Class C only, no automatic PSRP document import, physical document inventory item, traffic-light AI/sign recognition or new enforcement. Native route/parking/examiner/seatbelt/indicator gameplay needs GTA tests; UI phase 8 and work refinement phase 9 retained.'}
+        'scope_limits': 'This section covers class C; 6.4C adds separate M1. No automatic PSRP document import, physical document inventory item, traffic-light AI/sign recognition or new enforcement. Native route/parking/examiner/seatbelt/indicator gameplay needs GTA tests; UI phase 8 and work refinement phase 9 retained.'}
+m1_config = Path(__file__).resolve().parents[1] / 'config/Jobs/DmvM1.json'
+if m1_config.exists():
+    source = (a.reference_source / 'PSRP/TheoryTests.cs').read_text()
+    character = (a.reference_source / 'PSRP/MultiplayerCharacter.cs').read_text()
+    report['dmv_m1'] = {
+        'reference_source': ['PSRP/TheoryTests.cs','PSRP/MultiplayerCharacter.cs'],
+        'reference_declares_m1_price_30': 'Class M1 Theory Test' in source and 'Cost: $30' in source,
+        'reference_m1_is_future_placeholder': 'ClassM1TheoryTest.Description = "Coming In Later Update";' in source and 'ClassM1TheoryTest.Activated' not in source,
+        'reference_has_m1_document_fields': 'HasClassM1PassCertificate' in character and 'HasClassM1DrivingLicense' in character,
+        'rpcore_cycle': 'M1 selected in the same DMV menu, own motorcycle 15-question bank, separate optional DmvM1 book, PCJ 600/examiner pillion, helmet instead of seatbelt, indicators, first three road segments limited to 15 km/h then 40 km/h, all 36 ordered points/stops/return/parking/exit/issue.',
+        'wallet_checkpoint': 'Shared verified transaction implementation with explicit class selector; default API and old Dmv root remain class C. Separate receipts/pending/certificates/licenses/fees, shared real bank; class-mismatched configs/pending rejected. Paid M1 resume keeps price/rules/points/faults/time, no second debit.',
+        'compatibility': 'Absent class in old paid options defaults C; old Dmv.json remains byte-identical. New DmvM1.json only when missing. Class C tests/receipts/documents retained. No enforcement or jobs/garage/insurance/pilot restriction. Invalid one-class book can be left to select the other class.',
+        'helmet': 'Native helmet readback gates protection; optional stopped-rider loan button uses GIVE_PED_HELMET regular flag 4096. Tracks original head prop and restores only same ped/model/exact loan head prop. Character snapshot filter excludes this supplied temporary prop while preserving all other body/equipment fields; external changes bypass filter.',
+        'intentional_differences': 'Reference has M1 names/flags and a future-description menu only. Entire M1 exam/questions/PCJ/passenger/speed rules are own implementation; street coordinates adapted from reference class C, not an invented claim of a complete reference M1 route.',
+        'defaults': json.loads(m1_config.read_text()),
+        'configuration_sha256': digest(m1_config.read_bytes()),
+        'scope_limits': 'No closed slalom/cone course, remote instructor AI, class A, full physical document inventory, PSRP certificate import or enforcement. M1 pillion/helmet/handling/15 km/h segments and hat restoration need GTA testing. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

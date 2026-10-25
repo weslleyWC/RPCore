@@ -12,9 +12,15 @@ namespace RPCore
     public sealed class DmvSystem : ISystem
     {
         public string Name=>"dmv";
-        readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> belted;readonly DmvOptions options;readonly NativeMenu menu;readonly Blip office;
+        readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> belted;readonly DmvOptions carOptions,motorcycleOptions;DmvClass category;readonly NativeMenu menu;readonly Blip office;
         Vehicle car;Ped examiner;Blip route;Model carModel,examinerModel;bool preparing,lease;string owner,attempt;
         DmvDrive drive;DmvOptions examOptions;int last,saveAt,prepareAt,answerAt;float stopTime,speedTime,beltTime,damage;Vector3 previous;DmvStage routedStage;int routedPoint=-1;
+        DmvData Book=>category==DmvClass.C?Wallet.Dmv:Wallet.DmvM1;
+        DmvOptions options=>category==DmvClass.C?carOptions:motorcycleOptions;
+        bool Moto=>category==DmvClass.M1;
+        string ClassName=>Moto?"M1":"C";
+        bool Protection=>Moto?Function.Call<bool>(Hash.IS_PED_WEARING_HELMET,Game.Player.Character):belted();
+        float SpeedLimit=>examOptions!=null && drive!=null && drive.Stage==DmvStage.Route?examOptions.SpeedAt(drive.Point):examOptions?.SpeedKmh??options.SpeedKmh;
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);
         bool Calm=>!Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0;
         bool AtDesk=>Calm && !Game.Player.Character.IsInVehicle() && Game.Player.Character.Position.DistanceTo(Pos(options.Entry))<=3;
@@ -23,61 +29,69 @@ namespace RPCore
         bool Running=>preparing || drive!=null;
         public DmvSystem(ObjectPool pool,ShiftGate gate,Func<bool> belted)
         {
-            this.pool=pool;this.gate=gate;this.belted=belted;var defaults=DmvDefaults.Load();options=Store.LoadDef("Jobs/Dmv.json",()=>defaults);
-            if(options==null || !options.Valid){Log.Write("Invalid Dmv.json; embedded defaults used, original retained.");options=defaults;}
-            menu=new NativeMenu("DMV / habilitacao C","TEORIA / EXAME PRATICO");pool.Add(menu);Visuals.Register(menu,"core");office=MapBlips.Create(Pos(options.Entry),"RPCore: DMV / habilitacao C",BlipSprite.PropertyBikers,BlipColor.White,.8f);
+            this.pool=pool;this.gate=gate;this.belted=belted;
+            var defaults=DmvDefaults.Load();carOptions=Store.LoadDef("Jobs/Dmv.json",()=>defaults);
+            if(carOptions==null || !carOptions.Valid || carOptions.Category!=DmvClass.C){Log.Write("Invalid Dmv.json; embedded defaults used, original retained.");carOptions=defaults;}
+            var motoDefaults=DmvDefaults.Motorcycle();motorcycleOptions=Store.LoadDef("Jobs/DmvM1.json",()=>motoDefaults);
+            if(motorcycleOptions==null || !motorcycleOptions.Valid || motorcycleOptions.Category!=DmvClass.M1){Log.Write("Invalid DmvM1.json; embedded defaults used, original retained.");motorcycleOptions=motoDefaults;}
+            menu=new NativeMenu("DMV / habilitacoes","TEORIA / EXAME PRATICO");pool.Add(menu);Visuals.Register(menu,"core");office=MapBlips.Create(Pos(options.Entry),"RPCore: DMV / habilitacoes C e M1",BlipSprite.PropertyBikers,BlipColor.White,.8f);
         }
         void Add(string title,string description,Action action)
         {var item=new NativeItem(title,description);item.Activated+=(s,e)=>{try{action();}catch(Exception ex){EndRuntime();menu.Visible=false;Log.Error("dmv action",ex);Notify.Show("Exame nao concluido. Dados/pedido preservados; retome no DMV sem nova taxa.");}};menu.Add(item);}
         bool Acquire(){if(!gate.Acquire(Name)){Notify.Show("Encerre a atividade de "+gate.Owner+".");return false;}lease=true;owner=Profile.Id;return true;}
         public void OpenMenu()
         {
-            if(!Wallet.Dmv.Valid){Notify.Show("Documentos DMV invalidos; original preservado.");return;}
-            pool.HideAll();menu.Clear();menu.Name="Classe C / banco $"+Wallet.Bank;
+            pool.HideAll();menu.Clear();menu.Name="Classe "+ClassName+" / banco $"+Wallet.Bank;
+            if(!Running && !lease)Add("Trocar para classe "+(Moto?"C / carros":"M1 / motos"),"Documentos, provas e pagamentos separados; mantem pendencias da outra classe.",()=>{category=Moto?DmvClass.C:DmvClass.M1;OpenMenu();});
+            if(!Book.Valid || Book.Pending!=null && Book.Pending.Options.Category!=category){
+                Add("Documentos desta classe protegidos","Dados invalidos conservados. Pode trocar de classe sem alterar estes documentos.",()=>Notify.Show("Confira Wallet.json e backup; documentos preservados."));
+                Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;return;
+            }
             Add("GPS: DMV","Atendimento presencial. Nao bloqueia seus trabalhos/veiculos existentes por falta de documento.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,options.Entry.X,options.Entry.Y);menu.Visible=false;});
             if(Running){
+                if(Moto)Add("Vestir capacete de exame","Condutor da moto, parado. Opcional: guarda seu adereco atual e restaura ao encerrar se ele nao foi trocado por outro sistema.",EquipHelmet);
                 if(drive?.Stage==DmvStage.Report)Add("Receber habilitacao aprovada","A pe no DMV, sem nova taxa.",()=>Issue(attempt));
                 Add("Continuar exame","Fecha menu e continua a avaliacao.",()=>menu.Visible=false);
-                if(!Cfg.EnableVehicleControls){Add("Demonstrar seta direita","Motorista do carro de exame, parado.",()=>Signal(false));Add("Demonstrar seta esquerda","Motorista do carro de exame, parado.",()=>Signal(true));}
+                if(!Cfg.EnableVehicleControls){Add("Demonstrar seta direita","Condutor do veiculo de exame, parado.",()=>Signal(false));Add("Demonstrar seta esquerda","Condutor do veiculo de exame, parado.",()=>Signal(true));}
                 Add("Suspender / retomar depois","Conserva pagamento/progresso ja gravados. Libera o carro somente quando vazio; retomada presencial prepara outro carro.",()=>{Save();EndRuntime();menu.Visible=false;});
             }
             else{
-                var p=Wallet.Dmv.Pending;
+                var p=Book.Pending;
                 if(p!=null){string id=p.Id;Add(p.Practical?(p.Drive.Stage==DmvStage.Report?"Receber habilitacao aprovada":"Retomar exame pratico pago"):"Retomar prova teorica paga","No DMV, a pe. Sem cobrar outra vez.",()=>{if(!AtDesk){Notify.Show("Va a pe ao DMV, sem procurado/missao.");return;}if(p.Practical){if(p.Drive.Stage==DmvStage.Report)Issue(id);else Prepare();}else Theory(id);});
-                    if(!p.Started)Add("Cancelar e estornar $"+p.Price,"Antes da autorizacao de inicio; devolve taxa e tentativa.",()=>{if(!AtDesk)return;if(!Wallet.DmvCancel(id,out _))Notify.Show("Confira estado e limite do banco.");OpenMenu();});
+                    if(!p.Started)Add("Cancelar e estornar $"+p.Price,"Antes da autorizacao de inicio; devolve taxa e tentativa.",()=>{if(!AtDesk)return;if(!Wallet.DmvCancel(id,out _,category))Notify.Show("Confira estado e limite do banco.");OpenMenu();});
                     else Add("Abandonar tentativa sem estorno","Abre confirmacao; perde a tentativa pendente, mantendo certificado anterior.",()=>ConfirmAbandon(id));
                 }
-                else if(!Wallet.Dmv.TheoryPassed)Add("Prova teorica C / $"+options.TheoryPrice,"15 questoes proprias; minimo "+options.PassScore+" acertos. Taxa do banco. Atendimento a pe no DMV.",()=>{
+                else if(!Book.TheoryPassed)Add("Prova teorica "+ClassName+" / $"+options.TheoryPrice,"15 questoes proprias; minimo "+options.PassScore+" acertos. Taxa do banco. Atendimento a pe no DMV.",()=>{
                     if(!AtDesk){Notify.Show("Va a pe ao DMV.");return;}if(!Acquire())return;string id=Guid.NewGuid().ToString("N");
-                    if(!Wallet.DmvBegin(options,false,id,out _)){EndRuntime();Notify.Show("Confira saldo/pendencia. Nada iniciado.");return;}Theory(id);
+                    if(!Wallet.DmvBegin(options,false,id,out _,category)){EndRuntime();Notify.Show("Confira saldo/pendencia. Nada iniciado.");return;}Theory(id);
                 });
-                else if(!Wallet.Dmv.Licensed)Add("Exame pratico C / $"+options.PracticalPrice,"Asterope e examinadora, setas/cinto, "+options.Route.Count+" pontos, paradas e estacionamento. Taxa apenas com veiculo/equipe preparados.",Prepare);
+                else if(!Book.Licensed)Add("Exame pratico "+ClassName+" / $"+options.PracticalPrice,(Moto?"PCJ 600 e examinadora, capacete/setas/baixa velocidade, ":"Asterope e examinadora, setas/cinto, ")+options.Route.Count+" pontos, paradas e estacionamento. Taxa apenas com veiculo/equipe preparados.",Prepare);
             }
-            Add("Teoria: "+(Wallet.Dmv.TheoryPassed?"APROVADA":"pendente")+" / C: "+(Wallet.Dmv.Licensed?"EMITIDA":"pendente"),"Tentativas teoria "+Wallet.Dmv.TheoryAttempts+", pratico "+Wallet.Dmv.PracticalAttempts+" / taxas $"+Wallet.Dmv.Spent+". Ultima nota: "+Wallet.Dmv.LastTheoryScore+"/15.",()=>{});
+            Add("Teoria: "+(Book.TheoryPassed?"APROVADA":"pendente")+" / "+ClassName+": "+(Book.Licensed?"EMITIDA":"pendente"),"Tentativas teoria "+Book.TheoryAttempts+", pratico "+Book.PracticalAttempts+" / taxas $"+Book.Spent+". Ultima nota: "+Book.LastTheoryScore+"/15.",()=>{});
             Add("Fechar","Prova teorica em andamento fica retomavel no DMV.",()=>{if(drive==null && !preparing)EndRuntime();menu.Visible=false;});menu.Visible=true;
         }
         void Theory(string id)
         {
             if(!AtDesk)return;if(!lease && !Acquire())return;attempt=id;
-            if(!Wallet.Dmv.Pending.Started && !Wallet.DmvStart(id,out _))throw new InvalidOperationException("Theory start not saved.");Quiz();
+            if(!Book.Pending.Started && !Wallet.DmvStart(id,out _,category))throw new InvalidOperationException("Theory start not saved.");Quiz();
         }
         void Quiz()
         {
-            var p=Wallet.Dmv.Pending;if(p==null || p.Practical){EndRuntime();OpenMenu();return;}
-            int index=p.Answers.Count;var q=DmvQuestions.All[index];menu.Clear();menu.Name="Questao "+(index+1)+"/15 / "+q.Text;
+            var p=Book.Pending;if(p==null || p.Practical){EndRuntime();OpenMenu();return;}
+            int index=p.Answers.Count;var q=DmvQuestions.For(category)[index];menu.Clear();menu.Name="Questao "+(index+1)+"/15 / "+q.Text;
             for(int i=0;i<4;i++){int answer=i;Add(((char)('A'+i))+": "+q.Answers[i],q.Text,()=>{
                 if(!AtDesk || unchecked(Game.GameTime-answerAt)<500)return;
-                if(!Wallet.DmvAnswer(p.Id,index,answer,out _))throw new InvalidOperationException("Answer not saved.");answerAt=Game.GameTime;
-                if(Wallet.Dmv.Pending==null){int score=Wallet.Dmv.LastTheoryScore;bool pass=Wallet.Dmv.TheoryPassed;EndRuntime();OpenMenu();Notify.Show("Teoria: "+score+"/15 / "+(pass?"aprovado; pratico liberado.":"reprovado; nova tentativa tem taxa."));}else Quiz();
+                if(!Wallet.DmvAnswer(p.Id,index,answer,out _,category))throw new InvalidOperationException("Answer not saved.");answerAt=Game.GameTime;
+                if(Book.Pending==null){int score=Book.LastTheoryScore;bool pass=Book.TheoryPassed;EndRuntime();OpenMenu();Notify.Show("Teoria: "+score+"/15 / "+(pass?"aprovado; pratico liberado.":"reprovado; nova tentativa tem taxa."));}else Quiz();
             });}
             Add("Suspender prova","Guarda respostas ja confirmadas; retome no DMV sem cobrar novamente.",()=>{EndRuntime();menu.Visible=false;});menu.Visible=true;
         }
         void Prepare()
         {
-            if(Running || !AtDesk || !Wallet.Dmv.Valid || !Wallet.Dmv.TheoryPassed || Wallet.Dmv.Licensed){Notify.Show("Conclua teoria e contrate a pe no DMV.");return;}
-            var p=Wallet.Dmv.Pending;if(p!=null && !p.Practical)return;if(p==null && Wallet.Bank<options.PracticalPrice){Notify.Show("Saldo bancario insuficiente.");return;}
+            if(Running || !AtDesk || !Book.Valid || !Book.TheoryPassed || Book.Licensed){Notify.Show("Conclua teoria e contrate a pe no DMV.");return;}
+            var p=Book.Pending;if(p!=null && !p.Practical)return;if(p==null && Wallet.Bank<options.PracticalPrice){Notify.Show("Saldo bancario insuficiente.");return;}
             if(!Acquire())return;examOptions=p?.Options??options;attempt=p?.Id??Guid.NewGuid().ToString("N");
-            carModel=new Model("asterope");examinerModel=new Model("a_f_y_bevhills_01");
+            carModel=new Model(Moto?"pcj":"asterope");examinerModel=new Model("a_f_y_bevhills_01");
             if(!carModel.IsInCdImage || !examinerModel.IsInCdImage){EndRuntime();Notify.Show("Modelos de exame indisponiveis; nenhuma taxa nova.");return;}
             Function.Call(Hash.REQUEST_MODEL,carModel.Hash);Function.Call(Hash.REQUEST_MODEL,examinerModel.Hash);preparing=true;prepareAt=Game.GameTime;menu.Visible=false;
             Notify.Show("Preparando exame; aguarde a pe no DMV. Nao cobra se a area/modelo estiver indisponivel.");
@@ -90,18 +104,44 @@ namespace RPCore
             Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT,car,"RPDM"+Guid.NewGuid().ToString("N").Substring(0,4).ToUpperInvariant());
             if(!car.PlaceOnGround())throw new InvalidOperationException("Exam parking ground not ready.");Function.Call(Hash.SET_VEHICLE_ENGINE_ON,car,false,true,false);car.FuelLevel=Math.Max(10,Math.Min(10000,car.PetrolTankVolume));
             examiner=World.CreatePed(examinerModel,spawn+new Vector3(1,0,1));if(examiner==null || !examiner.Exists())throw new InvalidOperationException("Examiner failed.");examiner.IsPersistent=true;examiner.BlockPermanentEvents=true;examiner.RelationshipGroup=Game.Player.Character.RelationshipGroup;examiner.SetIntoVehicle(car,VehicleSeat.Passenger);if(!ExaminerSeated)throw new InvalidOperationException("Examiner not seated.");
-            if(Wallet.Dmv.Pending==null && !Wallet.DmvBegin(examOptions,true,attempt,out _)){EndRuntime();Notify.Show("Saldo/dados mudaram; exame nao cobrado.");return;}
-            if(!Wallet.Dmv.Pending.Started){if(!Wallet.DmvStart(attempt,out _))throw new InvalidOperationException("Practical start not saved.");}
-            else if(!Wallet.DmvRestart(attempt,out _))throw new InvalidOperationException("Practical resume not saved.");
-            drive=CharacterRules.Copy(Wallet.Dmv.Pending.Drive);preparing=false;last=Game.GameTime;saveAt=last+1000;previous=car.Position;damage=car.BodyHealth+car.EngineHealth;routedPoint=-1;
-            Route();Notify.Show("Entre como motorista, cinto "+Cfg.SeatbeltKey+", seta direita "+Cfg.RightSignalKey+", depois esquerda "+Cfg.LeftSignalKey+". Motor: "+Cfg.EngineKey+". END suspende.");
+            if(Moto)Function.Call(Hash.GIVE_PED_HELMET,examiner,false,4096,0);
+            if(Book.Pending==null && !Wallet.DmvBegin(examOptions,true,attempt,out _,category)){EndRuntime();Notify.Show("Saldo/dados mudaram; exame nao cobrado.");return;}
+            if(!Book.Pending.Started){if(!Wallet.DmvStart(attempt,out _,category))throw new InvalidOperationException("Practical start not saved.");}
+            else if(!Wallet.DmvRestart(attempt,out _,category))throw new InvalidOperationException("Practical resume not saved.");
+            drive=CharacterRules.Copy(Book.Pending.Drive);preparing=false;last=Game.GameTime;saveAt=last+1000;previous=car.Position;damage=car.BodyHealth+car.EngineHealth;routedPoint=-1;
+            Route();Notify.Show("Entre como condutor, "+(Moto?"capacete (aguarde no banco ou use F10)":"cinto "+Cfg.SeatbeltKey)+", seta direita "+Cfg.RightSignalKey+", depois esquerda "+Cfg.LeftSignalKey+". Motor: "+Cfg.EngineKey+". END suspende.");
         }
         Vector3 Target=>drive==null?Pos(options.Entry):drive.Stage==DmvStage.Report?Pos(options.Entry):drive.Stage==DmvStage.Route && drive.Point<examOptions.Route.Count?Pos(examOptions.Route[drive.Point]):Pos(examOptions.Spawn);
         void Route(){if(route!=null && route.Exists())route.Delete();route=World.CreateBlip(Target);route.Name="RPCore DMV: "+(drive.Stage==DmvStage.Route?"etapa "+(drive.Point+1):(drive.Stage==DmvStage.AwaitDriver?"entrar no carro":drive.Stage==DmvStage.RightSignal?"seta direita":drive.Stage==DmvStage.LeftSignal?"seta esquerda":drive.Stage==DmvStage.Parking?"estacionar":drive.Stage==DmvStage.Exit?"desembarcar":"retornar ao DMV"));route.Color=BlipColor.Yellow;route.ShowRoute=true;routedStage=drive.Stage;routedPoint=drive.Point;}
         void Signal(bool left){if(!Driver || car.Speed>.5f)return;Function.Call(Hash.SET_VEHICLE_INDICATOR_LIGHTS,car,0,!left);Function.Call(Hash.SET_VEHICLE_INDICATOR_LIGHTS,car,1,left);menu.Visible=false;}
-        void ConfirmAbandon(string id){menu.Clear();menu.Name="Abandonar sem estorno?";Add("Sim, abandonar tentativa","Conserva certificado/licencas ja emitidos, sem devolver taxa desta tentativa.",()=>{if(!AtDesk)return;if(!Wallet.DmvAbandon(id,out _))throw new InvalidOperationException("Abandon not saved.");EndRuntime();OpenMenu();});Add("Voltar","Manter pendencia.",OpenMenu);menu.Visible=true;}
-        void Issue(string id){if(!AtDesk)return;if(!Wallet.DmvFinish(id,true,out _) || !Wallet.Dmv.Licensed)throw new InvalidOperationException("License not saved.");EndRuntime();OpenMenu();Notify.Show("Habilitacao classe C emitida neste perfil. Sem nova cobranca.");}
-        void Fail(string reason){if(!Wallet.DmvFinish(attempt,false,out _))throw new InvalidOperationException("Failed result not saved.");EndRuntime();Notify.Show("Exame reprovado: "+reason+". Certificado teorico mantido; nova tentativa tem taxa.");}
+        Ped helmetOwner;int helmetModel,originalHat,originalTexture,loanHat,loanTexture;
+        void EquipHelmet()
+        {
+            if(!Moto || !Driver || car.Speed>.5f){Notify.Show("Pare como condutor da moto de exame.");return;}
+            if(Protection){Notify.Show("Capacete ja equipado.");return;}
+            RestoreHelmet();var p=Game.Player.Character;
+            int before=Function.Call<int>(Hash.GET_PED_PROP_INDEX,p,0),texture=before<0?0:Function.Call<int>(Hash.GET_PED_PROP_TEXTURE_INDEX,p,0);
+            Function.Call(Hash.GIVE_PED_HELMET,p,false,4096,0);
+            int given=Function.Call<int>(Hash.GET_PED_PROP_INDEX,p,0),givenTexture=given<0?0:Function.Call<int>(Hash.GET_PED_PROP_TEXTURE_INDEX,p,0);
+            if(!Protection || given<0){RestoreHead(p,before,texture);Notify.Show("Capacete nao confirmado neste modelo. Selecao anterior restaurada.");return;}
+            helmetOwner=p;helmetModel=p.Model.Hash;originalHat=before;originalTexture=texture;loanHat=given;loanTexture=givenTexture;menu.Visible=false;
+        }
+        static void RestoreHead(Ped p,int prop,int texture)
+        {Function.Call(Hash.REMOVE_PED_HELMET,p,true);if(prop<0)Function.Call(Hash.CLEAR_PED_PROP,p,0);else Function.Call(Hash.SET_PED_PROP_INDEX,p,0,prop,texture,true);}
+        void RestoreHelmet()
+        {
+            var p=helmetOwner;helmetOwner=null;
+            if(p==null || !p.Exists() || p!=Game.Player.Character || p.Model.Hash!=helmetModel)return;
+            if(Function.Call<int>(Hash.GET_PED_PROP_INDEX,p,0)==loanHat && Function.Call<int>(Hash.GET_PED_PROP_TEXTURE_INDEX,p,0)==loanTexture)RestoreHead(p,originalHat,originalTexture);
+        }
+        public CharacterBody FilterCharacterSnapshot(CharacterBody body)
+        {
+            var p=helmetOwner;
+            return p!=null && p.Exists() && p==Game.Player.Character && p.Model.Hash==helmetModel?DmvHelmetSnapshot.Filter(body,helmetModel,loanHat,loanTexture,originalHat,originalTexture):body;
+        }
+        void ConfirmAbandon(string id){menu.Clear();menu.Name="Abandonar sem estorno?";Add("Sim, abandonar tentativa","Conserva certificado/licencas ja emitidos, sem devolver taxa desta tentativa.",()=>{if(!AtDesk)return;if(!Wallet.DmvAbandon(id,out _,category))throw new InvalidOperationException("Abandon not saved.");EndRuntime();OpenMenu();});Add("Voltar","Manter pendencia.",OpenMenu);menu.Visible=true;}
+        void Issue(string id){if(!AtDesk)return;if(!Wallet.DmvFinish(id,true,out _,category) || !Book.Licensed)throw new InvalidOperationException("License not saved.");EndRuntime();OpenMenu();Notify.Show("Habilitacao classe "+ClassName+" emitida neste perfil. Sem nova cobranca.");}
+        void Fail(string reason){if(!Wallet.DmvFinish(attempt,false,out _,category))throw new InvalidOperationException("Failed result not saved.");EndRuntime();Notify.Show("Exame reprovado: "+reason+". Certificado teorico mantido; nova tentativa tem taxa.");}
         void DriveTick()
         {
             if(owner!=Profile.Id){EndRuntime();return;}
@@ -113,8 +153,8 @@ namespace RPCore
             if((int)drive.Stage>=(int)DmvStage.RightSignal && (int)drive.Stage<=(int)DmvStage.Parking && (!ExaminerSeated || Game.Player.Character.IsInVehicle() && !Driver)){Fail("use o carro correto com a examinadora no banco passageiro");return;}
             bool fault=false;float currentDamage=car.BodyHealth+car.EngineHealth;if(damage-currentDamage>=25){drive.Faults++;fault=true;damage=currentDamage;}if(currentDamage>damage)damage=currentDamage;
             if(Driver && drive.Stage!=DmvStage.Report){
-                if(car.Speed*3.6f>examOptions.SpeedKmh+5)speedTime+=dt;else speedTime=0;
-                if(examOptions.RequireSeatbelt && !belted())beltTime+=dt;else beltTime=0;
+                if(car.Speed*3.6f>SpeedLimit+5)speedTime+=dt;else speedTime=0;
+                if((examOptions.RequireSeatbelt || examOptions.RequireHelmet) && !Protection)beltTime+=dt;else beltTime=0;
                 if(speedTime>=3){drive.Faults++;speedTime=0;fault=true;}
                 if(beltTime>=5){drive.Faults++;beltTime=0;fault=true;}
             }
@@ -125,8 +165,8 @@ namespace RPCore
             stopTime=Driver && inTarget && car.Speed<=.5f?stopTime+dt:0;
             switch(drive.Stage){
                 case DmvStage.AwaitDriver:drive.Enter(Driver,ExaminerSeated);break;
-                case DmvStage.RightSignal:case DmvStage.LeftSignal:drive.Signal(car.IsRightIndicatorLightOn,car.IsLeftIndicatorLightOn,belted(),Driver,ExaminerSeated,examOptions);break;
-                case DmvStage.Route:if(drive.Point==examOptions.Route.Count)drive.Stage=DmvStage.Parking;else drive.Checkpoint(Driver,ExaminerSeated,inTarget && (!examOptions.RequireSeatbelt || belted()),car.Speed*3.6f<=examOptions.SpeedKmh,stopTime>=1,examOptions);break;
+                case DmvStage.RightSignal:case DmvStage.LeftSignal:drive.Signal(car.IsRightIndicatorLightOn,car.IsLeftIndicatorLightOn,Protection,Driver,ExaminerSeated,examOptions);break;
+                case DmvStage.Route:if(drive.Point==examOptions.Route.Count)drive.Stage=DmvStage.Parking;else drive.Checkpoint(Driver,ExaminerSeated,inTarget && (!(examOptions.RequireSeatbelt || examOptions.RequireHelmet) || Protection),car.Speed*3.6f<=SpeedLimit,stopTime>=1,examOptions);break;
                 case DmvStage.Parking:drive.Park(stopTime>=2);break;
                 case DmvStage.Exit:drive.Leave(!Game.Player.Character.IsInVehicle() && car.Speed<.5f && Game.Player.Character.Position.DistanceTo(car.Position)<12);break;
                 case DmvStage.Report:if(AtDesk && !pool.AreAnyVisible){GTA.UI.Screen.ShowHelpTextThisFrame("F10 > DMV > Receber habilitacao aprovada");}break;
@@ -134,8 +174,8 @@ namespace RPCore
             if(stage!=drive.Stage || point!=drive.Point){stopTime=0;Save();Route();}
             else if(fault || unchecked(Game.GameTime-saveAt)>=0)Save();
             if(routedStage!=drive.Stage || routedPoint!=drive.Point)Route();
-            string task=drive.Stage==DmvStage.AwaitDriver?"entre como motorista":drive.Stage==DmvStage.RightSignal?"cinto e seta DIREITA":drive.Stage==DmvStage.LeftSignal?"seta ESQUERDA":drive.Stage==DmvStage.Parking?"retorne e estacione por 2s":drive.Stage==DmvStage.Exit?"retire cinto e saia do carro":drive.Stage==DmvStage.Report?"volte a pe ao DMV para emitir":examOptions.Stops.Contains(drive.Point)?"pare por 1s no ponto marcado":"siga o ponto marcado";
-            GTA.UI.Screen.ShowSubtitle("DMV C / "+task+" / "+drive.Point+"/"+examOptions.Route.Count+" / faltas "+drive.Faults+"/"+examOptions.MaxFaults+" / limite "+examOptions.SpeedKmh+" km/h",100);
+            string task=drive.Stage==DmvStage.AwaitDriver?"entre como motorista":drive.Stage==DmvStage.RightSignal?(Moto?"capacete e seta DIREITA":"cinto e seta DIREITA"):drive.Stage==DmvStage.LeftSignal?"seta ESQUERDA":drive.Stage==DmvStage.Parking?"retorne e estacione por 2s":drive.Stage==DmvStage.Exit?(Moto?"pare e desembarque da moto":"retire cinto e saia do carro"):drive.Stage==DmvStage.Report?"volte a pe ao DMV para emitir":examOptions.Stops.Contains(drive.Point)?"pare por 1s no ponto marcado":"siga o ponto marcado";
+            GTA.UI.Screen.ShowSubtitle("DMV "+ClassName+" / "+task+" / "+drive.Point+"/"+examOptions.Route.Count+" / faltas "+drive.Faults+"/"+examOptions.MaxFaults+" / limite "+SpeedLimit+" km/h",100);
             if(drive.Stage==DmvStage.Route || drive.Stage==DmvStage.Parking)World.DrawMarker(MarkerType.Cylinder,Target-new Vector3(0,0,.8f),Vector3.Zero,Vector3.Zero,new Vector3(5,5,1),Color.FromArgb(100,255,210,0));
         }
         public void Tick()
@@ -143,12 +183,12 @@ namespace RPCore
             try{
                 if(preparing){if(owner!=Profile.Id || !AtDesk || unchecked(Game.GameTime-prepareAt)>10000){EndRuntime();Notify.Show("Preparacao interrompida; nenhuma taxa nova.");return;}if(carModel.IsLoaded && examinerModel.IsLoaded)Spawn();return;}
                 if(drive!=null){DriveTick();return;}
-                if(lease && Wallet.Dmv.Pending?.Practical==false && (!menu.Visible || !AtDesk)){EndRuntime();menu.Visible=false;}
-                if(Calm && !pool.AreAnyVisible && Game.Player.Character.Position.DistanceTo(Pos(options.Entry))<3)GTA.UI.Screen.ShowHelpTextThisFrame("F10 > DMV / habilitacao C");
+                if(lease && Book.Pending?.Practical==false && (!menu.Visible || !AtDesk)){EndRuntime();menu.Visible=false;}
+                if(Calm && !pool.AreAnyVisible && Game.Player.Character.Position.DistanceTo(Pos(options.Entry))<3)GTA.UI.Screen.ShowHelpTextThisFrame("F10 > DMV / habilitacoes C e M1");
             }catch(Exception ex){EndRuntime();menu.Visible=false;Log.Error("dmv tick",ex);Notify.Show("Exame suspenso por falha. Pedido/progresso gravado conservado; retome no DMV.");}
         }
-        public void Save(){if(drive==null || owner!=Profile.Id)return;if(!Wallet.DmvProgress(attempt,drive,out _))throw new InvalidOperationException("Practical progress not saved.");saveAt=Game.GameTime+1000;}
-        void EndRuntime(){if(route!=null && route.Exists())route.Delete();route=null;if(examiner!=null && examiner.Exists())JobActors.Retire(examiner);examiner=null;if(car!=null && car.Exists())JobVehicles.RetireRig(car,null);car=null;if(carModel.Hash!=0)carModel.MarkAsNoLongerNeeded();if(examinerModel.Hash!=0)examinerModel.MarkAsNoLongerNeeded();carModel=examinerModel=default(Model);drive=null;preparing=false;attempt=null;owner=null;stopTime=speedTime=beltTime=0;if(lease)gate.Release(Name);lease=false;}
+        public void Save(){if(drive==null || owner!=Profile.Id)return;if(!Wallet.DmvProgress(attempt,drive,out _,category))throw new InvalidOperationException("Practical progress not saved.");saveAt=Game.GameTime+1000;}
+        void EndRuntime(){RestoreHelmet();if(route!=null && route.Exists())route.Delete();route=null;if(examiner!=null && examiner.Exists())JobActors.Retire(examiner);examiner=null;if(car!=null && car.Exists())JobVehicles.RetireRig(car,null);car=null;if(carModel.Hash!=0)carModel.MarkAsNoLongerNeeded();if(examinerModel.Hash!=0)examinerModel.MarkAsNoLongerNeeded();carModel=examinerModel=default(Model);drive=null;preparing=false;attempt=null;owner=null;stopTime=speedTime=beltTime=0;if(lease)gate.Release(Name);lease=false;}
         public void OnKey(KeyEventArgs e){if(e.KeyCode==Keys.End && Running){try{Save();}finally{EndRuntime();menu.Visible=false;}Notify.Show("Exame suspenso; retome no DMV sem nova taxa.");}}
         public void Reload(){EndRuntime();menu.Visible=false;}
         public void Dispose()
