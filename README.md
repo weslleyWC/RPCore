@@ -1,4 +1,10 @@
-# RPCore 0.55.0 — GTA V Legacy
+# RPCore 0.56.0 — GTA V Legacy
+
+## Fase6.5N — roubo de suprimentos rivais
+
+[Atualização0.56.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.56.0.zip) · [Código-fonte0.56.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.56.0.zip) · [Instalação e teste](docs/FASE-6.5N-0.56.0.md)
+
+F4 → Comercio dos territorios → Roubar suprimentos: missão gratuita em área própria, um traficante e dois guardas hostis próprios, revista E por2s após os três abates com prova do jogador, retorno a pé e sem procurado para E entregar dois produtos ao armazém. Padrão35–90/un por SKU, sem dinheiro/estoque antes da entrega. NPCs com token de propriedade, até3; polícia nativa e veículos do jogador preservados. Suspensão/reload parcial refaz encontro sem rerrolar carga, carga recuperada fica salva; morte/abandono/prazo falham. Raided separado no histórico, contas/recibos/rollback e bloqueio de operações territoriais enquanto pendente. 2002 testes aprovados, build sem erros/avisos. Fretes pagos e saves anteriores mantidos. Guerras automáticas/convoys/armas/boost/diálogo/polícia e fases8/9 seguem pendentes.
 
 ## Fase6.5M — frete para o armazém criminal
 

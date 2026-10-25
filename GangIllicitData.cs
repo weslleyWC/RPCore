@@ -26,7 +26,7 @@ namespace RPCore
         static void Receipt(GangIllicitData b,string id){b.Receipts.Add(id);if(b.Receipts.Count>256)b.Receipts.RemoveAt(0);}
         public static bool Sale(WalletData w,GangState state,GangTurfDefinition area,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,Action save,out bool changed)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(state,area) || w.GangBusiness?.Supply!=null || string.IsNullOrWhiteSpace(id) || id.Length>160 || w.GangIllicit!=null && !w.GangIllicit.Valid || w.Dealer!=null && !w.Dealer.Valid)return false;
+            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(state,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || string.IsNullOrWhiteSpace(id) || id.Length>160 || w.GangIllicit!=null && !w.GangIllicit.Valid || w.Dealer!=null && !w.Dealer.Valid)return false;
             if(w.Dealer?.Receipts.Contains(id)==true || w.GangIllicit?.Receipts.Contains(id)==true)return true;
             // Reuse validated stock, quote, statistics and reputation rules without publishing
             // the legacy bank credit. Both books are committed by the real Wallet save below.
@@ -42,7 +42,7 @@ namespace RPCore
         }
         public static bool Process(WalletData w,GangState state,GangTurfDefinition area,GangLaunderingOptions c,int amount,DateTime now,string id,Action save,out bool changed)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(state,area) || w.GangBusiness?.Supply!=null || c==null || !c.Valid || amount<1 || amount>c.BatchAmount || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangIllicit==null || !w.GangIllicit.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
+            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(state,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || c==null || !c.Valid || amount<1 || amount>c.BatchAmount || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangIllicit==null || !w.GangIllicit.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
             string receipt=id+":launder";if(w.GangIllicit.Receipts.Contains(receipt))return true;
             var original=w.GangIllicit;var treasury=w.GangTreasury;var book=Copy(original);var a=Account(book,state.Gang,area.Id);
             if(a==null || a.Dirty<amount || a.Processed>long.MaxValue-amount)return false;

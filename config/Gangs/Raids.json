@@ -1,0 +1,30 @@
+{
+  "MinLoot": 35,
+  "MaxLoot": 90,
+  "SecondsLimit": 900,
+  "SearchSeconds": 2,
+  "Radius": 100,
+  "Sites": [
+    {
+      "Name": "Carga criminal / La Mesa",
+      "X": 887.2639,
+      "Y": -991.1592,
+      "Z": 32.74689,
+      "Heading": 0
+    },
+    {
+      "Name": "Carga criminal / centro",
+      "X": 400.9214,
+      "Y": -354.4539,
+      "Z": 46.81522,
+      "Heading": 0
+    },
+    {
+      "Name": "Carga criminal / oeste",
+      "X": -1631.082,
+      "Y": -124.8462,
+      "Z": 57.98261,
+      "Heading": 0
+    }
+  ]
+}

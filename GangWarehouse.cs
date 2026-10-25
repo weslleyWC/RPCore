@@ -16,7 +16,7 @@ namespace RPCore
         public GangWarehouse(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,GangSupply supply)
         {this.supply=supply;this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;options=Store.LoadDef("Gangs/Warehouse.json",()=>new GangWarehouseOptions());if(options==null || !options.Valid){options=new GangWarehouseOptions();Log.Write("Invalid warehouse config; original retained, defaults used.");}menu=new NativeMenu("Armazem criminal","PACOTES / TRANSFERENCIAS / VENDAS");pool.Add(menu);Visuals.Register(menu,"gangs");}
         static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
-        bool Safe=>area!=null && GangBusinessTransactions.Owns(state(),area) && gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) && gate.Owner==null && Wallet.GangBusiness?.Supply==null && Game.Player.Character.IsHuman && Game.Player.Character.IsOnFoot && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0 && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.Character.Position.DistanceTo(Pos(area))<=options.Radius;
+        bool Safe=>area!=null && GangBusinessTransactions.Owns(state(),area) && gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) && gate.Owner==null && Wallet.GangBusiness?.Supply==null && Wallet.GangRaid?.Pending==null && Game.Player.Character.IsHuman && Game.Player.Character.IsOnFoot && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0 && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.Character.Position.DistanceTo(Pos(area))<=options.Radius;
         void Add(string title,string description,Action action=null)
         {var row=new NativeItem(title,description);row.Activated+=(s,e)=>{try{action?.Invoke();}catch(Exception ex){Log.Error("gang warehouse",ex);Notify.Show("Operacao interrompida; confira estoque. Falha de gravacao conserva dados anteriores.");}};menu.Add(row);}
         public void Open(GangTurfDefinition target)
@@ -30,7 +30,7 @@ namespace RPCore
             foreach(var product in c.Products)
             {
                 var p=product;int held=GangWarehouseAccount.Get(Wallet.Dealer.Stock,p.Id),stored=a==null?0:GangWarehouseAccount.Get(a.Stock,p.Id);
-                Add(p.Name+" / pessoal "+held+" / local "+stored,"Peso "+p.Weight+" kg/un. Depositado "+(a==null?0:GangWarehouseAccount.Get(a.Deposited,p.Id))+" / retirado "+(a==null?0:GangWarehouseAccount.Get(a.Withdrawn,p.Id))+" / vendido "+(a==null?0:GangWarehouseAccount.Get(a.Sold,p.Id))+" / frete "+(a==null?0:GangWarehouseAccount.Get(a.Supplied,p.Id))+".");
+                Add(p.Name+" / pessoal "+held+" / local "+stored,"Peso "+p.Weight+" kg/un. Depositado "+(a==null?0:GangWarehouseAccount.Get(a.Deposited,p.Id))+" / retirado "+(a==null?0:GangWarehouseAccount.Get(a.Withdrawn,p.Id))+" / vendido "+(a==null?0:GangWarehouseAccount.Get(a.Sold,p.Id))+" / frete "+(a==null?0:GangWarehouseAccount.Get(a.Supplied,p.Id))+" / roubo "+(a==null?0:GangWarehouseAccount.Get(a.Raided,p.Id))+".");
                 supply.AddCriminal(area,c,options,p.Id,Add);
                 foreach(int n in new[]{1,5})
                 {

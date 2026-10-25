@@ -162,7 +162,7 @@ namespace RPCore
             try{loyalty.Tick();}catch(Exception ex){loyalty.Suspend();Log.Error("gang loyalty tick",ex);Notify.Show("Iniciacao suspensa; progresso confirmado preservado.");}
             try{strength.Tick();}catch(Exception ex){strength.Suspend();Log.Error("gang strength tick",ex);Notify.Show("Prova suspensa; retome no lider. Dados confirmados conservados.");}
             try{driving.Tick();}catch(Exception ex){driving.Suspend();Log.Error("gang driving tick",ex);Notify.Show("Iniciacao de direcao suspensa; retome junto ao lider.");}
-            try{business.Tick();}catch(Exception ex){business.Suspend();Log.Error("gang business tick",ex);Notify.Show("Comercio/frete suspenso; estoque e reserva conservados.");}
+            try{business.Tick();}catch(Exception ex){business.Suspend();Log.Error("gang business tick",ex);Notify.Show("Atividade territorial suspensa. Confira progresso e estoque no F4.");}
             try{turf.Tick();}catch(Exception ex){turf.Suspend();Log.Error("gang turf tick",ex);Notify.Show("Disputa suspensa; donos/progresso gravados preservados.");}
             if (menu.Visible && dirty) Rebuild();
             if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count+" / equipe "+presence.CrewCount+"/3";
@@ -173,7 +173,7 @@ namespace RPCore
         }
         public void OnKey(KeyEventArgs e)
         {
-            if(e.KeyCode==Keys.End && business.Active){business.Suspend();Notify.Show("Comercio/frete suspenso. Reserva de frete fica salva; F4 retoma ou estorna.");return;}
+            if(e.KeyCode==Keys.End && business.Active){string message=business.SuspensionMessage;business.Suspend();Notify.Show(message);return;}
             if(e.KeyCode==Keys.End && turf.Active){turf.Suspend();dirty=true;Notify.Show("Disputa suspensa. Retome na area pelo menu Territorios.");return;}
             if(e.KeyCode==Keys.End && driving.Active){driving.Suspend();dirty=true;Notify.Show("Iniciacao suspensa. Retomada parcial reinicia a missao de direcao.");return;}
             if(e.KeyCode==Keys.End && strength.Active){strength.Suspend();dirty=true;Notify.Show("Prova suspensa. Retomada parcial reinicia os tres desafiantes.");return;}

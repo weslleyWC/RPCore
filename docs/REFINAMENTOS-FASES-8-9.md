@@ -132,3 +132,7 @@ Estoque criminal local com transferências reais entre Dealer pessoal e conta da
 ## Base0.55.0 — abastecimento criminal (6.5M)
 
 Rota paga com SKU escolhido, três pontos de supply da referência e ciclo de carga/descarga próprio; entrega só no armazém criminal. Snapshot financeiro e recuperação sem cobrar novamente, separado do frete legal por enum compatível. Roubo de rivais, guardas/relacionamentos/loot e logística específica permanecem diferenças, não implementadas por esta compra com desconto. Refinar locais/traseiras/props e realismo nas etapas adequadas; fases8/9 mantidas.
+
+## Base0.56.0 — roubo rival (6.5N)
+
+Missão própria de combate/revista/retorno, três NPCs identificados com token e dois SKUs ao armazém apenas na confirmação final. Refinar comportamento de aproximação/aggro, armas/guardas, animações/carga visual, relações/reputação, escala e logística nas próximas etapas adequadas. Diferenças registradas frente ao DrugSupplyRun PSRP; não concede polícia amiga ou guerra automática. Fases8/9 mantidas.

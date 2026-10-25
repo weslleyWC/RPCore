@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento0.56.0: [fase6.5N — roubo de suprimentos](FASE-6.5N-0.56.0.md). Encontro rival próprio com traficante+2 guardas, revista2s e retorno com dois produtos ao armazém. Até3 NPCs, prova de abates, carga persistente, entrega atômica/Raided e falhas/suspensão distintas. Polícia nativa sem imunidade, posse/relações globais mantidas. Variações/escala de loot, relacionamento/reputação da missão, guerras/convoys/armas/boost/diálogo/polícia e fases8/9 continuam pendentes.
+
 Andamento0.55.0: [fase6.5M — frete criminal](FASE-6.5M-0.55.0.md). Compra de lote criminal com reserva bancária/desconto, rota física e entrega direta ao armazém da área. Slot legal/criminal exclusivo, retomada/estorno, contabilidade Supplied e capacidade revalidada. Preserva frete legal/contratos/estoques/modos anteriores. Roubo rival/guardas/convoys, armas/automação, café/boost, guerras/diálogo/polícia e fases8/9 continuam pendentes.
 
 Andamento0.54.0: [fase6.5L — armazém criminal](FASE-6.5L-0.54.0.md). Estoque por gangue/área/perfil, guardar/retirar pacotes existentes e vender do armazém sem consumir estoque pessoal; receita suja/85%/tesouraria anteriores integradas. Modos de venda anteriores e saves mantidos. Logística criminal, armas/automação, café/boost, guerras/diálogo/polícia e fases8/9 continuam pendentes.

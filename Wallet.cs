@@ -18,6 +18,13 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static GangRaidData GangRaid=>data.GangRaid;
+        public static bool GangRaidBegin(GangState s,GangRaidAttempt p,DealerOptions c,out bool changed)=>GangRaidTransactions.Begin(data,s,p,c,Save,out changed);
+        public static bool GangRaidDefeat(string id,int index,out bool changed)=>GangRaidTransactions.Defeat(data,id,index,Save,out changed);
+        public static bool GangRaidCollect(string id,out bool changed)=>GangRaidTransactions.Collect(data,id,Save,out changed);
+        public static bool GangRaidRestart(string id,out bool changed)=>GangRaidTransactions.Restart(data,id,Save,out changed);
+        public static bool GangRaidEnd(string id,bool failed,out bool changed)=>GangRaidTransactions.End(data,id,failed,Save,out changed);
+        public static bool GangRaidComplete(GangState s,GangTurfDefinition a,DealerOptions c,string id,out bool changed)=>GangRaidTransactions.Complete(data,s,a,c,id,Save,out changed);
         public static GangWarehouseData GangWarehouse=>data.GangWarehouse;
         public static bool GangWarehouseTransfer(GangState s,GangTurfDefinition a,DealerOptions c,GangWarehouseOptions o,string product,int count,bool deposit,string id,out bool changed)=>GangWarehouseTransactions.Transfer(data,s,a,c,o,product,count,deposit,id,Save,out changed);
         public static bool GangWarehouseSale(GangState s,GangTurfDefinition a,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,out bool changed)=>GangWarehouseTransactions.Sale(data,s,a,c,product,count,zone,premium,unit,last,id,Save,out changed);
