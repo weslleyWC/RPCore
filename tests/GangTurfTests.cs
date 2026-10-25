@@ -16,7 +16,7 @@ namespace RPCore.Tests
         [Fact] public void LegacyStateDoesNotAutoEnableMapOrWriteDefaultOwnership()
         {var s=JsonConvert.DeserializeObject<GangState>("{\"Gang\":\"Mine\",\"Reputation\":42,\"Future\":7}");Assert.False(s.TerritoriesEnabled);Assert.Null(s.Turf);Assert.Equal("3rd Avenue Hustlas",GangTurfRules.Owner(s.Turf,A().Area));Assert.Null(s.Turf);Assert.Equal(7,(int)JObject.FromObject(s)["Future"]);}
         [Fact] public void AllDefendersThenExplicitCaptureChangesOnlyOneOwner()
-        {var s=Ready();Assert.True(s.Turf.Pending.Ready);Assert.Empty(s.Turf.Owners);Assert.True(GangTurfTransactions.Capture(s,"turf",Save,out s));Assert.Equal("Mine",s.Turf.Owners[1]);Assert.Equal(1,s.Turf.Captures);Assert.Null(s.Turf.Pending);Assert.Equal(42,s.Reputation);Assert.Equal("3rd Avenue Hustlas",GangTurfRules.Owner(s.Turf,GangTurfOptions.Defaults().Areas[1]));}
+        {var s=Ready();Assert.True(s.Turf.Pending.Ready);Assert.Empty(s.Turf.Owners);Assert.True(GangTurfTransactions.Capture(s,"turf",Save,out s));Assert.Equal("Mine",s.Turf.Owners[1]);Assert.Equal(1,s.Turf.Captures);Assert.Null(s.Turf.Pending);Assert.Equal(92,s.Reputation);Assert.Equal("3rd Avenue Hustlas",GangTurfRules.Owner(s.Turf,GangTurfOptions.Defaults().Areas[1]));}
         [Fact] public void CaptureReplayAfterChangingGangDoesNotAssignOwnershipAgain()
         {var s=Ready();GangTurfTransactions.Capture(s,"turf",Save,out s);s.Gang="Other";Assert.True(GangTurfTransactions.Capture(s,"turf",x=>throw new Exception(),out s));Assert.Equal("Mine",s.Turf.Owners[1]);Assert.Equal(1,s.Turf.Captures);}
         [Fact] public void CannotCaptureWithoutAffiliationOrAttackOwnTerritory()

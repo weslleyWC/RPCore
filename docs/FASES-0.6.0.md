@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.50.0: [fase 6.5H — progressão/tesouraria](FASE-6.5H-0.50.0.md), patentes/reputação e resultados territoriais, caixa bancário explícito e participação por patente com intervalo do jogo. Conservação/recibos/rollback, sem renda automática/migração. Valores acima100 preservados; antigas capturas não ganham pontos retroativos. Calendário/banco/HQ precisam de GTA. Economia territorial/guerras automáticas/diálogo/polícia e demais diferenças continuam; fases 8/9 mantidas.
+
+
 Andamento 0.49.0: [fase 6.5G — defesa de territórios](FASE-6.5G-0.49.0.md), defesa explícita em duas ondas, vitória mantendo posse e derrota ativa transferindo ao rival, com save/recibos/retomada e contadores. Capturas 0.48 e dados antigos preservados. Sem ataques automáticos/offline; guerra completa/economia/rank/diálogo/polícia continuam pendentes. Ondas/combate/piso exigem GTA; fases 8/9 mantidas.
 
 

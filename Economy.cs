@@ -25,6 +25,7 @@ namespace RPCore
         public DmvData Dmv;
         public DmvData DmvM1;
         public DmvData DmvA;
+        public GangTreasuryData GangTreasury;
     }
 
     public class Portfolio : ExtensibleData

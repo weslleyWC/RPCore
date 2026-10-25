@@ -109,3 +109,6 @@ Atualização 0.48.0 / fase 6.5F: base de captura com 15 áreas/postos/donos PSR
 
 
 Atualização 0.49.0 / fase 6.5G: defesa manual em ondas e resultado de posse, após comparar atacantes/vitória/derrota PSRP. Mantém capturas antigas; falhas técnicas suspendem sem penalidade. Não declara IA de guerras/veículos/guarnição/economia/salários concluídos. Ondas, piso, combate e perda precisam de GTA; ergonomia e mecânicas permanecem para fase 8, refinamento de todos os trabalhos para fase 9.
+
+
+Atualização 0.50.0 / fase 6.5H: progressão250/750/1500 e recompensas territoriais PSRP, tesouraria financiada por banco e participação solicitada com percentuais/prazo da referência. Sem criar renda/passivo ou integrar CleanCash/comércio ainda. Resultados e reputação atômicos, transferência só em Wallet com rollback. Calendário/HQ/banco precisam de GTA; apresentação/mecânicas continuam na fase 8 e refinamento de todos os trabalhos na fase 9.

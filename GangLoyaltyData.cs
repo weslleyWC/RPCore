@@ -41,7 +41,7 @@ namespace RPCore
         public static bool Collect(GangState state,string id,int index,Action<GangState> save,out GangState result)
         {result=state;if(index<0 || index>1)return false;return Apply(state,id+":pickup:"+index,s=>{var p=s.Loyalty.Pending;if(p==null || p.Id!=id || p.Collected!=index || !GangLoyaltyRules.Unaffiliated(s.Gang))return false;p.Collected++;return true;},save,out result);}
         public static bool Complete(GangState state,string id,Action<GangState> save,out GangState result)
-            =>Apply(state,id+":complete",s=>{var p=s.Loyalty.Pending;if(p==null || p.Id!=id || p.Collected!=2 || !GangLoyaltyRules.Unaffiliated(s.Gang) || s.Loyalty.Completed==int.MaxValue)return false;s.Gang=p.Gang;s.Reputation=0;s.Loyalty.Pending=null;s.Loyalty.Completed++;s.Loyalty.LastResult="completed";return true;},save,out result);
+            =>Apply(state,id+":complete",s=>{var p=s.Loyalty.Pending;if(p==null || p.Id!=id || p.Collected!=2 || !GangLoyaltyRules.Unaffiliated(s.Gang) || s.Loyalty.Completed==int.MaxValue)return false;s.Gang=p.Gang;s.Reputation=0;s.Rank=1;s.Loyalty.Pending=null;s.Loyalty.Completed++;s.Loyalty.LastResult="completed";return true;},save,out result);
         public static bool Cancel(GangState state,string id,Action<GangState> save,out GangState result)
             =>Apply(state,id+":cancel",s=>{if(s.Loyalty.Pending==null || s.Loyalty.Pending.Id!=id)return false;s.Loyalty.Pending=null;s.Loyalty.LastResult="cancelled";return true;},save,out result);
     }

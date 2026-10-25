@@ -18,6 +18,10 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static GangTreasuryData GangTreasury=>data.GangTreasury;
+        public static bool GangDeposit(string gang,int amount,DateTime now,GangTreasuryOptions c,string id,out bool changed)=>GangTreasuryTransactions.Deposit(data,gang,amount,now,c,id,Save,out changed);
+        public static bool GangWithdraw(string gang,int amount,GangTreasuryOptions c,string id,out bool changed)=>GangTreasuryTransactions.Withdraw(data,gang,amount,c,id,Save,out changed);
+        public static bool GangPayday(string gang,int rank,DateTime now,GangTreasuryOptions c,string id,out bool changed)=>GangTreasuryTransactions.Payday(data,gang,rank,now,c,id,Save,out changed);
         public static DmvData DmvA=>data.DmvA??new DmvData();
         public static DmvData DmvM1=>data.DmvM1??new DmvData();
         public static DmvData Dmv=>data.Dmv??new DmvData();

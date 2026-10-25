@@ -1,4 +1,11 @@
-# RPCore 0.49.0 — GTA V Legacy
+# RPCore 0.50.0 — GTA V Legacy
+
+## Fase 6.5H — progressão e tesouraria da gangue
+
+[Atualização 0.50.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.50.0.zip) · [Código-fonte 0.50.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.50.0.zip) · [Instalação e teste](docs/FASE-6.5H-0.50.0.md)
+
+F4 mostra patentes250/750/1500, sem teto100; captura+50, defesa+25, perda−20 salvos junto ao resultado. F4 → Tesouraria permite consulta/GPS e depósito/retirada presencial na HQ. Caixa financiado explicitamente pelo banco, participação manual de 5/10/20/35% após24h do jogo, sem criar dinheiro. Contas/recibos/rollback por perfil e gangue; saves/configs anteriores mantidos. 1803 testes aprovados e build sem erros/avisos. Calendário/HQ/banco precisam de GTA; comércio/renda de territórios/salário automático/guerra/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5G — defesa de territórios
 

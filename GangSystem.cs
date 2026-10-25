@@ -26,7 +26,7 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         readonly AchievementSystem ach;
         GangState state;
-        readonly GangLoyalty loyalty;readonly GangStrength strength;readonly GangDriving driving;readonly GangTerritories turf;
+        readonly GangLoyalty loyalty;readonly GangStrength strength;readonly GangDriving driving;readonly GangTerritories turf;readonly GangTreasury treasury;
         bool InitiationPending=>loyalty.HasPending || strength.HasPending || driving.HasPending || turf.HasPending;
         void SaveState(GangState next){Store.Write("GangState.json",next);state=next;dirty=true;}
         bool dirty;NativeItem presenceStatus;
@@ -46,7 +46,7 @@ namespace RPCore
                 b.Color = gang.GangColor == "Purple" ? BlipColor.Purple : gang.GangColor == "Green" ? BlipColor.Green : BlipColor.Yellow;
                 blips.Add(b);
             }
-            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);turf=new GangTerritories(shared,pool,()=>state,SaveState,()=>gangs);
+            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);turf=new GangTerritories(shared,pool,()=>state,SaveState,()=>gangs);treasury=new GangTreasury(shared,pool,()=>state,()=>gangs);
         }
 
         public void Create(string name)
@@ -65,13 +65,14 @@ namespace RPCore
         void Progress(string stat, int amount)
         {
             if (stat != "pizza_drops" || string.IsNullOrEmpty(state.Gang) || !gangs.Any(g => g.Name == state.Gang)) return;
-            state.Reputation = Math.Min(100, state.Reputation + amount);
-            dirty = true;
+            try{var next=CharacterRules.Copy(state);if(GangProgressionRules.Grant(next,amount))SaveState(next);}catch(Exception ex){Log.Error("gang pizza reputation",ex);Notify.Show("Entrega preservada; reputacao extra nao gravada. Confira o log.");}
         }
 
         void Rebuild()
         {
             menu.Clear(); menu.Name = (state.Gang ?? "Unaffiliated") + " / rep " + state.Reputation;
+            int rank=GangProgressionRules.Rank(state);var rankRow=new NativeItem("Patente: "+GangProgressionRules.Name(rank)+" / "+rank,"Promocoes: 250 / 750 / 1500 pontos. Captura +50, defesa +25, perda de defesa -20. Patente nao cai por perda de reputacao na mesma gangue.");menu.Add(rankRow);
+            var funds=new NativeItem("Tesouraria / pagamentos","Saldo financiado explicitamente pelo banco; participacao por patente apos intervalo do jogo.");funds.Activated+=(s,e)=>treasury.Open();menu.Add(funds);
             var territories=new NativeItem("Territorios / mapa e disputas","15 territorios, donos por perfil, GPS e capturas explicitas. Afiliacao necessaria para disputar.");territories.Activated+=(s,e)=>turf.Open();menu.Add(territories);
             var enabled=new NativeItem("Presenca nas HQs: "+(state.PresenceEnabled?"LIGADA":"DESLIGADA"),"Lideres/membros nos postos configurados. Opcional por perfil; no maximo 12 NPCs com limites configuraveis.");
             enabled.Activated+=(s,e)=>{try{var copy=CharacterRules.Copy(state);copy.PresenceEnabled=!copy.PresenceEnabled;Store.Write("GangState.json",copy);state=copy;presence.Clear();dirty=true;}catch(Exception ex){Log.Error("gang presence toggle",ex);Notify.Show("Preferencia nao salva; estado anterior conservado.");}};menu.Add(enabled);
@@ -111,13 +112,13 @@ namespace RPCore
                     if (p.IsDead || p.IsInVehicle() || p.Position.DistanceTo(gang.Position) > 5) { Notify.Show("Visit the gang HQ on foot to join."); return; }
                     if(InitiationPending){Notify.Show("Cancele/conclua a iniciacao antes de usar Join.");return;}
                     if (state.Gang == gang.Name) return;
-                    var next=CharacterRules.Copy(state);next.Gang=gang.Name;next.Reputation=0;SaveState(next);
+                    var next=CharacterRules.Copy(state);next.Gang=gang.Name;next.Reputation=0;next.Rank=1;SaveState(next);
                     Notify.Show("Joined " + gang.Name);
                 };
                 menu.Add(join);
             }
             var leave = new NativeItem("Leave current gang");
-            leave.Activated += (s, e) => { var next=CharacterRules.Copy(state);next.Gang=null;next.Reputation=0;SaveState(next); }; menu.Add(leave);
+            leave.Activated += (s, e) => { var next=CharacterRules.Copy(state);next.Gang=null;next.Reputation=0;next.Rank=1;SaveState(next); }; menu.Add(leave);
             dirty = false;
         }
 
@@ -177,8 +178,8 @@ namespace RPCore
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { turf?.Reload();driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, Math.Min(100, state.Reputation)); menu.Visible = false; }
+        public void Reload() { treasury?.Close();turf?.Reload();driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, state.Reputation); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { treasury.Close();turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }
