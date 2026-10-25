@@ -951,5 +951,26 @@ if auto_arms_config.exists():
         'defaults':config,
         'intentional_differences':'PSRP automatically processes all owned-area available weapon categories via UTC elapsed and up to40 catch-up sales; RPCore opt-in categories, active-session time and safe/free conditions, no offline catch-up or ambient buyer simulation. Both default fixed500, which can be below paid acquisition/manual sale value. RPCore writes dirty book and keeps laundering manual85%, not automatic PSRP CleanCash. Automatic laundering/cafe boost and other systems remain pending.',
         'scope_limits':'Native gate/menu/pause/safety/profile interaction, timing and coexistence with live jobs/territory activity require GTA testing. No claim of complete gang economy parity; cafe boost/dialogue/automatic wars/police and phases8/9 remain pending.'}
+auto_launder_config=Path(__file__).resolve().parents[1] / 'config/Gangs/AutoLaunder.json'
+if auto_launder_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    cycle=source.split('private void UpdateAutomaticTurfLaundering()',1)[1].split('private void StartTattooPromotion(',1)[0]
+    config=json.loads(auto_launder_config.read_text())
+    report['gang_automatic_processing']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_base_rate_500_per_minute':'500.0 * num * totalSeconds / 60.0' in cycle and config['BatchAmount']==500 and config['IntervalSeconds']==60,
+        'reference_net_85_and_fraction_remainder':'* 0.85 + turfData.LaunderingCleanRemainder' in cycle and 'turfData.LaunderingCleanRemainder = num4 - (double)num5' in cycle,
+        'reference_debits_dirty_cash_and_credits_clean_cash':'turfData.Cash -= num3' in cycle and 'turfData.CleanCash += num5' in cycle,
+        'reference_utc_elapsed_cap_7200':'DateTime.UtcNow' in cycle and 'Math.Min(totalSeconds, 7200.0)' in cycle,
+        'reference_optional_expiring_multiplier':'turfData.LaunderingBoostExpiresUtc' in cycle and 'turfData.LaunderingBoostMultiplier' in cycle,
+        'rpcore_cycle':'Explicit initially-disabled F4 commerce per-owned-area automatic processing. Safe human on foot near area to enable; stop control remains available after lost gang/ownership. Default consumes up to500 existing Dirty per60 active session seconds, preserving existing cumulative85%/15% fee and crediting gang treasury LaunderedIncome, never player bank/cash. Handles min(Dirty,batch), interleaved manual processing and integer rounding, including zero-net tiny batches. No direct stock/sale or diplomacy effects.',
+        'persistence':'Optional Wallet.GangAutoLaunder account Enabled/Batches/Processed/Net/Fees and receipts per gang/area/profile, bounded and extensible. Reuses validated GangIllicit.Process against a shadow wallet with no IO, then atomically publishes AutoLaunder+Illicit+Treasury in one real Wallet save. Original three references restored on failure; replay/no-op/owner/pending/capacity/overflow guards. Global Processed/Net cumulative conservation remains authoritative when manual and automatic modes mix. Treasury payday anchor preserved; no new salary or bank credit. Legacy absence stays unconfigured until explicit action.',
+        'session_timing':'Reuses pure tested active clock with stable per-cycle receipt; no timestamps persisted or offline catch-up. Only safe/alive human/current affiliation+ownership/free gate/no pending raid/freight/bulk and positive dirty. Menus/pause/modal freeze; gaps>2s ignored. World/ownership/stock/contract/activity loss or reload/profile/actor/toggle resets elapsed. Independent automatic arms and processing clocks can feed proceeds sequentially, one confirmed transaction at a time. Save exception faults area until toggle/reload.',
+        'configuration_sha256':digest(auto_launder_config.read_bytes()),
+        'defaults':config,
+        'intentional_differences':'PSRP continuously processes each second using UTC elapsed up to7200s and optional expiring multiplier, credits turf CleanCash. RPCore opt-in, whole batches after full active interval, no catch-up/offline, treasury instead of separate CleanCash, safer gating. Cafe supply/earned2X boost remains pending; configuring a rate is not that mission. Existing manual mode remains available.',
+        'scope_limits':'Native safe/menu/gate/profile/clock and coexistence with automatic arms/manual processing/jobs require GTA testing. Cafe boost/other territorial activities/refinements/dialogue/wars/police and phases8/9 remain future.'}
+    if 'gang_automatic_arms' in report:
+        report['gang_automatic_arms']['intentional_differences']=report['gang_automatic_arms']['intentional_differences'].replace('keeps laundering manual85%, not automatic PSRP CleanCash. Automatic laundering/cafe boost','offers manual85% plus optional active-session automatic processing from0.62, not PSRP UTC CleanCash. Cafe boost')
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

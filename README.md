@@ -1,4 +1,10 @@
-# RPCore 0.61.0 — GTA V Legacy
+# RPCore 0.62.0 — GTA V Legacy
+
+## Fase 6.5T — processamento automático da receita suja
+
+[Atualização 0.62.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.62.0.zip) · [Código-fonte 0.62.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.62.0.zip) · [Instalação e teste](docs/FASE-6.5T-0.62.0.md)
+
+F4 → Comercio → Processamento automatico por área, inicialmente desligado. Até$500 sujos a cada60s ativos geram85% ao caixa, mantendo arredondamento cumulativo junto do modo manual. AutoLaunder+Illicit+Treasury em uma Wallet, rollback/replay e histórico por perfil/gangue/área; sem banco/cash ou renda offline. Menu/pausa congela, atividade/contratos/risco/saldo zero reiniciam intervalo; stop após perder posse. Automatizações de venda de armas e processamento são independentes e compatíveis. 2236 testes aprovados, build sem erros/avisos; gameplay pendente. Saves/configs/F2/F11 preservados. Café/boost2X e demais diferenças/refinamentos/fases8/9 continuam futuros.
 
 ## Fase 6.5S — venda automática de armas
 

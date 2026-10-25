@@ -156,3 +156,7 @@ Van própria parada com3 guardas de pistola e abates com prova; volante/retorno 
 ## Base 0.61.0 — venda automática de armas (6.5S)
 
 Opt-in por categoria no arsenal, uma arma/$500 por180s ativos por área, semAmmo/offline/catch-up. Fonte usaUTC e até40 vendas; nossa rotina segura/livre preserva processamento manual85%. Na8 refinar exposição de tempo/pausa/preços por modalidade e histórico; na9 refinar convivência com trabalhos/fluxos físicos sem retirar proteções de estoque/rollback. Lavagem automática/boost do café e demais diferenças ainda pendentes; fases8/9 futuras.
+
+## Base 0.62.0 — processamento automático (6.5T)
+
+Opt-in, até500 por60s ativos e85% ao caixa; mesma contabilidade cumulativa do manual, transação em3livros e sem offline. Fonte usaUTC/até7200s/boost temporário/CleanCash. Na8 refinar clareza do tempo/condições/taxa e saldos da área; na9 refinar convivência de receitas/trabalhos sem perder exclusividade/rollback. Missão do café/boost2X e demais diferenças ainda pendentes, fases8/9 futuras.

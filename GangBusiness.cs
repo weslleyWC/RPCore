@@ -14,7 +14,7 @@ namespace RPCore
         const string OwnerKey="gang_business";
         readonly ShiftGate gate; readonly ObjectPool pool; readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs; readonly GangTurfOptions territories;
-        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;readonly GangWarehouse warehouse;readonly GangRaid raid;readonly GangBulk bulk;readonly GangWeaponRaid weaponRaid;readonly GangAutoArms autoArms;
+        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;readonly GangWarehouse warehouse;readonly GangRaid raid;readonly GangBulk bulk;readonly GangWeaponRaid weaponRaid;readonly GangAutoArms autoArms;readonly GangAutoLaunder autoLaunder;
         public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;warehouse.Dealer=dealer;supply.Dealer=dealer;raid.Dealer=dealer;bulk.Dealer=dealer;}
         GangBusinessService service; GangTurfDefinition area; string profile,gang,id; int player;
         public string SuspensionMessage=>weaponRaid.Active?"Roubo de van suspenso. F4 > Comercio: retomar ou cancelar.":bulk.Active?"Venda em lote suspensa. F4 > Comercio: retomar ou cancelar contrato.":raid.Active?"Roubo suspenso. F4 > Comercio: retomar ou cancelar contrato.":supply.Active?"Frete suspenso. Reserva paga salva; F4 retoma ou estorna.":laundering.Active?"Processamento suspenso; receita nao consumida. Reinicie pelo F4.":"Atendimento encerrado; nenhum estoque nao confirmado foi consumido.";
@@ -32,6 +32,7 @@ namespace RPCore
             warehouse=new GangWarehouse(gate,pool,state,gangs,supply);
             raid=new GangRaid(gate,pool,state,gangs,()=>territories.Areas);
             weaponRaid=new GangWeaponRaid(gate,pool,state,gangs,()=>territories.Areas);
+            autoLaunder=new GangAutoLaunder(gate,pool,state,gangs,()=>territories.Areas);
             autoArms=new GangAutoArms(gate,pool,state,gangs,()=>territories.Areas);
             bulk=new GangBulk(gate,pool,state,gangs,()=>territories.Areas,autoArms);
             menu=new NativeMenu("Comercio territorial","ESTOQUE / ATENDIMENTO / RECEITA");pool.Add(menu);Visuals.Register(menu,"gangs");
@@ -50,7 +51,7 @@ namespace RPCore
             pool.HideAll();menu.Clear();
             if(Wallet.GangArms!=null && !Wallet.GangArms.Valid || Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
             Add("Banco: $"+Wallet.Bank,"Comercio proprio, presencial. Receita vai ao caixa da gangue; nao ao bolso. Sem vendas offline.");
-            autoArms.Controls(Add,Open);weaponRaid.Controls(Add,Open);bulk.Controls(Add,Open);raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
+            autoLaunder.Controls(Add,Open);autoArms.Controls(Add,Open);weaponRaid.Controls(Add,Open);bulk.Controls(Add,Open);raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
             if(service!=null)Add("Encerrar atendimento atual","Tempo nao confirmado e descartado; nenhuma mercadoria e consumida.",()=>{Suspend();Open();});
             var available=territories.Areas.Where(a=>GangBusinessTransactions.Owns(state(),a)).ToList();
             if(available.Count==0)Add("Nenhum territorio disponivel","Filie-se e controle uma area pelo F4 > Territorios. Resolva disputas/iniciacoes pendentes antes de comerciar.");
@@ -64,7 +65,7 @@ namespace RPCore
                 Add("Venda em lote: "+target.Name,"Escolha produto/quantidade e gangue compradora. Leve a caixa no seu carro; receita suja e chance30% de melhorar relacao ao concluir.",()=>bulk.Open(target));
                 weaponRaid.AddStart(target,Add);raid.AddStart(target,Add);
                 supply.AddStart(target,Add);
-                laundering.Append(target,Add);
+                autoLaunder.Append(target,Add,Open);laundering.Append(target,Add);
                 Add("Armazem criminal: "+target.Name,"Guardar/retirar pacotes do trafico e vender do estoque local; separado de mercadorias legais.",()=>warehouse.Open(target));
                 Add("Atender "+options.SaleUnits+" unidades / $"+(options.SaleUnits*options.UnitPrice),"Permaneca no local por "+options.ServiceSeconds+"s ativos e confirme E. Pausa/menu nao contam. END cancela sem consumir estoque.",()=>{if(!Begin(target))Notify.Show("Confira estoque, posse, proximidade e atividade.");});
             }
@@ -79,7 +80,7 @@ namespace RPCore
         bool Current=>service!=null && profile==Profile.Id && player==Game.Player.Character.Handle && GangCrewRules.SameGang(gang,state().Gang) && gate.Owner==OwnerKey && Safe(area);
         public void Tick()
         {
-            autoArms.Tick();weaponRaid.Tick();bulk.Tick();raid.Tick();laundering.Tick();supply.Tick();
+            autoArms.Tick();autoLaunder.Tick();weaponRaid.Tick();bulk.Tick();raid.Tick();laundering.Tick();supply.Tick();
             if(service==null)return;
             if(!Current){Suspend();Notify.Show("Atendimento encerrado; estoque e receita nao alterados.");return;}
             bool working=!Game.IsPaused && !pool.AreAnyVisible && !InterfaceOptions.ModalOpen;
@@ -96,6 +97,6 @@ namespace RPCore
         }
         public void Suspend(){weaponRaid.Suspend();bulk.Suspend();raid.Suspend();laundering.Suspend();supply.Suspend();service=null;area=null;profile=gang=id=null;gate.Release(OwnerKey);}
         public void Dispose(){Close();weaponRaid.Dispose();}
-        public void Close(){autoArms.Clear();bulk.Close();warehouse.Close();Suspend();menu.Visible=false;}
+        public void Close(){autoLaunder.Clear();autoArms.Clear();bulk.Close();warehouse.Close();Suspend();menu.Visible=false;}
     }
 }

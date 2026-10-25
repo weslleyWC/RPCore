@@ -33,6 +33,10 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangAutoLaunderData GangAutoLaunder=>data.GangAutoLaunder;
+        public static bool GangAutoLaunderConfigure(GangState s,GangTurfDefinition area,bool enabled,string id,out bool changed)=>GangAutoLaunderTransactions.Configure(data,s,area,enabled,id,Save,out changed);
+        public static bool GangAutoLaunderStop(string gang,int area,string id,out bool changed)=>GangAutoLaunderTransactions.Stop(data,gang,area,id,Save,out changed);
+        public static bool GangAutoLaunderProcess(GangState s,GangTurfDefinition area,GangAutoLaunderOptions c,DateTime now,string id,out bool changed)=>GangAutoLaunderTransactions.Process(data,s,area,c,now,id,Save,out changed);
         public static bool GangAutoArmsFree=>GangAutoArmsRules.Free(data);
         public static List<string> GangAutoArmsAvailable(string gang,int area,GangArmsOptions c)=>GangAutoArmsRules.Available(data,gang,area,c);
         public static bool GangAutoArmsConfigure(GangState s,GangTurfDefinition area,GangArmsOptions c,string product,bool enabled,string id,out bool changed)=>GangAutoArmsTransactions.Configure(data,s,area,c,product,enabled,id,Save,out changed);
