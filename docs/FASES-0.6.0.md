@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.51.0: [fase 6.5I — comércio territorial](FASE-6.5I-0.51.0.md). Compra bancária de mercadoria, atendimento ativo e receita no caixa da gangue; posse/proximidade/estoque exigidos, sem renda offline. Estoque separado por gangue/área/perfil e dois livros na mesma gravação Wallet. Abastecimento físico, compradores, comércio criminal/lavagem, guerras automáticas/diálogo/polícia e demais diferenças continuam pendentes. Fases 8/9 mantidas.
+
 Andamento 0.50.0: [fase 6.5H — progressão/tesouraria](FASE-6.5H-0.50.0.md), patentes/reputação e resultados territoriais, caixa bancário explícito e participação por patente com intervalo do jogo. Conservação/recibos/rollback, sem renda automática/migração. Valores acima100 preservados; antigas capturas não ganham pontos retroativos. Calendário/banco/HQ precisam de GTA. Economia territorial/guerras automáticas/diálogo/polícia e demais diferenças continuam; fases 8/9 mantidas.
 
 

@@ -1,0 +1,9 @@
+{
+  "UnitCost": 20,
+  "UnitPrice": 35,
+  "PurchaseUnits": 10,
+  "SaleUnits": 5,
+  "Capacity": 100,
+  "ServiceSeconds": 45,
+  "Radius": 12
+}

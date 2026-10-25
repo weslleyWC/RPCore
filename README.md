@@ -1,4 +1,10 @@
-# RPCore 0.50.0 — GTA V Legacy
+# RPCore 0.51.0 — GTA V Legacy
+
+## Fase 6.5I — comércio dos territórios
+
+[Atualização 0.51.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.51.0.zip) · [Código-fonte 0.51.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.51.0.zip) · [Instalação e teste](docs/FASE-6.5I-0.51.0.md)
+
+F4 → Comercio dos territorios: estoque por gangue/área/perfil, compra bancária de 10 unidades por $200 e atendimento presencial de 45 segundos para vender 5 por $175 ao caixa da gangue. E confirma; END encerra sem consumir mercadoria. Pausa/menu não contam; sem vendas offline. Receita financia retirada/participação existentes na tesouraria. Compra/venda atômicas na carteira, limites/recibos/rollback, saves anteriores conservados. 1833 testes aprovados, build sem erros/avisos. Comércio legal próprio e ativo nesta etapa; reposição com veículo, compradores, comércio criminal/lavagem e guerras automáticas continuam pendentes. Fases 8/9 mantidas.
 
 ## Fase 6.5H — progressão e tesouraria da gangue
 

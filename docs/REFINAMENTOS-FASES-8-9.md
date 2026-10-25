@@ -112,3 +112,7 @@ Atualização 0.49.0 / fase 6.5G: defesa manual em ondas e resultado de posse, a
 
 
 Atualização 0.50.0 / fase 6.5H: progressão250/750/1500 e recompensas territoriais PSRP, tesouraria financiada por banco e participação solicitada com percentuais/prazo da referência. Sem criar renda/passivo ou integrar CleanCash/comércio ainda. Resultados e reputação atômicos, transferência só em Wallet com rollback. Calendário/HQ/banco precisam de GTA; apresentação/mecânicas continuam na fase 8 e refinamento de todos os trabalhos na fase 9.
+
+## Base 0.51.0 — comércio territorial (6.5I)
+
+Gestão legal própria, sem equivalência completa aos negócios PSRP: compra direta na área e atendimento presencial cronometrado. Refinar balcão/pontos, trabalhadores/clientes, animações, produtos e logística após validação; integrar comércio criminal/estoque e lavagem em entregas posteriores. Receita vai ao caixa existente, sem pagamento gratuito/offline. Fases 8/9 não antecipadas.

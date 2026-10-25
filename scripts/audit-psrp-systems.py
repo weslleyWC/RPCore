@@ -734,5 +734,20 @@ if treasury_config.exists():
         'intentional_differences':'Reference daily automatic salary comes from owned turf CleanCash. This delivery uses an own explicit bank-funded treasury until territory business cash is connected; no automatic salary, laundering, clean-cash migration or income generation. Rank affects share only, no extra ownership/crew/admin grants. No silent debits, transfers or promotions written at startup.',
         'configuration_sha256':digest(treasury_config.read_bytes()),
         'scope_limits':'Native HQ access/game calendar, protagonist bank integration and coexistence with UI/mods need GTA tests. No turf commerce/rent/passive income, laundering, global gang bank sharing between profiles, AI war or police changes. Phases 8/9 retained.'}
+business_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Business.json'
+if business_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_territory_business']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_separate_stock_and_cash':'Dictionary<DrugTypes, int> Drugs' in source and 'Dictionary<TurfWeaponType, int> Weapons' in source and 'public int CleanCash' in source,
+        'reference_has_owned_turf_collection':'private bool CollectTurfCash(Turf turf)' in source and '!PlayerOwnsTurf(turf)' in source,
+        'reference_has_cafe_supply_work':'NutCafeSupplyRun' in source and 'CafeSupplyGoal = 3' in source,
+        'reference_has_laundering_efficiency':'TurfLaunderingEfficiency = 0.85' in source,
+        'rpcore_cycle':'Own original legal local commerce at configured owned territory centers. Explicit bank purchase stocks gang/area ledger; safe on-foot service for45 active seconds then E sells5 units into gang treasury. Shared shift gate, current owner/affiliation/profile/player checks, stock/capacity guards. Menus/pause/frame gaps do not add time; cancellation/death/vehicle/combat/wanted/abandonment/profile change discard only unconfirmed runtime time. No stock consumed until successful sale save.',
+        'persistence':'Optional Wallet.GangBusiness accounts by case-insensitive gang plus area, purchased/sold/stock/revenue conservation and bounded receipts. Optional treasury BusinessIncome supports legacy zero and decimal-exact deposited+income-withdrawn-salary=balance validation without long sum overflow. Sale clones both books and commits in one Wallet save; bank and original book references restored on exception. Existing payday anchor unchanged; first new treasury income starts game-calendar interval.',
+        'intentional_differences':'Foundation for territory business income, not complete PSRP economy. Generic legal merchandise and active management; no drug/weapon stock, buyers/props, cafe truck delivery, automatic sales, dirty cash, laundering or offline income. No conversion of PSRP Cash/CleanCash. Stock belongs to funding gang/profile; changed owner cannot sell rival stock. Ownership loss locks old stock until same gang regains control; no confiscation or free transfer.',
+        'configuration_sha256':digest(business_config.read_bytes()),
+        'defaults':json.loads(business_config.read_text()),
+        'scope_limits':'Actual centers/ground access, wanted/combat detection, menu/keyboard/native timing and coexistence with installed mods need GTA validation. Work/visual refinements remain phases8/9; full criminal commerce, supply runs, laundering, automatic wars/dialogue/police pending.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
