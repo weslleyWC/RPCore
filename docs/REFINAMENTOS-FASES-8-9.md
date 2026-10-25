@@ -152,3 +152,7 @@ Compra paga própria abastece estoque comercial separado; entrega Kind1 comparti
 ## Base 0.60.0 — roubo de van de armas (6.5R)
 
 Van própria parada com3 guardas de pistola e abates com prova; volante/retorno seguro15m/E final creditam Recovered. Fonte tem comboio motorista+3 passageiros/armas de gangue/fuga por mira-tiro/caixa de madeira/escala por territórios/MissionWin: ainda diferenças para refinamento. Na8 melhorar feedback das etapas/provas e na9 estudar/refinar condução/combate/logística de todos os trabalhos, mantendo snapshots, rollback e limpeza sem apagar veículos ocupados. Fases8/9 permanecem futuras.
+
+## Base 0.61.0 — venda automática de armas (6.5S)
+
+Opt-in por categoria no arsenal, uma arma/$500 por180s ativos por área, semAmmo/offline/catch-up. Fonte usaUTC e até40 vendas; nossa rotina segura/livre preserva processamento manual85%. Na8 refinar exposição de tempo/pausa/preços por modalidade e histórico; na9 refinar convivência com trabalhos/fluxos físicos sem retirar proteções de estoque/rollback. Lavagem automática/boost do café e demais diferenças ainda pendentes; fases8/9 futuras.

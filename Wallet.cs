@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GTA;
 
 namespace RPCore
@@ -31,6 +32,12 @@ namespace RPCore
         public static GangDiplomacyData GangDiplomacy=>data.GangDiplomacy;
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
+        public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static bool GangAutoArmsFree=>GangAutoArmsRules.Free(data);
+        public static List<string> GangAutoArmsAvailable(string gang,int area,GangArmsOptions c)=>GangAutoArmsRules.Available(data,gang,area,c);
+        public static bool GangAutoArmsConfigure(GangState s,GangTurfDefinition area,GangArmsOptions c,string product,bool enabled,string id,out bool changed)=>GangAutoArmsTransactions.Configure(data,s,area,c,product,enabled,id,Save,out changed);
+        public static bool GangAutoArmsStop(string gang,int area,string id,out bool changed)=>GangAutoArmsTransactions.Stop(data,gang,area,id,Save,out changed);
+        public static bool GangAutoArmsSale(GangState s,GangTurfDefinition area,GangArmsOptions catalog,GangAutoArmsOptions c,string product,string id,out bool changed)=>GangAutoArmsTransactions.Sale(data,s,area,catalog,c,product,id,Save,out changed);
         public static bool GangArmsBuy(GangState s,GangTurfDefinition a,GangArmsOptions c,string product,int units,string id,out bool changed)=>GangArmsTransactions.Buy(data,s,a,c,product,units,id,Save,out changed);
         public static bool GangArmsBegin(GangState s,GangBulkAttempt p,GangArmsOptions c,out bool changed)=>GangArmsTransactions.BeginDelivery(data,s,p,c,Save,out changed);
         public static bool GangArmsComplete(GangState s,GangTurfDefinition a,GangArmsOptions c,string id,out bool changed)=>GangArmsTransactions.CompleteDelivery(data,s,a,c,id,Save,out changed);

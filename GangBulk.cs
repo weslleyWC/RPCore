@@ -13,7 +13,7 @@ namespace RPCore
     {
         const string Owner="gang_bulk",Decor="RPCore_BulkOwner";
         readonly ShiftGate gate;readonly ObjectPool pool;readonly Func<GangState> state;readonly Func<IEnumerable<GangDefinition>> gangs;readonly Func<IEnumerable<GangTurfDefinition>> areas;
-        readonly GangBulkOptions options;readonly GangArmsOptions arms;readonly GangWarehouseOptions warehouse;readonly NativeMenu menu;
+        readonly GangBulkOptions options;readonly GangAutoArms autoArms;readonly GangArmsOptions arms;readonly GangWarehouseOptions warehouse;readonly NativeMenu menu;
         readonly Random random=new Random();readonly DeliveryCargo cargo=new DeliveryCargo();readonly GangRaidSearch handover=new GangRaidSearch();
         Vehicle vehicle;Ped buyer;Model buyerModel;Blip objective;int model,player,token,last,elapsed,prepareAt;string plate,profile,id;bool reserved,carrying,arrived,preparing;
         public DealerJob Dealer;public bool Active {get;private set;}
@@ -29,9 +29,10 @@ namespace RPCore
         Vector3 Rear=>vehicle.GetOffsetPosition(new Vector3(0,-3.2f,0));
         static bool ModelValid(string name){if(!GangPresenceRules.ModelName(name))return false;var m=new Model(name);return m.IsInCdImage && m.IsPed;}
         bool OwnBuyer=>buyer!=null && buyer.Exists() && buyer.Handle!=Game.Player.Character.Handle && Function.Call<bool>(Hash.DECOR_EXIST_ON,buyer,Decor) && Function.Call<int>(Hash.DECOR_GET_INT,buyer,Decor)==token;
-        public GangBulk(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,Func<IEnumerable<GangTurfDefinition>> areas)
+        public GangBulk(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,Func<IEnumerable<GangTurfDefinition>> areas):this(gate,pool,state,gangs,areas,null) {}
+        public GangBulk(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,Func<IEnumerable<GangTurfDefinition>> areas,GangAutoArms autoArms)
         {
-            this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;this.areas=areas;
+            this.autoArms=autoArms;this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;this.areas=areas;
             options=Store.LoadDef("Gangs/Bulk.json",()=>new GangBulkOptions());if(options?.Valid!=true){options=new GangBulkOptions();Log.Write("Invalid bulk config; defaults in memory, original preserved.");}
             warehouse=Store.LoadDef("Gangs/Warehouse.json",()=>new GangWarehouseOptions());if(warehouse?.Valid!=true)warehouse=new GangWarehouseOptions();
             arms=Store.LoadDef("Gangs/Arms.json",()=>new GangArmsOptions());if(arms?.Valid!=true){arms=new GangArmsOptions();Log.Write("Invalid arms config; defaults in memory, original preserved.");}
@@ -66,6 +67,7 @@ namespace RPCore
         {
             pool.HideAll();menu.Clear();var own=state().Gang;string currentProfile=Profile.Id;
             if(!GangBusinessTransactions.Owns(state(),area) || Wallet.GangArms!=null && !Wallet.GangArms.Valid){Add("Arsenal indisponivel/protegido","Confira filiacao/posse e dados; estoque anterior conservado.");menu.Visible=true;return;}
+            autoArms?.Append(area,Add,()=>OpenArms(area));
             var a=GangArmsTransactions.Account(Wallet.GangArms,own,area.Id);menu.Name="Arsenal / "+area.Name;
             int limit=Math.Min(150,Math.Max(1,areas().Count(t=>GangBusinessTransactions.Owns(state(),t)))*10);
             Add("Banco $"+Wallet.Bank+" / limite de entrega "+limit,"Estoque comercial separado de armas pessoais. Municao usa uma vaga por100 unidades, arredondando para cima. Compra paga na area; venda fisica usa seu carro.");

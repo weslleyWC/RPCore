@@ -33,6 +33,7 @@ namespace RPCore
         public GangDiplomacyData GangDiplomacy;
         public GangBulkData GangBulk;
         public GangArmsData GangArms;
+        public GangAutoArmsData GangAutoArms;
     }
 
     public class Portfolio : ExtensibleData

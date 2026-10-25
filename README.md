@@ -1,4 +1,10 @@
-# RPCore 0.60.0 — GTA V Legacy
+# RPCore 0.61.0 — GTA V Legacy
+
+## Fase 6.5S — venda automática de armas
+
+[Atualização 0.61.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.61.0.zip) · [Código-fonte 0.61.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.61.0.zip) · [Instalação e teste](docs/FASE-6.5S-0.61.0.md)
+
+F4 → Comercio → Arsenal / armas: opção Auto por categoria, inicialmente desligada. Uma arma selecionada/com estoque a cada180s ativos por área gera$500 de receita suja; munição excluída. Compra padrão de pistola$900 e entrega física$1200 continuam separadas do preço automático fixo. Livro/estoque/receita atômicos, rollback/replay e histórico por perfil/gangue/área. Menu/pausa congela, atividade/contratos/risco/falta de estoque reiniciam intervalo; sem vendas offline. Controle para desligar mesmo após perder posse. 2206 testes aprovados, build sem erros/avisos; gameplay pendente. Saves/configs/F2/F11 preservados. Lavagem automática/boost e demais sistemas/refinamentos/fases8/9 continuam futuros.
 
 ## Fase 6.5R — roubo de van de armas
 

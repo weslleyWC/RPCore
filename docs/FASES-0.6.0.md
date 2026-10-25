@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.61.0: [fase 6.5S — venda automática de armas](FASE-6.5S-0.61.0.md). Opt-in por categoria, uma arma por180s ativos/$500 de receita suja, semAmmo/catch-up/offline. Config/histórico por perfil/gangue/área, transação AutoArms+Arms+Illicit, relógio de sessão/condições de mundo e bloqueio durante atividade/contratos, stop mesmo sem posse. Preserva fluxos físicos/roubos/compra/processamento85%. Lavagem automática/boost/café, convoys/refinamento/diálogo/guerras/polícia e fases8/9 pendentes.
+
 Andamento 0.60.0: [fase 6.5R — roubo de van de armas](FASE-6.5R-0.60.0.md). GBurrito2 parada própria+3 guardas, prova dos abates/motorista/retorno≤15m e E final no arsenal. Snapshot de carga/veículo/opções, retomada parcial sem rerrolar, devolução pronta persistida, Recovered+Stock e Raid na mesma Wallet, limpeza própria adiada enquanto ocupada/móvel. LegadoKind0 e compras/vendas anteriores preservados. Convoy móvel/prop/escala por rival/MissionWin/automação/boost/diálogo/guerras/polícia e fases8/9 pendentes.
 
 Andamento 0.59.0: [fase 6.5Q — arsenal e entrega de armas](FASE-6.5Q-0.59.0.md). Cinco categorias comerciais separadas; compra bancária própria na área e entrega física no fluxo compartilhado com Kind1/arsenal/receita suja, sem relação/armas nativas. Preços/quantidades/vagas PSRP, snapshot/ready/retomada/rollback e legadoKind0 mantidos. Roubo de van/convoys/automação/crew/dano/emboscada/perda definitiva/MissionWin, boost/diálogo/guerras/polícia e fases8/9 pendentes.

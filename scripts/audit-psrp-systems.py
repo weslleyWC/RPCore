@@ -932,5 +932,24 @@ if weapon_raid_config.exists():
     if 'gang_arms_commerce' in report:
         report['gang_arms_commerce']['persistence']+=' From0.60 free weapon-van raid credits optional Recovered history atomically; conservation becomes Purchased+Recovered-Sold=Stock.'
         report['gang_arms_commerce']['intentional_differences']=report['gang_arms_commerce']['intentional_differences'].replace('rival weapon-van theft is still pending','weapon-van theft base is delivered in0.60; moving convoy/refinement remains pending')
+auto_arms_config=Path(__file__).resolve().parents[1] / 'config/Gangs/AutoArms.json'
+if auto_arms_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    pick=source.split('private bool TryGetAutomaticWeaponSale(',1)[1].split('private void ProcessAutomaticWeaponDealing(',1)[0]
+    cycle=source.split('private void ProcessAutomaticWeaponDealing(',1)[1].split('private void UpdateAutomaticWeaponDealing()',1)[0]
+    config=json.loads(auto_arms_config.read_text())
+    report['gang_automatic_arms']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_interval_180_and_price_500':'AutoWeaponSaleIntervalSeconds = 180' in source and 'AutoWeaponSaleDirtyCash = 500' in source and config['IntervalSeconds']==180 and config['UnitPrice']==500,
+        'reference_excludes_ammo_and_selects_four_weapon_categories':'TurfWeaponType.Ammo' not in pick and all('TurfWeaponType.'+n in pick for n in ['Pistol','SMG','AssaultRifle','Shotgun']),
+        'reference_consumes_one_weapon_and_credits_cash':'turfData.Weapons[weaponType]--' in cycle and 'turfData.Cash' in cycle and '+ 500L' in cycle,
+        'reference_uses_utc_and_catchup_cap_40':'DateTime.UtcNow' in cycle and 'Math.Min(40.0' in cycle,
+        'rpcore_cycle':'Explicit category opt-in in F4 arsenal, initially disabled/no book until user action. Fixed default500 dirty proceeds per one selected in-stock pistol/SMG/rifle/shotgun every180 active seconds per owned area; ammo excluded. Current catalog required, one random eligible selected category, no buyers/props/native player weapons. Settings show automatic price/current bank purchase/manual delivery quote before enabling. Activation safe on foot near owned area; disabling all available even after lost ownership/affiliation.',
+        'persistence':'Optional Wallet.GangAutoArms settings/history/receipts per gang/area/profile. Sale atomically clones AutoArms+Arms+Illicit, Stock-1/Sold+1/arms revenue, auto Sales/Revenue/last product and Dirty/Proceeds+price; rollback/replay/overflow guards. Arms purchased+recovered-sold conservation retained. Personal cash/bank/Dealer/drug warehouse/diplomacy/GangState/treasury unchanged. Existing manual85% processing handles dirty proceeds. Invalid books or missing selected catalog/stock cause no replacement/free money.',
+        'session_timing':'Runtime-only clock/receipt per area; no elapsed timestamps persisted. Only alive human/safe/wanted0/no mission/cutscene/free shift gate/no pending freight/raid/bulk/current affiliation+ownership. Menus/pause/modal freeze elapsed, gaps>2s ignored. Losing world/ownership conditions or stock resets elapsed; reload/profile/actor change/config toggles start fresh. One sale per interval, no offline/catch-up. Save exceptions fault that area for session until toggle/reload; never retry each frame.',
+        'configuration_sha256':digest(auto_arms_config.read_bytes()),
+        'defaults':config,
+        'intentional_differences':'PSRP automatically processes all owned-area available weapon categories via UTC elapsed and up to40 catch-up sales; RPCore opt-in categories, active-session time and safe/free conditions, no offline catch-up or ambient buyer simulation. Both default fixed500, which can be below paid acquisition/manual sale value. RPCore writes dirty book and keeps laundering manual85%, not automatic PSRP CleanCash. Automatic laundering/cafe boost and other systems remain pending.',
+        'scope_limits':'Native gate/menu/pause/safety/profile interaction, timing and coexistence with live jobs/territory activity require GTA testing. No claim of complete gang economy parity; cafe boost/dialogue/automatic wars/police and phases8/9 remain pending.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
