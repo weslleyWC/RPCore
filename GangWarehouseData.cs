@@ -33,7 +33,7 @@ namespace RPCore
         static void Receipt(GangWarehouseData b,string id){b.Receipts.Add(id);if(b.Receipts.Count>256)b.Receipts.RemoveAt(0);}
         public static bool Transfer(WalletData w,GangState s,GangTurfDefinition area,DealerOptions c,GangWarehouseOptions o,string product,int count,bool deposit,string id,Action save,out bool changed)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(s,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || c==null || !c.Valid || o==null || !o.Valid || count<1 || count>20 || string.IsNullOrWhiteSpace(id) || id.Length>80 || !c.Products.Any(p=>p.Id==product) || w.Dealer!=null && !w.Dealer.Valid || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
+            changed=false;if(w==null || GangBulkTransactions.Blocked(w) || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(s,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || c==null || !c.Valid || o==null || !o.Valid || count<1 || count>20 || string.IsNullOrWhiteSpace(id) || id.Length>80 || !c.Products.Any(p=>p.Id==product) || w.Dealer!=null && !w.Dealer.Valid || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
             string receipt=id+(deposit?":warehouse-in":":warehouse-out");if(w.GangWarehouse?.Receipts.Contains(receipt)==true)return true;
             var original=w.GangWarehouse;var dealer=w.Dealer;var book=original==null?new GangWarehouseData():Copy(original);var d=dealer==null?new DealerData():Copy(dealer);
             var a=Account(book,s.Gang,area.Id);if(a==null){if(!deposit || book.Accounts.Count>=640)return false;a=new GangWarehouseAccount{Gang=s.Gang,Area=area.Id};book.Accounts.Add(a);}
@@ -55,7 +55,7 @@ namespace RPCore
         }
         public static bool Sale(WalletData w,GangState s,GangTurfDefinition area,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,Action save,out bool changed)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(s,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || c==null || !c.Valid || !c.Products.Any(p=>p.Id==product) || count<1 || count>5 || string.IsNullOrWhiteSpace(id) || id.Length>160 || w.GangWarehouse==null || !w.GangWarehouse.Valid || w.Dealer!=null && !w.Dealer.Valid || w.GangIllicit!=null && !w.GangIllicit.Valid)return false;
+            changed=false;if(w==null || GangBulkTransactions.Blocked(w) || w.Bank<0 || save==null || !GangBusinessTransactions.Owns(s,area) || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || c==null || !c.Valid || !c.Products.Any(p=>p.Id==product) || count<1 || count>5 || string.IsNullOrWhiteSpace(id) || id.Length>160 || w.GangWarehouse==null || !w.GangWarehouse.Valid || w.Dealer!=null && !w.Dealer.Valid || w.GangIllicit!=null && !w.GangIllicit.Valid)return false;
             if(w.GangWarehouse.Receipts.Contains(id) || w.Dealer?.Receipts.Contains(id)==true || w.GangIllicit?.Receipts.Contains(id)==true)return true;
             var original=w.GangWarehouse;var book=Copy(original);var a=Account(book,s.Gang,area.Id);if(a==null)return false;
             long sold=GangWarehouseAccount.Get(a.Sold,product);if(sold>long.MaxValue-count)return false;

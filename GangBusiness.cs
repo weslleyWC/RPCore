@@ -14,11 +14,11 @@ namespace RPCore
         const string OwnerKey="gang_business";
         readonly ShiftGate gate; readonly ObjectPool pool; readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs; readonly GangTurfOptions territories;
-        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;readonly GangWarehouse warehouse;readonly GangRaid raid;
-        public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;warehouse.Dealer=dealer;supply.Dealer=dealer;raid.Dealer=dealer;}
+        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;readonly GangWarehouse warehouse;readonly GangRaid raid;readonly GangBulk bulk;
+        public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;warehouse.Dealer=dealer;supply.Dealer=dealer;raid.Dealer=dealer;bulk.Dealer=dealer;}
         GangBusinessService service; GangTurfDefinition area; string profile,gang,id; int player;
-        public string SuspensionMessage=>raid.Active?"Roubo suspenso. F4 > Comercio: retomar ou cancelar contrato.":supply.Active?"Frete suspenso. Reserva paga salva; F4 retoma ou estorna.":laundering.Active?"Processamento suspenso; receita nao consumida. Reinicie pelo F4.":"Atendimento encerrado; nenhum estoque nao confirmado foi consumido.";
-        public bool Active=>service!=null || supply.Active || laundering.Active || raid.Active;
+        public string SuspensionMessage=>bulk.Active?"Venda em lote suspensa. F4 > Comercio: retomar ou cancelar contrato.":raid.Active?"Roubo suspenso. F4 > Comercio: retomar ou cancelar contrato.":supply.Active?"Frete suspenso. Reserva paga salva; F4 retoma ou estorna.":laundering.Active?"Processamento suspenso; receita nao consumida. Reinicie pelo F4.":"Atendimento encerrado; nenhum estoque nao confirmado foi consumido.";
+        public bool Active=>service!=null || supply.Active || laundering.Active || raid.Active || bulk.Active;
         static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
         public GangBusiness(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs)
         {
@@ -31,6 +31,7 @@ namespace RPCore
             supply=new GangSupply(gate,pool,state,gangs,()=>territories.Areas,options);
             warehouse=new GangWarehouse(gate,pool,state,gangs,supply);
             raid=new GangRaid(gate,pool,state,gangs,()=>territories.Areas);
+            bulk=new GangBulk(gate,pool,state,gangs,()=>territories.Areas);
             menu=new NativeMenu("Comercio territorial","ESTOQUE / ATENDIMENTO / RECEITA");pool.Add(menu);Visuals.Register(menu,"gangs");
         }
         bool Safe(GangTurfDefinition a)
@@ -45,9 +46,9 @@ namespace RPCore
         public void Open()
         {
             pool.HideAll();menu.Clear();
-            if(Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
+            if(Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
             Add("Banco: $"+Wallet.Bank,"Comercio proprio, presencial. Receita vai ao caixa da gangue; nao ao bolso. Sem vendas offline.");
-            raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
+            bulk.Controls(Add,Open);raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
             if(service!=null)Add("Encerrar atendimento atual","Tempo nao confirmado e descartado; nenhuma mercadoria e consumida.",()=>{Suspend();Open();});
             var available=territories.Areas.Where(a=>GangBusinessTransactions.Owns(state(),a)).ToList();
             if(available.Count==0)Add("Nenhum territorio disponivel","Filie-se e controle uma area pelo F4 > Territorios. Resolva disputas/iniciacoes pendentes antes de comerciar.");
@@ -57,6 +58,7 @@ namespace RPCore
                 Add(a.Name+" / estoque "+(account?.Stock??0)+"/"+options.Capacity,"Receita historica: $"+(account?.Revenue??0)+". Compra $"+options.UnitCost+"/un; venda $"+options.UnitPrice+"/un.");
                 Add("GPS: "+a.Name,"Atendimento a pe, a ate "+options.Radius+"m do ponto do territorio.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,target.Center.X,target.Center.Y);menu.Visible=false;});
                 Add("Repor "+options.PurchaseUnits+" unidades / $"+(options.PurchaseUnits*options.UnitCost),"Debita banco e acrescenta estoque local. Compra direta opcional. O frete abaixo exige buscar e descarregar caixas com desconto.",()=>{if(Active || gate.Owner!=null || !Safe(target) || Game.IsPaused || InterfaceOptions.ModalOpen || !Wallet.GangTrade(state(),target,options,false,GangTreasury.Clock(),Guid.NewGuid().ToString("N"),out _))Notify.Show("Confira posse, proximidade, banco, capacidade e atividade.");Open();});
+                Add("Venda em lote: "+target.Name,"Escolha produto/quantidade e gangue compradora. Leve a caixa no seu carro; receita suja e chance30% de melhorar relacao ao concluir.",()=>bulk.Open(target));
                 raid.AddStart(target,Add);
                 supply.AddStart(target,Add);
                 laundering.Append(target,Add);
@@ -67,14 +69,14 @@ namespace RPCore
         }
         bool Begin(GangTurfDefinition target)
         {
-            if(Active || Wallet.GangRaid?.Pending!=null || Wallet.GangBusiness?.Supply!=null || !Safe(target) || Game.IsPaused || InterfaceOptions.ModalOpen || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid || (GangBusinessTransactions.Account(Wallet.GangBusiness,state().Gang,target.Id)?.Stock??0)<options.SaleUnits || !gate.Acquire(OwnerKey))return false;
+            if(Active || Wallet.GangBulkBlocked || Wallet.GangRaid?.Pending!=null || Wallet.GangBusiness?.Supply!=null || !Safe(target) || Game.IsPaused || InterfaceOptions.ModalOpen || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid || (GangBusinessTransactions.Account(Wallet.GangBusiness,state().Gang,target.Id)?.Stock??0)<options.SaleUnits || !gate.Acquire(OwnerKey))return false;
             area=target;profile=Profile.Id;gang=state().Gang;player=Game.Player.Character.Handle;id=Guid.NewGuid().ToString("N");service=new GangBusinessService(Game.GameTime);pool.HideAll();
             Notify.Show("Atendimento iniciado. Permaneça no ponto; E confirma ao terminar, END encerra.");return true;
         }
         bool Current=>service!=null && profile==Profile.Id && player==Game.Player.Character.Handle && GangCrewRules.SameGang(gang,state().Gang) && gate.Owner==OwnerKey && Safe(area);
         public void Tick()
         {
-            raid.Tick();laundering.Tick();supply.Tick();
+            bulk.Tick();raid.Tick();laundering.Tick();supply.Tick();
             if(service==null)return;
             if(!Current){Suspend();Notify.Show("Atendimento encerrado; estoque e receita nao alterados.");return;}
             bool working=!Game.IsPaused && !pool.AreAnyVisible && !InterfaceOptions.ModalOpen;
@@ -83,13 +85,13 @@ namespace RPCore
         }
         public void Interact()
         {
-            raid.Interact();laundering.Interact();supply.Interact();
+            bulk.Interact();raid.Interact();laundering.Interact();supply.Interact();
             if(!Current || Game.IsPaused || pool.AreAnyVisible || InterfaceOptions.ModalOpen || !service.Ready(options.ServiceSeconds))return;
             if(Wallet.GangTrade(state(),area,options,true,GangTreasury.Clock(),id,out bool changed))
             {Suspend();Notify.Show(changed?"Venda gravada. Receita enviada ao caixa da gangue; confira F4 > Tesouraria.":"Venda ja confirmada; nenhum pagamento repetido.");}
             else{Suspend();Notify.Show("Venda recusada. Confira estoque, posse e limites do caixa; sem debito parcial.");}
         }
-        public void Suspend(){raid.Suspend();laundering.Suspend();supply.Suspend();service=null;area=null;profile=gang=id=null;gate.Release(OwnerKey);}
-        public void Close(){warehouse.Close();Suspend();menu.Visible=false;}
+        public void Suspend(){bulk.Suspend();raid.Suspend();laundering.Suspend();supply.Suspend();service=null;area=null;profile=gang=id=null;gate.Release(OwnerKey);}
+        public void Close(){bulk.Close();warehouse.Close();Suspend();menu.Visible=false;}
     }
 }

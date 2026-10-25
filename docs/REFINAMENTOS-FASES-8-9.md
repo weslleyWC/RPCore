@@ -140,3 +140,7 @@ Missão própria de combate/revista/retorno, três NPCs identificados com token 
 ## Base 0.57.0 — relações e acordos (6.5O)
 
 Revista rival agora piora atitude uma vez com carga; menu F4 consulta e compra melhora na HQ por $1000/24h do jogo. Negociação é própria, não corresponde à venda em lote PSRP com30% de melhoria. Na fase8 revisar feedback/clareza do cooldown e estado Guerra; na9 integrar/refinar contextos físicos de trabalhos sem alterar contabilidade. Bulk deals, IA global/guerras, convoys/armas/boost/diálogo/polícia e recompensa MissionWin ainda não concluídos. Preserva fases8/9 como etapas futuras.
+
+## Base 0.58.0 — venda em lote (6.5P)
+
+Entrega física de um SKU em caixa no veículo atual e um comprador próprio; E final grava estoque/receita suja/relação30% atomicamente. Fonte PSRP tem mix, van própria, crew/carro, sequência longa, reserva inicial, integridade/dano/emboscada e MissionWin: continuam diferenças explícitas, com semântica recuperável desta base. Na8 refinar informações de lote/receita/ready; na9 refinar transporte/encontro de todos os trabalhos, sem enfraquecer snapshots/rollback/contabilidade. Fases8/9 ainda futuras.

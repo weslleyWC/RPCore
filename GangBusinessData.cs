@@ -43,7 +43,7 @@ namespace RPCore
         public static bool Trade(WalletData w,GangState s,GangTurfDefinition area,GangBusinessOptions c,bool sale,DateTime now,string id,Action save,out bool changed)
         {
             changed=false;
-            if(w==null || w.Bank<0 || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || !Owns(s,area) || c==null || !c.Valid || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangBusiness!=null && !w.GangBusiness.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
+            if(w==null || GangBulkTransactions.Blocked(w) || w.Bank<0 || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null || !Owns(s,area) || c==null || !c.Valid || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangBusiness!=null && !w.GangBusiness.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
             string receipt=id+(sale?":sale":":stock");
             var original=w.GangBusiness;var treasury=w.GangTreasury;
             if(original?.Receipts.Contains(receipt)==true)return true;

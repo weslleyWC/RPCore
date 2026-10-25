@@ -13,8 +13,8 @@ namespace RPCore
     public sealed class GangDiplomacyAccount : ExtensibleData
     {
         public string Gang,Rival,Attitude="Neutral";
-        public long StolenLoads,Paid,LastAgreementTicks;public int Agreements;
-        [JsonIgnore] public bool Valid=>GangDiplomacyRules.Pair(Gang,Rival) && GangDiplomacyRules.Known(Attitude) && StolenLoads>=0 && Agreements>=0 && Paid>=Agreements && LastAgreementTicks>=0 && LastAgreementTicks<=DateTime.MaxValue.Ticks && (Agreements!=0 || Paid==0 && LastAgreementTicks==0);
+        public long StolenLoads,Paid,LastAgreementTicks,BulkDeals;public int Agreements;
+        [JsonIgnore] public bool Valid=>GangDiplomacyRules.Pair(Gang,Rival) && GangDiplomacyRules.Known(Attitude) && StolenLoads>=0 && BulkDeals>=0 && Agreements>=0 && Paid>=Agreements && LastAgreementTicks>=0 && LastAgreementTicks<=DateTime.MaxValue.Ticks && (Agreements!=0 || Paid==0 && LastAgreementTicks==0);
     }
     public sealed class GangDiplomacyData : ExtensibleData
     {
@@ -55,7 +55,7 @@ namespace RPCore
             changed=false;
             if(w==null || w.Bank<0 || state==null || !GangProgressionRules.Valid(state) || !GangDiplomacyRules.Pair(state.Gang,rival) || !GangDiplomacyRules.Known(initial) || c?.Valid!=true || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid)return false;
             string receipt=id+":agreement";var old=w.GangDiplomacy;if(old?.Receipts.Contains(receipt)==true)return true;
-            if(w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.Bank<c.AgreementPrice)return false;
+            if(GangBulkTransactions.Blocked(w) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.Bank<c.AgreementPrice)return false;
             var next=GangDiplomacyRules.Copy(old);var a=GangDiplomacyRules.Ensure(next,state.Gang,rival,initial);
             if(a==null || a.Attitude=="Respect" || a.Agreements==int.MaxValue || a.Paid>long.MaxValue-c.AgreementPrice || a.Agreements>0 && (now.Ticks<a.LastAgreementTicks || now.Ticks-a.LastAgreementTicks<(long)c.CooldownHours*TimeSpan.TicksPerHour))return false;
             a.Attitude=GangDiplomacyRules.Improve(a.Attitude);a.Agreements++;a.Paid+=c.AgreementPrice;a.LastAgreementTicks=now.Ticks;GangDiplomacyRules.Receipt(next,receipt);

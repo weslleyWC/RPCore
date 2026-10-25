@@ -1,5 +1,7 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.58.0: [fase 6.5P — venda em lote](FASE-6.5P-0.58.0.md). Um SKU local, comprador explícito, caixa/traseira/viagem/entrega3s/E final. Débito de estoque, receita suja e melhoria30% na mesma Wallet; sorteio e preço capturados, retomada/ready/cancelamento e bloqueio de operações territoriais. Seis pontos PSRP, veículo emprestado e um comprador próprio. Mix de SKUs/van/crew/emboscada/dano/perda definitiva/MissionWin, convoys/armas/boost/diálogo/guerras/polícia e fases8/9 continuam pendentes.
+
 Andamento 0.57.0: [fase 6.5O — relações e acordos](FASE-6.5O-0.57.0.md). Revista rival aplica uma piora de atitude na mesma gravação da carga, sem repetição/retroatividade. Menu F4 e acordo próprio pago na HQ sobem um nível por intervalo, com débito/atitude atômicos. Histórico por direção/gangue/perfil, definições e IA globais preservadas. Venda em lote/chance PSRP de melhoria, guerras automáticas/convoys/armas/boost/diálogo/polícia e fases 8/9 pendentes.
 
 Andamento0.56.0: [fase6.5N — roubo de suprimentos](FASE-6.5N-0.56.0.md). Encontro rival próprio com traficante+2 guardas, revista2s e retorno com dois produtos ao armazém. Até3 NPCs, prova de abates, carga persistente, entrega atômica/Raided e falhas/suspensão distintas. Polícia nativa sem imunidade, posse/relações globais mantidas. Variações/escala de loot, relacionamento/reputação da missão, guerras/convoys/armas/boost/diálogo/polícia e fases8/9 continuam pendentes.

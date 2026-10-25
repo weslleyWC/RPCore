@@ -859,5 +859,28 @@ if diplomacy_config.exists():
     if 'gang_rival_supply_raid' in report:
         report['gang_rival_supply_raid']['persistence']+=' From0.57 body-search checkpoint also atomically worsens the directed rival attitude, with rollback of both books.'
         report['gang_rival_supply_raid']['intentional_differences']=report['gang_rival_supply_raid']['intentional_differences'].replace('permanent relationship penalty/reputation reward','reputation reward')
+bulk_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Bulk.json'
+if bulk_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    block=source.split('weaponSaleBuyerLocations =',1)[1].split('\n\t};',1)[0]
+    points=[list(map(float,p)) for p in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\),\s*([-\d.]+)f',block)]
+    config=json.loads(bulk_config.read_text())
+    report['gang_bulk_sale']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_quantities_25_50_100_200_500':'new int[5] { 25, 50, 100, 200, 500 }' in source,
+        'reference_value_one_and_half_and_cap_75000':'GetStreetDrugUnitPrice(item.Key) * (long)item.Value * 3 / 2' in source and 'if (num > 75000)' in source,
+        'reference_prefers_meeting_at_least_1200m':'x.Key.DistanceTo(turf.Center) >= 1200f' in source and 'GetWeaponSaleBuyerLocation(turf, out var position' in source,
+        'all_six_meeting_positions_headings_match_reference':len(points)==6 and len(points)==len(config['Sites']) and all(all(abs(a-b)<0.0001 for a,b in zip(p,[c['X'],c['Y'],c['Z'],c['Heading']])) for p,c in zip(points,config['Sites'])),
+        'reference_completion_credits_turf_cash_and_chance_30':'turfSaveData.Cash += currentBulkDrugValue' in source and 'bulkDrugRelationshipRandom.Next(100) < 30' in source and 'ImproveGangRelationship(bulkDrugBuyerGang)' in source,
+        'reference_has_spawned_van_buyer_crew_and_damage_value':'new Model(VehicleHash.GBurrito2)' in source and 'while (bulkDrugBuyerFriends.Count < 3)' in source and 'private int GetCurrentBulkDrugValue()' in source,
+        'rpcore_cycle':'F4 commerce own territory bulk menu, one known SKU and quantity, explicit buyer gang with ped model, captured150% Dealer.Sell integer value capped75000. Uses borrowed player car/van stopped at area, E pick crate and E rear load, drive same vehicle to captured meeting and park within25m, E rear unload, own unarmed civilian-group buyer, E handover3 active seconds, final E at meeting credits dirty proceeds. Exactly one own tagged NPC, no supplied/modified player vehicle or global relationships. Source six positions/headings with preference >=1200m, async model/ground/space checks.',
+        'persistence':'Optional Wallet.GangBulk pending snapshot/counters/revenue/receipts. Stock stays in warehouse book while contract locks territorial trade/transfer/sale/laundering/freight/raid/agreement. No escrow debit/refund. Only final completion atomically clones Bulk+Warehouse+Illicit+Diplomacy, debits local SKU/Sold, credits local Dirty/Proceeds, counts BulkDeals and improves one attitude tier only for captured roll<30. Roll/price/buyer/quantity/site/options survive reload; no reroll on partial restart. Personal stock/bank/cash/treasury/reputation untouched. Ready handover persists and resumes at meeting on foot without respawn/car; partial resume at area with car resets physical load. Cancellation unlocks undepleted stock even after lost affiliation/ownership. Full rollback/replay/overflow/legacy unknown-field guards.',
+        'configuration_sha256':digest(bulk_config.read_bytes()),
+        'defaults':config,
+        'intentional_differences':'PSRP supports mixed SKU shipment, real upfront reservation, supplied GBurrito2, buyer car+three friends, multi-stage animations/vehicle transfer, cargo damage/price scaling and hijack attacks, turf cash and MissionWin. RPCore one SKU, one crate and one pedestrian buyer, borrowed existing car, logical stock lock until final debit, fixed quoted full value and dirty revenue processed85% separately. No ambush/damage pricing/permanent cargo loss, buyer car/crew or mission reputation reward. Death/wanted/vehicle loss/technical failure/time limit suspend without consuming stock; these are deliberate recoverable semantics. Native police remain active.',
+        'scope_limits':'Actual access/ground at meetings, buyer tag/streaming/AI, input/rear handling/prop/clock/vehicle identity/coexistence need GTA tests. Further bulk realism, convoys/weapons/boost/dialogue/automatic wars/police and phases8/9 remain pending.'}
+    if 'gang_diplomacy' in report:
+        report['gang_diplomacy']['intentional_differences']=report['gang_diplomacy']['intentional_differences'].replace('Bulk deals, automatic war/peace/AI hostility','Advanced bulk scenes/damage/ambushes, automatic war/peace/AI hostility')
+        report['gang_diplomacy']['persistence']+=' From0.58 confirmed bulk sale counts BulkDeals and applies30% snapshot roll for one improvement in the same Wallet save; pending bulk blocks paid negotiation.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -1,0 +1,56 @@
+{
+  "MaxValue": 75000,
+  "SecondsLimit": 1200,
+  "HandoverSeconds": 3,
+  "Quantities": [
+    25,
+    50,
+    100,
+    200,
+    500
+  ],
+  "Sites": [
+    {
+      "Name": "Encontro oeste",
+      "X": -1919.756,
+      "Y": 2052.753,
+      "Z": 140.5457,
+      "Heading": 257.0092
+    },
+    {
+      "Name": "Encontro Sandy Shores",
+      "X": 1624.158,
+      "Y": 3876.18,
+      "Z": 32.75102,
+      "Heading": 245.2432
+    },
+    {
+      "Name": "Encontro Grapeseed",
+      "X": 2355.005,
+      "Y": 4873.825,
+      "Z": 41.3113,
+      "Heading": 44.09565
+    },
+    {
+      "Name": "Encontro Paleto",
+      "X": 120.0075,
+      "Y": 6651.063,
+      "Z": 31.11201,
+      "Heading": 135.8579
+    },
+    {
+      "Name": "Encontro Vinewood",
+      "X": -411.7521,
+      "Y": 1236.108,
+      "Z": 325.1439,
+      "Heading": 231.1451
+    },
+    {
+      "Name": "Encontro deserto",
+      "X": 1221.537,
+      "Y": 1829.018,
+      "Z": 78.83425,
+      "Heading": 26.25417
+    }
+  ]
+}

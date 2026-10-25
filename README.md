@@ -1,4 +1,10 @@
-# RPCore 0.57.0 — GTA V Legacy
+# RPCore 0.58.0 — GTA V Legacy
+
+## Fase 6.5P — venda em lote entre gangues
+
+[Atualização 0.58.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.58.0.zip) · [Código-fonte 0.58.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.58.0.zip) · [Instalação e teste](docs/FASE-6.5P-0.58.0.md)
+
+F4 → Comercio dos territorios → Venda em lote: escolha produto/quantidade e gangue compradora. E pega/carrega caixa, dirija seu carro ao encontro, E retira/entrega por3s e E final confirma venda. Só então desconta armazém e credita receita suja, com30% de chance salva de melhorar relação. Quantidades25/50/100/200/500,150% do preço Dealer/teto$75000, seis destinos PSRP. Lote comprometido bloqueia operações territoriais até concluir/cancelar. END/reload preservam snapshot; pronta retoma a pé no encontro. Um comprador próprio; sem van fornecida/crew/emboscada/dano no preço nesta base. 2091 testes aprovados, build sem erros/avisos; teste no GTA pendente. Preserva saves/configs, F2/F11 e fases8/9 futuras.
 
 ## Fase 6.5O — relações e acordos
 

@@ -39,7 +39,7 @@ namespace RPCore
         }
         public static bool Begin(WalletData w,GangState s,GangTurfDefinition area,GangBusinessOptions business,GangSupplyOptions options,string id,Action save,out bool changed)
         {
-            changed=false;if(w?.GangRaid?.Pending!=null || !Id(id) || !GangBusinessTransactions.Owns(s,area) || business==null || !business.Valid || options==null || !options.Valid)return false;
+            changed=false;if(GangBulkTransactions.Blocked(w) || w?.GangRaid?.Pending!=null || !Id(id) || !GangBusinessTransactions.Owns(s,area) || business==null || !business.Valid || options==null || !options.Valid)return false;
             int cost=Math.Max(1,business.PurchaseUnits*business.UnitCost*(100-options.DiscountPercent)/100);
             return Apply(w,id+":supply-begin",b=>{
                 if(b.Supply!=null)return null;var a=GangBusinessTransactions.Account(b,s.Gang,area.Id);
@@ -49,7 +49,7 @@ namespace RPCore
         }
         public static bool BeginCriminal(WalletData w,GangState state,GangTurfDefinition area,DealerOptions catalog,GangWarehouseOptions warehouse,GangCriminalSupplyOptions c,string product,string id,Action save,out bool changed)
         {
-            changed=false;if(!Id(id) || !GangBusinessTransactions.Owns(state,area) || catalog==null || !catalog.Valid || warehouse==null || !warehouse.Valid || c==null || !c.Valid || string.IsNullOrWhiteSpace(product) || product.Length>80 || w==null || w.GangRaid?.Pending!=null || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
+            changed=false;if(!Id(id) || !GangBusinessTransactions.Owns(state,area) || catalog==null || !catalog.Valid || warehouse==null || !warehouse.Valid || c==null || !c.Valid || string.IsNullOrWhiteSpace(product) || product.Length>80 || w==null || GangBulkTransactions.Blocked(w) || w.GangRaid?.Pending!=null || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
             var item=catalog.Products.Find(p=>p.Id==product);if(item==null)return false;var a=GangWarehouseTransactions.Account(w.GangWarehouse,state.Gang,area.Id);
             if(a==null && w.GangWarehouse?.Accounts.Count>=640 || (a==null?0:GangWarehouseAccount.Get(a.Stock,product))>999-c.Units || GangWarehouseTransactions.Weight(a,catalog)+c.Units*(double)item.Weight>warehouse.Capacity+.0001)return false;
             int cost=Math.Max(1,item.Buy*c.Units*(100-c.DiscountPercent)/100);

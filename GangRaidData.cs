@@ -42,7 +42,7 @@ namespace RPCore
         }
         public static bool Begin(WalletData w,GangState s,GangRaidAttempt p,DealerOptions c,Action save,out bool changed)
         {
-            changed=false;if(w==null || p==null || !p.Valid || p.Package || p.Defeated.Count!=0 || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness?.Supply!=null || c==null || !c.Valid || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
+            changed=false;if(w==null || GangBulkTransactions.Blocked(w) || p==null || !p.Valid || p.Package || p.Defeated.Count!=0 || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness?.Supply!=null || c==null || !c.Valid || w.GangWarehouse!=null && !w.GangWarehouse.Valid)return false;
             if(!Fits(w.GangWarehouse,p,c))return false;
             return Apply(w,p.Id+":raid-begin",b=>{if(b.Pending!=null || b.Attempts==int.MaxValue)return false;b.Pending=Copy(p);b.Attempts++;return true;},save,out changed);
         }
