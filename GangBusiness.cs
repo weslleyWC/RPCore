@@ -46,7 +46,7 @@ namespace RPCore
         public void Open()
         {
             pool.HideAll();menu.Clear();
-            if(Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
+            if(Wallet.GangArms!=null && !Wallet.GangArms.Valid || Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
             Add("Banco: $"+Wallet.Bank,"Comercio proprio, presencial. Receita vai ao caixa da gangue; nao ao bolso. Sem vendas offline.");
             bulk.Controls(Add,Open);raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
             if(service!=null)Add("Encerrar atendimento atual","Tempo nao confirmado e descartado; nenhuma mercadoria e consumida.",()=>{Suspend();Open();});
@@ -58,6 +58,7 @@ namespace RPCore
                 Add(a.Name+" / estoque "+(account?.Stock??0)+"/"+options.Capacity,"Receita historica: $"+(account?.Revenue??0)+". Compra $"+options.UnitCost+"/un; venda $"+options.UnitPrice+"/un.");
                 Add("GPS: "+a.Name,"Atendimento a pe, a ate "+options.Radius+"m do ponto do territorio.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,target.Center.X,target.Center.Y);menu.Visible=false;});
                 Add("Repor "+options.PurchaseUnits+" unidades / $"+(options.PurchaseUnits*options.UnitCost),"Debita banco e acrescenta estoque local. Compra direta opcional. O frete abaixo exige buscar e descarregar caixas com desconto.",()=>{if(Active || gate.Owner!=null || !Safe(target) || Game.IsPaused || InterfaceOptions.ModalOpen || !Wallet.GangTrade(state(),target,options,false,GangTreasury.Clock(),Guid.NewGuid().ToString("N"),out _))Notify.Show("Confira posse, proximidade, banco, capacidade e atividade.");Open();});
+                Add("Arsenal / armas: "+target.Name,"Compra bancaria de estoque comercial separado, entrega fisica de armas/municao e receita suja. Nao equipa armas pessoais.",()=>bulk.OpenArms(target));
                 Add("Venda em lote: "+target.Name,"Escolha produto/quantidade e gangue compradora. Leve a caixa no seu carro; receita suja e chance30% de melhorar relacao ao concluir.",()=>bulk.Open(target));
                 raid.AddStart(target,Add);
                 supply.AddStart(target,Add);

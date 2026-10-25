@@ -1,4 +1,10 @@
-# RPCore 0.58.0 — GTA V Legacy
+# RPCore 0.59.0 — GTA V Legacy
+
+## Fase 6.5Q — arsenal comercial e entrega de armas
+
+[Atualização 0.59.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.59.0.zip) · [Código-fonte 0.59.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.59.0.zip) · [Instalação e teste](docs/FASE-6.5Q-0.59.0.md)
+
+F4 → Comercio dos territorios → Arsenal / armas: cinco categorias comerciais separadas de drogas e armas pessoais. Compra própria paga no banco, a pé na área; entrega física no seu carro com caixa/traseira/viagem/comprador3s/E final usa estoque de armas e gera receita suja. Preços de venda PSRP1200/2500/4500/3200/3, quantidades1/5/10/25/50 e10 vagas por área (munição por100), sem bônus diplomático de drogas. Slot compartilhado com Kind0 legado/Kind1 armas, ready/retomada/cancelamento/rollback, sem equipar/retirar armas nativas. 2133 testes aprovados, build sem erros/avisos; teste GTA pendente. Roubo de van/convoys/automação/emboscada/dano e demais diferenças PSRP e fases8/9 continuam futuras. Saves/configs/F2/F11 preservados.
 
 ## Fase 6.5P — venda em lote entre gangues
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 namespace RPCore
 {
+    public enum GangBulkKind { Drugs=0,Arms=1 }
     public sealed class GangBulkOptions : ExtensibleData
     {
         public int MaxValue=75000,SecondsLimit=1200,HandoverSeconds=3;
@@ -19,9 +20,10 @@ namespace RPCore
     }
     public sealed class GangBulkAttempt : ExtensibleData
     {
+        public GangBulkKind Kind;public int ArmsLimit;
         public string Id,Gang,Buyer,Product,Model,InitialAttitude="Neutral";public int Units,Value,RelationRoll;
         public GangTurfDefinition Area;public JobPoint Site;public GangBulkOptions Options;public bool Loaded,Ready;
-        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && GangDiplomacyRules.Pair(Gang,Buyer) && !string.IsNullOrWhiteSpace(Product) && Product.Length<=80 && GangPresenceRules.ModelName(Model) && GangDiplomacyRules.Known(InitialAttitude) && Units>=1 && Units<=500 && Value>=1 && Value<=75000 && RelationRoll>=0 && RelationRoll<100 && Area!=null && Area.Valid && Site!=null && Site.Valid && Options!=null && Options.Valid && Value<=Options.MaxValue && Options.Quantities.Contains(Units) && (!Ready || Loaded);
+        [JsonIgnore] public bool Valid=>(Kind==GangBulkKind.Drugs || Kind==GangBulkKind.Arms && ArmsLimit>=1 && ArmsLimit<=150 && (Product=="ammo"?(Units+99)/100:Units)<=ArmsLimit) && !string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && GangDiplomacyRules.Pair(Gang,Buyer) && !string.IsNullOrWhiteSpace(Product) && Product.Length<=80 && GangPresenceRules.ModelName(Model) && GangDiplomacyRules.Known(InitialAttitude) && Units>=1 && Units<=500 && Value>=1 && Value<=75000 && RelationRoll>=0 && RelationRoll<100 && Area!=null && Area.Valid && Site!=null && Site.Valid && Options!=null && Options.Valid && Value<=Options.MaxValue && Options.Quantities.Contains(Units) && (!Ready || Loaded);
     }
     public sealed class GangBulkData : ExtensibleData
     {
@@ -46,7 +48,7 @@ namespace RPCore
         }
         public static bool Begin(WalletData w,GangState s,GangBulkAttempt p,DealerOptions c,Action save,out bool changed)
         {
-            changed=false;if(w==null || p?.Valid!=true || p.Loaded || p.Ready || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangWarehouse?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || Quote(c,p.Product,p.Units)!=p.Value || p.Value>p.Options.MaxValue)return false;
+            changed=false;if(w==null || p?.Valid!=true || p.Kind!=GangBulkKind.Drugs || p.Loaded || p.Ready || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangWarehouse?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || Quote(c,p.Product,p.Units)!=p.Value || p.Value>p.Options.MaxValue)return false;
             var a=GangWarehouseTransactions.Account(w.GangWarehouse,p.Gang,p.Area.Id);if(a==null || GangWarehouseAccount.Get(a.Stock,p.Product)<p.Units)return false;
             return Apply(w,p.Id+":bulk-begin",b=>{if(b.Pending!=null || b.Attempts==int.MaxValue)return false;b.Pending=Copy(p);b.Attempts++;return true;},save,out changed);
         }
@@ -63,7 +65,7 @@ namespace RPCore
             changed=false;if(w==null || w.Bank<0 || save==null || !Id(id) || !GangBusinessTransactions.Owns(s,area) || w.GangBulk?.Valid!=true || w.GangWarehouse?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || c?.Valid!=true || w.GangBusiness?.Supply!=null || w.GangRaid?.Pending!=null)return false;
             string receipt=id+":bulk-complete";if(w.GangBulk.Receipts.Contains(receipt))return true;
             var old=w.GangBulk;var stock=w.GangWarehouse;var dirty=w.GangIllicit;var dip=w.GangDiplomacy;var book=Copy(old);var p=book.Pending;
-            if(p==null || p.Id!=id || !p.Ready || p.Area.Id!=area.Id || !GangCrewRules.SameGang(p.Gang,s.Gang) || !c.Products.Any(v=>v.Id==p.Product) || book.Completed==int.MaxValue || book.Revenue>long.MaxValue-p.Value)return false;
+            if(p==null || p.Kind!=GangBulkKind.Drugs || p.Id!=id || !p.Ready || p.Area.Id!=area.Id || !GangCrewRules.SameGang(p.Gang,s.Gang) || !c.Products.Any(v=>v.Id==p.Product) || book.Completed==int.MaxValue || book.Revenue>long.MaxValue-p.Value)return false;
             var storage=Copy(stock);var a=GangWarehouseTransactions.Account(storage,p.Gang,p.Area.Id);
             if(a==null || GangWarehouseAccount.Get(a.Stock,p.Product)<p.Units || GangWarehouseAccount.Get(a.Sold,p.Product)>long.MaxValue-p.Units)return false;
             a.Stock[p.Product]-=p.Units;a.Sold[p.Product]=GangWarehouseAccount.Get(a.Sold,p.Product)+p.Units;

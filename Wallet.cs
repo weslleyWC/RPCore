@@ -25,6 +25,10 @@ namespace RPCore
         public static bool GangRaidCollect(string id,out bool changed,string initial)=>GangRaidTransactions.Collect(data,id,Save,out changed,initial);
         public static GangDiplomacyData GangDiplomacy=>data.GangDiplomacy;
         public static GangBulkData GangBulk=>data.GangBulk;
+        public static GangArmsData GangArms=>data.GangArms;
+        public static bool GangArmsBuy(GangState s,GangTurfDefinition a,GangArmsOptions c,string product,int units,string id,out bool changed)=>GangArmsTransactions.Buy(data,s,a,c,product,units,id,Save,out changed);
+        public static bool GangArmsBegin(GangState s,GangBulkAttempt p,GangArmsOptions c,out bool changed)=>GangArmsTransactions.BeginDelivery(data,s,p,c,Save,out changed);
+        public static bool GangArmsComplete(GangState s,GangTurfDefinition a,GangArmsOptions c,string id,out bool changed)=>GangArmsTransactions.CompleteDelivery(data,s,a,c,id,Save,out changed);
         public static bool GangBulkBlocked=>GangBulkTransactions.Blocked(data);
         public static bool GangBulkBegin(GangState s,GangBulkAttempt p,DealerOptions c,out bool changed)=>GangBulkTransactions.Begin(data,s,p,c,Save,out changed);
         public static bool GangBulkLoad(string id,out bool changed)=>GangBulkTransactions.Load(data,id,Save,out changed);

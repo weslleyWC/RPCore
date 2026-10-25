@@ -882,5 +882,28 @@ if bulk_config.exists():
     if 'gang_diplomacy' in report:
         report['gang_diplomacy']['intentional_differences']=report['gang_diplomacy']['intentional_differences'].replace('Bulk deals, automatic war/peace/AI hostility','Advanced bulk scenes/damage/ambushes, automatic war/peace/AI hostility')
         report['gang_diplomacy']['persistence']+=' From0.58 confirmed bulk sale counts BulkDeals and applies30% snapshot roll for one improvement in the same Wallet save; pending bulk blocks paid negotiation.'
+arms_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Arms.json'
+if arms_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    prices=source.split('private int GetWeaponSalePrice(TurfWeaponType type)',1)[1].split('private int GetWeaponSaleValue()',1)[0]
+    sale=source.split('private void CompleteWeaponSaleMission()',1)[1].split('private void ',1)[0]
+    config=json.loads(arms_config.read_text())
+    expected={'pistol':1200,'smg':2500,'rifle':4500,'shotgun':3200,'ammo':3}
+    report['gang_arms_commerce']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_five_categories_and_prices':all(t in prices for t in ['TurfWeaponType.Pistol => 1200','TurfWeaponType.SMG => 2500','TurfWeaponType.AssaultRifle => 4500','TurfWeaponType.Shotgun => 3200','TurfWeaponType.Ammo => 3']),
+        'all_default_sell_prices_match_reference':{p['Id']:p['Sell'] for p in config['Products']}==expected,
+        'reference_quantities_1_5_10_25_50':'new int[5] { 1, 5, 10, 25, 50 }' in source and config['Delivery']['Quantities']==[1,5,10,25,50],
+        'reference_ten_slots_per_owned_area_and_ammo_per_hundred':'return playerOwnedTurfCount * 10' in source and 'Math.Ceiling((double)item.Value / 100.0)' in source,
+        'reference_arms_sale_credits_turf_cash':'turfData.Cash += currentWeaponSaleValue' in sale,
+        'reference_has_rival_weapon_van_robbery':'private void GenerateWeaponSupplyLoot(string targetGang)' in source and 'private void SpawnWeaponSupplyCrates()' in source,
+        'rpcore_cycle':'F4 commerce Arsenal at owned territory. Separate commercial pistol/SMG/rifle/shotgun/ammo accounts by gang/area/profile. Own paid purchase mechanic: safe human on foot within Warehouse radius, bank debit plus conserved stock/Purchased/Spent in one save. Stock is never player weapon/ammo inventory. Arms delivery uses existing GangBulk physical car/crate/rear/travel/one tagged civilian buyer/handover3s/final E engine, Kind=Arms1 with captured limit10 per owned area capped150 and ceil(ammo units/100) slot usage. Drug Kind0 remains default for legacy contracts.',
+        'persistence':'Optional Wallet.GangArms stock=Purchased-Sold, max999/SKU, bounded accounts/keys/receipts and spent/revenue histories. Paid buy rollback/replay; pending arms/drug cargo share one slot and block purchases/territorial operations. Final arms delivery atomically clones Bulk+Arms+Illicit, debits commercial weapons only and credits local Dirty/Proceeds, no relation chance/BulkDeals or native player weapon/cash changes. Original drug warehouse/Dealer/diplomacy references remain exact. Captured quote/kind/limit/options survive reload/restart; ready resumes at meeting on foot, cancellation only unlocks unconsumed stock. Same recoverable suspension semantics as bulk base, no refund of earlier completed purchases. Invalid/unknown catalog/state conservatively preserved.',
+        'configuration_sha256':digest(arms_config.read_bytes()),
+        'defaults':config,
+        'intentional_differences':'Paid local supply is RPCore code, not PSRP parity: rival weapon-van theft is still pending. One SKU, one buyer pedestrian, borrowed player car and logical stock lock until final debit; PSRP mixed shipment/GBurrito2/buyer crew/vehicle exchange/ambushes/cargo damage/permanent loss/automatic sales and MissionWin remain pending. PSRP credits turf cash; RPCore dirty proceeds require existing85% processing. Shared delivery cap75000 is RPCore bound. Sale slot limit is captured at contract, not continuously scaled during transit. Never equips, withdraws or captures native player weapons/ammo.',
+        'scope_limits':'GTA access/ground/vehicle identity/rear/props/buyer tag/input/GPS/AI/coexistence still need real testing. Arms van theft/convoys/automatic trade/boost/dialogue/automatic wars/police and phases8/9 remain pending.'}
+    if 'gang_bulk_sale' in report:
+        report['gang_bulk_sale']['persistence']+=' From0.59 Kind0 explicitly selects drugs; Kind1 arms shares runtime/checkpoints but uses separate Arms transactions and no diplomacy bonus. Missing Kind stays0.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

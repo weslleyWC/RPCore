@@ -144,3 +144,7 @@ Revista rival agora piora atitude uma vez com carga; menu F4 consulta e compra m
 ## Base 0.58.0 — venda em lote (6.5P)
 
 Entrega física de um SKU em caixa no veículo atual e um comprador próprio; E final grava estoque/receita suja/relação30% atomicamente. Fonte PSRP tem mix, van própria, crew/carro, sequência longa, reserva inicial, integridade/dano/emboscada e MissionWin: continuam diferenças explícitas, com semântica recuperável desta base. Na8 refinar informações de lote/receita/ready; na9 refinar transporte/encontro de todos os trabalhos, sem enfraquecer snapshots/rollback/contabilidade. Fases8/9 ainda futuras.
+
+## Base 0.59.0 — arsenal comercial (6.5Q)
+
+Compra paga própria abastece estoque comercial separado; entrega Kind1 compartilha caixa/carro/um comprador e grava Bulk+Arms+Illicit, sem bônus diplomático/equipar armas nativas. Valores e vagas inspirados em GetWeaponSalePrice/MaxAmount; PSRP rouba van e usa crew/dano/emboscada/automação/MissionWin, ainda pendentes. Na8 refinar clareza de estoque comercial vs armas pessoais; na9 refinar logística/diálogo/animação e todos os trabalhos preservando snapshot/rollback. Fases8/9 permanecem futuras.

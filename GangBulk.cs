@@ -13,7 +13,7 @@ namespace RPCore
     {
         const string Owner="gang_bulk",Decor="RPCore_BulkOwner";
         readonly ShiftGate gate;readonly ObjectPool pool;readonly Func<GangState> state;readonly Func<IEnumerable<GangDefinition>> gangs;readonly Func<IEnumerable<GangTurfDefinition>> areas;
-        readonly GangBulkOptions options;readonly GangWarehouseOptions warehouse;readonly NativeMenu menu;
+        readonly GangBulkOptions options;readonly GangArmsOptions arms;readonly GangWarehouseOptions warehouse;readonly NativeMenu menu;
         readonly Random random=new Random();readonly DeliveryCargo cargo=new DeliveryCargo();readonly GangRaidSearch handover=new GangRaidSearch();
         Vehicle vehicle;Ped buyer;Model buyerModel;Blip objective;int model,player,token,last,elapsed,prepareAt;string plate,profile,id;bool reserved,carrying,arrived,preparing;
         public DealerJob Dealer;public bool Active {get;private set;}
@@ -34,6 +34,7 @@ namespace RPCore
             this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;this.areas=areas;
             options=Store.LoadDef("Gangs/Bulk.json",()=>new GangBulkOptions());if(options?.Valid!=true){options=new GangBulkOptions();Log.Write("Invalid bulk config; defaults in memory, original preserved.");}
             warehouse=Store.LoadDef("Gangs/Warehouse.json",()=>new GangWarehouseOptions());if(warehouse?.Valid!=true)warehouse=new GangWarehouseOptions();
+            arms=Store.LoadDef("Gangs/Arms.json",()=>new GangArmsOptions());if(arms?.Valid!=true){arms=new GangArmsOptions();Log.Write("Invalid arms config; defaults in memory, original preserved.");}
             menu=new NativeMenu("Venda em lote","ARMAZEM / COMPRADOR / ENTREGA");pool.Add(menu);Visuals.Register(menu,"gangs");
         }
         void Add(string title,string description,Action action=null){var row=new NativeItem(title,description);row.Activated+=(s,e)=>{try{action?.Invoke();}catch(Exception ex){Suspend();Log.Error("gang bulk",ex);Notify.Show("Venda suspensa; contrato e valores confirmados conservados.");}};menu.Add(row);}
@@ -41,7 +42,7 @@ namespace RPCore
         {
             add("Lotes vendidos: "+(Wallet.GangBulk?.Completed??0)+" / receita suja $"+(Wallet.GangBulk?.Revenue??0),"Venda em lote usa estoque local, sem pagamento direto no banco/cash.",null);
             var p=Pending;if(p==null)return;
-            add("Lote pendente: "+p.Units+"x "+p.Product+" / "+p.Buyer+" / $"+p.Value,p.Ready?"Entrega fisica confirmada. Retome a pe no encontro para E finalizar receita/estoque.":"Estoque comprometido fica no livro ate finalizar. Retomada parcial refaz carga na sua area, com mesmo preco/destino/comprador.",null);
+            add((p.Kind==GangBulkKind.Arms?"Armas pendentes: ":"Lote pendente: ")+p.Units+"x "+p.Product+" / "+p.Buyer+" / $"+p.Value,p.Ready?"Entrega fisica confirmada. Retome a pe no encontro para E finalizar receita/estoque.":"Estoque comprometido fica no livro ate finalizar. Retomada parcial refaz carga na sua area, com mesmo preco/destino/comprador.",null);
             add("GPS do lote pendente",p.Ready?"Volte ao encontro para finalizar a entrega pronta.":"Volte a sua area para retomar com carro e refazer a carga parcial.",()=>{var target=p.Ready?Pos(p.Site):Pos(p.Area);Function.Call(Hash.SET_NEW_WAYPOINT,target.X,target.Y);pool.HideAll();});
             add(Active?"Suspender venda em lote":"Retomar venda em lote","END suspende. Parcial: seu carro parado na area. Entrega confirmada: a pe no encontro. Sem rerrolar relacao ou criar estoque.",()=>{if(Active){Suspend();reopen();}else if(!Resume())Notify.Show("Confira posse, catalogo, seguranca, carro na area ou ponto de entrega pronta.");});
             add("Cancelar lote pendente","Desbloqueia estoque que ainda nao foi debitado. Sem dinheiro/estorno. Disponivel mesmo apos perder posse/filiacao.",()=>{if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null && gate.Owner!=Owner || !Wallet.GangBulkCancel(p.Id,out _)){Notify.Show("Cancelamento nao confirmado; dados conservados.");return;}Suspend();reopen();});
@@ -60,6 +61,41 @@ namespace RPCore
             }
             if(count==0)Add("Nenhum lote disponivel","Abasteca o armazem com frete, deposito ou roubo. Quantidade minima padrao25; confira teto de valor.");
             Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
+        }
+        public void OpenArms(GangTurfDefinition area)
+        {
+            pool.HideAll();menu.Clear();var own=state().Gang;string currentProfile=Profile.Id;
+            if(!GangBusinessTransactions.Owns(state(),area) || Wallet.GangArms!=null && !Wallet.GangArms.Valid){Add("Arsenal indisponivel/protegido","Confira filiacao/posse e dados; estoque anterior conservado.");menu.Visible=true;return;}
+            var a=GangArmsTransactions.Account(Wallet.GangArms,own,area.Id);menu.Name="Arsenal / "+area.Name;
+            int limit=Math.Min(150,Math.Max(1,areas().Count(t=>GangBusinessTransactions.Owns(state(),t)))*10);
+            Add("Banco $"+Wallet.Bank+" / limite de entrega "+limit,"Estoque comercial separado de armas pessoais. Municao usa uma vaga por100 unidades, arredondando para cima. Compra paga na area; venda fisica usa seu carro.");
+            Add("Comprado $"+(a?.Spent??0)+" / vendido $"+(a?.Revenue??0),"Compra e uma mecanica propria do RPCore. Precos de venda seguem cinco categorias PSRP. Nada equipa o jogador ou retira suas armas.");
+            foreach(var product in arms.Products)
+            {
+                var p=product;int stock=a==null?0:GangWarehouseAccount.Get(a.Stock,p.Id);
+                Add(p.Name+": "+stock+"/"+arms.MaxStock,"Comprado "+(a==null?0:GangWarehouseAccount.Get(a.Purchased,p.Id))+" / vendido "+(a==null?0:GangWarehouseAccount.Get(a.Sold,p.Id))+". Compra $"+p.Buy+"/un, venda $"+p.Sell+"/un sem multiplicador.");
+                foreach(int amount in arms.Delivery.Quantities)
+                {
+                    int units=amount;string receipt=Guid.NewGuid().ToString("N");
+                    if(stock<=arms.MaxStock-units)Add("Comprar "+units+" / "+p.Name+" / $"+((long)p.Buy*units),"Selecionar confirma compra. A pe na area, sem procurado/atividade/contratos. Debita banco e credita apenas arsenal comercial.",()=>{
+                        var actor=Game.Player.Character;
+                        if(currentProfile!=Profile.Id || !GangCrewRules.SameGang(own,state().Gang) || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null || !actor.IsOnFoot || actor.IsRagdoll || actor.Position.DistanceTo(Pos(area))>warehouse.Radius || !Wallet.GangArmsBuy(state(),area,arms,p.Id,units,receipt,out _))Notify.Show("Compra recusada. Confira area a pe, banco, capacidade e pendencias.");OpenArms(area);
+                    });
+                    int value=GangArmsTransactions.Quote(arms,p.Id,units);if(stock<units || value==0 || (p.Id=="ammo"?(units+99)/100:units)>limit)continue;
+                    Add("Entregar "+units+" / "+p.Name+" / $"+value,"Confirma contrato de armas: carro parado na area, caixa/traseira/viagem/comprador/E final. Receita suja; sem sorteio de relacao.",()=>{if(currentProfile!=Profile.Id || !GangCrewRules.SameGang(own,state().Gang) || !BeginArms(area,p.Id,units,limit))Notify.Show("Confira carro parado na area, posse, arsenal e contratos/atividade.");});
+                }
+            }
+            if(a!=null && a.Stock.Any(p=>p.Value>0 && !arms.Products.Any(v=>v.Id==p.Key)))Add("Produtos fora do catalogo conservados","Restaure o mesmo ID no Arms.json para gerenciar; nada e convertido ou apagado.");
+            Add("GPS da area","Compra presencial no centro da area.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,area.Center.X,area.Center.Y);menu.Visible=false;});
+            Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
+        }
+        bool BeginArms(GangTurfDefinition area,string product,int units,int limit)
+        {
+            if(Active || Pending!=null || gate.Owner!=null || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !GangBusinessTransactions.Owns(state(),area) || !Bind(area))return false;
+            var sites=arms.Delivery.Sites.Where(p=>Pos(p).DistanceTo(Pos(area))>=1200).ToList();if(sites.Count==0)sites=arms.Delivery.Sites;
+            string customer=GangCrewRules.SameGang(state().Gang,"Comprador particular")?"Cliente de armas":"Comprador particular";
+            var attempt=new GangBulkAttempt{Kind=GangBulkKind.Arms,ArmsLimit=limit,Id=Guid.NewGuid().ToString("N"),Gang=state().Gang,Buyer=customer,Product=product,Units=units,Value=GangArmsTransactions.Quote(arms,product,units),Model="a_m_m_bevhills_02",Area=CharacterRules.Copy(area),Site=CharacterRules.Copy(sites[random.Next(sites.Count)]),Options=CharacterRules.Copy(arms.Delivery)};
+            if(!gate.Acquire(Owner))return false;try{if(!Wallet.GangArmsBegin(state(),attempt,arms,out bool changed) || !changed){Suspend();return false;}Activate();return true;}catch{Suspend();throw;}
         }
         void ChooseBuyer(GangTurfDefinition area,string product,int units)
         {
@@ -83,7 +119,7 @@ namespace RPCore
         }
         bool Resume()
         {
-            if(Active || Pending==null || Wallet.GangBulk?.Valid!=true || gate.Owner!=null || !Owned || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen || Dealer?.Catalog?.Valid!=true)return false;
+            if(Active || Pending==null || Wallet.GangBulk?.Valid!=true || gate.Owner!=null || !Owned || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen || Pending.Kind==GangBulkKind.Drugs && Dealer?.Catalog?.Valid!=true || Pending.Kind==GangBulkKind.Arms && !arms.Valid)return false;
             if(Pending.Ready){if(!Game.Player.Character.IsOnFoot || Game.Player.Character.Position.DistanceTo(Pos(Pending.Site))>10)return false;}
             else if(!Bind(Pending.Area))return false;
             if(!gate.Acquire(Owner))return false;try{if(!Pending.Ready && !Wallet.GangBulkRestart(Pending.Id,out _)){Suspend();return false;}Activate();return true;}catch{Suspend();throw;}
@@ -126,7 +162,7 @@ namespace RPCore
         {
             if(!Active || !Input || !Owned || Pending?.Id!=id || profile!=Profile.Id || player!=Game.Player.Character.Handle || gate.Owner!=Owner || !Game.Player.Character.IsOnFoot)return;
             var p=Game.Player.Character;
-            if(Pending.Ready){if(p.Position.DistanceTo(Pos(Pending.Site))>3)return;int value=Pending.Value;string purchaser=Pending.Buyer;if(Wallet.GangBulkComplete(state(),CurrentArea,Dealer?.Catalog,id,out bool changed)){Suspend();Notify.Show(changed?"Lote vendido: $"+value+" de receita suja na area. Confira relacao com "+purchaser+" e processe85% pelo F4.":"Venda ja confirmada; nenhum credito repetido.");}else Notify.Show("Venda nao confirmada. Confira estoque/catalogo/limites; entrega continua salva.");return;}
+            if(Pending.Ready){if(p.Position.DistanceTo(Pos(Pending.Site))>3)return;int value=Pending.Value;string purchaser=Pending.Buyer;bool weapons=Pending.Kind==GangBulkKind.Arms;bool changed;bool ok=weapons?Wallet.GangArmsComplete(state(),CurrentArea,arms,id,out changed):Wallet.GangBulkComplete(state(),CurrentArea,Dealer?.Catalog,id,out changed);if(ok){Suspend();Notify.Show(changed?(weapons?"Armas vendidas: $"+value+" de receita suja na area. Processe85% pelo F4; sem premio de relacao.":"Lote vendido: $"+value+" de receita suja na area. Confira relacao com "+purchaser+" e processe85% pelo F4."):"Venda ja confirmada; nenhum credito repetido.");}else Notify.Show("Venda nao confirmada. Confira estoque/catalogo/limites; entrega continua salva.");return;}
             if(!Car || !Stopped || p.IsRagdoll)return;
             if(!Pending.Loaded)
             {
