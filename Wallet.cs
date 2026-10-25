@@ -19,6 +19,12 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static GangBusinessData GangBusiness=>data.GangBusiness;
+        public static bool GangSupplyBegin(GangState s,GangTurfDefinition a,GangBusinessOptions b,GangSupplyOptions c,string id,out bool changed)=>GangSupplyTransactions.Begin(data,s,a,b,c,id,Save,out changed);
+        public static bool GangSupplyLoad(string id,int index,out bool changed)=>GangSupplyTransactions.Load(data,id,index,Save,out changed);
+        public static bool GangSupplyDeliver(string id,int number,out bool changed)=>GangSupplyTransactions.Deliver(data,id,number,Save,out changed);
+        public static bool GangSupplyRestart(string id,out bool changed)=>GangSupplyTransactions.Restart(data,id,Save,out changed);
+        public static bool GangSupplyComplete(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangSupplyTransactions.Complete(data,s,a,id,Save,out changed);
+        public static bool GangSupplyRefund(string id,out bool changed)=>GangSupplyTransactions.Refund(data,id,Save,out changed);
         public static bool GangTrade(GangState s,GangTurfDefinition area,GangBusinessOptions c,bool sale,DateTime now,string id,out bool changed)=>GangBusinessTransactions.Trade(data,s,area,c,sale,now,id,Save,out changed);
         public static GangTreasuryData GangTreasury=>data.GangTreasury;
         public static bool GangDeposit(string gang,int amount,DateTime now,GangTreasuryOptions c,string id,out bool changed)=>GangTreasuryTransactions.Deposit(data,gang,amount,now,c,id,Save,out changed);

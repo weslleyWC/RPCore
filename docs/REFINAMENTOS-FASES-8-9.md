@@ -116,3 +116,7 @@ Atualização 0.50.0 / fase 6.5H: progressão250/750/1500 e recompensas territor
 ## Base 0.51.0 — comércio territorial (6.5I)
 
 Gestão legal própria, sem equivalência completa aos negócios PSRP: compra direta na área e atendimento presencial cronometrado. Refinar balcão/pontos, trabalhadores/clientes, animações, produtos e logística após validação; integrar comércio criminal/estoque e lavagem em entregas posteriores. Receita vai ao caixa existente, sem pagamento gratuito/offline. Fases 8/9 não antecipadas.
+
+## Base 0.52.0 — frete territorial (6.5J)
+
+Reposição ativa com três fornecedores/coletas da PSRP, caixas em mão pelo DeliveryCargo existente, carro/van do jogador e descarga no território. Reserva financeira persistente com retomada/estorno; sem recriar entidades de handles salvos. Refinar geometria de traseiras/estacionamento, caixas no chão/interior do veículo, trabalhador/cliente e variantes específicas de negócio nas etapas adequadas. Recompensa atual é lote comprado com desconto, não bônus2x de lavagem do café PSRP. Fases8/9 mantidas.

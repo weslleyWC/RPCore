@@ -19,7 +19,8 @@ namespace RPCore
     {
         public List<GangBusinessAccount> Accounts=new List<GangBusinessAccount>();
         public List<string> Receipts=new List<string>();
-        [JsonIgnore] public bool Valid=>Accounts!=null && Accounts.Count<=640 && Accounts.All(a=>a!=null && a.Valid) && Accounts.GroupBy(a=>a.Area+"|"+a.Gang,StringComparer.OrdinalIgnoreCase).All(g=>g.Count()==1) && Receipts!=null && Receipts.Count<=256 && Receipts.All(r=>!string.IsNullOrWhiteSpace(r) && r.Length<=110) && Receipts.Distinct().Count()==Receipts.Count;
+        public GangSupplyOrder Supply;
+        [JsonIgnore] public bool Valid=>(Supply==null || Supply.Valid) && Accounts!=null && Accounts.Count<=640 && Accounts.All(a=>a!=null && a.Valid) && Accounts.GroupBy(a=>a.Area+"|"+a.Gang,StringComparer.OrdinalIgnoreCase).All(g=>g.Count()==1) && Receipts!=null && Receipts.Count<=256 && Receipts.All(r=>!string.IsNullOrWhiteSpace(r) && r.Length<=110) && Receipts.Distinct().Count()==Receipts.Count;
     }
     // A runtime-only shift: reload, cancellation and unsafe conditions discard time, never stock.
     public sealed class GangBusinessService
@@ -42,7 +43,7 @@ namespace RPCore
         public static bool Trade(WalletData w,GangState s,GangTurfDefinition area,GangBusinessOptions c,bool sale,DateTime now,string id,Action save,out bool changed)
         {
             changed=false;
-            if(w==null || w.Bank<0 || !Owns(s,area) || c==null || !c.Valid || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangBusiness!=null && !w.GangBusiness.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
+            if(w==null || w.Bank<0 || w.GangBusiness?.Supply!=null || !Owns(s,area) || c==null || !c.Valid || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangBusiness!=null && !w.GangBusiness.Valid || w.GangTreasury!=null && !w.GangTreasury.Valid)return false;
             string receipt=id+(sale?":sale":":stock");
             var original=w.GangBusiness;var treasury=w.GangTreasury;
             if(original?.Receipts.Contains(receipt)==true)return true;

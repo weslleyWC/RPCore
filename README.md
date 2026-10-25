@@ -1,4 +1,10 @@
-# RPCore 0.51.0 — GTA V Legacy
+# RPCore 0.52.0 — GTA V Legacy
+
+## Fase 6.5J — frete de reposição territorial
+
+[Atualização 0.52.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.52.0.zip) · [Código-fonte 0.52.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.52.0.zip) · [Instalação e teste](docs/FASE-6.5J-0.52.0.md)
+
+F4 → Comercio dos territorios → Frete: reserve10 unidades por $150 (25% desconto), usando seu carro/van parado no território. GPS para três fornecedores da referência; E pega caixa e guarda pela traseira, depois dirija de volta e descarregue três caixas a pé. E final acrescenta estoque uma vez, sem nova cobrança. END suspende; reserva paga fica salva para retomar ou estornar explicitamente. Retomada parcial refaz carga sem novo débito, entrega pronta persiste. Não apaga/move/repara seu veículo, respeita props visuais existentes. Compra direta/atendimento/tesouraria anteriores mantidos; frete pendente bloqueia novas compras/vendas até resolver. 1867 testes aprovados e build sem erros/avisos. Logística/posições/props precisam do GTA; não inclui bônus de lavagem do café PSRP. Fases8/9 mantidas.
 
 ## Fase 6.5I — comércio dos territórios
 

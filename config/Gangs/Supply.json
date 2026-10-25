@@ -1,0 +1,27 @@
+{
+  "DiscountPercent": 25,
+  "TimeLimitSeconds": 1800,
+  "Suppliers": [
+    {
+      "Name": "Fornecedor Davis",
+      "X": 55.15895,
+      "Y": -1737.911,
+      "Z": 29.57429,
+      "Heading": 259.3541
+    },
+    {
+      "Name": "Fornecedor Little Seoul",
+      "X": -677.5007,
+      "Y": -854.6947,
+      "Z": 24.0892,
+      "Heading": 183.2677
+    },
+    {
+      "Name": "Fornecedor Burton",
+      "X": -151.7666,
+      "Y": -290.0251,
+      "Z": 40.10313,
+      "Heading": 47.94599
+    }
+  ]
+}

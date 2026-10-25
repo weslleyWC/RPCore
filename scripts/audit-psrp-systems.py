@@ -749,5 +749,23 @@ if business_config.exists():
         'configuration_sha256':digest(business_config.read_bytes()),
         'defaults':json.loads(business_config.read_text()),
         'scope_limits':'Actual centers/ground access, wanted/combat detection, menu/keyboard/native timing and coexistence with installed mods need GTA validation. Work/visual refinements remain phases8/9; full criminal commerce, supply runs, laundering, automatic wars/dialogue/police pending.'}
+supply_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Supply.json'
+if supply_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    block=source.split('private readonly Dictionary<Vector3, float> cafeSupplyParcelLocations',1)[1].split('private const int CafeSupplyGoal',1)[0]
+    points=[[float(v) for v in m] for m in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\),\s*([-\d.]+)f',block)]
+    config=json.loads(supply_config.read_text())
+    report['gang_supply']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_supplier_count':len(points),
+        'all_supplier_positions_headings_match_reference':len(points)==len(config['Suppliers']) and all(all(abs(a-b)<0.00001 for a,b in zip(p,[c['X'],c['Y'],c['Z'],c['Heading']])) for p,c in zip(points,config['Suppliers'])),
+        'reference_has_pickup_load_unload_delivery':all(t in source for t in ['PickupCafeSupplyParcel','LoadCafeSupplyParcel','UnloadCafeSupplyParcel','DeliverCafeSupplyParcel','CafeSupplyGoal = 3']),
+        'reference_completion_is_laundering_boost':'turfData.LaunderingBoostMultiplier = 2f' in source and 'DateTime.UtcNow.AddHours(1.0)' in source,
+        'rpcore_cycle':'Optional physical commerce freight for any owned configured territory. Driver binds own stopped unreserved car/van at destination, reserves discounted bank cost once. GPS three reference suppliers, foot E pickup with borrowed vehicle nearby, box carry using existing optional DeliveryCargo and E at rear records distinct load. Must drive bound vehicle to destination then foot rear pickup and three dropoffs; final E credits complete stock lot, no second debit, salary or treasury credit.',
+        'persistence':'Optional Wallet.GangBusiness.Supply order snapshots gang/area, suppliers, cost/units/capacity/time, distinct loads and sequential delivery checkpoints. One Wallet save per bank/stock checkpoint, clone/save/publish and rollback. Shared gate and JobVehicles reservation, existing WorkContext shop input reservation around active point with owned cleanup, model/plate/handle/profile/actor/owner checks. Suspension never refunds automatically; explicit safe refund restores reserved cost once including changed gang/ownership. Partial resume resets physical proof and checkpoint receipts but preserves paid reservation; fully delivered order resumes ready without car. No entity handles resurrected from save.',
+        'intentional_differences':'PSRP supplies a spawned Burrito for turf4 cafe and rewards2x laundering for60 real minutes plus MissionWin. RPCore borrows player car/van, does not spawn/delete/repair/move it, grants a discounted paid merchandise lot instead, permits configured owned areas and has no laundering or reputation reward. Carry prop respects existing Visuals flags and ups_box/vanilla fallback; no supplier world crates or vehicle-mounted crate props. Direct purchase and service preserved but blocked while freight reservation exists.',
+        'configuration_sha256':digest(supply_config.read_bytes()),
+        'defaults':config,
+        'scope_limits':'Actual supplier/destination access, vehicle rear offsets/parking, GPS, E inputs, optional props/animations and native vehicle identity/mod coexistence need GTA testing. Automatic criminal sales/laundering, cafe-specific simulation, wars/dialogue/police and phases8/9 pending.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
