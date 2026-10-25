@@ -686,5 +686,25 @@ if driving_config.exists():
         'intentional_differences':'Reference permits some exits and uses victory cutscene. RPCore requires same driver/passenger vehicle until home, parked home return, wanted cleared naturally before report, 1200 active seconds and explicit E at leader. No forced camera/cutscene or police immunity. Attribution relies on native damage/death fields and requires GTA tests with other scripts.',
         'configuration_sha256':digest(driving_config.read_bytes()),
         'scope_limits':'Native passenger doors/window fire/aim, target floor/streaming/clearance and exact kill attribution need GTA validation. No full leader dialogue, territories/war/economy or police integration. Phases 8/9 retained.'}
+turf_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Territories.json'
+if turf_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text();creator=(a.reference_source / 'PSRP/GangCreators.cs').read_text();config=json.loads(turf_config.read_text())
+    refs=[]
+    for block in source.split('private void LoadTurfs()',1)[1].split('GangTurfs.Add(new Turf')[1:]:
+        ident=int(re.search(r'ID = (\d+)',block)[1]);center=[float(v) for v in re.search(r'Center = new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',block).groups()]
+        pb=block.split('PedSpawnSpots =',1)[1].split('VehicleSpawnPostitions =',1)[0]
+        posts=[[float(v) for v in m] for m in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\),\s*([-\d.]+)f',pb)]
+        refs.append((ident,center,posts))
+    report['gang_territories']={
+        'reference_source':['PSRP/GangSpawner.cs','PSRP/GangCreators.cs'],
+        'reference_territory_count':len(refs),
+        'all_centers_and_posts_match_reference':len(refs)==len(config['Areas']) and all(ident==c['Id'] and xyz==[c['Center'][k] for k in ['X','Y','Z']] and posts==[[p[k] for k in ['X','Y','Z','Heading']] for p in c['Posts']] for (ident,xyz,posts),c in zip(refs,config['Areas'])),
+        'reference_owner_bands_match': 'i <= 5' in creator and '3rd Avenue Hustlas' in creator and 'i <= 10' in creator and all(c['DefaultOwner']==('3rd Avenue Hustlas' if c['Id']<=5 else 'Eastside Kings' if c['Id']<=10 else 'Blacktop Locos') for c in config['Areas']),
+        'reference_has_defender_capture':'private bool AreTurfDefendersDead(Turf turf)' in source and 'private void CaptureTurf(Turf turf)' in source and 'TurfOwnership[turf.ID] = playerGangAffiliation' in source,
+        'rpcore_cycle':'F4 territory submenu, opt-in map per profile, 15 default owners/coordinates and all ped posts retained. Explicit on-foot area attack, actual previous-owner valid ped models, asynchronous preparation and safe original posts. Default 3 own armed defenders, no loot, native combat only on player. All distinct deaths persist ready checkpoint; E in area atomically captures ownership with expected-previous-owner and affiliation checks, refreshes colored owner blips.',
+        'persistence':'Optional GangState.Turf Owners override dictionary plus snapshot pending/defeats/ready/receipts/counts. Initial owners resolved in memory, no autosave migration/grants on load. Partial restart requires fresh defenders, no extra attempt; ready proof persists across reload. Changed owner cannot be overwritten, failures conserve old owner, receipts prevent replay. Per-profile ownership persists after Leave; old/unknown owner IDs and metadata retained.',
+        'intentional_differences':'Initial capture module only: default three pistol defenders versus full PSRP ambient forces/weapons/reinforcements. Explicit F4 attack and E capture, own 600s limit, on-foot45m center, optional map; no automatic attack trigger/cutscene/relations changes. Combat deaths of all owned defenders count, disappearance does not. No money/reputation award, turf stock/commerce, gang AI battles or automatic counterattack.',
+        'configuration_sha256':digest(turf_config.read_bytes()),
+        'scope_limits':'Native combat, paths/floor, airport/restricted access, wanted, coexistence with crew/police/mods require GTA tests. No automatic PSRP TurfOwnership import, complete gang economy, reinforcement/convoy or police integration. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

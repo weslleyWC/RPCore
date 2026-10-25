@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.48.0: [fase 6.5F — mapa e captura de territórios](FASE-6.5F-0.48.0.md), 15 centros/postos/donos PSRP, mapa opcional, GPS, três defensores e posse confirmada após vitória. Overrides por perfil, recibos/retomada e guarda de dono anterior. Não declara guerra/economia completa: reforços/contra-ataques/comércio/renda, diálogo e polícia continuam. Teste de combate/piso/acesso no GTA pendente; fases 8/9 mantidas.
+
+
 Andamento 0.47.0: [fase 6.5E — iniciação de direção](FASE-6.5E-0.47.0.md), passageiro próprio/tiro em alvo rival, 25 pontos PSRP, autoria nativa, fuga150m, retorno e filiação persistida no líder. Carro emprestado do jogador preservado; trava/retomada/exclusão mútua entre as três iniciações. Embarque/visada/autoria precisam de GTA. Diálogo/territórios/guerras/economia/polícia e demais diferenças continuam; fases 8/9 mantidas.
 
 

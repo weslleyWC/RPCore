@@ -15,6 +15,7 @@
     <GTAV Condition="'$(GTAV)'==''">C:\Program Files\Rockstar Games\Grand Theft Auto V</GTAV>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="config/Gangs/Territories.json" LogicalName="RPCore.JobDefaults.GangTerritories.json" />
     <EmbeddedResource Include="config/Gangs/Driving.json" LogicalName="RPCore.JobDefaults.GangDriving.json" />
     <EmbeddedResource Include="config/Gangs/Loyalty.json" LogicalName="RPCore.JobDefaults.GangLoyalty.json" />
     <EmbeddedResource Include="config/Jobs/PdmLogistics.json" LogicalName="RPCore.JobDefaults.PdmLogistics.json" />

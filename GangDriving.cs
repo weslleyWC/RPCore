@@ -25,14 +25,14 @@ namespace RPCore
         static string[] Models(GangDefinition g)=>(g.PedModels??Array.Empty<string>()).Where(GangPresenceRules.ModelName).Where(n=>{var m=new Model(n);return m.IsInCdImage && m.IsPed;}).ToArray();
         public bool Begin(GangDefinition gang,IEnumerable<GangDefinition> gangs)
         {
-            if(Active || HasPending || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(gang.Name))return false;
+            if(Active || HasPending || state().Turf?.Pending!=null || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(gang.Name))return false;
             var own=Models(gang);var rivals=gangs.Where(g=>!string.Equals(g.Name,gang.Name,StringComparison.OrdinalIgnoreCase)).SelectMany(Models).ToArray();if(own.Length==0 || rivals.Length==0)return false;
             var p=new GangDrivingAttempt{Id=Guid.NewGuid().ToString("N"),Gang=gang.Name,CrewModel=own[random.Next(own.Length)],TargetModel=rivals[random.Next(rivals.Length)],Home=GangPresenceRules.HQ(gang),Target=options.Targets[random.Next(options.Targets.Count)],Options=CharacterRules.Copy(options)};
             return Prepare(CharacterRules.Copy(p));
         }
         public bool Resume()
         {
-            if(Active || Pending==null || state().Driving.Valid!=true || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang))return false;
+            if(Active || Pending==null || state().Turf?.Pending!=null || state().Driving.Valid!=true || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang))return false;
             if(Pending.Stage==GangDrivingStage.Report){if(!gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
             return Prepare(CharacterRules.Copy(Pending));
         }

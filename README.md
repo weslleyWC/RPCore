@@ -1,4 +1,11 @@
-# RPCore 0.47.0 — GTA V Legacy
+# RPCore 0.48.0 — GTA V Legacy
+
+## Fase 6.5F — mapa e captura de territórios
+
+[Atualização 0.48.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.48.0.zip) · [Código-fonte 0.48.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.48.0.zip) · [Instalação e teste](docs/FASE-6.5F-0.48.0.md)
+
+F4 → Territorios / mapa e disputas → mapa ligado. Quinze centros/postos/donos da PSRP, GPS, combate explícito contra três defensores próprios e confirmação E da posse após vencer. Donos por perfil, mapa opcional, snapshots/retomada/rollback e atualização dos ícones. Sem renda/recompensa/captura automática, polícia ou mudanças de grupos nativos. Sistemas/saves/configs anteriores preservados. 1744 testes aprovados e build sem erros/avisos. Combate/piso/acesso precisam de GTA; reforços/guerras/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5E — iniciação de direção
 

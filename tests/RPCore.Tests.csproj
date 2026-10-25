@@ -47,6 +47,7 @@
     <Compile Include="../GangLoyaltyData.cs" Link="GangLoyaltyData.cs" />
     <Compile Include="../GangStrengthData.cs" Link="GangStrengthData.cs" />
     <Compile Include="../GangDrivingData.cs" Link="GangDrivingData.cs" />
+    <Compile Include="../GangTurfData.cs" Link="GangTurfData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
+    <EmbeddedResource Include="../config/Gangs/Territories.json" LogicalName="RPCore.JobDefaults.GangTerritories.json" />
     <EmbeddedResource Include="../config/Gangs/Driving.json" LogicalName="RPCore.JobDefaults.GangDriving.json" />
     <EmbeddedResource Include="../config/Gangs/Loyalty.json" LogicalName="RPCore.JobDefaults.GangLoyalty.json" />
     <EmbeddedResource Include="../config/Jobs/PdmLogistics.json" LogicalName="RPCore.JobDefaults.PdmLogistics.json" />

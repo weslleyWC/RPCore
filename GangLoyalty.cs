@@ -21,7 +21,7 @@ namespace RPCore
         bool AtLeader(string gang){var leader=presence.Leader(gang);return Calm && !InterfaceOptions.ModalOpen && Game.Player.Character.IsOnFoot && leader!=null && Game.Player.Character.Position.DistanceTo(leader.Position)<=3;}
         public bool Begin(GangDefinition gang)
         {
-            if(active || HasPending || state().Driving?.Pending!=null || !AtLeader(gang.Name) || !GangLoyaltyRules.Unaffiliated(state().Gang) || !gate.Acquire(Owner))return false;
+            if(active || HasPending || state().Turf?.Pending!=null || state().Driving?.Pending!=null || !AtLeader(gang.Name) || !GangLoyaltyRules.Unaffiliated(state().Gang) || !gate.Acquire(Owner))return false;
             try{
                 var candidates=options.Contacts.Where(a=>options.Contacts.Any(b=>GangPresenceRules.Distance(a,b)>=3)).ToArray();if(candidates.Length==0)return false;var first=candidates[random.Next(candidates.Length)];var others=options.Contacts.Where(p=>GangPresenceRules.Distance(p,first)>=3).ToArray();
                 var leader=presence.Leader(gang.Name);var p=leader.Position;
@@ -31,7 +31,7 @@ namespace RPCore
             }finally{if(!active)gate.Release(Owner);}
         }
         public bool Resume()
-        {if(active || Pending==null || state().Driving?.Pending!=null || state().Strength?.Pending!=null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
+        {if(active || Pending==null || state().Turf?.Pending!=null || state().Driving?.Pending!=null || state().Strength?.Pending!=null || state().Loyalty.Valid!=true || !GangLoyaltyRules.Unaffiliated(state().Gang) || !AtLeader(Pending.Gang) || !gate.Acquire(Owner))return false;active=true;profile=Profile.Id;pool.HideAll();Route();return true;}
         public bool Cancel(){if(Pending==null)return false;if(!GangLoyaltyTransactions.Cancel(state(),Pending.Id,save,out _))return false;Suspend();return true;}
         void ClearContact(){StopHandover();if(contact!=null && contact.Exists())contact.Delete();contact=null;if(model.Hash!=0)model.MarkAsNoLongerNeeded();model=default(Model);loading=false;}
         void StopHandover(){if(handing && handoverPed!=null && handoverPed.Exists())Function.Call(Hash.STOP_ANIM_TASK,handoverPed,"mp_common","givetake1_a",-4f);handing=false;handoverPed=null;}
@@ -40,7 +40,7 @@ namespace RPCore
         void Route(){ClearContact();if(route!=null && route.Exists())route.Delete();route=World.CreateBlip(Target);route.Name="RPCore lealdade: "+(Pending.Collected<2?"pacote "+(Pending.Collected+1):"voltar ao lider");route.Sprite=BlipSprite.Package;route.Color=BlipColor.Yellow;route.ShowRoute=true;step=Pending.Collected;retryAt=0;}
         public void Interact()
         {
-            if(!active || Pending==null || !Calm || InterfaceOptions.ModalOpen || pool.AreAnyVisible || !Game.Player.Character.IsOnFoot || handing)return;
+            if(!active || Pending==null || state().Turf?.Pending!=null || !Calm || InterfaceOptions.ModalOpen || pool.AreAnyVisible || !Game.Player.Character.IsOnFoot || handing)return;
             if(Pending.Collected==2){if(!AtLeader(Pending.Gang))return;if(!GangLoyaltyTransactions.Complete(state(),Pending.Id,save,out _))return;Suspend();Notify.Show("Iniciacao concluida. Filiacao gravada; bem-vindo a "+state().Gang+".");return;}
             if(contact==null || !contact.Exists() || contact.IsDead || Game.Player.Character.Position.DistanceTo(contact.Position)>2.5f)return;
             handAt=Game.GameTime;handing=true;handoverPed=Game.Player.Character;Function.Call(Hash.REQUEST_ANIM_DICT,"mp_common");
@@ -49,7 +49,7 @@ namespace RPCore
         public void Tick()
         {
             if(!active)return;
-            if(profile!=Profile.Id || Pending==null || !state().PresenceEnabled || !GangLoyaltyRules.Unaffiliated(state().Gang)){Suspend();return;}
+            if(profile!=Profile.Id || Pending==null || state().Turf?.Pending!=null || !state().PresenceEnabled || !GangLoyaltyRules.Unaffiliated(state().Gang)){Suspend();return;}
             if(Game.IsPaused){if(handing)handAt=Game.GameTime;return;}
             if(!Calm){Suspend();Notify.Show("Iniciacao suspensa; retome pelo F4 junto ao lider. Pacotes confirmados conservados.");return;}
             if(Pending.Collected!=step)Route();

@@ -37,7 +37,7 @@ namespace RPCore
             save(next);result=next;return true;
         }
         public static bool Begin(GangState state,GangLoyaltyAttempt attempt,Action<GangState> save,out GangState result)
-        {result=state;if(attempt==null || !attempt.Valid || attempt.Collected!=0)return false;return Apply(state,attempt.Id+":begin",s=>{if(!GangLoyaltyRules.Unaffiliated(s.Gang) || s.Loyalty.Pending!=null || s.Strength?.Pending!=null || s.Driving?.Pending!=null)return false;s.Loyalty.Pending=Copy(attempt);return true;},save,out result);}
+        {result=state;if(attempt==null || !attempt.Valid || attempt.Collected!=0)return false;return Apply(state,attempt.Id+":begin",s=>{if(!GangLoyaltyRules.Unaffiliated(s.Gang) || s.Loyalty.Pending!=null || s.Strength?.Pending!=null || s.Turf?.Pending!=null || s.Driving?.Pending!=null)return false;s.Loyalty.Pending=Copy(attempt);return true;},save,out result);}
         public static bool Collect(GangState state,string id,int index,Action<GangState> save,out GangState result)
         {result=state;if(index<0 || index>1)return false;return Apply(state,id+":pickup:"+index,s=>{var p=s.Loyalty.Pending;if(p==null || p.Id!=id || p.Collected!=index || !GangLoyaltyRules.Unaffiliated(s.Gang))return false;p.Collected++;return true;},save,out result);}
         public static bool Complete(GangState state,string id,Action<GangState> save,out GangState result)

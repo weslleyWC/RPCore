@@ -103,3 +103,6 @@ Atualização 0.46.0 / fase 6.5D: iniciação por força com três desafiantes, 
 
 
 Atualização 0.47.0 / fase 6.5E: iniciação de direção após comparar passageiro/alvo/autoria/fuga/retorno PSRP. Carro do jogador somente referenciado, grupos próprios temporários e aprovação/retomada persistentes, sem alterar polícia/relações nativas. Tiros/visada/portas/autoria precisam de GTA e refinamento de interface/mecânicas na fase 8; refinamento de todos os trabalhos permanece na fase 9. Territórios/guerras/economia/polícia e diálogo completo continuam pendentes.
+
+
+Atualização 0.48.0 / fase 6.5F: base de captura com 15 áreas/postos/donos PSRP, mapa opcional e posse por perfil após combate/confirmar. Não declara reforços/guerras/economia/renda ou polícia completos. Combate/piso/acesso nativo precisam de GTA. Ergonomia/leitura de área e apresentação continuam na fase 8; refinamento de todos os trabalhos na fase 9.
