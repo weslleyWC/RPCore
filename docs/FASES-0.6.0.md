@@ -1,5 +1,8 @@
 # RPCore × PSRP — comparação e fases (0.6.0)
 
+Andamento 0.42.0: [fase 6.4D — A/caminhões](FASE-6.4D-0.42.0.md), livro próprio, teoria e exame articulado com engate, rota industrial, ré/alinhamento/desengate e emissão. PSRP apenas anuncia A futura; código/regras/rota próprios. C/M1 e trabalhos antigos preservados; retomada sem nova taxa. Engate/física/rota precisam de GTA. Fiscalização e demais diferenças continuam; fases 8/9 mantidas.
+
+
 Andamento 0.41.0: [fase 6.4C — M1/motos](FASE-6.4C-0.41.0.md), teoria/prático próprios com PCJ, capacete, baixa velocidade e documento separado. Fonte PSRP só anuncia M1 como futura; C e seus saves/pagamentos preservados. Capacete fornecido não substitui o adereço salvo. Classe A/fiscalização e demais diferenças continuam; fases 8/9 mantidas. Teste GTA pendente.
 
 Andamento 0.40.0: [fase 6.4B — DMV classe C](FASE-6.4B-0.40.0.md), teoria/certificado e prático completo com os 36 pontos da referência, avaliação e emissão por perfil. Completa o fluxo prático que está sem acionamento/progressão final na PSRP; implementação própria e retomada sem taxa duplicada. Não adiciona bloqueios aos empregos/veículos antigos. A/M1/fiscalização e demais diferenças seguem; fases 8/9 mantidas. Teste GTA pendente.

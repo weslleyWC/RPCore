@@ -24,6 +24,7 @@ namespace RPCore
         public VehicleInsuranceData VehicleInsurance;
         public DmvData Dmv;
         public DmvData DmvM1;
+        public DmvData DmvA;
     }
 
     public class Portfolio : ExtensibleData

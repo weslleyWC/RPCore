@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 namespace RPCore
 {
-    public enum DmvClass { C, M1 }
+    public enum DmvClass { C, M1, A }
     public static class DmvHelmetSnapshot
     {
         public static CharacterBody Filter(CharacterBody body,int model,int given,int givenTexture,int original,int originalTexture)
@@ -19,15 +19,18 @@ namespace RPCore
     {
         public int TheoryPrice=30,PracticalPrice=60,PassScore=12,SpeedKmh=50,MaxFaults=5,SecondsLimit=1200;
         public DmvClass Category;
-        public bool RequireSeatbelt=true,RequireHelmet;
+        public bool RequireSeatbelt=true,RequireHelmet,SnapRouteToRoad;
+        public JobPoint TrailerSpawn;
+        public int ReverseMeters=5;
         public Dictionary<int,int> PointSpeeds=new Dictionary<int,int>();
         public JobPoint Entry,Spawn;
         public List<JobPoint> Route=new List<JobPoint>();public List<int> Stops=new List<int>();
         public int SpeedAt(int point)=>PointSpeeds!=null && PointSpeeds.TryGetValue(point,out var limit)?limit:SpeedKmh;
-        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(DmvClass),Category) && (Category==DmvClass.C?!RequireHelmet:!RequireSeatbelt && RequireHelmet) && PointSpeeds!=null && PointSpeeds.All(p=>p.Key>=0 && Route!=null && p.Key<Route.Count && p.Value>=5 && p.Value<=SpeedKmh) && TheoryPrice>=0 && TheoryPrice<=10000 && PracticalPrice>=0 && PracticalPrice<=10000 && PassScore>=1 && PassScore<=15 && SpeedKmh>=20 && SpeedKmh<=100 && MaxFaults>=1 && MaxFaults<=20 && SecondsLimit>=120 && SecondsLimit<=7200 && Entry!=null && Entry.Valid && Spawn!=null && Spawn.Valid && Route!=null && Route.Count>=2 && Route.Count<=100 && Route.All(p=>p!=null && p.Valid) && Stops!=null && Stops.All(i=>i>=0 && i<Route.Count) && Stops.Distinct().Count()==Stops.Count;
+        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(DmvClass),Category) && (Category==DmvClass.M1?!RequireSeatbelt && RequireHelmet:!RequireHelmet) && (Category!=DmvClass.A || RequireSeatbelt && TrailerSpawn!=null && TrailerSpawn.Valid && ReverseMeters>=3 && ReverseMeters<=20) && PointSpeeds!=null && PointSpeeds.All(p=>p.Key>=0 && Route!=null && p.Key<Route.Count && p.Value>=5 && p.Value<=SpeedKmh) && TheoryPrice>=0 && TheoryPrice<=10000 && PracticalPrice>=0 && PracticalPrice<=10000 && PassScore>=1 && PassScore<=15 && SpeedKmh>=20 && SpeedKmh<=100 && MaxFaults>=1 && MaxFaults<=20 && SecondsLimit>=120 && SecondsLimit<=7200 && Entry!=null && Entry.Valid && Spawn!=null && Spawn.Valid && Route!=null && Route.Count>=2 && Route.Count<=100 && Route.All(p=>p!=null && p.Valid) && Stops!=null && Stops.All(i=>i>=0 && i<Route.Count) && Stops.Distinct().Count()==Stops.Count;
     }
     public static class DmvDefaults
     {
+        public static DmvOptions Truck(){using(var s=typeof(DmvDefaults).Assembly.GetManifestResourceStream("RPCore.JobDefaults.DmvA.json"))using(var r=new System.IO.StreamReader(s))return JsonConvert.DeserializeObject<DmvOptions>(r.ReadToEnd());}
         public static DmvOptions Motorcycle(){using(var s=typeof(DmvDefaults).Assembly.GetManifestResourceStream("RPCore.JobDefaults.DmvM1.json"))using(var r=new System.IO.StreamReader(s))return JsonConvert.DeserializeObject<DmvOptions>(r.ReadToEnd());}
         public static DmvOptions Load(){using(var s=typeof(DmvDefaults).Assembly.GetManifestResourceStream("RPCore.JobDefaults.Dmv.json"))using(var r=new System.IO.StreamReader(s))return JsonConvert.DeserializeObject<DmvOptions>(r.ReadToEnd());}
     }
@@ -55,21 +58,28 @@ namespace RPCore
             new DmvQuestion("Antes de entrar numa curva:",1,"Acelere ao maximo","Ajuste a velocidade antes e mantenha controle","Puxe o freio de mao sempre","Feche os olhos para o sol"),
             new DmvQuestion("Ao ver obstaculo ou acidente a frente:",2,"Acelere para passar primeiro","Mude de faixa sem observar","Reduza, observe e sinalize a manobra necessaria","Fique colado no veiculo anterior"),
             new DmvQuestion("O limite de velocidade:",0,"E um teto; as condicoes podem exigir velocidade menor","Deve ser ultrapassado no exame","Nao vale quando o GPS pede pressa","Permite dirigir sem distancia de seguranca")};
-        public static DmvQuestion[] For(DmvClass category)=>category==DmvClass.M1?MotorcycleQuestions.All:All;
+        public static DmvQuestion[] For(DmvClass category)=>category==DmvClass.A?TruckQuestions.All:category==DmvClass.M1?MotorcycleQuestions.All:All;
         public static int Score(IList<int> answers,DmvClass category=DmvClass.C){var bank=For(category);return answers==null?0:answers.Select((a,i)=>i<bank.Length && a==bank[i].Correct?1:0).Sum();}
     }
     public enum DmvStage { AwaitDriver,RightSignal,LeftSignal,Route,Parking,Exit,Report }
     public sealed class DmvDrive : ExtensibleData
     {
         public DmvStage Stage;public int Point,Faults;public float Seconds;
-        public bool Valid(DmvOptions c)=>Enum.IsDefined(typeof(DmvStage),Stage) && Point>=0 && Point<=c.Route.Count && Faults>=0 && Faults<=10000 && Finite(Seconds) && Seconds>=0 && Seconds<=86400 && ((int)Stage<(int)DmvStage.Parking || Point==c.Route.Count);
+        public bool Coupled,Reversed,Detached;
+        public bool Valid(DmvOptions c)=>Enum.IsDefined(typeof(DmvStage),Stage) && Point>=0 && Point<=c.Route.Count && Faults>=0 && Faults<=10000 && Finite(Seconds) && Seconds>=0 && Seconds<=86400 && ((int)Stage<(int)DmvStage.Parking || Point==c.Route.Count) && (c.Category==DmvClass.A?(!Coupled || (int)Stage>=(int)DmvStage.Route) && (!Reversed || (int)Stage>=(int)DmvStage.Parking) && ((int)Stage<(int)DmvStage.Parking || Coupled) && (!Reversed || Coupled) && (!Detached || Reversed) && ((int)Stage<(int)DmvStage.Exit || Coupled && Reversed && Detached):!Coupled && !Reversed && !Detached);
         public static bool Finite(float v)=>!float.IsNaN(v) && !float.IsInfinity(v);
         public bool Failed(DmvOptions c)=>Faults>=c.MaxFaults || Seconds>=c.SecondsLimit;
         public bool Enter(bool driver,bool examiner)=>Move(DmvStage.AwaitDriver,DmvStage.RightSignal,driver && examiner);
         public bool Signal(bool right,bool left,bool belted,bool driver,bool examiner,DmvOptions c)
         {if(!driver || !examiner || (c.RequireSeatbelt || c.RequireHelmet) && !belted)return false;return Stage==DmvStage.RightSignal?Move(Stage,DmvStage.LeftSignal,right && !left):Stage==DmvStage.LeftSignal && Move(Stage,DmvStage.Route,left && !right);}
         public bool Checkpoint(bool driver,bool examiner,bool inTarget,bool speedAllowed,bool stoppedForRequiredTime,DmvOptions c)
-        {if(Stage!=DmvStage.Route || !driver || !examiner || !inTarget || !speedAllowed || c.Stops.Contains(Point) && !stoppedForRequiredTime)return false;Point++;if(Point==c.Route.Count)Stage=DmvStage.Parking;return true;}
+        {if(Stage!=DmvStage.Route || Point>=c.Route.Count || c.Category==DmvClass.A && !Coupled || !driver || !examiner || !inTarget || !speedAllowed || c.Stops.Contains(Point) && !stoppedForRequiredTime)return false;Point++;if(Point==c.Route.Count)Stage=DmvStage.Parking;return true;}
+        public bool Couple(bool driver,bool examiner,bool protection,bool towing,DmvOptions c)
+        {if(c.Category!=DmvClass.A || Stage!=DmvStage.Route || Coupled || !driver || !examiner || !protection || !towing)return false;Coupled=true;return true;}
+        public bool Reverse(bool assessed,DmvOptions c)
+        {if(c.Category!=DmvClass.A || Stage!=DmvStage.Parking || !Coupled || Reversed || !assessed)return false;Reversed=true;return true;}
+        public bool Detach(bool assessed,DmvOptions c)
+        {if(c.Category!=DmvClass.A || Stage!=DmvStage.Parking || !Reversed || Detached || !assessed)return false;Detached=true;return true;}
         public bool Park(bool stoppedInBayForTime)=>Move(DmvStage.Parking,DmvStage.Exit,stoppedInBayForTime);
         public bool Leave(bool outsideNearCar)=>Move(DmvStage.Exit,DmvStage.Report,outsideNearCar);
         bool Move(DmvStage from,DmvStage to,bool condition){if(Stage!=from || !condition)return false;Stage=to;return true;}
@@ -88,8 +98,8 @@ namespace RPCore
     }
     public static class DmvTransactions
     {
-        static DmvData Read(WalletData w,DmvClass c)=>c==DmvClass.C?w.Dmv:w.DmvM1;
-        static void Set(WalletData w,DmvClass c,DmvData book){if(c==DmvClass.C)w.Dmv=book;else w.DmvM1=book;}
+        static DmvData Read(WalletData w,DmvClass c)=>c==DmvClass.C?w.Dmv:c==DmvClass.M1?w.DmvM1:w.DmvA;
+        static void Set(WalletData w,DmvClass c,DmvData book){if(c==DmvClass.C)w.Dmv=book;else if(c==DmvClass.M1)w.DmvM1=book;else w.DmvA=book;}
         static T Copy<T>(T value)=>JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(value));
         static bool Apply(WalletData w,string receipt,Func<DmvData,int?> change,Action save,out bool changed,DmvClass category=DmvClass.C)
         {
@@ -114,10 +124,16 @@ namespace RPCore
                 var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || progress==null || !progress.Valid(p.Options))return null;var old=p.Drive;
                 if(progress.Point<old.Point || progress.Point>old.Point+1 || progress.Faults<old.Faults || progress.Seconds<old.Seconds || (int)progress.Stage<(int)old.Stage || (int)progress.Stage>(int)old.Stage+1 || progress.Point>old.Point && old.Stage!=DmvStage.Route)return null;
                 if(old.Stage==DmvStage.Route && progress.Stage==DmvStage.Parking && progress.Point!=p.Options.Route.Count)return null;
+                if(category==DmvClass.A){
+                    if(old.Coupled && !progress.Coupled || old.Reversed && !progress.Reversed || old.Detached && !progress.Detached)return null;
+                    if(!old.Coupled && progress.Coupled && (old.Stage!=DmvStage.Route || progress.Stage!=DmvStage.Route))return null;
+                    if(!old.Reversed && progress.Reversed && (old.Stage!=DmvStage.Parking || progress.Stage!=DmvStage.Parking))return null;
+                    if(!old.Detached && progress.Detached && old.Stage!=DmvStage.Parking)return null;
+                }
                 p.Drive=Copy(progress);return 0;
             },save,out changed,category);
         }
-        public static bool Restart(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,Guid.NewGuid().ToString("N")+":restart",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || p.Drive.Stage==DmvStage.Report)return null;p.Drive.Stage=DmvStage.AwaitDriver;return 0;},save,out changed,category);
+        public static bool Restart(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,Guid.NewGuid().ToString("N")+":restart",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || p.Drive.Stage==DmvStage.Report)return null;p.Drive.Stage=DmvStage.AwaitDriver;if(category==DmvClass.A)p.Drive.Coupled=p.Drive.Reversed=p.Drive.Detached=false;return 0;},save,out changed,category);
         public static bool Finish(WalletData w,string id,bool passed,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":finish",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || passed && (p.Drive.Stage!=DmvStage.Report || p.Drive.Point!=p.Options.Route.Count || p.Drive.Failed(p.Options)))return null;d.Licensed=passed;d.LastResult=passed?"practical_pass":"practical_fail";d.Pending=null;return 0;},save,out changed,category);
         public static bool Cancel(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":cancel",d=>{var p=d.Pending;if(p==null || p.Id!=id || p.Started)return null;int amount=p.Price;d.Spent-=amount;if(p.Practical)d.PracticalAttempts--;else d.TheoryAttempts--;d.Pending=null;return amount;},save,out changed,category);
         public static bool Abandon(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":abandon",d=>{if(d.Pending==null || d.Pending.Id!=id || !d.Pending.Started)return null;d.LastResult="abandoned";d.Pending=null;return 0;},save,out changed,category);

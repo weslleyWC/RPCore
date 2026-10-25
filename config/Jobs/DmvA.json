@@ -1,0 +1,136 @@
+{
+  "TheoryPrice": 30,
+  "PracticalPrice": 120,
+  "PassScore": 12,
+  "SpeedKmh": 50,
+  "MaxFaults": 5,
+  "SecondsLimit": 1800,
+  "RequireSeatbelt": true,
+  "Entry": {
+    "Name": "DMV A / patio industrial",
+    "X": 481.9995,
+    "Y": -2172.934,
+    "Z": 5.918277
+  },
+  "Spawn": {
+    "Name": "Cavalo do exame A",
+    "X": 521.6107097943717,
+    "Y": -2159.4499700553793,
+    "Z": 5.986342,
+    "Heading": 170.0806
+  },
+  "Route": [
+    {
+      "Name": "Trecho industrial 1",
+      "X": 540,
+      "Y": -2200,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 2",
+      "X": 600,
+      "Y": -2170,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 3",
+      "X": 610,
+      "Y": -2050,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 4",
+      "X": 650,
+      "Y": -1970,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 5",
+      "X": 750,
+      "Y": -1980,
+      "Z": 8
+    },
+    {
+      "Name": "Trecho industrial 6",
+      "X": 900,
+      "Y": -2075,
+      "Z": 30
+    },
+    {
+      "Name": "Trecho industrial 7",
+      "X": 1010,
+      "Y": -2210,
+      "Z": 30
+    },
+    {
+      "Name": "Trecho industrial 8",
+      "X": 1070,
+      "Y": -2400,
+      "Z": 30
+    },
+    {
+      "Name": "Trecho industrial 9",
+      "X": 1010,
+      "Y": -2530,
+      "Z": 28
+    },
+    {
+      "Name": "Trecho industrial 10",
+      "X": 900,
+      "Y": -2470,
+      "Z": 28
+    },
+    {
+      "Name": "Trecho industrial 11",
+      "X": 800,
+      "Y": -2350,
+      "Z": 28
+    },
+    {
+      "Name": "Trecho industrial 12",
+      "X": 680,
+      "Y": -2290,
+      "Z": 10
+    },
+    {
+      "Name": "Trecho industrial 13",
+      "X": 610,
+      "Y": -2310,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 14",
+      "X": 550,
+      "Y": -2370,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 15",
+      "X": 450,
+      "Y": -2330,
+      "Z": 6
+    },
+    {
+      "Name": "Trecho industrial 16",
+      "X": 440,
+      "Y": -2210,
+      "Z": 6
+    }
+  ],
+  "Stops": [
+    3,
+    8,
+    13
+  ],
+  "Category": 2,
+  "RequireHelmet": false,
+  "SnapRouteToRoad": true,
+  "ReverseMeters": 5,
+  "TrailerSpawn": {
+    "Name": "Patio de treinamento / carreta",
+    "X": 524.8837,
+    "Y": -2140.734,
+    "Z": 5.986342,
+    "Heading": 170.0806
+  }
+}

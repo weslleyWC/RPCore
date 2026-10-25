@@ -85,3 +85,6 @@ Atualização 0.40.0 / fase 6.4B: DMV C com questões próprias, prático/36 pon
 
 
 Atualização 0.41.0 / fase 6.4C: M1 com livro/questões próprios, PCJ/examinadora na garupa, capacete e limites por trecho. Referência só anuncia M1 futura; adaptação do circuito C e escolha de garupa são implementação própria. C preservada. Refinamento de física/rota/UI/capacete e avaliação de trânsito continua na fase 8; classe A e fiscalização não declaradas concluídas. Fase 9 dos trabalhos mantida.
+
+
+Atualização 0.42.0 / fase 6.4D: A com teoria própria, Phantom/carreta, engate manual, rota industrial, ré/alinhamento/desengate e documento por perfil. Referência anuncia A como futura; não se declara exame A pronto na PSRP. Rota, manobras, tráfego e ergonomia precisam de GTA; interface/mecânicas continuam na fase 8, refinamento de TODOS os trabalhos na fase 9. C/M1 e empregos antigos sem novos bloqueios. Fiscalização e demais diferenças seguem.

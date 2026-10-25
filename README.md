@@ -1,4 +1,11 @@
-# RPCore 0.35.0 — GTA V Legacy
+# RPCore 0.42.0 — GTA V Legacy
+
+## Fase 6.4D — DMV / habilitação A para caminhões
+
+[Atualização 0.42.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.42.0.zip) · [Código-fonte 0.42.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.42.0.zip) · [Instalação e teste](docs/FASE-6.4D-0.42.0.md)
+
+F10 → DMV → Trocar até A → GPS: DMV. Atendimento industrial próprio, teoria ($30/12 acertos), prático ($120) com Phantom/carreta/examinadora, engate manual, 16 pontos/paradas, ré de 5 m, alinhamento, desengate e emissão por perfil. Retomada conserva taxa/pontos/faltas/tempo e exige novas provas físicas no conjunto substituto. C/M1/saves/configs/F2/F11 preservados, sem novos bloqueios aos trabalhos. 1536 testes aprovados e build sem erros/avisos. Física, engate e rota precisam de GTA. Fiscalização, demais diferenças e fases 8/9 continuam.
+
 
 
 ## Fase 6.4C — DMV / habilitação M1 para motos

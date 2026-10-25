@@ -590,5 +590,20 @@ if m1_config.exists():
         'defaults': json.loads(m1_config.read_text()),
         'configuration_sha256': digest(m1_config.read_bytes()),
         'scope_limits': 'No closed slalom/cone course, remote instructor AI, class A, full physical document inventory, PSRP certificate import or enforcement. M1 pillion/helmet/handling/15 km/h segments and hat restoration need GTA testing. Phases 8/9 retained.'}
+a_config = Path(__file__).resolve().parents[1] / 'config/Jobs/DmvA.json'
+if a_config.exists():
+    source = (a.reference_source / 'PSRP/TheoryTests.cs').read_text()
+    report['dmv_a'] = {
+        'reference_source': 'PSRP/TheoryTests.cs',
+        'reference_declares_a_price_30': 'ClassATheoryTest = new NativeItem("Class A Theory Test", "Cost: $30' in source,
+        'reference_a_is_future_placeholder': 'ClassATheoryTest.Description = "Coming In Later Update"' in source and 'ClassATheoryTest.Activated' not in source,
+        'reference_has_a_document_fields': 'HasClassAPassCertificate' in character and 'HasClassADrivingLicense' in character,
+        'rpcore_cycle': 'Separate DmvA theory 30 / own 15 questions / threshold 12. Own practical 120 with Phantom, trailers2 and passenger examiner. Manual coupling, 16 ordered industrial anchors resolved to road nodes before payment, belt/signals/stops/speed/damage/time, physical reverse 5m near bay, stopped aligned trailer 2s, explicit own-pair uncouple, exit and desk issue.',
+        'physical_proof': 'Stage values 0..6 preserved; appended Coupled/Reversed/Detached flags. A route gated on own rig. Bay checks XY <=4m, vertical <=3m, heading <=20 degrees, both speeds <0.5m/s. Reverse uses actual displacement <=10m/frame, negative local velocity, driver/examiner/belt and near-bay requirement. Retirement protects occupied/moving/foreign connections.',
+        'compatibility': 'C and M1 configs unchanged; three books separate pending/receipts/certificates/licenses, shared bank. Restart resets physical proof for replacement rig but preserves paid rules, points, faults and elapsed time. No license enforcement added to existing jobs. Missing A config only installed when absent.',
+        'intentional_differences': 'Reference only advertises future A with 30 theory price and document flags. Entire A practical/fee/questions/route/rig/assessment are own code, not a recovered functional PSRP exam. Yard base matches previously used LS GAS area; road anchors and maneuver need GTA validation.',
+        'defaults': json.loads(a_config.read_text()),
+        'configuration_sha256': digest(a_config.read_bytes()),
+        'scope_limits': 'No traffic-sign/light recognition, physical license inventory/import, police enforcement, cone course, mirror camera or collision-free route guarantee. No subagent/game execution. Coupling, industrial road nodes/clearance/traffic, reverse/bay and mods coexistence require GTA testing. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

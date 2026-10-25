@@ -43,6 +43,20 @@ namespace RPCore
             }
             finally{tanker.MarkAsNoLongerNeeded();hauler.MarkAsNoLongerNeeded();}
         }
+        public static RigSpawnSlot FindForModels(JobPoint anchor,Model truck,Model trailer,string label)
+        {
+            if(!truck.IsLoaded || !trailer.IsLoaded)return null;
+            var center=new Vector3(anchor.X,anchor.Y,anchor.Z);var obstacles=new List<SpawnBox>();
+            foreach(var v in World.GetNearbyVehicles(center,110))if(v.Exists())obstacles.Add(Bounds(Point(v),v.Model));
+            foreach(var p in World.GetNearbyPeds(center,110))if(p.Exists())obstacles.Add(new SpawnBox(Point(p),-.5,.5,-.5,.5,-1,1));
+            foreach(var prop in World.GetNearbyProps(center,110))if(prop.Exists() && prop.IsCollisionEnabled)AddPropBounds(obstacles,prop);
+            var chosen=RigSpawnSearch.Find(anchor,slot=>{
+                if(!Ground(slot.Truck,truck) || !Ground(slot.Trailer,trailer))return false;
+                var a=Bounds(slot.Truck,truck);var b=Bounds(slot.Trailer,trailer);
+                return Math.Abs((a.Z-a.HalfHeight)-(b.Z-b.HalfHeight))<=.6 && !a.Overlaps(b) && !obstacles.Exists(o=>a.Overlaps(o)||b.Overlaps(o)) && WorldClear(a) && WorldClear(b);
+            });
+            Log.Write(label+" spawn: "+(chosen==null?"no clear bay":chosen.Trailer.X+","+chosen.Trailer.Y));return chosen;
+        }
         // Single vehicle variant for the prison bus; the validated LS GAS pair search stays unchanged.
         public static JobPoint FindVehicle(JobPoint anchor,Model model,string label)
         {

@@ -18,6 +18,7 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static DmvData DmvA=>data.DmvA??new DmvData();
         public static DmvData DmvM1=>data.DmvM1??new DmvData();
         public static DmvData Dmv=>data.Dmv??new DmvData();
         public static bool DmvBegin(DmvOptions c,bool practical,string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Begin(data,c,practical,id,Save,out changed,category);
