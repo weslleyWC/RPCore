@@ -43,6 +43,7 @@
     <Compile Include="../TankerData.cs" Link="TankerData.cs" />
     <Compile Include="../FreightData.cs" Link="FreightData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />
+    <Compile Include="../GangCrewData.cs" Link="GangCrewData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />

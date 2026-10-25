@@ -71,6 +71,10 @@ namespace RPCore
             var enabled=new NativeItem("Presenca nas HQs: "+(state.PresenceEnabled?"LIGADA":"DESLIGADA"),"Lideres/membros nos postos configurados. Opcional por perfil; no maximo 12 NPCs com limites configuraveis.");
             enabled.Activated+=(s,e)=>{try{var copy=CharacterRules.Copy(state);copy.PresenceEnabled=!copy.PresenceEnabled;Store.Write("GangState.json",copy);state=copy;presence.Clear();dirty=true;}catch(Exception ex){Log.Error("gang presence toggle",ex);Notify.Show("Preferencia nao salva; estado anterior conservado.");}};menu.Add(enabled);
             presenceStatus=new NativeItem("NPCs ativos: "+presence.Count,"Ativacao proxima da HQ; modelo, piso e espaco precisam estar disponiveis. Sem guerras/fiscalizacao nesta etapa.");menu.Add(presenceStatus);
+            AddCrewAction("Recrutar membro mais proximo", "A pe, a ate 3m de um membro da sua gangue. Presenca ligada; equipe de ate 3. Lideres e NPCs alheios nao podem ser recrutados.",()=>presence.RecruitNearest(state.Gang));
+            AddCrewAction("Equipe: seguir", "Segue a pe e embarca como passageiro quando voce dirige um carro parado com lugar livre. Nao usa veiculos reservados de trabalho.",()=>presence.Order(false));
+            AddCrewAction("Equipe: aguardar aqui", "Pare os veiculos. Desembarca e aguarda no local; use seguir para continuar.",()=>presence.Order(true));
+            AddCrewAction("Dispensar equipe", "Retorno a pe aos postos quando perto da HQ; fora dela os NPCs proprios sao liberados. Sem teleporte ou taxa.",()=>{presence.DismissCrew();return true;});
             AddPostAction("Definir posto do lider aqui",true,false);
             AddPostAction("Adicionar posto de membro aqui",false,false);
             AddPostAction("Remover ultimo posto de membro",false,true);
@@ -95,6 +99,9 @@ namespace RPCore
             dirty = false;
         }
 
+        void AddCrewAction(string label,string description,Func<bool> action)
+        {var item=new NativeItem(label,description);item.Activated+=(s,e)=>{try{if(!action())Notify.Show("Confira filiacao, distancia, vagas, seguranca e veiculos parados.");else{menu.Visible=false;Notify.Show("Equipe: "+presence.CrewCount+"/3. Ordem confirmada.");}}catch(Exception ex){Log.Error("gang crew order",ex);Notify.Show("Ordem nao concluida; confira a equipe no F4.");}};menu.Add(item);}
+
         void AddPostAction(string label,bool leader,bool remove)
         {
             var item=new NativeItem(label,"Somente sua gangue criada no RPCoreCreated.json. A pe a ate 70m da HQ, sem combate/procurado/missao. Postos a pelo menos 2m; limite 20. Modelos existentes preservados.");
@@ -115,9 +122,9 @@ namespace RPCore
 
         public void Tick()
         {
-            try{presence.Tick(gangs,state.PresenceEnabled);}catch(Exception ex){presence.Clear();Log.Error("gang presence",ex);}
+            try{presence.Tick(gangs,state.PresenceEnabled,state.Gang);}catch(Exception ex){presence.Clear();Log.Error("gang presence",ex);}
             if (menu.Visible && dirty) Rebuild();
-            if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count;
+            if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count+" / equipe "+presence.CrewCount+"/3";
             var p = Game.Player.Character;
             if (p.IsDead) return;
             foreach (var g in gangs.Where(g => p.Position.DistanceTo(g.Position) < 35))

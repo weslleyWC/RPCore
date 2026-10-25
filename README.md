@@ -1,4 +1,11 @@
-# RPCore 0.43.0 — GTA V Legacy
+# RPCore 0.44.0 — GTA V Legacy
+
+## Fase 6.5B — equipe da gangue / recrutamento e ordens
+
+[Atualização 0.44.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.44.0.zip) · [Código-fonte 0.44.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.44.0.zip) · [Instalação e teste](docs/FASE-6.5B-0.44.0.md)
+
+F4 → presença ligada → afilie-se → aproxime-se de um membro → Recrutar membro mais proximo. Até 3 integrantes próprios acompanham fora da HQ, com ordens Seguir/Aguardar/Dispensar e embarque físico em passageiros livres de carro parado. Sem líderes/rivais/NPCs alheios, grupo nativo, armas, teleporte ou embarque em veículos reservados de trabalho. Equipe só da sessão; filiação/reputação/saves/configurações anteriores preservados. 1617 testes aprovados e build sem erros/avisos. Navegação/portas/assentos precisam de GTA; iniciações/territórios/guerras/economia/polícia e fases 8/9 seguem.
+
 
 ## Fase 6.5A — presença de gangues nas HQs
 

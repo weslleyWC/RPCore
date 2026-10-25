@@ -6,9 +6,9 @@ using GTA.Math;
 using GTA.Native;
 namespace RPCore
 {
-    internal sealed class GangPresence : IDisposable
+    internal sealed partial class GangPresence : IDisposable
     {
-        sealed class Actor { public Ped Ped;public string Gang;public Blip Blip;public Vector3 Post;public int NextReturn;public bool Returning; }
+        sealed class Actor { public Ped Ped;public string Gang;public Blip Blip;public Vector3 Post;public int NextReturn;public bool Returning,Leader,Crew,Waiting,Departing;public Vector3 WaitPost;public Vehicle Boarding;public int Seat=-2,BoardUntil,NextTask,Formation,DepartAt; }
         readonly Dictionary<string,Actor> actors=new Dictionary<string,Actor>();readonly Dictionary<string,int> retry=new Dictionary<string,int>();
         readonly GangPresenceOptions options;Model model;GangPost pending;string pendingKey,pendingGang;int requested,next;string profile;
         public GangPresence(){options=Store.LoadDef("Gangs/Presence.json",()=>new GangPresenceOptions());if(options==null || !options.Valid){Log.Write("Invalid Gangs/Presence.json; original retained, defaults used.");options=new GangPresenceOptions();}profile=Profile.Id;}
@@ -25,7 +25,7 @@ namespace RPCore
             }return true;
         }
         public void Clear(){ReleasePending();foreach(var a in actors.Values)Delete(a);actors.Clear();retry.Clear();}
-        public void Tick(IEnumerable<GangDefinition> gangs,bool enabled)
+        public void Tick(IEnumerable<GangDefinition> gangs,bool enabled,string affiliation)
         {
             if(profile!=Profile.Id){Clear();profile=Profile.Id;}
             if(Game.IsPaused)return;
@@ -37,6 +37,13 @@ namespace RPCore
             foreach(var pair in actors.ToArray()){
                 var g=near.Find(x=>x.Name==pair.Value.Gang);var a=pair.Value;
                 bool dead=a.Ped==null || !a.Ped.Exists() || a.Ped.IsDead;
+                if(a.Crew && !dead && GangCrewRules.Keep(affiliation,a.Gang,player.Position.DistanceTo(a.Ped.Position),true)){UpdateCrew(a,now);continue;}
+                if(a.Crew){Delete(a);actors.Remove(pair.Key);retry[pair.Key]=now+options.RespawnSeconds*1000;continue;}
+                if(a.Departing && !dead && a.Ped.IsInVehicle()){
+                    if(unchecked(now-a.DepartAt)>=60000){if(a.Blip!=null && a.Blip.Exists())a.Blip.Delete();a.Ped.MarkAsNoLongerNeeded();actors.Remove(pair.Key);retry[pair.Key]=now+options.RespawnSeconds*1000;continue;}
+                    if(GangCrewRules.CanExit(a.Ped.CurrentVehicle.Speed) && unchecked(now-a.NextTask)>=0){JobActors.Leave(a.Ped,a.Ped.CurrentVehicle);a.NextTask=now+6000;}continue;
+                }
+                a.Departing=false;
                 if(dead || g==null || !GangPresenceRules.Keep(player.Position.DistanceTo(g.Position),true,options) || a.Ped.Position.DistanceTo(g.Position)>options.DespawnRadius){Delete(a);actors.Remove(pair.Key);if(dead)retry[pair.Key]=now+options.RespawnSeconds*1000;}
                 else if(!a.Ped.IsInCombat && !a.Ped.IsInVehicle()){
                     float distance=a.Ped.Position.DistanceTo(a.Post);
@@ -55,7 +62,7 @@ namespace RPCore
                     var ped=World.CreatePed(model,new Vector3(pos.X,pos.Y,ground+.05f),pending.Spot.Heading);
                     if(ped==null || !ped.Exists()){retry[pendingKey]=now+30000;return;}
                     // Only this owned ped gets a civilian group; no relationship matrix or vanilla actors are changed.
-                    var actor=new Actor{Ped=ped,Gang=pendingGang,Post=new Vector3(pos.X,pos.Y,ground)};actors.Add(pendingKey,actor);
+                    var actor=new Actor{Ped=ped,Gang=pendingGang,Leader=pending.Leader,Post=new Vector3(pos.X,pos.Y,ground)};actors.Add(pendingKey,actor);
                     if(!ped.IsHuman){Delete(actor);actors.Remove(pendingKey);retry[pendingKey]=now+60000;return;}
                     ped.IsPersistent=true;ped.Weapons.RemoveAll();Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD,ped,false);ped.RelationshipGroup=new RelationshipGroup((int)RelationshipGroupHash.CivilianMale);ped.Task.StandStill(-1);
                     if(pending.Leader){actor.Blip=MapBlips.Create(ped.Position,"RPCore: lider / "+pendingGang,BlipSprite.Friend,BlipColor.White,.5f);}

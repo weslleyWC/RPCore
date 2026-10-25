@@ -621,5 +621,19 @@ if presence_config.exists():
         'configuration_sha256':digest(presence_config.read_bytes()),
         'defaults':json.loads(presence_config.read_text()),
         'scope_limits':'Native model/ground/props/path/ambient response and mods coexistence require GTA tests. Definition files are shared across profiles; presence preference is per-profile. No automatic conversion of reference turf ownership or spawning in uncertain interiors. Phases 8/9 retained.'}
+crew_source=Path(__file__).resolve().parents[1] / 'GangCrew.cs'
+if crew_source.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_crew']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_has_recruit_dismiss':'private void RecruitExistingGangMember(Ped ped)' in source and 'private void DismissRecruitedGangMember(Ped ped)' in source,
+        'reference_limits_three_members':'MaxRecruitedGangMembers = 3' in source and 'recruitedGangMembers.Count >= 3' in source,
+        'reference_excludes_hq_leader':'value.LeaderPed != ped' in source,
+        'reference_detaches_recruit_from_hq_posts':'value.Posts.Remove(ped)' in source,
+        'rpcore_cycle':'F4 recruit nearest own same-affiliation member within 3m, max 3, no leader/duplicate/dead/foreign recruitment. Existing actor/post key is retained and marked crew, preventing replacement while recruited. Session crew remains outside HQ radius while <=180m from player and same affiliation. Follow/wait/dismiss orders, own moving blips, three offsets, physical passenger boarding/exit.',
+        'vehicle_safety':'Only stopped driveable car driven by player, within 25m, no JobVehicles reservation. Distinct vacant non-driver seats reserved 15s; DontJackAnyone and BlockSeatShuffling flags, no warp/unlock/seat setter. Cancels invalid or newly occupied seat. Exit waits stopped; dismissed moving passengers wait up to 60s then marked no longer needed rather than deleting vehicle. Anti-commandeer attribute is per owned recruit; no global group changes.',
+        'persistence':'No saved ped/vehicle handles, crew membership or new monetary ledger. Existing affiliation/reputation/presence options/metadata unchanged. Crew ends on reload/profile switch/disable/death/mission/cutscene, affiliation mismatch or >180m; no teleport or auto-respawn into crew. Existing source post becomes eligible only as ordinary HQ member afterward.',
+        'intentional_differences':'PSRP uses player native group, separation 9999 and combat attributes. RPCore uses scoped tasks on its own existing unarmed HQ NPCs, no takeover of player group or armed escort orders. Waiting/passenger seat allocation/exit are own additions. Driver shuffle prevention flag is documented MP-only, so no claim of game-level prevention of every native/third-party AI shuffle in Legacy.',
+        'scope_limits':'No gang wars/territory/economy, armed protection, initiation/leader dialogue or individual command wheel. Native paths, doors, moving seat changes and coexistence with other followers/mods require GTA testing. Phases 8/9 retained.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')
