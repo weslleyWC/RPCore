@@ -767,5 +767,20 @@ if supply_config.exists():
         'configuration_sha256':digest(supply_config.read_bytes()),
         'defaults':config,
         'scope_limits':'Actual supplier/destination access, vehicle rear offsets/parking, GPS, E inputs, optional props/animations and native vehicle identity/mod coexistence need GTA testing. Automatic criminal sales/laundering, cafe-specific simulation, wars/dialogue/police and phases8/9 pending.'}
+laundering_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Laundering.json'
+if laundering_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    report['gang_illicit_laundering']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_street_sale_consumes_stock_and_credits_dirty':'private bool CompleteStreetDrugSale' in source and 'turfData.Drugs[drug] -= quantity' in source and 'turfData.Cash += earnings' in source,
+        'reference_has_85_percent_processing':'TurfLaunderingEfficiency = 0.85' in source and 'double num4 = (double)num3 * 0.85' in source,
+        'reference_has_rate_500_per_minute':'TurfLaunderingPerMinute = 500.0' in source,
+        'reference_is_automatic_real_time':'private void UpdateAutomaticTurfLaundering()' in source and 'DateTime utcNow = DateTime.UtcNow' in source and 'totalSeconds = Math.Min(totalSeconds, 7200.0)' in source,
+        'rpcore_cycle':'Explicit F4 owned-area territorial dealer mode reuses existing buyer/stock/quote/refusal/police/handover/session rules. Sale stock/statistics/reputation and dirty proceeds commit in one Wallet save without legacy bank payout. Normal dealer mode remains bank-funded payout, no historical sales migration. Recheck gang/profile/actor/ownership/area45m/cutscene and supply reservation; shared shift gate and owned shop-input context.',
+        'processing':'Explicit safe on-foot owned-area batch up to500 dirty over60 active seconds then E credits85% to gang treasury. Fixed cumulative integer/decimal rounding gives equal net across batch sizes, exact processed=net+fee and proceeds-processed=dirty. No deposits of bank/cash as dirty source. Optional LaunderedIncome treasury field defaults0; deposits+business+laundered-withdrawn-salary=balance. First new treasury anchors game-calendar payday; existing anchor preserved. Dealer/dirty and dirty/treasury cloned separately with single real Wallet save and original references restored on exception.',
+        'intentional_differences':'PSRP stores criminal stock per turf, automatic UTC laundering with7200s catchup into turf CleanCash, separate collection/salary and cafe boost. RPCore uses existing personal Dealer stock only in opt-in territorial mode, per gang/area/profile dirty ledger, active manual batch directly to treasury, no catchup/offline wages, weapons/auto dealing/cafe boost or 1:1 PSRP cash migration. Pausing/menu gaps do not add work; suspension/reload drops only unconfirmed time. Existing legal commerce/freight untouched.',
+        'configuration_sha256':digest(laundering_config.read_bytes()),
+        'defaults':json.loads(laundering_config.read_text()),
+        'scope_limits':'Real buyer paths/offer/input/animation, safety/area/native clock, police encounters and compatibility require GTA validation. Full automatic turf economy, separate criminal warehouse/convoys, war/dialogue/police and phases8/9 remain pending.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -21,7 +21,7 @@ namespace RPCore
             pool.HideAll();menu.Clear();var s=state();
             if(GangLoyaltyRules.Unaffiliated(s.Gang) || !GangProgressionRules.Valid(s) || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Tesouraria indisponivel","Confira filiacao/dados; saldos protegidos.");menu.Visible=true;return;}
             int rank=GangProgressionRules.Rank(s);var a=GangTreasuryTransactions.Account(Wallet.GangTreasury,s.Gang);menu.Name=s.Gang+" / banco $"+Wallet.Bank;
-            Add("Caixa: $"+(a?.Balance??0)+" / "+GangProgressionRules.Name(rank),"Participacao: "+GangProgressionRules.Share(rank)+"% do saldo atual. Depositos e receita do comercio financiam este caixa; participacao sai dele e entra no banco.");
+            Add("Caixa: $"+(a?.Balance??0)+" / "+GangProgressionRules.Name(rank),"Participacao: "+GangProgressionRules.Share(rank)+"% do saldo atual. Depositos, comercio e receita processada financiam este caixa; participacao sai dele e entra no banco.");
             Add("Prazo: "+options.PaydayHours+" horas do jogo",a==null?"Primeiro deposito inicia o prazo. Nao ha salario automatico ou pagamento retroativo.":"Ultima referencia: "+new DateTime(a.LastPaydayTicks).ToString("yyyy-MM-dd HH:mm")+". Voltar o relogio nao antecipa pagamento.");
             foreach(int n in new[]{100,1000,10000}){int amount=n;if(amount>options.MaxTransfer)continue;
                 Add("Depositar $"+amount+" do banco","Operacao presencial na HQ; dinheiro real do seu banco vai ao caixa desta gangue/perfil.",()=>Wallet.GangDeposit(state().Gang,amount,Clock(),options,Guid.NewGuid().ToString("N"),out _));

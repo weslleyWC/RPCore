@@ -21,8 +21,8 @@ namespace RPCore
     }
     public sealed class GangTreasuryAccount : ExtensibleData
     {
-        public int Balance;public long LastPaydayTicks,Deposited,Withdrawn,Salary,BusinessIncome;
-        [JsonIgnore] public bool Valid=>Balance>=0 && LastPaydayTicks>=DateTime.MinValue.Ticks && LastPaydayTicks<=DateTime.MaxValue.Ticks && Deposited>=0 && Withdrawn>=0 && Salary>=0 && BusinessIncome>=0 && (decimal)Deposited+BusinessIncome-Withdrawn-Salary==Balance;
+        public int Balance;public long LastPaydayTicks,Deposited,Withdrawn,Salary,BusinessIncome,LaunderedIncome;
+        [JsonIgnore] public bool Valid=>Balance>=0 && LastPaydayTicks>=DateTime.MinValue.Ticks && LastPaydayTicks<=DateTime.MaxValue.Ticks && Deposited>=0 && Withdrawn>=0 && Salary>=0 && BusinessIncome>=0 && LaunderedIncome>=0 && (decimal)Deposited+BusinessIncome+LaunderedIncome-Withdrawn-Salary==Balance;
     }
     public sealed class GangTreasuryData : ExtensibleData
     {

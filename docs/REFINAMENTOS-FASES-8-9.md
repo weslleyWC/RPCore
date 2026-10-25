@@ -120,3 +120,7 @@ Gestão legal própria, sem equivalência completa aos negócios PSRP: compra di
 ## Base 0.52.0 — frete territorial (6.5J)
 
 Reposição ativa com três fornecedores/coletas da PSRP, caixas em mão pelo DeliveryCargo existente, carro/van do jogador e descarga no território. Reserva financeira persistente com retomada/estorno; sem recriar entidades de handles salvos. Refinar geometria de traseiras/estacionamento, caixas no chão/interior do veículo, trabalhador/cliente e variantes específicas de negócio nas etapas adequadas. Recompensa atual é lote comprado com desconto, não bônus2x de lavagem do café PSRP. Fases8/9 mantidas.
+
+## Base0.53.0 — receita territorial e lavagem (6.5K)
+
+Vendas ilegais optativas usam o Dealer existente na área sob posse; receita suja não entra diretamente no banco. Processamento próprio presencial gera85% ao caixa com taxa15% e arredondamento cumulativo. Refinar integração de trabalhadores/clientes/instalações, estoque criminal separado por território, logística e eventos/boosts após validação; não declara paridade com automação UTC/CleanCash/coleta da PSRP. Fases8/9 mantidas.

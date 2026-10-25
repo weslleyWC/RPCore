@@ -49,6 +49,8 @@ namespace RPCore
             ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);turf=new GangTerritories(shared,pool,()=>state,SaveState,()=>gangs);treasury=new GangTreasury(shared,pool,()=>state,()=>gangs);business=new GangBusiness(shared,pool,()=>state,()=>gangs);
         }
 
+        public void ConfigureDealer(DealerJob dealer)=>business.ConfigureDealer(dealer);
+
         public void Create(string name)
         {
             if (gangs.Any(g => string.Equals(g.Name, name, StringComparison.OrdinalIgnoreCase))) { Notify.Show("Ja existe uma gangue com este nome."); return; }

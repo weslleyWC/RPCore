@@ -14,9 +14,10 @@ namespace RPCore
         const string OwnerKey="gang_business";
         readonly ShiftGate gate; readonly ObjectPool pool; readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs; readonly GangTurfOptions territories;
-        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;
+        readonly GangBusinessOptions options; readonly NativeMenu menu;readonly GangSupply supply;readonly GangLaundering laundering;
+        public void ConfigureDealer(DealerJob dealer){laundering.Dealer=dealer;}
         GangBusinessService service; GangTurfDefinition area; string profile,gang,id; int player;
-        public bool Active=>service!=null || supply.Active;
+        public bool Active=>service!=null || supply.Active || laundering.Active;
         static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
         public GangBusiness(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs)
         {
@@ -25,6 +26,7 @@ namespace RPCore
             if(territories==null || !territories.Valid)territories=GangTurfOptions.Defaults();
             options=Store.LoadDef("Gangs/Business.json",()=>new GangBusinessOptions());
             if(options==null || !options.Valid){options=new GangBusinessOptions();Log.Write("Invalid gang business config; original retained, defaults used.");}
+            laundering=new GangLaundering(gate,pool,state,gangs);
             supply=new GangSupply(gate,pool,state,gangs,()=>territories.Areas,options);
             menu=new NativeMenu("Comercio territorial","ESTOQUE / ATENDIMENTO / RECEITA");pool.Add(menu);Visuals.Register(menu,"gangs");
         }
@@ -40,9 +42,9 @@ namespace RPCore
         public void Open()
         {
             pool.HideAll();menu.Clear();
-            if(Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
+            if(Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
             Add("Banco: $"+Wallet.Bank,"Comercio proprio, presencial. Receita vai ao caixa da gangue; nao ao bolso. Sem vendas offline.");
-            supply.Append(Add,Open);
+            supply.Append(Add,Open);laundering.Controls(Add,Open);
             if(service!=null)Add("Encerrar atendimento atual","Tempo nao confirmado e descartado; nenhuma mercadoria e consumida.",()=>{Suspend();Open();});
             var available=territories.Areas.Where(a=>GangBusinessTransactions.Owns(state(),a)).ToList();
             if(available.Count==0)Add("Nenhum territorio disponivel","Filie-se e controle uma area pelo F4 > Territorios. Resolva disputas/iniciacoes pendentes antes de comerciar.");
@@ -53,6 +55,7 @@ namespace RPCore
                 Add("GPS: "+a.Name,"Atendimento a pe, a ate "+options.Radius+"m do ponto do territorio.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,target.Center.X,target.Center.Y);menu.Visible=false;});
                 Add("Repor "+options.PurchaseUnits+" unidades / $"+(options.PurchaseUnits*options.UnitCost),"Debita banco e acrescenta estoque local. Compra direta opcional. O frete abaixo exige buscar e descarregar caixas com desconto.",()=>{if(Active || gate.Owner!=null || !Safe(target) || Game.IsPaused || InterfaceOptions.ModalOpen || !Wallet.GangTrade(state(),target,options,false,GangTreasury.Clock(),Guid.NewGuid().ToString("N"),out _))Notify.Show("Confira posse, proximidade, banco, capacidade e atividade.");Open();});
                 supply.AddStart(target,Add);
+                laundering.Append(target,Add);
                 Add("Atender "+options.SaleUnits+" unidades / $"+(options.SaleUnits*options.UnitPrice),"Permaneca no local por "+options.ServiceSeconds+"s ativos e confirme E. Pausa/menu nao contam. END cancela sem consumir estoque.",()=>{if(!Begin(target))Notify.Show("Confira estoque, posse, proximidade e atividade.");});
             }
             Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
@@ -66,7 +69,7 @@ namespace RPCore
         bool Current=>service!=null && profile==Profile.Id && player==Game.Player.Character.Handle && GangCrewRules.SameGang(gang,state().Gang) && gate.Owner==OwnerKey && Safe(area);
         public void Tick()
         {
-            supply.Tick();
+            laundering.Tick();supply.Tick();
             if(service==null)return;
             if(!Current){Suspend();Notify.Show("Atendimento encerrado; estoque e receita nao alterados.");return;}
             bool working=!Game.IsPaused && !pool.AreAnyVisible && !InterfaceOptions.ModalOpen;
@@ -75,13 +78,13 @@ namespace RPCore
         }
         public void Interact()
         {
-            supply.Interact();
+            laundering.Interact();supply.Interact();
             if(!Current || Game.IsPaused || pool.AreAnyVisible || InterfaceOptions.ModalOpen || !service.Ready(options.ServiceSeconds))return;
             if(Wallet.GangTrade(state(),area,options,true,GangTreasury.Clock(),id,out bool changed))
             {Suspend();Notify.Show(changed?"Venda gravada. Receita enviada ao caixa da gangue; confira F4 > Tesouraria.":"Venda ja confirmada; nenhum pagamento repetido.");}
             else{Suspend();Notify.Show("Venda recusada. Confira estoque, posse e limites do caixa; sem debito parcial.");}
         }
-        public void Suspend(){supply.Suspend();service=null;area=null;profile=gang=id=null;gate.Release(OwnerKey);}
+        public void Suspend(){laundering.Suspend();supply.Suspend();service=null;area=null;profile=gang=id=null;gate.Release(OwnerKey);}
         public void Close(){Suspend();menu.Visible=false;}
     }
 }

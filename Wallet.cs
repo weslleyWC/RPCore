@@ -18,6 +18,9 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static GangIllicitData GangIllicit=>data.GangIllicit;
+        public static bool DealerTerritorySale(GangState s,GangTurfDefinition a,DealerOptions c,string product,int count,string zone,bool premium,int unit,bool last,string id,out bool changed)=>GangIllicitTransactions.Sale(data,s,a,c,product,count,zone,premium,unit,last,id,Save,out changed);
+        public static bool GangLaunder(GangState s,GangTurfDefinition a,GangLaunderingOptions c,int amount,DateTime now,string id,out bool changed)=>GangIllicitTransactions.Process(data,s,a,c,amount,now,id,Save,out changed);
         public static GangBusinessData GangBusiness=>data.GangBusiness;
         public static bool GangSupplyBegin(GangState s,GangTurfDefinition a,GangBusinessOptions b,GangSupplyOptions c,string id,out bool changed)=>GangSupplyTransactions.Begin(data,s,a,b,c,id,Save,out changed);
         public static bool GangSupplyLoad(string id,int index,out bool changed)=>GangSupplyTransactions.Load(data,id,index,Save,out changed);

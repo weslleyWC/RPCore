@@ -1,4 +1,10 @@
-# RPCore 0.52.0 — GTA V Legacy
+# RPCore 0.53.0 — GTA V Legacy
+
+## Fase 6.5K — vendas territoriais e processamento de receita
+
+[Atualização 0.53.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.53.0.zip) · [Código-fonte 0.53.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.53.0.zip) · [Instalação e teste](docs/FASE-6.5K-0.53.0.md)
+
+F4 → Comercio dos territorios → Vendas ilegais usa pacotes/compradores/negociação/riscos do tráfico existente, com receita suja isolada por gangue/área/perfil. Modo normal do tráfico continua pagando no banco. No território, processar até500 por60s ativos e E transfere85% ao caixa e contabiliza taxa15%, com arredondamento cumulativo. Sem lavagem offline ou conversão de receitas antigas. Venda e processamento usam uma gravação Wallet com recibos/rollback; receita processada financia tesouraria/participação existentes. Estoque legal, fretes, configurações, saves, F2 e F11 mantidos. 1901 testes aprovados, build sem erros/avisos. Estoque criminal específico por área, automação, café/boost, guerras/diálogo/polícia e fases8/9 seguem pendentes.
 
 ## Fase 6.5J — frete de reposição territorial
 

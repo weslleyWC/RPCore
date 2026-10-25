@@ -1,0 +1,6 @@
+{
+  "BatchAmount": 500,
+  "Seconds": 60,
+  "Radius": 12,
+  "SaleRadius": 45
+}

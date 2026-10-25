@@ -25,6 +25,17 @@ namespace RPCore
         readonly Blip supplierBlip;
         readonly Random random = new Random();
         DealerRun run;
+        GangTurfDefinition territory;Func<GangState> territoryState;string territoryGang,territoryProfile;int territoryRadius,territoryPlayer;
+        bool TerritoryValid=>!Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && territory!=null && territoryState!=null && territoryProfile==Profile.Id && territoryPlayer==Game.Player.Character.Handle && GangCrewRules.SameGang(territoryGang,territoryState().Gang) && GangBusinessTransactions.Owns(territoryState(),territory) && Wallet.GangBusiness?.Supply==null && Game.Player.Character.Position.DistanceTo(new Vector3(territory.Center.X,territory.Center.Y,territory.Center.Z))<=territoryRadius;
+        void TerritoryContext(){if(territory==null || !Active)return;var p=Game.Player.Character.Position;WorkContext.ShopDelivery.Set("dealer_territory",new JobPoint{Name="territorial buyer",X=p.X,Y=p.Y,Z=p.Z},5);}
+        void ClearTerritory(){WorkContext.ShopDelivery.Clear("dealer_territory");territory=null;territoryState=null;territoryGang=territoryProfile=null;}
+        public bool BeginTerritory(Func<GangState> current,GangTurfDefinition area,int radius)
+        {
+            if(Active || current==null || radius<20 || radius>100 || !GangBusinessTransactions.Owns(current(),area) || Wallet.GangBusiness?.Supply!=null || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid)return false;
+            territory=CharacterRules.Copy(area);territoryState=current;territoryGang=current().Gang;territoryRadius=radius;territoryProfile=Profile.Id;territoryPlayer=Game.Player.Character.Handle;
+            if(!TerritoryValid){ClearTerritory();return false;}Begin();if(!Active){ClearTerritory();return false;}
+            pool.HideAll();TerritoryContext();Notify.Show("Modo territorial: receita vai ao dinheiro sujo da area. F4 > Comercio para processar85% ao caixa.");return true;
+        }
         Ped buyer, animationOwner;
         Blip buyerBlip;
         bool animRequested, animStarted;
@@ -57,6 +68,7 @@ namespace RPCore
             pool.HideAll(); menu.Clear(); var d = Wallet.Dealer;
             if (!d.Valid) { Log.Write("Invalid Wallet.json/Dealer; no changes applied."); Notify.Show("Dados de trafico invalidos. Arquivo preservado."); return; }
             string zone = Zone(); menu.Name = "Trafico / " + d.Sales + " vendas / rep " + DealerRules.Reputation(d, zone) + "/100 em " + zone;
+            Add(menu, "Destino da receita: "+(territory==null?"banco":"dinheiro sujo / "+territory.Name),"Modo territorial e iniciado pelo F4 na area da sua gangue. Vendas normais mantem pagamento bancario.",()=>{});
             Add(menu, "GPS: contato / estoque", "Contato externo da referencia. Compra por debito bancario.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             Add(menu, "Estoque: " + DealerTransactions.Weight(d, options).ToString("0.0") + " / " + options.Capacity + " kg", "Mercadorias desta atividade em Wallet.json/Dealer. Nenhum item pessoal e removido.", () => { });
             foreach (var p in options.Products)
@@ -109,7 +121,7 @@ namespace RPCore
             if (run == null || run.Stage != DealerStage.Offer || !BuyerNear || !SafeSale) return;
             pool.HideAll(); offerMenu.Clear(); var p = options.Products.Find(m => m.Id == run.Product);
             int regular = DealerRules.UnitPrice(p, run.Reputation, false), premium = DealerRules.UnitPrice(p, run.Reputation, true);
-            offerMenu.Name = "1 pacote / " + p.Name;
+            offerMenu.Name = "1 pacote / " + p.Name+(territory==null?" / banco":" / dinheiro sujo");
             Add(offerMenu, "Vender pelo preco normal: $" + regular, "Risco base de recusa/denuncia. Entrega de " + options.HandoverSeconds + " segundos junto do comprador.", () => Choose(false));
             Add(offerMenu, "Pedir mais: $" + premium, "Aumenta o preco em 20%, com maior chance de recusa/denuncia. Reabrir menu nao sorteia novo resultado.", () => Choose(true));
             Add(offerMenu, "Dispensar comprador", "Nao retira estoque nem paga; outro contato em alguns segundos.", () => Next("Comprador dispensado. Estoque preservado.")); offerMenu.Visible = true;
@@ -139,7 +151,8 @@ namespace RPCore
             {
                 if (InputAllowed && SafeFoot && Game.Player.Character.Position.DistanceTo(StartPosition) < 3) { Prompt.Help("~INPUT_CONTEXT~: contato / estoque / trafico"); if (Game.IsControlJustPressed(GTA.Control.Context)) OpenMenu(); } return;
             }
-            var player = Game.Player.Character;
+            if(territory!=null && !TerritoryValid){End("Venda territorial encerrada: confira posse, filiacao e limite da area. Vendas ja confirmadas conservadas.");return;}
+            TerritoryContext();var player = Game.Player.Character;
             if (player.IsDead || !player.IsHuman || player.IsInVehicle() || player.IsSwimming || player.IsRagdoll || player.IsInCombat || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0) { End("Turno interrompido. Estoque e vendas confirmadas preservados."); return; }
             if (Game.IsPaused) return;
             if (run.Stage == DealerStage.Waiting)
@@ -172,7 +185,7 @@ namespace RPCore
                 try
                 {
                     if (run.Commit(Game.GameTime, true, Sell))
-                    { if (run.Stage == DealerStage.Finished) End("Vendas concluidas / turno finalizado. Pagamentos ja creditados no banco."); else Next("Venda confirmada. Aguardando outro comprador."); }
+                    { if (run.Stage == DealerStage.Finished) End(territory==null?"Vendas concluidas / turno finalizado. Pagamentos ja creditados no banco.":"Vendas territoriais concluidas. Receita suja salva na area; F4 > Comercio para processar."); else Next("Venda confirmada. Aguardando outro comprador."); }
                 }
                 catch (Exception ex) { nextSave = Game.GameTime + 5000; Log.Error("dealer sale checkpoint", ex); Notify.Show("Falha ao salvar venda. Estoque/pagamento nao alterados; nova tentativa em 5s."); }
             }
@@ -180,8 +193,9 @@ namespace RPCore
         bool Sell(bool last)
         {
             var p = options.Products.Find(m => m.Id == run.Product); int unit = DealerRules.UnitPrice(p, run.Reputation, run.Premium);
-            if (!Wallet.DealerSale(options, p.Id, 1, run.Zone, run.Premium, unit, last, run.Receipt + ":sale", out bool changed)) { nextSave = Game.GameTime + 3000; Notify.Show("Venda nao confirmada: estoque/saldo/dados no limite. Pode encerrar com End."); return false; }
-            if (changed) { Notify.Show("~g~+$" + unit + " no banco~s~ / um pacote vendido"); Bump("dealer_sales"); Bump("cash_earned", unit); if (last) Bump("dealer_sessions"); } return true;
+            bool changed=false;bool accepted=territory==null?Wallet.DealerSale(options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed):TerritoryValid && Wallet.DealerTerritorySale(territoryState(),territory,options,p.Id,1,run.Zone,run.Premium,unit,last,run.Receipt+":sale",out changed);
+            if (!accepted) { nextSave = Game.GameTime + 3000; Notify.Show("Venda nao confirmada: estoque/saldo/dados no limite. Pode encerrar com End."); return false; }
+            if (changed) { Notify.Show("~g~+$" + unit + (territory==null?" no banco":" sujo no territorio")+"~s~ / um pacote vendido"); Bump("dealer_sales"); if(territory==null)Bump("cash_earned", unit); if (last) Bump("dealer_sessions"); } return true;
         }
         void Status(string text)
         {
@@ -204,11 +218,11 @@ namespace RPCore
             finally { buyer = null; buyerBlip = null; animStarted = false; animationOwner = null; if (animRequested) { Function.Call(Hash.REMOVE_ANIM_DICT, AnimDict); animRequested = false; } offerMenu.Visible = false; }
         }
         void Next(string text) { run?.Skip(); CleanupBuyer(); nextBuyer = Game.GameTime + 5000; spawnSince = Game.GameTime; Notify.Show(text); }
-        void End(string text) { run?.Cancel(); try { CleanupBuyer(); } finally { run = null; gate.Release(Name); menu.Visible = false; } Notify.Show(text); }
+        void End(string text) { run?.Cancel(); try { CleanupBuyer(); } finally { run = null;ClearTerritory(); gate.Release(Name); menu.Visible = false; } Notify.Show(text); }
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) End("Vendas encerradas. Estoque e pagamentos salvos preservados."); }
         public void OnKey(KeyEventArgs e) { }
         public void Reload() { if (Active) End("Vendas encerradas na troca de perfil."); menu.Visible = offerMenu.Visible = false; }
         public void Save() { }
-        public void Dispose() { try { CleanupBuyer(); } finally { run = null; gate.Release(Name); menu.Visible = offerMenu.Visible = false; if (supplierBlip != null && supplierBlip.Exists()) supplierBlip.Delete(); } }
+        public void Dispose() { try { CleanupBuyer(); } finally { run = null;ClearTerritory(); gate.Release(Name); menu.Visible = offerMenu.Visible = false; if (supplierBlip != null && supplierBlip.Exists()) supplierBlip.Delete(); } }
     }
 }

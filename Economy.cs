@@ -27,6 +27,7 @@ namespace RPCore
         public DmvData DmvA;
         public GangTreasuryData GangTreasury;
         public GangBusinessData GangBusiness;
+        public GangIllicitData GangIllicit;
     }
 
     public class Portfolio : ExtensibleData
