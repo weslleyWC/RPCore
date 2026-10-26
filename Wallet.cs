@@ -33,6 +33,14 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangDockData GangDock=>data.GangDock;
+        public static bool GangDockOtherFree=>GangDockTransactions.OtherFree(data);
+        public static bool GangDockBegin(GangState s,GangTurfDefinition a,GangDockOptions c,string id,out bool changed)=>GangDockTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangDockUpdate(GangState s,GangTurfDefinition a,string id,GangDockProgress p,out bool changed)=>GangDockTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangDockLoad(GangState s,GangTurfDefinition a,string id,int index,out bool changed)=>GangDockTransactions.Load(data,s,a,id,index,Save,out changed);
+        public static bool GangDockUnload(GangState s,GangTurfDefinition a,string id,int index,out bool changed)=>GangDockTransactions.Unload(data,s,a,id,index,Save,out changed);
+        public static bool GangDockCancel(string id,out bool changed)=>GangDockTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangDockComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangDockTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangChauffeurData GangChauffeur=>data.GangChauffeur;
         public static bool GangChauffeurOtherFree=>GangChauffeurTransactions.OtherFree(data);
         public static bool GangChauffeurBegin(GangState s,GangTurfDefinition a,GangChauffeurOptions c,string id,string car,string ped,int destination,int personality,out bool changed)=>GangChauffeurTransactions.Begin(data,s,a,c,id,car,ped,destination,personality,Save,out changed);

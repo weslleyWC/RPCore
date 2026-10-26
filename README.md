@@ -1,4 +1,10 @@
-# RPCore 0.72.0 — GTA V Legacy
+# RPCore 0.73.0 — GTA V Legacy
+
+## Fase6.5AE — frete do porto
+
+[Atualização0.73.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.73.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.73.0.zip) · [Guia/teste](docs/FASE-6.5AE-0.73.0.md)
+
+F4, território11: retire Phantom/trflat, engate, carregue7 paletes na baia(3s cada), entregue e descarregue(2s cada) no prazo10min. E final concede processamento1,25X/1,5X/2X conforme condição da PSRP. Progresso/tempo/danos persistem ao suspender; sem pagamento pessoal.2688 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AD — motorista particular VIP
 

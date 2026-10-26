@@ -1,0 +1,79 @@
+{
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "SecondsLimit": 600,
+  "TruckModel": "phantom",
+  "TrailerModel": "trflat",
+  "CargoModelA": "prop_cementbags01",
+  "CargoModelB": "prop_conc_blocks01a",
+  "Truck": {
+    "Name": "Caminhao do porto",
+    "X": -779.6579,
+    "Y": -2662.85,
+    "Z": 13.88363,
+    "Heading": 59.62956
+  },
+  "Trailer": {
+    "Name": "Carreta do porto",
+    "X": -816.874,
+    "Y": -2627.552,
+    "Z": 13.88067,
+    "Heading": 239.2787
+  },
+  "Bay": {
+    "Name": "Baia de carregamento",
+    "X": -765.6149,
+    "Y": -2603.296,
+    "Z": 13.31192
+  },
+  "Destination": {
+    "Name": "Entrega de materiais",
+    "X": 1377.557,
+    "Y": -743.3366,
+    "Z": 66.7329
+  },
+  "Slots": [
+    {
+      "Name": "Palete 1",
+      "X": 0,
+      "Y": 3.2,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 2",
+      "X": 0,
+      "Y": 1.8,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 3",
+      "X": 0,
+      "Y": 0.4,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 4",
+      "X": 0,
+      "Y": -1,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 5",
+      "X": 0,
+      "Y": -2.4,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 6",
+      "X": 0,
+      "Y": -3.8,
+      "Z": 0.4
+    },
+    {
+      "Name": "Palete 7",
+      "X": 0,
+      "Y": -5.2,
+      "Z": 0.4
+    }
+  ]
+}

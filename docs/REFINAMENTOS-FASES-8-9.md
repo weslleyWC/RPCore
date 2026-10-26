@@ -202,3 +202,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.72.0 / fase6.5AD: motorista VIP no território10 implementado com modelos/destinos/perfis/prazo/nota da PSRP e bônus graduado. Refinar HUD, rota/acesso, porta e embarque IA, conforto/prazo e retomada parcial nas fases8/9 após teste no GTA. Guia FASE-6.5AD-0.72.0.md.
+
+
+0.73.0 / fase6.5AE: frete do porto no território11 implementado conforme rig/carga/descarga/fórmula da PSRP. Refinar HUD, acesso/baia/rota, offsets de paletes e condição nas fases8/9 após teste no GTA. Fórmula da referência reduz dano a1/3, mínimo66,67% com base1000 e corpo não negativo; não confundir com carroceria bruta. Guia FASE-6.5AE-0.73.0.md.
