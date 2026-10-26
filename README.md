@@ -1,4 +1,10 @@
-# RPCore 0.66.0 — GTA V Legacy
+# RPCore 0.67.0 — GTA V Legacy
+
+## Fase6.5Y — transporte de valores Gruppe
+
+[Atualização0.67.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.67.0.zip) · [Código-fonte0.67.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.67.0.zip) · [Instalação e teste](docs/FASE-6.5Y-0.67.0.md)
+
+F4 → Comercio, território5 controlado: GPS Stockade → a pé/vaga livre/afaste-se4m → Transportar valores /5 malotes. Blindado fornecido, segurança mais próximo, E recebe bag/1,5s e E traseira carrega/props visíveis respeitando preferências. Cinco carregados, dirigir ao depósito/parar/sair, E recebedor/1,5s salva entrega e E final2XUTC60min na área5; sem crédito de dinheiro/estoque/auto-enable. Parcial refaz coletas/snapshot mantido, entregue retoma sem respawn; recibos/rollback/cancelamento grátis. Recebedor assume blindado/sai, cleanup próprio/ocupados protegidos. Bônus máximo2X/85% ao caixa/produção ativa.2428 testes aprovados/build sem erros ou avisos; gameplay pendente. Demais trabalhos/refinamentos/diálogo/guerras/polícia e fases8/9 futuros.
 
 ## Fase6.5X — recuperação com guincho territorial
 

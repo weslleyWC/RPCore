@@ -180,3 +180,8 @@ Base reproduz três clientes,120 modelos, chegada/dano/capô/animação/minigame
 ## Base0.66.0 — guincho territorial
 
 Engate físico nativo com guincho fornecido, duas recuperações e nota de danoPSRP. Fase8 refinar HUD/braço e atalhos configuráveis; fase9 estudar alinhamento por modelo, física de rodas/gancho, capacidade/danos/dificuldade, interação com cliente e trajetos/ocupação dos15 pontos. Preservar H, scripts nativos de guincho, carros pessoais, prova de descarga comandada, exclusão de ocupados/ligações externas, snapshots/recibos/rollback, recuperação salva e bônusUTC não cumulativo/85%. Coexistência controller_towing e física precisam de GTA; base não declara refinamento concluído.
+
+
+## Base0.67.0 — transporte de valores
+
+Stockade/cinco seguranças/moneybags carregados fisicamente com offsetsPSRP e entrega ao recebedor. Fase8 refinar HUD/ícones/carga/bônus; fase9 avaliar segurança simultânea/diálogos/ritmo/gestos/props por ped e modelo, portas do blindado, acompanhante/rota/ameaças/danos/dificuldade e embarque/saída. Preservar preferênciasUseProps, carro pessoal, cleanup de ocupados, provaDelivered/replay/rollback, parcialrefaz e pronto persistido,85% e bônusUTC não cumulativo. Gameplays/native armored-truck coexistence ainda precisam do GTA; não declara refinamentos concluídos.

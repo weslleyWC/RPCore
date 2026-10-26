@@ -1,0 +1,65 @@
+{
+  "BoostMinutes": 60,
+  "ReturnRadius": 8,
+  "VehicleModel": "stockade",
+  "GuardModel": "s_m_m_security_01",
+  "BagModel": "prop_money_bag_01",
+  "Spawn": {
+    "Name": "Stockade",
+    "X": -1330.259,
+    "Y": -663.4227,
+    "Z": 26.0517,
+    "Heading": 127.8134
+  },
+  "Depot": {
+    "Name": "Deposito Gruppe",
+    "X": -680.2075,
+    "Y": -615.2822,
+    "Z": 25.30618,
+    "Heading": 264.3309
+  },
+  "Receiver": {
+    "Name": "Recebedor Gruppe",
+    "X": -675.5438,
+    "Y": -613.2014,
+    "Z": 25.30774,
+    "Heading": 131.4234
+  },
+  "Sites": [
+    {
+      "Name": "Coleta 1",
+      "X": -1345.975,
+      "Y": -583.4302,
+      "Z": 29.42169,
+      "Heading": 118.8955
+    },
+    {
+      "Name": "Coleta 2",
+      "X": -1348.51,
+      "Y": -636.1747,
+      "Z": 27.62371,
+      "Heading": 298.137
+    },
+    {
+      "Name": "Coleta 3",
+      "X": -1313.146,
+      "Y": -688.2759,
+      "Z": 25.88811,
+      "Heading": 314.1575
+    },
+    {
+      "Name": "Coleta 4",
+      "X": -1276.763,
+      "Y": -691.4911,
+      "Z": 24.22008,
+      "Heading": 147.4821
+    },
+    {
+      "Name": "Coleta 5",
+      "X": -1258.987,
+      "Y": -759.3558,
+      "Z": 20.42819,
+      "Heading": 327.9869
+    }
+  ]
+}

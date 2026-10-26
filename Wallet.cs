@@ -33,6 +33,14 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangCashRunData GangCashRun=>data.GangCashRun;
+        public static bool GangCashRunOtherFree=>GangCashRunTransactions.OtherFree(data);
+        public static bool GangCashRunBegin(GangState s,GangTurfDefinition area,GangCashRunOptions c,string id,out bool changed)=>GangCashRunTransactions.Begin(data,s,area,c,id,Save,out changed);
+        public static bool GangCashRunLoad(GangState s,GangTurfDefinition area,string id,int index,out bool changed)=>GangCashRunTransactions.Load(data,s,area,id,index,Save,out changed);
+        public static bool GangCashRunDeliver(GangState s,GangTurfDefinition area,string id,out bool changed)=>GangCashRunTransactions.Deliver(data,s,area,id,Save,out changed);
+        public static bool GangCashRunRestart(string id,out bool changed)=>GangCashRunTransactions.Restart(data,id,Save,out changed);
+        public static bool GangCashRunCancel(string id,out bool changed)=>GangCashRunTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangCashRunComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangCashRunTransactions.Complete(data,s,area,id,utc,Save,out changed);
         public static GangTowData GangTow=>data.GangTow;
         public static bool GangTowOtherFree=>GangTowTransactions.OtherFree(data);
         public static bool GangTowBegin(GangState s,GangTurfDefinition area,GangTowOptions c,IEnumerable<GangTowDispatch> d,string id,out bool changed)=>GangTowTransactions.Begin(data,s,area,c,d,id,Save,out changed);
