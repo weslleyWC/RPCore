@@ -165,3 +165,8 @@ Opt-in, até500 por60s ativos e85% ao caixa; mesma contabilidade cumulativa do m
 ## Base0.63.0 — café sem antecipar fases8/9
 
 Área4 possui abastecimento grátis e bônus2X conquistado por três caixas, com pontosPSRP. Base usa carro/van do jogador e caixa na mão/checkpoints, não Burrito fornecida/carga visível na van. Fase9 deve avaliar veículo, volumes físicos/animacões, tempos/distâncias/dificuldade e MissionWin com consistência entre arquivos; fase8 refinar apresentação/contador atualizado e necessidades sem remover compatibilidade. ValidadeUTC/histórico/snapshot/replay/rollback e taxa85% são invariantes a preservar. Gameplay ainda precisa de testes do usuário. Demais atividades de bônus, diálogo/guerras/polícia continuam no roteiro.
+
+
+## Base0.64.0 — panfletagem sem antecipar fases8/9
+
+Divulgação da tatuagem usa pedestres civis reais e animação do jogador, faixa/contagem/loja da PSRP. Não congela/toma controle de NPC de rua e não cria clientes artificiais; densidade local/alcance precisam de teste GTA. Fase8 deve refinar painel/ícones/tempo visível; fase9 avaliar prop de papel, gesto/diálogo, ritmo de clientes e balanceamento, preservando exclusão de NPCs de missão/grupos/gangues, cinco clientes distintos, recompensa apenas na volta, taxa85%, atomicidade/snapshot/recibos e bônusUTC não cumulativo. Mecânico/guincho e demais atividades de território seguem no roteiro.

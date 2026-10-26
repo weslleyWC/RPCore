@@ -1,0 +1,15 @@
+{
+  "Goal": 5,
+  "BoostMinutes": 60,
+  "GiveMilliseconds": 1500,
+  "SearchRadius": 120,
+  "MinDistance": 50,
+  "ReturnRadius": 5,
+  "InteractionDistance": 2.2,
+  "Shop": {
+    "Name": "Loja de tatuagem",
+    "X": 1320.043,
+    "Y": -1647.478,
+    "Z": 52.14559
+  }
+}

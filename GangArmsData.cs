@@ -52,7 +52,7 @@ namespace RPCore
         }
         public static bool BeginDelivery(WalletData w,GangState s,GangBulkAttempt p,GangArmsOptions c,Action save,out bool changed)
         {
-            changed=false;if(p?.Valid!=true || p.Kind!=GangBulkKind.Arms || p.Loaded || p.Ready || !Available(w,s,p.Area,c,save) || !GangCrewRules.SameGang(s.Gang,p.Gang) || Quote(c,p.Product,p.Units)!=p.Value || !c.Delivery.Quantities.Contains(p.Units) || w.GangBulk!=null && !w.GangBulk.Valid)return false;
+            changed=false;if(p?.Valid!=true || GangPromotionTransactions.Blocked(w) || p.Kind!=GangBulkKind.Arms || p.Loaded || p.Ready || !Available(w,s,p.Area,c,save) || !GangCrewRules.SameGang(s.Gang,p.Gang) || Quote(c,p.Product,p.Units)!=p.Value || !c.Delivery.Quantities.Contains(p.Units) || w.GangBulk!=null && !w.GangBulk.Valid)return false;
             var a=Account(w.GangArms,p.Gang,p.Area.Id);if(a==null || GangWarehouseAccount.Get(a.Stock,p.Product)<p.Units)return false;
             var old=w.GangBulk;string receipt=p.Id+":bulk-begin";if(old?.Receipts.Contains(receipt)==true)return true;var book=old==null?new GangBulkData():Copy(old);
             if(book.Pending!=null || book.Attempts==int.MaxValue)return false;book.Pending=Copy(p);book.Attempts++;book.Receipts.Add(receipt);if(book.Receipts.Count>256)book.Receipts.RemoveAt(0);if(!book.Valid)return false;
@@ -63,7 +63,7 @@ namespace RPCore
             changed=false;if(!Available(w,s,area,c,save) || !Id(id) || w.GangArms?.Valid!=true || w.GangBulk?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid)return false;
             string receipt=id+":arms-complete";if(w.GangArms.Receipts.Contains(receipt))return true;
             var old=w.GangBulk;var original=w.GangArms;var dirty=w.GangIllicit;var book=Copy(old);var p=book.Pending;
-            if(p==null || p.Id!=id || p.Kind!=GangBulkKind.Arms || !p.Ready || p.Area.Id!=area.Id || !GangCrewRules.SameGang(s.Gang,p.Gang) || !c.Products.Any(v=>v.Id==p.Product) || book.Completed==int.MaxValue || book.Revenue>long.MaxValue-p.Value)return false;
+            if(p==null || p.Id!=id || GangPromotionTransactions.Blocked(w) || p.Kind!=GangBulkKind.Arms || !p.Ready || p.Area.Id!=area.Id || !GangCrewRules.SameGang(s.Gang,p.Gang) || !c.Products.Any(v=>v.Id==p.Product) || book.Completed==int.MaxValue || book.Revenue>long.MaxValue-p.Value)return false;
             var storage=Copy(original);var a=Account(storage,p.Gang,p.Area.Id);if(a==null || GangWarehouseAccount.Get(a.Stock,p.Product)<p.Units || GangWarehouseAccount.Get(a.Sold,p.Product)>long.MaxValue-p.Units || a.Revenue>long.MaxValue-p.Value)return false;
             a.Stock[p.Product]-=p.Units;a.Sold[p.Product]=GangWarehouseAccount.Get(a.Sold,p.Product)+p.Units;a.Revenue+=p.Value;
             var income=dirty==null?new GangIllicitData():Copy(dirty);var d=GangIllicitTransactions.Account(income,p.Gang,p.Area.Id);if(d==null){if(income.Accounts.Count>=640)return false;d=new GangIllicitAccount{Gang=p.Gang,Area=p.Area.Id};income.Accounts.Add(d);}

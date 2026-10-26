@@ -33,6 +33,13 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangPromotionData GangPromotion=>data.GangPromotion;
+        public static bool GangPromotionOtherFree=>GangPromotionTransactions.OtherFree(data);
+        public static bool GangPromotionBegin(GangState s,GangTurfDefinition area,GangPromotionOptions c,string id,out bool changed)=>GangPromotionTransactions.Begin(data,s,area,c,id,Save,out changed);
+        public static bool GangPromotionGive(GangState s,GangTurfDefinition area,string id,string customer,out bool changed)=>GangPromotionTransactions.Give(data,s,area,id,customer,Save,out changed);
+        public static bool GangPromotionRestart(string id,out bool changed)=>GangPromotionTransactions.Restart(data,id,Save,out changed);
+        public static bool GangPromotionCancel(string id,out bool changed)=>GangPromotionTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangPromotionComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangPromotionTransactions.Complete(data,s,area,id,utc,Save,out changed);
         public static GangCafeData GangCafe=>data.GangCafe;
         public static bool GangCafeBegin(GangState s,GangTurfDefinition area,GangCafeOptions c,string id,out bool changed)=>GangCafeTransactions.Begin(data,s,area,c,id,Save,out changed);
         public static bool GangCafeComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangCafeTransactions.Complete(data,s,area,id,utc,Save,out changed);

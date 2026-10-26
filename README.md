@@ -1,4 +1,10 @@
-# RPCore 0.63.0 — GTA V Legacy
+# RPCore 0.64.0 — GTA V Legacy
+
+## Fase6.5V — divulgação da loja de tatuagem
+
+[Atualização0.64.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.64.0.zip) · [Código-fonte0.64.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.64.0.zip) · [Instalação e teste](docs/FASE-6.5V-0.64.0.md)
+
+F4 → Comercio, território1 controlado: GPS da loja → a pé → Divulgar loja /5 panfletos. Marcação de pedestres civis reais na faixa50–120m; E a até2,2m/1,5s ativos para cada cliente diferente. Cinco entregas e retorno/E na loja liberam2X por60minUTC somente na área1. Grátis, sem estoque/renda/reputação e sem ligar automático; padrão500/30s ativos/425 ao caixa quando houver saldo sujo. Livro opcional, snapshot/recibos/rollback, parcial refaz clientes ao retomar/pronto preservado/cancelamento grátis. Não modifica/apaga NPCs ambiente. Café preservado/máximo2X/sem renda offline. 2309 testes aprovados, build sem erros/avisos; teste no GTA pendente. Demais trabalhos territoriais/refinamentos/diálogo/guerras/polícia e fases8/9 futuros.
 
 ## Fase 6.5U — café e processamento2X
 

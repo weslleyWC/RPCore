@@ -36,7 +36,7 @@ namespace RPCore
         static T Copy<T>(T v)=>JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(v));
         static bool Id(string id)=>!string.IsNullOrWhiteSpace(id) && id.Length<=80;
         // Locked in place until confirmation: no escrow debit/refund or hidden stock creation.
-        public static bool Blocked(WalletData w)=>w?.GangBulk!=null && (!w.GangBulk.Valid || w.GangBulk.Pending!=null);
+        public static bool Blocked(WalletData w)=>GangPromotionTransactions.Blocked(w) || w?.GangBulk!=null && (!w.GangBulk.Valid || w.GangBulk.Pending!=null);
         public static int Quote(DealerOptions c,string product,int units)
         {var p=c?.Valid==true?c.Products.Find(v=>v.Id==product):null;long n=p==null || units<1 || units>500?0:(long)p.Sell*units*3/2;return n>=1 && n<=75000?(int)n:0;}
         static bool Apply(WalletData w,string receipt,Func<GangBulkData,bool> mutate,Action save,out bool changed)
@@ -48,7 +48,7 @@ namespace RPCore
         }
         public static bool Begin(WalletData w,GangState s,GangBulkAttempt p,DealerOptions c,Action save,out bool changed)
         {
-            changed=false;if(w==null || p?.Valid!=true || p.Kind!=GangBulkKind.Drugs || p.Loaded || p.Ready || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangWarehouse?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || Quote(c,p.Product,p.Units)!=p.Value || p.Value>p.Options.MaxValue)return false;
+            changed=false;if(w==null || GangPromotionTransactions.Blocked(w) || p?.Valid!=true || p.Kind!=GangBulkKind.Drugs || p.Loaded || p.Ready || !GangBusinessTransactions.Owns(s,p.Area) || !GangCrewRules.SameGang(s.Gang,p.Gang) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangWarehouse?.Valid!=true || w.GangIllicit!=null && !w.GangIllicit.Valid || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid || Quote(c,p.Product,p.Units)!=p.Value || p.Value>p.Options.MaxValue)return false;
             var a=GangWarehouseTransactions.Account(w.GangWarehouse,p.Gang,p.Area.Id);if(a==null || GangWarehouseAccount.Get(a.Stock,p.Product)<p.Units)return false;
             return Apply(w,p.Id+":bulk-begin",b=>{if(b.Pending!=null || b.Attempts==int.MaxValue)return false;b.Pending=Copy(p);b.Attempts++;return true;},save,out changed);
         }
