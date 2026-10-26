@@ -1,3 +1,9 @@
+## Atualização 0.78.0 — guerras, diplomacia e reforços
+
+[Baixar atualização 0.78.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.78.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.78.0.zip) · [Roteiro único de teste](docs/FASE-6.5AJ-0.78.0.md) · [Pendências antes do refinamento](docs/PENDENCIAS-ANTES-REFINAMENTO.md)
+
+F4: declaração de guerra na HQ, alertas/defesa dos seus territórios, simulação distante entre rivais e reforços nas novas capturas. Três opções desligadas em saves antigos; ignorar alerta habilitado por120segundos ativos transfere a área. Solicitar alerta agora permite testar sem esperar o intervalo, exigindo território próprio e rival hostil. Defesa e propriedade gravadas juntas, sem renda gratuita. F2/F11/saves/configs/YTD/RPF mantidos.2891 testes aprovados; build sem erros/avisos. GTA ainda precisa de teste. Comboios/assaltos organizados/drive-bys/diálogos restantes, polícia e fase7 seguem na fila agrupada; refinamentos8/9 preservados.
+
 # RPCore 0.77.0 — GTA V Legacy
 
 ## Fase6.5AI — turno de caixa 24/7

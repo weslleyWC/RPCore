@@ -19,6 +19,7 @@ namespace RPCore
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
+        public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
         public static GangRaidData GangRaid=>data.GangRaid;
         public static bool GangWeaponRaidBegin(GangState s,GangRaidAttempt p,GangArmsOptions c,out bool changed)=>GangWeaponRaidTransactions.Begin(data,s,p,c,Save,out changed);
         public static bool GangWeaponRaidCapture(string id,out bool changed)=>GangWeaponRaidTransactions.Capture(data,id,Save,out changed);
@@ -29,6 +30,7 @@ namespace RPCore
         public static bool GangRaidDefeat(string id,int index,out bool changed)=>GangRaidTransactions.Defeat(data,id,index,Save,out changed);
         public static bool GangRaidCollect(string id,out bool changed)=>GangRaidCollect(id,out changed,"Neutral");
         public static bool GangRaidCollect(string id,out bool changed,string initial)=>GangRaidTransactions.Collect(data,id,Save,out changed,initial);
+        public static bool GangDeclareWar(GangState s,string rival,string initial,string id,out bool changed)=>GangDiplomacyTransactions.DeclareWar(data,s,rival,initial,id,Save,out changed);
         public static GangDiplomacyData GangDiplomacy=>data.GangDiplomacy;
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;

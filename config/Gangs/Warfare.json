@@ -1,0 +1,6 @@
+{
+  "ResponseSeconds": 120,
+  "RivalMinSeconds": 300,
+  "RivalMaxSeconds": 900,
+  "RemoteRadius": 200
+}

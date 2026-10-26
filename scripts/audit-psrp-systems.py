@@ -1383,5 +1383,18 @@ if cashier_config.exists():
         'integration':'Pending/invalid cashier added direct/shared territorial blockers and invalid guard in auto processing. No new multiplier:14 earned activity bonuses stay max2X, fractional clock and85/15 split unchanged. Input/menu/pause freezes clock; unsafe/owner/profile/actor/50m departure suspends. Dead customer/deadline faults for explicit cancel. All account salary totals and choices/options/unknown fields preserved.',
         'intentional_differences':'Source HideOriginalCashier deletes nearby mp_m_shopkeep_01; RPCore preserves it and permits exterior stand with2.5m initial start radius (source1.2). No global shop-script manipulation. Durable scans/served/time, END resume, ready finalE instead of immediate final salary, active-only deadline. Human-friendly ID labels and native subtitle rather than full texture basket UI; phases8/9 remain reserved.',
         'scope_limits':'GTA tests needed for access/vanilla clerk coexistence/police response, exterior E and purchase-menu exclusion, customer shelf navigation/till proximity/path blockage, scans/sounds/checkout/leaving, all5 within10min, cash salary MP/protagonists, END/reload partial/ready/cancel/failure/profile and installed store assets. Other gang systems and phases8UI/needs/9job realism remain future.'}
+war_source=(a.reference_source/'PSRP/GangSpawner.cs').read_text()
+report['gang_warfare']={
+    'reference_source':'PSRP/GangSpawner.cs: GetAiTurfAttackInterval, UpdateTurfAttackByAi, UpdateAiVsAiTurfAttacks, CheckTurfReinforcements',
+    'reference_active_attack_intervals_780_to_240_seconds':all(x in war_source for x in ['GetAiTurfAttackInterval','780000','240000']),
+    'reference_response_deadline_120_seconds':'GangTurfDefenceTime = 120000' in war_source,
+    'reference_rival_interval_300_to_900_seconds':'turfRandom.Next(300000, 900001)' in war_source,
+    'reference_rival_event_chance_85':'AiVsAiAttackChance = 85' in war_source,
+    'reference_rival_capture_odds_55_50_45':all(x in war_source for x in ['int num4 = 50','num4 = 55','num4 = 45']),
+    'reference_half_force_reinforcements':'num2 > 0.5f' in war_source and 'SpawnTurfReinforcements(turf)' in war_source,
+    'configuration_sha256':digest((Path(__file__).resolve().parents[1]/'config/Gangs/Warfare.json').read_bytes()),
+    'rpcore_cycle':'Independent per-profile opt-in personal attacks, rival simulation and capture reinforcements. Source attack intervals,120s alert,85%/5-15min distant rival simulation,45/50/55 odds. Directed declaration in existing diplomacy Wallet book; agreements remain paid. Alert and ownership/history one GangState checkpoint; responding clears warning and creates existing defense in one save. Source maximum domination exception and global relationships not ported. Remote battles cannot involve player faction.',
+    'differences':'Own bounded32-entry history; active safe free-world clock, pauses on menus/jobs/pending/mission/wanted/combat; no offline simulation. Alert progress checkpoints1s. Source reinforcements use vehicle; RPCore three extra owned foot actors, total<=6, snapshot per attempt and trigger at half initial casualties including all killed in one frame. Defaults disabled on legacy saves. Declaration is own explicit HQ interaction, no fee/global faction rewrite.',
+    'remaining':'Vehicle convoys/reinforcements, organized assaults, drive-bys and full dialogue remain unfinished; no claim of complete gang parity, police,phase7,8 or9. GTA navigation/combat/streaming/map and compatibility tests required.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -26,7 +26,7 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         readonly AchievementSystem ach;
         GangState state;
-        readonly GangLoyalty loyalty;readonly GangStrength strength;readonly GangDriving driving;readonly GangTerritories turf;readonly GangTreasury treasury;readonly GangBusiness business;readonly GangDiplomacy diplomacy;
+        readonly GangWar warfare;readonly GangLoyalty loyalty;readonly GangStrength strength;readonly GangDriving driving;readonly GangTerritories turf;readonly GangTreasury treasury;readonly GangBusiness business;readonly GangDiplomacy diplomacy;
         bool InitiationPending=>loyalty.HasPending || strength.HasPending || driving.HasPending || turf.HasPending;
         void SaveState(GangState next){Store.Write("GangState.json",next);state=next;dirty=true;}
         bool dirty;NativeItem presenceStatus;
@@ -46,7 +46,7 @@ namespace RPCore
                 b.Color = gang.GangColor == "Purple" ? BlipColor.Purple : gang.GangColor == "Green" ? BlipColor.Green : BlipColor.Yellow;
                 blips.Add(b);
             }
-            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);turf=new GangTerritories(shared,pool,()=>state,SaveState,()=>gangs);treasury=new GangTreasury(shared,pool,()=>state,()=>gangs);business=new GangBusiness(shared,pool,()=>state,()=>gangs);diplomacy=new GangDiplomacy(shared,pool,()=>state,()=>gangs);
+            ach.Progress += Progress; Reload();var shared=gate??new ShiftGate();loyalty=new GangLoyalty(shared,pool,presence,()=>state,SaveState);strength=new GangStrength(shared,pool,presence,()=>state,SaveState);driving=new GangDriving(shared,pool,presence,()=>state,SaveState);turf=new GangTerritories(shared,pool,()=>state,SaveState,()=>gangs);treasury=new GangTreasury(shared,pool,()=>state,()=>gangs);business=new GangBusiness(shared,pool,()=>state,()=>gangs);diplomacy=new GangDiplomacy(shared,pool,()=>state,()=>gangs);warfare=new GangWar(shared,pool,()=>state,SaveState,()=>gangs,turf);
         }
 
         public void ConfigureDealer(DealerJob dealer)=>business.ConfigureDealer(dealer);
@@ -76,6 +76,7 @@ namespace RPCore
             int rank=GangProgressionRules.Rank(state);var rankRow=new NativeItem("Patente: "+GangProgressionRules.Name(rank)+" / "+rank,"Promocoes: 250 / 750 / 1500 pontos. Captura +50, defesa +25, perda de defesa -20. Patente nao cai por perda de reputacao na mesma gangue.");menu.Add(rankRow);
             var funds=new NativeItem("Tesouraria / pagamentos","Depositos bancarios e receita do comercio; participacao por patente apos intervalo do jogo.");funds.Activated+=(s,e)=>treasury.Open();menu.Add(funds);
             var relations=new NativeItem("Relacoes / acordos", "Consulte atitudes rivais, consequencias de roubos e negocie na sua HQ.");relations.Activated+=(s,e)=>diplomacy.Open();menu.Add(relations);
+            var war=new NativeItem("Guerras / alertas e reforcos","Ataques opcionais, responder/GPS, disputas entre rivais, reforcos e historico.");war.Activated+=(s,e)=>warfare.Open();menu.Add(war);
             var commerce=new NativeItem("Comercio dos territorios","Estoque pago pelo banco, atendimento presencial e receita no caixa da gangue.");commerce.Activated+=(s,e)=>business.Open();menu.Add(commerce);
             var territories=new NativeItem("Territorios / mapa e disputas","15 territorios, donos por perfil, GPS e capturas explicitas. Afiliacao necessaria para disputar.");territories.Activated+=(s,e)=>turf.Open();menu.Add(territories);
             var enabled=new NativeItem("Presenca nas HQs: "+(state.PresenceEnabled?"LIGADA":"DESLIGADA"),"Lideres/membros nos postos configurados. Opcional por perfil; no maximo 12 NPCs com limites configuraveis.");
@@ -165,6 +166,7 @@ namespace RPCore
             try{driving.Tick();}catch(Exception ex){driving.Suspend();Log.Error("gang driving tick",ex);Notify.Show("Iniciacao de direcao suspensa; retome junto ao lider.");}
             try{business.Tick();}catch(Exception ex){business.Suspend();Log.Error("gang business tick",ex);Notify.Show("Atividade territorial suspensa. Confira progresso e estoque no F4.");}
             try{turf.Tick();}catch(Exception ex){turf.Suspend();Log.Error("gang turf tick",ex);Notify.Show("Disputa suspensa; donos/progresso gravados preservados.");}
+            try{warfare.Tick();}catch(Exception ex){warfare.Reset();Log.Error("gang war tick",ex);}
             if (menu.Visible && dirty) Rebuild();
             if(menu.Visible && presenceStatus!=null)presenceStatus.Title="NPCs ativos: "+presence.Count+" / equipe "+presence.CrewCount+"/3";
             var p = Game.Player.Character;
@@ -184,8 +186,8 @@ namespace RPCore
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { diplomacy?.Close();business?.Close();treasury?.Close();turf?.Reload();driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, state.Reputation); menu.Visible = false; }
+        public void Reload() { warfare?.Close();diplomacy?.Close();business?.Close();treasury?.Close();turf?.Reload();driving?.Suspend();strength?.Suspend();loyalty?.Suspend();presence.Clear();dirty=true;state = Store.Load("GangState.json", () => new GangState()); state.Reputation = Math.Max(0, state.Reputation); menu.Visible = false; }
         public void Save() { Store.Write("GangState.json", state); }
-        public void Dispose() { diplomacy.Close();business.Dispose();treasury.Close();turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
+        public void Dispose() { warfare.Close();diplomacy.Close();business.Dispose();treasury.Close();turf.Dispose();driving.Dispose();strength.Dispose();loyalty.Dispose();presence.Dispose();ach.Progress -= Progress; menu.Visible = false; foreach (var b in blips) if (b.Exists()) b.Delete(); }
     }
 }

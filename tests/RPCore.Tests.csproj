@@ -77,6 +77,7 @@
     <Compile Include="../GangSupplyData.cs" Link="GangSupplyData.cs" />
     <Compile Include="../GangBusinessData.cs" Link="GangBusinessData.cs" />
     <Compile Include="../GangEconomyData.cs" Link="GangEconomyData.cs" />
+    <Compile Include="../GangWarData.cs" Link="GangWarData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />

@@ -13,8 +13,8 @@ namespace RPCore
     public sealed class GangDiplomacyAccount : ExtensibleData
     {
         public string Gang,Rival,Attitude="Neutral";
-        public long StolenLoads,Paid,LastAgreementTicks,BulkDeals;public int Agreements;
-        [JsonIgnore] public bool Valid=>GangDiplomacyRules.Pair(Gang,Rival) && GangDiplomacyRules.Known(Attitude) && StolenLoads>=0 && BulkDeals>=0 && Agreements>=0 && Paid>=Agreements && LastAgreementTicks>=0 && LastAgreementTicks<=DateTime.MaxValue.Ticks && (Agreements!=0 || Paid==0 && LastAgreementTicks==0);
+        public long StolenLoads,Paid,LastAgreementTicks,BulkDeals;public int Agreements,Declarations;
+        [JsonIgnore] public bool Valid=>GangDiplomacyRules.Pair(Gang,Rival) && GangDiplomacyRules.Known(Attitude) && StolenLoads>=0 && BulkDeals>=0 && Declarations>=0 && Agreements>=0 && Paid>=Agreements && LastAgreementTicks>=0 && LastAgreementTicks<=DateTime.MaxValue.Ticks && (Agreements!=0 || Paid==0 && LastAgreementTicks==0);
     }
     public sealed class GangDiplomacyData : ExtensibleData
     {
@@ -50,6 +50,16 @@ namespace RPCore
     }
     public static class GangDiplomacyTransactions
     {
+        public static bool DeclareWar(WalletData w,GangState state,string rival,string initial,string id,Action save,out bool changed)
+        {
+            changed=false;
+            if(w==null || state==null || !GangProgressionRules.Valid(state) || !GangWarRules.Free(state) || !GangDiplomacyRules.Pair(state.Gang,rival) || !GangDiplomacyRules.Known(initial) || save==null || string.IsNullOrWhiteSpace(id) || id.Length>80 || w.GangDiplomacy!=null && !w.GangDiplomacy.Valid)return false;
+            var old=w.GangDiplomacy;string receipt=id+":declaration";if(old?.Receipts.Contains(receipt)==true)return true;
+            if(GangBulkTransactions.Blocked(w) || w.GangRaid!=null && (!w.GangRaid.Valid || w.GangRaid.Pending!=null) || w.GangBusiness!=null && (!w.GangBusiness.Valid || w.GangBusiness.Supply!=null))return false;
+            var next=GangDiplomacyRules.Copy(old);var a=GangDiplomacyRules.Ensure(next,state.Gang,rival,initial);if(a==null || a.Attitude=="War" || a.Declarations==int.MaxValue)return false;
+            a.Attitude="War";a.Declarations++;GangDiplomacyRules.Receipt(next,receipt);if(!next.Valid)return false;
+            try{w.GangDiplomacy=next;save();changed=true;return true;}catch{w.GangDiplomacy=old;throw;}
+        }
         public static bool Negotiate(WalletData w,GangState state,string rival,string initial,GangDiplomacyOptions c,DateTime now,string id,Action save,out bool changed)
         {
             changed=false;

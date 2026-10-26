@@ -16,6 +16,7 @@ namespace RPCore
         GangTurfAttempt Pending=>state().Turf?.Pending;
         public bool HasPending=>Pending!=null;
         public bool Active=>active || preparing;
+        public Action OpenWarfare;
         static Vector3 Pos(GangSpot p)=>new Vector3(p.X,p.Y,p.Z);
         bool Safe=>Game.Player.Character.IsHuman && !Game.IsMissionActive && !Game.Player.Character.IsDead && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
         bool InArea(GangTurfAttempt p)=>GangTurfRules.Inside(Game.Player.Character.Position.DistanceTo(Pos(p.Area.Center)),p.Radius);
@@ -28,6 +29,7 @@ namespace RPCore
             pool.HideAll();menu.Clear();
             if(state().Turf!=null && !state().Turf.Valid){Add("Dados de territorio protegidos","Confira GangState.json/backup; nenhum dono sera substituido.",()=>{});menu.Visible=true;return;}
             Add("Mapa de territorios: "+(state().TerritoriesEnabled?"LIGADO":"DESLIGADO"),"15 pontos da referencia; opcional por perfil. Desligar suspende a disputa sem apagar donos.",()=>{var next=CharacterRules.Copy(state());next.TerritoriesEnabled=!next.TerritoriesEnabled;save(next);if(!next.TerritoriesEnabled)Suspend();SyncMap();Open();});
+            Add("Guerras / alertas e reforcos","Ataques automaticos opcionais, mapa dinamico e reforcos nas capturas.",()=>OpenWarfare?.Invoke());
             Add("Capturas: "+(state().Turf?.Captures??0)+" / defesas: "+(state().Turf?.Defenses??0)+" / perdas: "+(state().Turf?.LostDefenses??0),"Contadores deste perfil; sem renda ou premio automatico.",()=>{});
             if(Pending!=null){Add((Active?"Suspender":"Retomar")+" disputa: "+Pending.Area.Name,"A pe dentro da area. Luta parcial refaz defensores; territorio pronto pode confirmar E apos reload.",()=>{if(Active)Suspend();else if(!Resume())Notify.Show("Confira gangue, area, mapa e atividade atual.");menu.Visible=false;});Add("Cancelar disputa pendente","Conserva dono anterior; nao cobra ou estorna dinheiro.",()=>{if(GangTurfTransactions.End(state(),Pending.Id,false,save,out _)){Suspend();Open();}});}
             foreach(var a in options.Areas){var area=a;string owner=GangTurfRules.Owner(state().Turf,area);bool own=GangCrewRules.SameGang(state().Gang,owner);
@@ -43,7 +45,7 @@ namespace RPCore
             if(Active || HasPending || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || state().Driving?.Pending!=null || GangLoyaltyRules.Unaffiliated(state().Gang))return false;
             var own=gangs().FirstOrDefault(g=>GangCrewRules.SameGang(g.Name,state().Gang));var owner=GangTurfRules.Owner(state().Turf,area);var rival=gangs().FirstOrDefault(g=>GangCrewRules.SameGang(g.Name,owner));if(own==null || rival==null || GangCrewRules.SameGang(owner,state().Gang))return false;
             var names=(rival.PedModels??Array.Empty<string>()).Where(GangPresenceRules.ModelName).Where(n=>{var m=new Model(n);return m.IsInCdImage && m.IsPed;}).ToArray();if(names.Length==0)return false;
-            var p=new GangTurfAttempt{Id=Guid.NewGuid().ToString("N"),Gang=state().Gang,PreviousOwner=owner,Area=CharacterRules.Copy(area),Radius=options.Radius,SecondsLimit=options.SecondsLimit,Models=Enumerable.Range(0,options.Defenders).Select(i=>names[i%names.Length]).ToArray()};
+            var p=new GangTurfAttempt{Id=Guid.NewGuid().ToString("N"),Gang=state().Gang,PreviousOwner=owner,Area=CharacterRules.Copy(area),Radius=options.Radius,SecondsLimit=options.SecondsLimit,InitialDefenders=state().Warfare?.Valid==true && state().Warfare.Reinforcements?Math.Min(3,options.Defenders):0,Models=Enumerable.Range(0,state().Warfare?.Valid==true && state().Warfare.Reinforcements?Math.Min(3,options.Defenders)+3:options.Defenders).Select(i=>names[i%names.Length]).ToArray()};
             return CanStart(p) && Prepare(p);
         }
         bool BeginDefense(GangTurfDefinition area)
@@ -53,6 +55,15 @@ namespace RPCore
             foreach(var rival in rivals){var names=(rival.PedModels??Array.Empty<string>()).Where(GangPresenceRules.ModelName).Where(n=>{var m=new Model(n);return m.IsInCdImage && m.IsPed;}).ToArray();if(names.Length==0)continue;
                 var p=new GangTurfAttempt{Id=Guid.NewGuid().ToString("N"),Gang=state().Gang,PreviousOwner=state().Gang,Attacker=rival.Name,Mode=GangTurfMode.Defense,WaveSize=defense.PerWave,Area=CharacterRules.Copy(area),Radius=options.Radius,SecondsLimit=options.SecondsLimit,Models=Enumerable.Range(0,defense.PerWave*defense.Waves).Select(i=>names[i%names.Length]).ToArray()};return CanStart(p) && Prepare(p);
             }return false;
+        }
+        public bool RespondToAlert()
+        {
+            var a=state().Warfare?.Alert;
+            if(a?.Valid!=true || Active || HasPending || !state().Warfare.AttacksEnabled || state().Warfare.Valid!=true)return false;
+            var rival=gangs().FirstOrDefault(g=>GangCrewRules.SameGang(g.Name,a.Attacker));
+            var names=(rival?.PedModels??Array.Empty<string>()).Where(GangPresenceRules.ModelName).Where(n=>{var m=new Model(n);return m.IsInCdImage && m.IsPed;}).ToArray();if(names.Length==0)return false;
+            var p=new GangTurfAttempt{Id=Guid.NewGuid().ToString("N"),WarAlertId=a.Id,Gang=a.Gang,PreviousOwner=a.Gang,Attacker=a.Attacker,Mode=GangTurfMode.Defense,WaveSize=defense.PerWave,Area=CharacterRules.Copy(a.Area),Radius=options.Radius,SecondsLimit=options.SecondsLimit,Models=Enumerable.Range(0,defense.PerWave*defense.Waves).Select(i=>names[i%names.Length]).ToArray()};
+            return CanStart(p) && Prepare(p);
         }
         bool Resume()
         {
@@ -84,13 +95,13 @@ namespace RPCore
         void FightBatch(int start){foreach(var p in defenders.Skip(start)){p.Weapons.Give(WeaponHash.Pistol,120,true,true);Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES,p,46,true);Function.Call(Hash.TASK_COMBAT_PED,p,player,0,16);}}
         void Spawn()
         {
-            SpawnBatch(0,draft.Mode==GangTurfMode.Defense?draft.WaveSize:models.Length);
+            SpawnBatch(0,draft.Mode==GangTurfMode.Defense?draft.WaveSize:draft.InitialDefenders>0?draft.InitialDefenders:models.Length);
             if(Pending==null){if(!GangTurfTransactions.Begin(state(),draft,save,out _))throw new InvalidOperationException("Territory attempt not saved.");}else if(!GangTurfTransactions.Restart(state(),Pending.Id,save,out _))throw new InvalidOperationException("Territory restart not saved.");
             preparing=false;active=true;last=Game.GameTime;seconds=0;FightBatch(0);if(defenders.Count==draft.Models.Length)ReleaseModels();Route();Notify.Show(draft.Mode==GangTurfMode.Defense?"Defesa contra "+draft.Attacker+" iniciada. Elimine as ondas; perder transfere posse ao atacante. END suspende.":"Disputa iniciada: elimine os defensores e confirme E na area. END suspende.");
         }
         void Route(){if(objective!=null && objective.Exists())objective.Delete();objective=World.CreateBlip(Pos(Pending.Area.Center));objective.Name="RPCore disputa: "+Pending.Area.Name;objective.Color=BlipColor.Yellow;objective.ShowRoute=true;}
         void ReleaseModels(){if(models!=null)foreach(var m in models)m.MarkAsNoLongerNeeded();models=null;}
-        void ClearDefenders(){foreach(var b in enemyBlips)if(b!=null && b.Exists())b.Delete();enemyBlips.Clear();foreach(var p in defenders)if(p!=null && p.Exists()){p.Weapons.RemoveAll();p.Delete();}defenders.Clear();ReleaseModels();}
+        void ClearDefenders(){foreach(var b in enemyBlips)if(b!=null && b.Exists())b.Delete();enemyBlips.Clear();foreach(var p in defenders)if(p!=null && p.Exists()){if(p.IsInVehicle()){p.BlockPermanentEvents=false;p.MarkAsNoLongerNeeded();}else{p.Weapons.RemoveAll();p.Delete();}}defenders.Clear();ReleaseModels();}
         public void Suspend(){ClearDefenders();if(objective!=null && objective.Exists())objective.Delete();objective=null;draft=null;player=null;profile=null;active=preparing=false;gate.Release(OwnerKey);}
         void Fail(string reason){bool loss=Pending?.Mode==GangTurfMode.Defense;string attacker=Pending?.Attacker;if(Pending!=null && !GangTurfTransactions.End(state(),Pending.Id,true,save,out _))throw new InvalidOperationException("Territory failure not saved.");Suspend();signature=null;SyncMap();Notify.Show("Disputa encerrada: "+reason+(loss?". Territorio transferido a "+attacker+".":". Dono anterior conservado."));}
         public void Interact(){if(!active || Pending?.Ready!=true || !Safe || Game.IsPaused || !Game.Player.Character.IsOnFoot || !InArea(Pending) || pool.AreAnyVisible || InterfaceOptions.ModalOpen)return;bool defended=Pending.Mode==GangTurfMode.Defense;if(!GangTurfTransactions.Capture(state(),Pending.Id,save,out _))throw new InvalidOperationException("Territory ownership not saved.");Suspend();signature=null;SyncMap();Notify.Show((defended?"Defesa confirmada; territorio mantido por ":"Territorio capturado e gravado para ")+state().Gang+". Sem pagamento automatico.");}
@@ -115,6 +126,9 @@ namespace RPCore
             if(!Safe || !InArea(Pending) || !Game.Player.Character.IsOnFoot || player!=null && player!=Game.Player.Character){Fail("morte/missao, veiculo, troca de ped ou abandono da area");return;}
             seconds+=Math.Min(1,Math.Max(0,unchecked(Game.GameTime-last)/1000f));last=Game.GameTime;if(seconds>=Pending.SecondsLimit){Fail("limite de tempo");return;}
             for(int i=0;i<defenders.Count;i++){if(Pending.Defeated.Contains(i))continue;var p=defenders[i];if(p==null || !p.Exists()){Suspend();Notify.Show("NPC indisponivel; disputa suspensa sem mudar a posse.");return;}if(p.IsDead){if(!GangTurfTransactions.Defeat(state(),Pending.Id,i,save,out _))throw new InvalidOperationException("Territory defeat not saved.");if(enemyBlips[i]!=null && enemyBlips[i].Exists())enemyBlips[i].Delete();}}
+            if(Pending.Mode==GangTurfMode.Attack && GangWarRules.Reinforce(Pending.InitialDefenders,Pending.Defeated.Count,defenders.Count,Pending.Models.Length)){
+                int first=defenders.Count;SpawnBatch(first,Pending.Models.Length-first);FightBatch(first);ReleaseModels();Notify.Show("Reforcos rivais chegaram: elimine o segundo grupo antes de capturar.");
+            }
             if(Pending.Mode==GangTurfMode.Defense && GangDefenseRules.NextWave(defenders.Count,Pending.Defeated.Count,Pending.Models.Length,Pending.WaveSize)){
                 int first=defenders.Count;SpawnBatch(first,Math.Min(Pending.WaveSize,Pending.Models.Length-first));FightBatch(first);if(defenders.Count==Pending.Models.Length)ReleaseModels();Notify.Show("Nova onda de "+Pending.Attacker+" aproximando-se.");
             }

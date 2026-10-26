@@ -14,7 +14,7 @@ namespace RPCore
         public Dictionary<string,string> Relationships;
     }
     public class GangSpot : ExtensibleData { public float X,Y,Z,Heading; }
-    public class GangState : ExtensibleData { public string Gang;public int Reputation,Rank;public bool PresenceEnabled;public GangLoyaltyData Loyalty;public GangStrengthData Strength;public GangDrivingData Driving;public bool TerritoriesEnabled;public GangTurfData Turf; }
+    public class GangState : ExtensibleData { public string Gang;public int Reputation,Rank;public bool PresenceEnabled;public GangLoyaltyData Loyalty;public GangStrengthData Strength;public GangDrivingData Driving;public bool TerritoriesEnabled;public GangTurfData Turf;public GangWarData Warfare; }
     public sealed class GangPresenceOptions : ExtensibleData
     {
         public int MaxActors=12,PerHQ=6,SpawnRadius=80,DespawnRadius=160,RespawnSeconds=120;
