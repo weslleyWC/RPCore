@@ -15,10 +15,14 @@ namespace RPCore
         readonly ShiftGate gate;readonly ObjectPool pool;readonly Func<GangState> state;
         readonly Func<IEnumerable<GangDefinition>> gangs;readonly Func<IEnumerable<GangTurfDefinition>> areas;
         readonly GangBusinessOptions business;readonly GangSupplyOptions options;readonly GangCriminalSupplyOptions criminal;public DealerJob Dealer;
+        readonly GangCafeOptions cafe;
         readonly DeliveryCargo cargo=new DeliveryCargo();
         Vehicle vehicle;int model,player,last,elapsed,picked=-1;string plate,profile,orderId;bool carrying,arrived,reserved;
         Blip objective;public bool Active { get; private set; }
         GangSupplyOrder Pending=>Wallet.GangBusiness?.Supply;
+        bool Cafe=>Pending?.CargoKind==GangSupplyCargo.Cafe;
+        Vector3 Destination=>Cafe?Pos(Pending.Cafe.Door):Pos(Pending.Area);
+        Vector3 Parking=>Cafe?Pos(Pending.Cafe.Parking):Pos(Pending.Area);
         GangTurfDefinition CurrentArea=>Pending==null?null:areas().FirstOrDefault(a=>a.Id==Pending.Area.Id);
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);
         static Vector3 Pos(GangTurfDefinition a)=>new Vector3(a.Center.X,a.Center.Y,a.Center.Z);
@@ -31,6 +35,7 @@ namespace RPCore
         public GangSupply(ShiftGate gate,ObjectPool pool,Func<GangState> state,Func<IEnumerable<GangDefinition>> gangs,Func<IEnumerable<GangTurfDefinition>> areas,GangBusinessOptions business)
         {
             this.gate=gate;this.pool=pool;this.state=state;this.gangs=gangs;this.areas=areas;this.business=business;
+            cafe=Store.LoadDef("Gangs/Cafe.json",()=>new GangCafeOptions());if(cafe?.Valid!=true){cafe=new GangCafeOptions();Log.Write("Invalid cafe config; defaults in memory, original retained.");}
             criminal=Store.LoadDef("Gangs/CriminalSupply.json",()=>new GangCriminalSupplyOptions());if(criminal==null || !criminal.Valid){criminal=new GangCriminalSupplyOptions();Log.Write("Invalid criminal supply config; original retained, defaults used.");}
             options=Store.LoadDef("Gangs/Supply.json",()=>new GangSupplyOptions());
             if(options==null || !options.Valid){options=new GangSupplyOptions();Log.Write("Invalid gang supply config; original retained, defaults used.");}
@@ -38,9 +43,22 @@ namespace RPCore
         public void Append(Action<string,string,Action> add,Action reopen)
         {
             var p=Pending;if(p==null)return;
-            add((p.CargoKind==GangSupplyCargo.Criminal?"Frete criminal / "+p.ProductId+": ":"Frete reservado: ")+p.Area.Name+" / $"+p.Cost,"Carga "+p.Loaded.Count+"/3, descarga "+p.Delivered+"/3. Lote de "+p.Units+" unidades. Conclua ou estorne antes de comprar/vender outro lote.",null);
-            add(Active?"Suspender frete":"Retomar frete reservado",p.Ready?"A pe no destino, E confirma estoque. Carga pronta permanece pronta apos reload.":"A bordo de carro/van proprio parado no territorio de destino. Retomada refaz as tres caixas, sem pagar novamente.",()=>{if(Active){Suspend();reopen();}else if(!Resume())Notify.Show("Confira posse, carro proprio parado no destino, atividade e pendencias.");});
-            add("Cancelar frete e estornar $"+p.Cost,"Sem estoque parcial. Estorna somente o custo reservado ao banco; pode cancelar mesmo depois de perder filiacao/posse. Sem combate/procurado/missao.",()=>{if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null && gate.Owner!=OwnerKey || !Wallet.GangSupplyRefund(p.Id,out _)){Notify.Show("Estorno recusado; confira seguranca e limite do banco. Reserva conservada.");return;}Suspend();reopen();});
+            add((Cafe?"Abastecimento do cafe: ":p.CargoKind==GangSupplyCargo.Criminal?"Frete criminal / "+p.ProductId+": ":"Frete reservado: ")+p.Area.Name+" / $"+p.Cost,(Cafe?"Tres caixas liberam processamento automatico2X; nao ha custo/estoque. ":"")+"Carga "+p.Loaded.Count+"/3, descarga "+p.Delivered+"/3. Lote de "+p.Units+" unidades. Conclua ou estorne antes de comprar/vender outro lote.",null);
+            add(Active?"Suspender frete":"Retomar frete reservado",p.Ready?"A pe no ponto final, E confirma recompensa. Pronto permanece pronto apos reload.":Cafe?"No seu carro/van parado no patio do cafe. Retomada refaz tres caixas sem bonus parcial.":"A bordo de carro/van proprio parado no territorio de destino. Retomada refaz as tres caixas, sem pagar novamente.",()=>{if(Active){Suspend();reopen();}else if(!Resume())Notify.Show("Confira posse, carro proprio parado no destino, atividade e pendencias.");});
+            add(Cafe?"Cancelar abastecimento do cafe":"Cancelar frete e estornar $"+p.Cost,Cafe?"Cancela sem cobrar, pagar ou conceder bonus. Bonus anterior permanece com vencimento original.":"Sem estoque parcial. Estorna somente o custo reservado ao banco; pode cancelar mesmo depois de perder filiacao/posse. Sem combate/procurado/missao.",()=>{if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null && gate.Owner!=OwnerKey || !Wallet.GangSupplyRefund(p.Id,out _)){Notify.Show("Estorno recusado; confira seguranca e limite do banco. Reserva conservada.");return;}Suspend();reopen();});
+        }
+        public void AddCafe(GangTurfDefinition area,Action<string,string,Action> add)
+        {
+            if(area.Id!=4)return;var a=GangCafeTransactions.Account(Wallet.GangCafe,state().Gang,area.Id);var utc=DateTime.UtcNow;
+            string status=GangCafeTransactions.Multiplier(Wallet.GangCafe,state().Gang,area.Id,utc)==2?"ATIVO / "+Math.Ceiling((a.ExpiresUtcTicks-utc.Ticks)/(double)TimeSpan.TicksPerMinute)+"min":"inativo";
+            add("Cafe / bonus2X: "+status,"Concluidos: "+(a?.Completed??0)+". Duplica velocidade do processamento automatico desta area; taxa85% igual. Expira em tempo real, inclusive fora do GTA; nao liga o automatico sozinho.",null);
+            add("GPS: patio do cafe","Va no seu carro/van, estacione a ate17m do patio e inicie pelo F4.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,cafe.Parking.X,cafe.Parking.Y);pool.HideAll();});
+            add("Abastecer cafe / tres caixas","Gratis. No seu carro/van parado no patio. Colete/carregue tres caixas e entregue na porta. E final libera2X por"+cafe.BoostMinutes+"min reais, sem acumular duracao.",()=>{if(!BeginCafe(area))Notify.Show("Exige posse da area4, carro/van proprio parado no patio do cafe e nenhuma atividade/pendencia.");});
+        }
+        bool BeginCafe(GangTurfDefinition target)
+        {
+            if(Active || gate.Owner!=null || Pending!=null || !GangBusinessTransactions.Owns(state(),target) || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !BindAt(Pos(cafe.Parking),12) || !gate.Acquire(OwnerKey))return false;
+            try{if(!Wallet.GangCafeBegin(state(),target,cafe,Guid.NewGuid().ToString("N"),out bool changed) || !changed){Suspend();return false;}Activate();return true;}catch{Suspend();throw;}
         }
         public void AddStart(GangTurfDefinition area,Action<string,string,Action> add)
         {
@@ -59,17 +77,18 @@ namespace RPCore
             if(Active || gate.Owner!=null || Pending!=null || !GangBusinessTransactions.Owns(state(),target) || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang)) || !Bind(target,warehouse.Radius) || !gate.Acquire(OwnerKey))return false;
             try{if(!Wallet.GangSupplyBeginCriminal(state(),target,catalog,warehouse,criminal,product,Guid.NewGuid().ToString("N"),out bool changed) || !changed){Suspend();return false;}Activate();return true;}catch{Suspend();throw;}
         }
-        bool Bind(GangTurfDefinition target,int radius=0)
+        bool Bind(GangTurfDefinition target,int radius=0)=>BindAt(Pos(target),radius==0?business.Radius:radius);
+        bool BindAt(Vector3 point,int radius)
         {
             var p=Game.Player.Character;var v=p.CurrentVehicle;
-            if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || v==null || !v.Exists() || !v.Model.IsCar || v.Driver!=p || v.Speed>=.5f || v.IsDead || !v.IsDriveable || JobVehicles.Contains(v) || p.Position.DistanceTo(Pos(target))>(radius==0?business.Radius:radius)+5)return false;
+            if(!Safe || Game.IsPaused || InterfaceOptions.ModalOpen || v==null || !v.Exists() || !v.Model.IsCar || v.Driver!=p || v.Speed>=.5f || v.IsDead || !v.IsDriveable || JobVehicles.Contains(v) || p.Position.DistanceTo(point)>radius+5)return false;
             vehicle=v;model=v.Model.Hash;plate=v.Mods.LicensePlate;return true;
         }
         void Activate()
         {
             Active=true;profile=Profile.Id;player=Game.Player.Character.Handle;orderId=Pending.Id;last=Game.GameTime;elapsed=0;carrying=arrived=false;picked=-1;
             if(vehicle!=null){JobVehicles.Reserve(vehicle);reserved=true;}pool.HideAll();Route();
-            Notify.Show("Frete ativo: siga o GPS, E para pegar/carregar/descarregar. END suspende; reserva fica salva.");
+            Notify.Show((Cafe?"Cafe ativo: ":"Frete ativo: ")+"siga o GPS, E para pegar/carregar/descarregar. END suspende; reserva fica salva.");
         }
         bool Begin(GangTurfDefinition target)
         {
@@ -81,15 +100,15 @@ namespace RPCore
         {
             if(Active || gate.Owner!=null || Pending==null || Wallet.GangBusiness?.Valid!=true || !Owns || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen)return false;
             bool ready=Pending.Ready;
-            if(ready){vehicle=null;if(!Game.Player.Character.IsOnFoot || Game.Player.Character.Position.DistanceTo(Pos(Pending.Area))>(Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;}
-            else if(!Bind(Pending.Area,Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;
+            if(ready){vehicle=null;if(!Game.Player.Character.IsOnFoot || Game.Player.Character.Position.DistanceTo(Destination)>(Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;}
+            else if(Cafe?!BindAt(Parking,12):!Bind(Pending.Area,Pending.CargoKind==GangSupplyCargo.Criminal?Pending.StartRadius:business.Radius))return false;
             if(!gate.Acquire(OwnerKey))return false;
             try{if(!ready && !Wallet.GangSupplyRestart(Pending.Id,out _)){Suspend();return false;}Activate();return true;}
             catch{Suspend();throw;}
         }
         int Next=>Enumerable.Range(0,3).First(i=>!Pending.Loaded.Contains(i));
-        Vector3 Target=>Pending.Ready?Pos(Pending.Area):carrying?(picked>=0?Rear:Pos(Pending.Area)):Pending.Loaded.Count<3?Pos(Pending.Options.Suppliers[Next]):arrived?Rear:Pos(Pending.Area);
-        string Instruction=>Pending.Ready?"E: confirmar lote no estoque":carrying?(picked>=0?"E: guardar caixa na traseira":"E: entregar caixa no territorio"):Pending.Loaded.Count<3?"E: pegar caixa do fornecedor":arrived?"E: retirar caixa pela traseira":"Dirija o veiculo carregado ate o territorio e estacione";
+        Vector3 Target=>Pending.Ready?Destination:carrying?(picked>=0?Rear:Destination):Pending.Loaded.Count<3?Pos(Pending.Options.Suppliers[Next]):arrived?Rear:Parking;
+        string Instruction=>Pending.Ready?(Cafe?"E: confirmar cafe e liberar bonus2X":"E: confirmar lote no estoque"):carrying?(picked>=0?"E: guardar caixa na traseira":Cafe?"E: entregar caixa na porta do cafe":"E: entregar caixa no territorio"):Pending.Loaded.Count<3?"E: pegar caixa do fornecedor":arrived?"E: retirar caixa pela traseira":Cafe?"Dirija ao patio do cafe e estacione":"Dirija o veiculo carregado ate o territorio e estacione";
         void Route()
         {
             if(objective!=null && objective.Exists())objective.Delete();objective=null;
@@ -105,7 +124,7 @@ namespace RPCore
             uint delta=unchecked((uint)(Game.GameTime-last));last=Game.GameTime;
             if(Input && delta<=2000)elapsed+=(int)delta;
             if(!Pending.Ready && elapsed>=Pending.Options.TimeLimitSeconds*1000){Suspend();Notify.Show("Prazo ativo encerrado. Retome o frete ou estorne a reserva no F4.");return;}
-            if(!Pending.Ready && Pending.Loaded.Count==3 && !arrived && Stopped && Game.Player.Character.IsInVehicle(vehicle) && vehicle.Driver==Game.Player.Character && vehicle.Position.DistanceTo(Pos(Pending.Area))<=25){arrived=true;Route();}
+            if(!Pending.Ready && Pending.Loaded.Count==3 && !arrived && Stopped && Game.Player.Character.IsInVehicle(vehicle) && vehicle.Driver==Game.Player.Character && vehicle.Position.DistanceTo(Parking)<=25){arrived=true;Route();}
             cargo.Tick();
             var context=Game.Player.Character.Position;WorkContext.ShopDelivery.Set(OwnerKey,new JobPoint{Name="gang supply",X=context.X,Y=context.Y,Z=context.Z},5);
             if(!Input)return;
@@ -119,7 +138,8 @@ namespace RPCore
             var p=Pending;var character=Game.Player.Character;
             if(p.Ready)
             {
-                if(character.Position.DistanceTo(Pos(p.Area))>3)return;
+                if(character.Position.DistanceTo(Destination)>3)return;
+                if(Cafe){if(Wallet.GangCafeComplete(state(),CurrentArea,p.Id,DateTime.UtcNow,out bool awarded)){Suspend();Notify.Show(awarded?"Cafe abastecido! Processamento automatico2X na area4 por"+p.Cafe.BoostMinutes+"min reais. Ative o automatico separadamente no F4.":"Contrato ja confirmado; bonus nao repetido.");}return;}
                 if(Wallet.GangSupplyComplete(state(),CurrentArea,p.Id,out bool changed,Dealer?.Catalog)){Suspend();Notify.Show(changed?(p.CargoKind==GangSupplyCargo.Criminal?"Frete criminal entregue no armazem da area; sem nova cobranca.":"Frete entregue. Lote acrescentado ao estoque; sem nova cobranca."):"Frete ja confirmado; nenhum lote repetido.");}return;
             }
             if(!Car || !Stopped || character.Position.DistanceTo(vehicle.Position)>40)return;
@@ -132,11 +152,11 @@ namespace RPCore
                 }
                 else
                 {
-                    if(!arrived || character.Position.DistanceTo(Pos(p.Area))>3 || vehicle.Position.DistanceTo(Pos(p.Area))>30)return;
+                    if(!arrived || character.Position.DistanceTo(Destination)>3 || vehicle.Position.DistanceTo(Parking)>30)return;
                     if(!Wallet.GangSupplyDeliver(p.Id,p.Delivered+1,out _))return;
                 }
                 cargo.Stop();carrying=false;picked=-1;Route();
-                Notify.Show(Pending.Ready?"Tres caixas entregues. E no ponto confirma o lote no estoque.":Pending.Loaded.Count==3 && !arrived?"Carga completa. Dirija o mesmo veiculo ao territorio e estacione a ate 25m do ponto.":"Caixa confirmada. Siga o proximo ponto do GPS.");return;
+                Notify.Show(Pending.Ready?(Cafe?"Tres caixas entregues. E na porta confirma o bonus2X.":"Tres caixas entregues. E no ponto confirma o lote no estoque."):Pending.Loaded.Count==3 && !arrived?Cafe?"Carga completa. Dirija ao patio do cafe e estacione a ate25m do ponto.":"Carga completa. Dirija o mesmo veiculo ao territorio e estacione a ate 25m do ponto.":"Caixa confirmada. Siga o proximo ponto do GPS.");return;
             }
             if(p.Loaded.Count<3)
             {
@@ -144,7 +164,7 @@ namespace RPCore
                 if(character.Position.DistanceTo(point)>3 || vehicle.Position.DistanceTo(point)>35)return;
                 picked=index;carrying=true;cargo.Start(character,false);Route();
             }
-            else if(arrived && vehicle.Position.DistanceTo(Pos(p.Area))<=25 && character.Position.DistanceTo(Rear)<=3)
+            else if(arrived && vehicle.Position.DistanceTo(Parking)<=25 && character.Position.DistanceTo(Rear)<=3)
             {picked=-1;carrying=true;cargo.Start(character,false);Route();}
         }
         public void Suspend()

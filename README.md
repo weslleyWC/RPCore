@@ -1,4 +1,10 @@
-# RPCore 0.62.0 — GTA V Legacy
+# RPCore 0.63.0 — GTA V Legacy
+
+## Fase 6.5U — café e processamento2X
+
+[Atualização0.63.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.63.0.zip) · [Código-fonte0.63.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.63.0.zip) · [Instalação e teste](docs/FASE-6.5U-0.63.0.md)
+
+F4 → Comercio, com posse do território4: GPS do pátio → seu carro/van → Abastecer cafe. Três coletas/carregamentos, retorno ao pátio, três entregas na porta e E final liberam2X por60min reais. Sem custo/pagamento/estoque ao concluir; não liga automático sozinho. Com receita suja e automático ativo na área4, lote500 passa de60s para30s ativos,85% ao caixa igual. ExpiraUTC inclusive offline, sem produzir offline; outra rota completa renova sem somar duração, replay não renova. Contrato e bônus atômicos/rollback, parcial/pronto/retomada/cancelamento e dados legados preservados. 2270 testes aprovados, build sem erros/avisos; gameplay pendente. Usa carro emprestado, sem van fornecida/três props no veículo/MissionWin; demais sistemas e fases8/9 futuros.
 
 ## Fase 6.5T — processamento automático da receita suja
 

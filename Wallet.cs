@@ -33,6 +33,9 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangCafeData GangCafe=>data.GangCafe;
+        public static bool GangCafeBegin(GangState s,GangTurfDefinition area,GangCafeOptions c,string id,out bool changed)=>GangCafeTransactions.Begin(data,s,area,c,id,Save,out changed);
+        public static bool GangCafeComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangCafeTransactions.Complete(data,s,area,id,utc,Save,out changed);
         public static GangAutoLaunderData GangAutoLaunder=>data.GangAutoLaunder;
         public static bool GangAutoLaunderConfigure(GangState s,GangTurfDefinition area,bool enabled,string id,out bool changed)=>GangAutoLaunderTransactions.Configure(data,s,area,enabled,id,Save,out changed);
         public static bool GangAutoLaunderStop(string gang,int area,string id,out bool changed)=>GangAutoLaunderTransactions.Stop(data,gang,area,id,Save,out changed);

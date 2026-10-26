@@ -17,11 +17,12 @@ namespace RPCore
     }
     public sealed class GangSupplyOrder : ExtensibleData
     {
+        public GangCafeOptions Cafe;
         public GangSupplyCargo CargoKind;public string ProductId;public float ProductWeight,WarehouseCapacity;public int StartRadius;
         public string Id,Gang;public GangTurfDefinition Area;public GangSupplyOptions Options;
         public int Units,Cost,Capacity,Delivered;public List<int> Loaded=new List<int>();
         [JsonIgnore] public bool Ready=>Delivered==3;
-        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(GangSupplyCargo),CargoKind) && (CargoKind==GangSupplyCargo.Legal || !string.IsNullOrWhiteSpace(ProductId) && ProductId.Length<=80 && GangPresenceRules.Finite(ProductWeight) && ProductWeight>0 && ProductWeight<=5 && GangPresenceRules.Finite(WarehouseCapacity) && WarehouseCapacity>=1 && WarehouseCapacity<=1000 && StartRadius>=5 && StartRadius<=30) && !string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area!=null && Area.Valid && Options!=null && Options.Valid && Units>=1 && Units<=100 && Capacity>=Units && Capacity<=1000 && Cost>=1 && Cost<=1000000 && Loaded!=null && Loaded.Count<=3 && Loaded.All(i=>i>=0 && i<3) && Loaded.Distinct().Count()==Loaded.Count && Delivered>=0 && Delivered<=3 && (Delivered==0 || Loaded.Count==3);
+        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(GangSupplyCargo),CargoKind) && (CargoKind!=GangSupplyCargo.Criminal || !string.IsNullOrWhiteSpace(ProductId) && ProductId.Length<=80 && GangPresenceRules.Finite(ProductWeight) && ProductWeight>0 && ProductWeight<=5 && GangPresenceRules.Finite(WarehouseCapacity) && WarehouseCapacity>=1 && WarehouseCapacity<=1000 && StartRadius>=5 && StartRadius<=30) && !string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !GangLoyaltyRules.Unaffiliated(Gang) && Gang.Length<=100 && Area!=null && Area.Valid && Options!=null && Options.Valid && Units>=1 && Units<=100 && Capacity>=Units && Capacity<=1000 && (CargoKind==GangSupplyCargo.Cafe?Cost==0 && Units==3 && Capacity==3 && Area.Id==4 && Cafe?.Valid==true:Cost>=1 && Cost<=1000000) && Loaded!=null && Loaded.Count<=3 && Loaded.All(i=>i>=0 && i<3) && Loaded.Distinct().Count()==Loaded.Count && Delivered>=0 && Delivered<=3 && (Delivered==0 || Loaded.Count==3);
     }
     public static class GangSupplyTransactions
     {
@@ -71,6 +72,7 @@ namespace RPCore
         public static bool Complete(WalletData w,GangState s,GangTurfDefinition currentArea,string id,Action save,out bool changed,DealerOptions catalog)
         {
             changed=false;if(!Id(id) || !GangBusinessTransactions.Owns(s,currentArea))return false;
+            if(w?.GangBusiness?.Supply?.CargoKind==GangSupplyCargo.Cafe)return false; // Cafe completion must atomically grant its earned bonus.
             if(w?.GangBusiness?.Supply?.CargoKind==GangSupplyCargo.Criminal)return CompleteCriminal(w,s,currentArea,id,catalog,save,out changed);
             return Apply(w,id+":supply-complete",b=>{var p=b.Supply;if(p==null || p.Id!=id || !p.Ready || p.Area.Id!=currentArea.Id || !GangCrewRules.SameGang(p.Gang,s.Gang))return null;
                 var a=GangBusinessTransactions.Account(b,p.Gang,p.Area.Id);if(a==null){if(b.Accounts.Count>=640)return null;a=new GangBusinessAccount{Gang=p.Gang,Area=p.Area.Id};b.Accounts.Add(a);}

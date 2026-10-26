@@ -972,5 +972,27 @@ if auto_launder_config.exists():
         'scope_limits':'Native safe/menu/gate/profile/clock and coexistence with automatic arms/manual processing/jobs require GTA testing. Cafe boost/other territorial activities/refinements/dialogue/wars/police and phases8/9 remain future.'}
     if 'gang_automatic_arms' in report:
         report['gang_automatic_arms']['intentional_differences']=report['gang_automatic_arms']['intentional_differences'].replace('keeps laundering manual85%, not automatic PSRP CleanCash. Automatic laundering/cafe boost','offers manual85% plus optional active-session automatic processing from0.62, not PSRP UTC CleanCash. Cafe boost')
+cafe_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Cafe.json'
+if cafe_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    start=source.split('private void StartCafeSupplyRun(Turf turf)',1)[1].split('private void UpdateCafeSupplyParcelBlip()',1)[0]
+    complete=source.split('private void CompleteCafeSupplyContract()',1)[1].split('private void StartCafeSupplyRun(',1)[0]
+    config=json.loads(cafe_config.read_text())
+    coords=[(55.15895,-1737.911,29.57429),(-677.5007,-854.6947,24.0892),(-151.7666,-290.0251,40.10313)]
+    report['gang_cafe_supply']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_requires_owned_turf_four':'turf.ID != 4 || !PlayerOwnsTurf(turf)' in start,
+        'reference_three_boxes':'private const int CafeSupplyGoal = 3' in source and '3 supply parcels delivered.' in complete,
+        'all_three_pickups_match_reference':all(all(abs(p[k]-v)<.0001 for k,v in zip(['X','Y','Z'],xyz)) for p,xyz in zip(config['Route']['Suppliers'],coords)) and len(config['Route']['Suppliers'])==3,
+        'reference_parking_and_door_match':'new Vector3(-1270.415f, -1211.753f, 4.90133f)' in source and 'new Vector3(-1275.385f, -1200.205f, 5.370624f)' in source and abs(config['Parking']['X']+1270.415)<.0001 and abs(config['Door']['Y']+1200.205)<.0001,
+        'reference_awards_two_x_for_one_utc_hour':'LaunderingBoostMultiplier = 2f' in complete and 'DateTime.UtcNow.AddHours(1.0)' in complete and config['BoostMinutes']==60,
+        'rpcore_cycle':'Free opt-in supply contract only owned area4. Player own car/van starts at cafe yard, three distinct pickup/load checkpoints, drive same reserved borrowed vehicle to source yard, three rear unload/door deliveries, E final. Reuses physical GangSupply and DeliveryCargo, preserves paid legal/criminal routes and pending slot. Complete commits Business pending removal plus Cafe reward in one Wallet save; no money, stock, reputation, diplomacy or auto-enable. Resume partial repeats physical proof with same snapshots; ready resumes foot at door; cancel zero refund preserves any older expiry.',
+        'persistence':'Optional bounded/extensible Wallet.GangCafe Accounts Gang/Area/Completed/StartedUtcTicks/ExpiresUtcTicks and256 receipts. Free order Kind2, Cafe config snapshot, cost0/units3/capacity3; legacy Kind0 legal/Kind1 criminal unchanged. Replay does not extend, new actual completion refreshes duration without stacking, rollback restores both books, owned/current gang/readiness/invalid books/overflow checks. UTC-only award, expiry no greater than180min, clock before award inactive.',
+        'boost':'Multiplier2 accelerates only active automatic processing clock in matching profile/gang/area. Default batch500 per30s instead of60, unchanged cumulative85% net and treasury transaction. Menu/pause freeze production; risk/activity/pending/reload resets current interval. Reward expiry follows real UTC including menus/offline like PSRP; no offline production or automatic enable. Original three-argument shared clock keeps arms at normal rate; boosted overload tested with menus, gaps and expiry.',
+        'configuration_sha256':digest(cafe_config.read_bytes()),'defaults':config,
+        'intentional_differences':'Player own borrowed car/van instead of supplied Burrito, abstract load checkpoints instead of three persistent visible props in van, sequential GPS pickups, explicit persisted ready/E reward instead of immediate third box reward. Does not write cross-file GangState MissionWin. Advanced cargo visuals/van/dialogue/other work boosts/wars/police and phases8/9 remain future.',
+        'scope_limits':'Yard/door access with installed resources, vehicle rear/carrying props/markers, E/END and saved partial/ready resume, live UTC expiry and coexistence with jobs and auto/manual/arms require GTA tests; cloud does not run GTA.'}
+    report['gang_automatic_processing']['intentional_differences']='PSRP continuous UTC production with7200s cap; RPCore opt-in active whole batches to treasury, no offline/catch-up. Cafe earned2X integrated from0.63; expiry itself follows UTC, production still active only. Manual remains unchanged.'
+    report['gang_automatic_processing']['scope_limits']='Native timing/safety/gate/profile and cafe expiry/coexistence require GTA tests. Other territorial activities/dialogue/wars/police/refinements and phases8/9 remain future.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

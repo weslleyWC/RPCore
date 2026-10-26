@@ -160,3 +160,8 @@ Opt-in por categoria no arsenal, uma arma/$500 por180s ativos por área, semAmmo
 ## Base 0.62.0 — processamento automático (6.5T)
 
 Opt-in, até500 por60s ativos e85% ao caixa; mesma contabilidade cumulativa do manual, transação em3livros e sem offline. Fonte usaUTC/até7200s/boost temporário/CleanCash. Na8 refinar clareza do tempo/condições/taxa e saldos da área; na9 refinar convivência de receitas/trabalhos sem perder exclusividade/rollback. Missão do café/boost2X e demais diferenças ainda pendentes, fases8/9 futuras.
+
+
+## Base0.63.0 — café sem antecipar fases8/9
+
+Área4 possui abastecimento grátis e bônus2X conquistado por três caixas, com pontosPSRP. Base usa carro/van do jogador e caixa na mão/checkpoints, não Burrito fornecida/carga visível na van. Fase9 deve avaliar veículo, volumes físicos/animacões, tempos/distâncias/dificuldade e MissionWin com consistência entre arquivos; fase8 refinar apresentação/contador atualizado e necessidades sem remover compatibilidade. ValidadeUTC/histórico/snapshot/replay/rollback e taxa85% são invariantes a preservar. Gameplay ainda precisa de testes do usuário. Demais atividades de bônus, diálogo/guerras/polícia continuam no roteiro.

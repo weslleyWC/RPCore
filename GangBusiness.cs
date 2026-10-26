@@ -49,7 +49,7 @@ namespace RPCore
         public void Open()
         {
             pool.HideAll();menu.Clear();
-            if(Wallet.GangArms!=null && !Wallet.GangArms.Valid || Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
+            if(Wallet.GangCafe!=null && !Wallet.GangCafe.Valid || Wallet.GangArms!=null && !Wallet.GangArms.Valid || Wallet.GangBulk!=null && !Wallet.GangBulk.Valid || Wallet.GangRaid!=null && !Wallet.GangRaid.Valid || Wallet.GangWarehouse!=null && !Wallet.GangWarehouse.Valid || Wallet.GangIllicit!=null && !Wallet.GangIllicit.Valid || Wallet.GangBusiness!=null && !Wallet.GangBusiness.Valid || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid){Add("Dados protegidos","Confira Wallet.json/backup; nenhum estoque ou saldo sera substituido.");menu.Visible=true;return;}
             Add("Banco: $"+Wallet.Bank,"Comercio proprio, presencial. Receita vai ao caixa da gangue; nao ao bolso. Sem vendas offline.");
             autoLaunder.Controls(Add,Open);autoArms.Controls(Add,Open);weaponRaid.Controls(Add,Open);bulk.Controls(Add,Open);raid.Controls(Add,Open);supply.Append(Add,Open);laundering.Controls(Add,Open);
             if(service!=null)Add("Encerrar atendimento atual","Tempo nao confirmado e descartado; nenhuma mercadoria e consumida.",()=>{Suspend();Open();});
@@ -64,7 +64,7 @@ namespace RPCore
                 Add("Arsenal / armas: "+target.Name,"Compra bancaria de estoque comercial separado, entrega fisica de armas/municao e receita suja. Nao equipa armas pessoais.",()=>bulk.OpenArms(target));
                 Add("Venda em lote: "+target.Name,"Escolha produto/quantidade e gangue compradora. Leve a caixa no seu carro; receita suja e chance30% de melhorar relacao ao concluir.",()=>bulk.Open(target));
                 weaponRaid.AddStart(target,Add);raid.AddStart(target,Add);
-                supply.AddStart(target,Add);
+                supply.AddStart(target,Add);supply.AddCafe(target,Add);
                 autoLaunder.Append(target,Add,Open);laundering.Append(target,Add);
                 Add("Armazem criminal: "+target.Name,"Guardar/retirar pacotes do trafico e vender do estoque local; separado de mercadorias legais.",()=>warehouse.Open(target));
                 Add("Atender "+options.SaleUnits+" unidades / $"+(options.SaleUnits*options.UnitPrice),"Permaneca no local por "+options.ServiceSeconds+"s ativos e confirme E. Pausa/menu nao contam. END cancela sem consumir estoque.",()=>{if(!Begin(target))Notify.Show("Confira estoque, posse, proximidade e atividade.");});

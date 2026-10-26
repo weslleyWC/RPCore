@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 namespace RPCore
 {
-    public enum GangSupplyCargo { Legal,Criminal }
+    public enum GangSupplyCargo { Legal,Criminal,Cafe }
     public sealed class GangCriminalSupplyOptions : ExtensibleData
     {
         public int Units=10,DiscountPercent=10;
