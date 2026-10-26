@@ -16,7 +16,7 @@ namespace RPCore
         readonly PropPresentation props;
         readonly InventorySystem inventory;
         readonly NeedsSystem needs;
-        readonly Action jobs;
+        readonly Action jobs,studio;
         readonly UberJob uber;
         readonly StreamerJob streamer;
         readonly string[] shortcuts = { "Wallet / Bank", "Inventory", "Garages", "Stocks", "Radio", "Gangs", "Pizza shift", "Settings", "Trabalhos / contratos" };
@@ -24,8 +24,8 @@ namespace RPCore
         int selection, row, stopwatchStart = -1;
         string page = "Home", query = "", result = "0";
         public bool Visible { get; private set; }
-        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null, UberJob uber = null, StreamerJob streamer = null)
-        { this.streamer = streamer; if (streamer != null) streamer.Activity += JobActivity; this.uber = uber; if (uber != null) uber.Activity += JobActivity; this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
+        public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null, UberJob uber = null, StreamerJob streamer = null, Action studio = null)
+        { this.studio=studio; this.streamer = streamer; if (streamer != null) streamer.Activity += JobActivity; this.uber = uber; if (uber != null) uber.Activity += JobActivity; this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
         void JobActivity(string title, string body)
         {
             try { data.History.Insert(0,new PhoneEntry { Title=title,Body=body }); if(data.History.Count>64)data.History.RemoveRange(64,data.History.Count-64);Save(); }
@@ -89,7 +89,7 @@ namespace RPCore
                 if (row == 0) { query = Game.GetUserInput(WindowTitle.EnterMessage60, query, 32); row = 0; }
                 else if (row-1 < matches.Length) Shortcut(matches[row-1]);
             }
-            else if (page == "Contacts") { Shortcut(new[] { 0,2,6,5,8 }[row]); }
+            else if (page == "Contacts") { if(row==5 && studio!=null){Close();studio();}else if(row>=0 && row<5)Shortcut(new[] { 0,2,6,5,8 }[row]); }
         }
         int RowCount()
         {
@@ -98,7 +98,7 @@ namespace RPCore
             if (page == "Notes") return data.Notes.Count + 1;
             if (page == "Settings") return shortcuts.Length + 1;
             if (page == "Search") return Matches().Length + 1;
-            if (page == "Contacts") return 5;
+            if (page == "Contacts") return studio==null?5:6;
             return 1;
         }
         void Navigate(int dx, int dy)
@@ -183,7 +183,7 @@ namespace RPCore
             else if (page == "Search") { line("Search: "+query,0); var found=Matches(); for(int i=0;i<found.Length;i++) line(shortcuts[found[i]],i+1); }
             else if (page == "Contacts")
             {
-                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);line("Trabalhos / contratos",4);
+                line("Fleeca / Bank",0);line("Mechanic / Garages",1);line("Pizza This / Work",2);line("Gang HQ",3);line("Trabalhos / contratos",4);if(studio!=null)line("Lester / Hollywood Act",5);
                 text("RPCore service shortcuts.~n~Voice calls are not integrated.",23,283,.23f,Color.LightGray,GTA.UI.Alignment.Left,196);
             }
             else if (page == "Notifications" || page == "Messages")

@@ -20,6 +20,12 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
+        public static StudioHeistData StudioHeist=>data.StudioHeist;
+        public static bool StudioBegin(string id,int act,StudioHeistOptions options,int reward,out bool changed)=>StudioHeistTransactions.Begin(data,id,act,options,reward,Save,out changed);
+        public static bool StudioCheckpoint(string id,int elapsed,out bool changed)=>StudioHeistTransactions.Checkpoint(data,id,elapsed,Save,out changed);
+        public static bool StudioReady(StudioHeistFlow flow,out bool changed)=>StudioHeistTransactions.Ready(data,flow,Save,out changed);
+        public static bool StudioDiversion(StudioHeistFlow flow,bool complete,out bool changed)=>StudioHeistTransactions.Diversion(data,flow,complete,Save,out changed);
+        public static bool StudioFinish(string id,string outcome,out bool changed)=>StudioHeistTransactions.Finish(data,id,outcome,Save,out changed);
         public static CustodyData Custody=>data.Custody;
         public static bool CustodyConfigure(bool enabled,out bool changed)=>CustodyTransactions.Configure(data,enabled,Save,out changed);
         public static bool CustodyBook(string id,int stars,CustodyOptions options,out bool changed)=>CustodyTransactions.Book(data,id,stars,options,Save,out changed);

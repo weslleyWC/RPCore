@@ -21,11 +21,11 @@ namespace RPCore
         readonly Action barber;
         readonly Action characters;
         readonly Action insurance;
-        readonly Action dmv,traffic;
+        readonly Action dmv,traffic,studio;
         readonly NativeMenu menu = new NativeMenu("RPCore", "");
         public string RequestedProfile;
         bool dirty;
-        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null) { this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null, Action studio = null) { this.studio=studio; this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
 
         void Add(string title, string description, Action action)
         {
@@ -34,7 +34,8 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.83.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.84.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            if(studio!=null) Add("Contratos / assalto ao estudio","Cinco preparacoes e final de The Hollywood Act.",()=>{menu.Visible=false;studio();});
             if(traffic!=null) Add("Policia / transito e multas","Fiscalizacao opcional, patrulha observadora, autuacoes e pagamento bancario.",()=>{menu.Visible=false;traffic();});
             if (dmv != null) Add("DMV / habilitacoes C, M1 e A", "GPS, teoria e pratica de carros/motos, com documentos separados por perfil.", () => { menu.Visible = false; dmv(); });
             if (insurance != null) Add("Seguro veicular / recuperacao", "Cadastro gratuito, GPS e recuperacao de destruido por franquia. Veiculos pessoais registrados nas garagens.", () => { menu.Visible = false; insurance(); });

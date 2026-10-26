@@ -18,6 +18,7 @@
     <EmbeddedResource Include="config/Gangs/Assault.json" LogicalName="RPCore.JobDefaults.GangAssault.json" />
     <EmbeddedResource Include="config/Police/Custody.json" LogicalName="RPCore.JobDefaults.Custody.json" />
     <EmbeddedResource Include="config/Police/TrafficPursuit.json" LogicalName="RPCore.JobDefaults.TrafficPursuit.json" />
+    <EmbeddedResource Include="config/Missions/StudioHeist.json" LogicalName="RPCore.JobDefaults.StudioHeist.json" />
     <EmbeddedResource Include="config/Police/Traffic.json" LogicalName="RPCore.JobDefaults.Traffic.json" />
     <EmbeddedResource Include="config/Gangs/Territories.json" LogicalName="RPCore.JobDefaults.GangTerritories.json" />
     <EmbeddedResource Include="config/Gangs/Driving.json" LogicalName="RPCore.JobDefaults.GangDriving.json" />

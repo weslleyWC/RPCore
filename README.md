@@ -1,3 +1,9 @@
+## Atualização0.84.0 — The Hollywood Act completo em seis atos
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.84.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.84.0.zip) · [Guia dos seis atos](docs/FASE-7.1-0.84.0.md)
+
+F11 → Contratos / assalto ao estúdio ou F2 → Contatos → Lester: suprimentos, documentos/noturno/fechadura, carro, Bison/reboque, bolsa de distração e final com infiltração/diretor/chave/dispositivo/fuga/barco/comprador. Preparações salvas, prazo/snapshot/retomada do ato, entrega pronta e prêmio bancário único$200–450mil. Recursos próprios/cleanup protegido, sem supressão global de polícia.3157 testes aprovados, build sem erros/avisos. GTA precisa de teste dos seis atos; Halloween/editor/revisão final seguem na fase7. F2/F11/saves/visuais e refinamentos8/9 preservados.
+
 ## Atualização0.83.0 — perseguição própria e quatro infrações adicionais
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.83.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.83.0.zip) · [Guia de teste](docs/FASE-6.6C-0.83.0.md)
