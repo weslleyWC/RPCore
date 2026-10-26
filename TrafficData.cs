@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 namespace RPCore
 {
-    public enum TrafficOffence { Speeding,NoSeatbelt,NoHeadlights,NoHelmet,Burnout,SmokingEngine,BurstTyre }
+    public enum TrafficOffence { Speeding,NoSeatbelt,NoHeadlights,NoHelmet,Burnout,SmokingEngine,BurstTyre,MobilePhone,Tailgating,AimingWeapon,ExcessiveHorn }
     public sealed class TrafficOptions : ExtensibleData
     {
         public string CruiserModel="police3",OfficerModel="s_m_y_cop_01";
@@ -15,7 +15,7 @@ namespace RPCore
     }
     public sealed class TrafficFrame
     {
-        public bool Car,Bike,Belt,Helmet,Lights,Night,Burnout,Burst;public float Speed,Engine;public string Street;
+        public bool Car,Bike,Belt,Helmet,Lights,Night,Burnout,Burst,MobilePhone,Tailgating,AimingWeapon;public int HornMilliseconds;public float Speed,Engine;public string Street;
     }
     public sealed class TrafficWitnessMeter
     {
@@ -30,14 +30,14 @@ namespace RPCore
     public sealed class TrafficLine : ExtensibleData
     {
         public TrafficOffence Code;public int Amount;public double Value;
-        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(TrafficOffence),Code) && !double.IsNaN(Value) && !double.IsInfinity(Value) && Math.Abs(Value)<=100000 && (Code!=TrafficOffence.Speeding || Value>0) && (Code!=TrafficOffence.SmokingEngine || Value<=300) && Amount==TrafficRules.Cost(Code,Value);
+        [JsonIgnore] public bool Valid=>Enum.IsDefined(typeof(TrafficOffence),Code) && !double.IsNaN(Value) && !double.IsInfinity(Value) && Math.Abs(Value)<=100000 && (Code!=TrafficOffence.Speeding || Value>0) && (Code!=TrafficOffence.SmokingEngine || Value<=300) && (Code!=TrafficOffence.ExcessiveHorn || Value>=10000 && Value<=60000) && Amount==TrafficRules.Cost(Code,Value);
     }
     public static class TrafficRules
     {
-        public static int Cost(TrafficOffence code,double value=0)=>code==TrafficOffence.Speeding?(value>=30?250:150):code==TrafficOffence.NoSeatbelt?150:code==TrafficOffence.NoHelmet?120:code==TrafficOffence.SmokingEngine?75:100;
-        public static string Label(TrafficOffence code)=>code==TrafficOffence.Speeding?"Excesso de velocidade":code==TrafficOffence.NoSeatbelt?"Sem cinto":code==TrafficOffence.NoHeadlights?"Farois apagados a noite":code==TrafficOffence.NoHelmet?"Sem capacete":code==TrafficOffence.Burnout?"Burnout":code==TrafficOffence.SmokingEngine?"Motor em estado critico":"Pneu estourado";
+        public static int Cost(TrafficOffence code,double value=0)=>code==TrafficOffence.Speeding?(value>=30?250:150):code==TrafficOffence.NoSeatbelt?150:code==TrafficOffence.NoHelmet?120:code==TrafficOffence.SmokingEngine?75:code==TrafficOffence.Tailgating?120:code==TrafficOffence.AimingWeapon?350:code==TrafficOffence.ExcessiveHorn?125:100;
+        public static string Label(TrafficOffence code)=>code==TrafficOffence.Speeding?"Excesso de velocidade":code==TrafficOffence.NoSeatbelt?"Sem cinto":code==TrafficOffence.NoHeadlights?"Farois apagados a noite":code==TrafficOffence.NoHelmet?"Sem capacete":code==TrafficOffence.Burnout?"Burnout":code==TrafficOffence.SmokingEngine?"Motor em estado critico":code==TrafficOffence.BurstTyre?"Pneu estourado":code==TrafficOffence.MobilePhone?"Uso do celular nativo":code==TrafficOffence.Tailgating?"Distancia insegura do veiculo a frente":code==TrafficOffence.AimingWeapon?"Arma apontada":"Buzina prolongada";
         public static int Limit(TrafficOptions c,string street)=>c?.Valid==true && street!=null?c.SpeedLimits.Where(p=>string.Equals(p.Key,street,StringComparison.OrdinalIgnoreCase)).Select(p=>p.Value).FirstOrDefault():0;
-        public static List<TrafficLine> Evaluate(TrafficFrame f,TrafficOptions c)
+        public static List<TrafficLine> Evaluate(TrafficFrame f,TrafficOptions c,bool advanced=false)
         {
             var lines=new List<TrafficLine>();if(f==null || c?.Valid!=true || !GangPresenceRules.Finite(f.Speed) || f.Speed<0 || !GangPresenceRules.Finite(f.Engine) || !(f.Car || f.Bike))return lines;
             Action<TrafficOffence,double> add=(code,value)=>lines.Add(new TrafficLine{Code=code,Value=value,Amount=Cost(code,value)});
@@ -48,7 +48,9 @@ namespace RPCore
             if(f.Bike && !f.Helmet)add(TrafficOffence.NoHelmet,0);
             if(f.Burnout)add(TrafficOffence.Burnout,0);
             if(f.Engine<=300)add(TrafficOffence.SmokingEngine,f.Engine);
-            if(f.Burst)add(TrafficOffence.BurstTyre,0);return lines;
+            if(f.Burst)add(TrafficOffence.BurstTyre,0);
+            if(advanced){if(f.MobilePhone)add(TrafficOffence.MobilePhone,0);if(moving && f.Tailgating)add(TrafficOffence.Tailgating,0);if(f.AimingWeapon)add(TrafficOffence.AimingWeapon,0);if(f.HornMilliseconds>=10000 && f.HornMilliseconds<=60000)add(TrafficOffence.ExcessiveHorn,f.HornMilliseconds);}
+            return lines;
         }
         public static bool Stopped(bool sameDriver,float playerSpeed,float patrolSpeed,float distance)=>sameDriver && GangPresenceRules.Finite(playerSpeed) && GangPresenceRules.Finite(patrolSpeed) && GangPresenceRules.Finite(distance) && playerSpeed>=0 && playerSpeed<.5f && patrolSpeed>=0 && patrolSpeed<1.5f && distance>=0 && distance<=18;
         public static bool Inspect(bool sameDriver,bool alive,float speed,float distance)=>sameDriver && alive && GangPresenceRules.Finite(speed) && speed>=0 && speed<.5f && GangPresenceRules.Finite(distance) && distance>=0 && distance<=2.5f;
@@ -56,13 +58,13 @@ namespace RPCore
     }
     public sealed class TrafficTicket : ExtensibleData
     {
-        public string Id,Street,Plate,Outcome="open";public int Model,LimitMph;public List<TrafficLine> Lines=new List<TrafficLine>();public bool Paid;
+        public string Id,Street,Plate,Outcome="open";public int Model,LimitMph;public List<TrafficLine> Lines=new List<TrafficLine>();public bool Paid;public TrafficPursuitOptions Pursuit;public int BackupLevel;
         [JsonIgnore] public int Total=>Lines?.Sum(l=>l.Amount)??0;
-        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !string.IsNullOrWhiteSpace(Street) && Street.Length<=100 && !string.IsNullOrWhiteSpace(Plate) && Plate.Length<=16 && Model!=0 && LimitMph>=0 && LimitMph<=200 && TrafficRules.Outcome(Outcome) && (!Paid || Outcome!="open") && Lines!=null && Lines.Count>=1 && Lines.Count<=7 && Lines.All(l=>l?.Valid==true) && Lines.Select(l=>l.Code).Distinct().Count()==Lines.Count && (!Lines.Any(l=>l.Code==TrafficOffence.Speeding) || LimitMph>0);
+        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !string.IsNullOrWhiteSpace(Street) && Street.Length<=100 && !string.IsNullOrWhiteSpace(Plate) && Plate.Length<=16 && Model!=0 && LimitMph>=0 && LimitMph<=200 && TrafficRules.Outcome(Outcome) && (!Paid || Outcome!="open") && Lines!=null && Lines.Count>=1 && Lines.Count<=11 && Lines.All(l=>l?.Valid==true) && Lines.Select(l=>l.Code).Distinct().Count()==Lines.Count && (Pursuit==null || Pursuit.Valid) && BackupLevel>=0 && BackupLevel<=3 && (BackupLevel==0 || Outcome=="evaded" && Pursuit!=null && BackupLevel<=Pursuit.BackupStars) && (!Lines.Any(l=>l.Code==TrafficOffence.Speeding) || LimitMph>0);
     }
     public sealed class TrafficData : ExtensibleData
     {
-        public bool Enabled;public string Pending;public long Issued,Paid,Collected;public List<TrafficTicket> Tickets=new List<TrafficTicket>();
+        public bool Enabled,AdvancedOffences,PursuitEnabled;public string Pending;public long Issued,Paid,Collected;public List<TrafficTicket> Tickets=new List<TrafficTicket>();
         [JsonIgnore] public bool Valid=>Issued>=0 && Paid>=0 && Paid<=Issued && Collected>=Paid && Tickets!=null && Tickets.Count<=256 && Tickets.All(t=>t?.Valid==true) && Tickets.Select(t=>t.Id).Distinct().Count()==Tickets.Count && Issued>=Tickets.Count && Paid>=Tickets.Count(t=>t.Paid) && (decimal)Collected>=Tickets.Where(t=>t.Paid).Sum(t=>(decimal)t.Total) && (Pending==null?Tickets.All(t=>t.Outcome!="open"):Tickets.Count(t=>t.Id==Pending && t.Outcome=="open" && !t.Paid)==1 && Tickets.Count(t=>t.Outcome=="open")==1);
     }
     public static class TrafficTransactions
@@ -74,6 +76,12 @@ namespace RPCore
             try{w.Traffic=n;save();changed=true;return true;}catch{w.Traffic=old;throw;}
         }
         public static bool Configure(WalletData w,bool enabled,Action save,out bool changed)=>Apply(w,save,b=>{b.Enabled=enabled;return true;},out changed);
+        public static bool Preferences(WalletData w,bool advanced,bool pursuit,Action save,out bool changed)=>Apply(w,save,b=>{if(b.Pending!=null)return false;b.AdvancedOffences=advanced;b.PursuitEnabled=pursuit;return true;},out changed);
+        public static bool Refer(WalletData w,string id,int level,Action save,out bool changed)
+        {
+            changed=false;if(w?.Traffic?.Valid!=true || level<1 || level>3)return false;var t=w.Traffic.Tickets.FirstOrDefault(a=>a.Id==id);if(t==null || t.Pursuit?.Valid!=true || level>t.Pursuit.BackupStars)return false;if(t.BackupLevel!=0)return t.BackupLevel==level;
+            return Apply(w,save,b=>{if(!b.Enabled || !b.PursuitEnabled || b.Pending!=id || t.Outcome!="open")return false;var next=b.Tickets.First(a=>a.Id==id);next.Outcome="evaded";next.BackupLevel=level;b.Pending=null;return true;},out changed);
+        }
         public static bool Begin(WalletData w,TrafficTicket ticket,Action save,out bool changed)=>Apply(w,save,b=>{
             if(!b.Enabled || b.Pending!=null || ticket?.Valid!=true || ticket.Paid || ticket.Outcome!="open" || b.Issued==long.MaxValue || b.Tickets.Any(t=>t.Id==ticket.Id))return false;
             if(b.Tickets.Count==256){var remove=b.Tickets.FirstOrDefault(t=>t.Paid);if(remove==null)return false;b.Tickets.Remove(remove);}

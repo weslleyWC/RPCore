@@ -1,3 +1,9 @@
+## Atualização0.83.0 — perseguição própria e quatro infrações adicionais
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.83.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.83.0.zip) · [Guia de teste](docs/FASE-6.6C-0.83.0.md)
+
+F11 → Polícia/trânsito: celular nativo, distância insegura, arma apontada e buzina prolongada; perseguição de carro/a pé e reforço nativo por fuga. Duas opções novas desligadas em saves antigos. Esperar parado não acumula fuga; pedido de estrelas gravado uma vez, respeita máximo do jogo e não reaplica após recarga. Onze checks ativosPSRP cobertos com filtros conservadores; sem suborno/BOLO automático/LSPDFR. Multas/custódia/saves/F2/F11 preservados.3111 testes aprovados; build sem erros/avisos, GTA precisa de teste. Próximo bloco fase7; refinamentos8/9 reservados.
+
 ## Atualização0.82.0 — custódia, pena e fiança
 
 [Baixar DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.82.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.82.0.zip) · [Roteiro de teste](docs/FASE-6.6B-0.82.0.md)

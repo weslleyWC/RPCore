@@ -29,6 +29,8 @@ namespace RPCore
         public static bool TrafficConfigure(bool enabled,out bool changed)=>TrafficTransactions.Configure(data,enabled,Save,out changed);
         public static bool TrafficBegin(TrafficTicket ticket,out bool changed)=>TrafficTransactions.Begin(data,ticket,Save,out changed);
         public static bool TrafficFinish(string id,string outcome,out bool changed)=>TrafficTransactions.Finish(data,id,outcome,Save,out changed);
+        public static bool TrafficPreferences(bool advanced,bool pursuit,out bool changed)=>TrafficTransactions.Preferences(data,advanced,pursuit,Save,out changed);
+        public static bool TrafficRefer(string id,int level,out bool changed)=>TrafficTransactions.Refer(data,id,level,Save,out changed);
         public static bool TrafficPay(string id,out bool changed)=>TrafficTransactions.Pay(data,id,Save,out changed);
         public static GangRaidData GangRaid=>data.GangRaid;
         public static bool GangWeaponRaidBegin(GangState s,GangRaidAttempt p,GangArmsOptions c,out bool changed)=>GangWeaponRaidTransactions.Begin(data,s,p,c,Save,out changed);
