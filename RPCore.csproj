@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="config/Gangs/Assault.json" LogicalName="RPCore.JobDefaults.GangAssault.json" />
+    <EmbeddedResource Include="config/Police/Traffic.json" LogicalName="RPCore.JobDefaults.Traffic.json" />
     <EmbeddedResource Include="config/Gangs/Territories.json" LogicalName="RPCore.JobDefaults.GangTerritories.json" />
     <EmbeddedResource Include="config/Gangs/Driving.json" LogicalName="RPCore.JobDefaults.GangDriving.json" />
     <EmbeddedResource Include="config/Gangs/Loyalty.json" LogicalName="RPCore.JobDefaults.GangLoyalty.json" />

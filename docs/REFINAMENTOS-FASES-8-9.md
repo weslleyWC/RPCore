@@ -226,3 +226,6 @@ Atualização0.79.0 /6.5AK: pacote integrado de preparação de quatro carros, e
 
 
 Atualização0.80.0 /6.5AL: pacote de emboscadas optativas(aproximação/tiro/fuga/encerramento) e conversa presencial com líder ligado às iniciações/gestão existentes. Métodos/constantesPSRP e tipos0/1/2 comparados. Sem arma/vida/imunidade do jogador ou matriz global hostil; reload interrompe eventos, sem replay/prêmio. Fase8 revisará desenho do diálogo/menus/ícones/ergonomia; fase9 aprofundará direção/tiros/LOS/dificuldade/tuning/variantes. Fallback de co-líder, variantes móveis de roubo/reforço motorizado e demais diferenças na revisão de paridade, sem declarar equivalência total. Polícia/prisão e fase7 seguem na fila; não antecipadas8/9.
+
+
+Atualização0.81.0 /6.6A: pacote de fiscalização7infrações/162limites, observação contínua/LOS, patrulha/resposta própria/abordagem e dívida/pagamento bancário atômico. PSRPBetterPolice comparada; PrisonSystem só suprime polícia globalmente e não é portada. Fase8 revisará apresentação/lista/limite/contexto/cinto/HUD; fase9 aprofundará navegação/estacionamento/gestos/dificuldade e integração física. Perseguição/custódia/prisão e infrações restantes exigem etapas funcionais posteriores, não são declaradas refinamento já entregue. Trabalho prisional antigo separado; fases8/9 preservadas.

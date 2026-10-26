@@ -20,6 +20,11 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
+        public static TrafficData Traffic=>data.Traffic;
+        public static bool TrafficConfigure(bool enabled,out bool changed)=>TrafficTransactions.Configure(data,enabled,Save,out changed);
+        public static bool TrafficBegin(TrafficTicket ticket,out bool changed)=>TrafficTransactions.Begin(data,ticket,Save,out changed);
+        public static bool TrafficFinish(string id,string outcome,out bool changed)=>TrafficTransactions.Finish(data,id,outcome,Save,out changed);
+        public static bool TrafficPay(string id,out bool changed)=>TrafficTransactions.Pay(data,id,Save,out changed);
         public static GangRaidData GangRaid=>data.GangRaid;
         public static bool GangWeaponRaidBegin(GangState s,GangRaidAttempt p,GangArmsOptions c,out bool changed)=>GangWeaponRaidTransactions.Begin(data,s,p,c,Save,out changed);
         public static bool GangWeaponRaidCapture(string id,out bool changed)=>GangWeaponRaidTransactions.Capture(data,id,Save,out changed);

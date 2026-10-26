@@ -8,6 +8,7 @@ namespace RPCore
         public int Cash;
         public int Bank;
         public Portfolio Exchange;
+        public TrafficData Traffic;
         public TransportData Transport;
         public JobLedger Jobs;
         public HuntingData Hunting;

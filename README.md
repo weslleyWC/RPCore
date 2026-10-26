@@ -1,3 +1,9 @@
+## Atualização0.81.0 — fiscalização, abordagem e multas
+
+[Baixar atualização0.81.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.81.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.81.0.zip) · [Roteiro único de teste](docs/FASE-6.6A-0.81.0.md)
+
+F11 → Polícia/trânsito e multas (tambémF10):opção desligada em saves antigos, sete infrações reais/162limitesPSRP, testemunha50m/LOS e resposta própria. Patrulha de teste só multa se observar infração; encoste, permaneça ao volante e aguarde o agente. Autuação persistente sem débito automático; pagamento exato pelo banco, sem cobrança repetida. Polícia ambiente/Wanted/dispatch/armas do jogador preservados.3032testes aprovados e build sem erros/avisos; observação/condução/abordagem precisam do GTA. Não implementa prisão/perseguição ainda nem antecipa8/9; F2, teleporteF11 e sistemas anteriores mantidos.
+
 ## Atualização0.80.0 — emboscadas rivais e líderes
 
 [Baixar atualização0.80.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.80.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.80.0.zip) · [Roteiro único de teste](docs/FASE-6.5AL-0.80.0.md)

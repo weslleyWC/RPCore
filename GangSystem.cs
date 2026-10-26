@@ -53,6 +53,7 @@ namespace RPCore
         {switch(GangLeaderRules.Initiation(g)){case 0:return loyalty.Begin(g);case 1:return strength.Begin(g);case 2:return driving.Begin(g,gangs);default:return false;}}
         bool ResumeLeaderInitiation(GangDefinition g)
         {if(GangCrewRules.SameGang(state.Loyalty?.Pending?.Gang,g.Name))return loyalty.Resume();if(GangCrewRules.SameGang(state.Strength?.Pending?.Gang,g.Name))return strength.Resume();if(GangCrewRules.SameGang(state.Driving?.Pending?.Gang,g.Name))return driving.Resume();return false;}
+        public bool HasPendingActivity=>InitiationPending || state.Warfare?.Alert!=null || state.DriveBys?.Pending!=null;
         public void ConfigureDealer(DealerJob dealer)=>business.ConfigureDealer(dealer);
 
         public void Create(string name)
