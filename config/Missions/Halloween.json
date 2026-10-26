@@ -1,0 +1,42 @@
+{
+  "SecondsLimit": 180,
+  "AwaitDriverSeconds": 120,
+  "PulseCooldownSeconds": 8,
+  "MaxAttackers": 4,
+  "MaxSpawns": 12,
+  "SpawnSeconds": 10,
+  "RetaskMilliseconds": 1500,
+  "RamCooldownMilliseconds": 2800,
+  "PulseRadius": 12,
+  "PulseSpeed": 27,
+  "RamRange": 36,
+  "HearseModel": "romero",
+  "DriverModel": "a_m_m_skidrow_01",
+  "Start": {
+    "Name": "Halloween / The Last Ride",
+    "X": 232.1685,
+    "Y": -1389.492,
+    "Z": 29.99907,
+    "Heading": 0
+  },
+  "Hearse": {
+    "Name": "Romero",
+    "X": 242.2843,
+    "Y": -1394.68,
+    "Z": 30.01883,
+    "Heading": 78.73449
+  },
+  "Destination": {
+    "Name": "Cemiterio / entrega",
+    "X": -1655.124,
+    "Y": -221.2749,
+    "Z": 55.03468,
+    "Heading": 0
+  },
+  "AttackerModels": [
+    "asea",
+    "stanier",
+    "emperor",
+    "premier"
+  ]
+}

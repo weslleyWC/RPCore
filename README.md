@@ -1,3 +1,9 @@
+## Atualização0.85.0 — Halloween / The Last Ride
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.85.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.85.0.zip) · [Guia de teste](docs/FASE-7.2-0.85.0.md)
+
+F11 → Halloween, GPS/marcador de fantasma: dirija oRomero até cemitério em180s, com perseguidores próprios e pulsoE/polegar direito a cada8s. Sustos opcionais usamJumpScareOne e áudio já instalados; não toma trânsito ambiente nem muda clima/relogio globais. Histórico/resultado/pulso salvos, recarga interrompe sem restaurar carro reparado; sem pagamento, conformePSRP.3193 testes aprovados; build sem erros/avisos. GTA precisa de teste; assalto ao estúdio/F2/F11/saves/visuais mantidos. Editor e revisão final são os próximos blocos antes dos refinamentos8/9.
+
 ## Atualização0.84.0 — The Hollywood Act completo em seis atos
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.84.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.84.0.zip) · [Guia dos seis atos](docs/FASE-7.1-0.84.0.md)

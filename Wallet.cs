@@ -20,6 +20,11 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
+        public static HalloweenData Halloween=>data.Halloween;
+        public static bool HalloweenConfigure(bool scares,out bool changed)=>HalloweenTransactions.Configure(data,scares,Save,out changed);
+        public static bool HalloweenBegin(string id,HalloweenOptions options,out bool changed)=>HalloweenTransactions.Begin(data,id,options,Save,out changed);
+        public static bool HalloweenCheckpoint(string id,HalloweenProgress progress,out bool changed)=>HalloweenTransactions.Checkpoint(data,id,progress,Save,out changed);
+        public static bool HalloweenFinish(string id,string outcome,float condition,HalloweenRun proof,out bool changed)=>HalloweenTransactions.Finish(data,id,outcome,condition,proof,Save,out changed);
         public static StudioHeistData StudioHeist=>data.StudioHeist;
         public static bool StudioBegin(string id,int act,StudioHeistOptions options,int reward,out bool changed)=>StudioHeistTransactions.Begin(data,id,act,options,reward,Save,out changed);
         public static bool StudioCheckpoint(string id,int elapsed,out bool changed)=>StudioHeistTransactions.Checkpoint(data,id,elapsed,Save,out changed);
