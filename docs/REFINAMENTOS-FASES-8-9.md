@@ -220,3 +220,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 Atualização0.78.0 /6.5AJ: pacote de declaração diplomática, alertas120s/defesa integrada, simulação rival distante e reforços a pé opcionais. ComparaçãoPSRP documentada, sem globalrelationships/produçãooffline. Fase8 revisará leitura/menus/mapa e relógios associados; fase9 aprofundará combate/chegada de reforços/física/dificuldade e variantes. Comboios motorizados/assaltos organizados/drive-bys/diálogos completos ainda não entregues. Pendências agrupadas em PENDENCIAS-ANTES-REFINAMENTO.md; nenhuma conclusão antecipada de6/7/8/9.
+
+
+Atualização0.79.0 /6.5AK: pacote integrado de preparação de quatro carros, escoltas, chegada salva com prova de motorista/uma escolta, desembarque voluntário, equipe de até15aliados e captura existente. Comparação dos60pontos/rumos e métodos de comboio PSRP registrada. Fase8 revisará seleção/objetivos/ícones/leitura de relógios; fase9 aprofundará condução/recuperação de IA, saúde/munição/dano/posição dos sobreviventes, tuning e variantes físicas. END/reload conservam baixas/chegada/clocks, sem salvar handles. Drive-bys/diálogos completos e variantes de reforço/roubo motorizado não declarados entregues; polícia/fase7 pendentes. Nenhuma conclusão antecipada de8/9.

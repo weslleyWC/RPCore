@@ -9,19 +9,19 @@ using LemonUI;
 using LemonUI.Menus;
 namespace RPCore
 {
-    internal sealed class GangTerritories : IDisposable
+    internal sealed partial class GangTerritories : IDisposable
     {
         const string OwnerKey="gang_turf";readonly ShiftGate gate;readonly ObjectPool pool;readonly Func<GangState> state;readonly Action<GangState> save;readonly Func<IEnumerable<GangDefinition>> gangs;readonly GangTurfOptions options;readonly GangDefenseOptions defense;readonly NativeMenu menu;
         readonly List<Ped> defenders=new List<Ped>();readonly List<Blip> enemyBlips=new List<Blip>();readonly Dictionary<int,Blip> map=new Dictionary<int,Blip>();Model[] models;GangTurfAttempt draft;Ped player;string profile,signature;bool active,preparing;int started,last;float seconds;Blip objective;
         GangTurfAttempt Pending=>state().Turf?.Pending;
         public bool HasPending=>Pending!=null;
-        public bool Active=>active || preparing;
+        public bool Active=>active || preparing || convoyPreparing || convoyMoving;
         public Action OpenWarfare;
         static Vector3 Pos(GangSpot p)=>new Vector3(p.X,p.Y,p.Z);
         bool Safe=>Game.Player.Character.IsHuman && !Game.IsMissionActive && !Game.Player.Character.IsDead && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
         bool InArea(GangTurfAttempt p)=>GangTurfRules.Inside(Game.Player.Character.Position.DistanceTo(Pos(p.Area.Center)),p.Radius);
         public GangTerritories(ShiftGate gate,ObjectPool pool,Func<GangState> state,Action<GangState> save,Func<IEnumerable<GangDefinition>> gangs)
-        {this.gate=gate;this.pool=pool;this.state=state;this.save=save;this.gangs=gangs;options=Store.LoadDef("Gangs/Territories.json",GangTurfOptions.Defaults);if(options==null || !options.Valid){options=GangTurfOptions.Defaults();Log.Write("Invalid territory config; original retained, embedded defaults used.");}defense=Store.LoadDef("Gangs/Defense.json",()=>new GangDefenseOptions());if(defense==null || !defense.Valid){defense=new GangDefenseOptions();Log.Write("Invalid territory defense config; original retained, defaults used.");}menu=new NativeMenu("Territorios","MAPA / DISPUTAS");pool.Add(menu);Visuals.Register(menu,"gangs");}
+        {this.gate=gate;this.pool=pool;this.state=state;this.save=save;this.gangs=gangs;options=Store.LoadDef("Gangs/Territories.json",GangTurfOptions.Defaults);if(options==null || !options.Valid){options=GangTurfOptions.Defaults();Log.Write("Invalid territory config; original retained, embedded defaults used.");}defense=Store.LoadDef("Gangs/Defense.json",()=>new GangDefenseOptions());if(defense==null || !defense.Valid){defense=new GangDefenseOptions();Log.Write("Invalid territory defense config; original retained, defaults used.");}menu=new NativeMenu("Territorios","MAPA / DISPUTAS");pool.Add(menu);Visuals.Register(menu,"gangs");InitAssault();}
         void Add(string title,string description,Action action,bool enabled=true)
         {var row=new NativeItem(title,description){Enabled=enabled};row.Activated+=(s,e)=>{try{action();}catch(Exception ex){Suspend();Log.Error("territory menu",ex);Notify.Show("Acao suspensa; dados gravados conservados.");}};menu.Add(row);}
         public void Open()
@@ -30,6 +30,7 @@ namespace RPCore
             if(state().Turf!=null && !state().Turf.Valid){Add("Dados de territorio protegidos","Confira GangState.json/backup; nenhum dono sera substituido.",()=>{});menu.Visible=true;return;}
             Add("Mapa de territorios: "+(state().TerritoriesEnabled?"LIGADO":"DESLIGADO"),"15 pontos da referencia; opcional por perfil. Desligar suspende a disputa sem apagar donos.",()=>{var next=CharacterRules.Copy(state());next.TerritoriesEnabled=!next.TerritoriesEnabled;save(next);if(!next.TerritoriesEnabled)Suspend();SyncMap();Open();});
             Add("Guerras / alertas e reforcos","Ataques automaticos opcionais, mapa dinamico e reforcos nas capturas.",()=>OpenWarfare?.Invoke());
+            Add("Assalto organizado / comboio","Quatro carros e equipe propria: partir de area sob seu controle, escoltar e capturar alvo rival.",OpenAssault);
             Add("Capturas: "+(state().Turf?.Captures??0)+" / defesas: "+(state().Turf?.Defenses??0)+" / perdas: "+(state().Turf?.LostDefenses??0),"Contadores deste perfil; sem renda ou premio automatico.",()=>{});
             if(Pending!=null){Add((Active?"Suspender":"Retomar")+" disputa: "+Pending.Area.Name,"A pe dentro da area. Luta parcial refaz defensores; territorio pronto pode confirmar E apos reload.",()=>{if(Active)Suspend();else if(!Resume())Notify.Show("Confira gangue, area, mapa e atividade atual.");menu.Visible=false;});Add("Cancelar disputa pendente","Conserva dono anterior; nao cobra ou estorna dinheiro.",()=>{if(GangTurfTransactions.End(state(),Pending.Id,false,save,out _)){Suspend();Open();}});}
             foreach(var a in options.Areas){var area=a;string owner=GangTurfRules.Owner(state().Turf,area);bool own=GangCrewRules.SameGang(state().Gang,owner);
@@ -67,6 +68,7 @@ namespace RPCore
         }
         bool Resume()
         {
+            if(!Active && Pending?.Assault!=null && !Pending.Ready)return ResumeAssault();
             if(Active || Pending==null || state().Turf.Valid!=true || !CanStart(Pending) || state().Loyalty?.Pending!=null || state().Strength?.Pending!=null || state().Driving?.Pending!=null)return false;
             if(Pending.Ready){if(!gate.Acquire(OwnerKey))return false;active=true;profile=Profile.Id;menu.Visible=false;Route();return true;}
             return Prepare(CharacterRules.Copy(Pending));
@@ -102,7 +104,7 @@ namespace RPCore
         void Route(){if(objective!=null && objective.Exists())objective.Delete();objective=World.CreateBlip(Pos(Pending.Area.Center));objective.Name="RPCore disputa: "+Pending.Area.Name;objective.Color=BlipColor.Yellow;objective.ShowRoute=true;}
         void ReleaseModels(){if(models!=null)foreach(var m in models)m.MarkAsNoLongerNeeded();models=null;}
         void ClearDefenders(){foreach(var b in enemyBlips)if(b!=null && b.Exists())b.Delete();enemyBlips.Clear();foreach(var p in defenders)if(p!=null && p.Exists()){if(p.IsInVehicle()){p.BlockPermanentEvents=false;p.MarkAsNoLongerNeeded();}else{p.Weapons.RemoveAll();p.Delete();}}defenders.Clear();ReleaseModels();}
-        public void Suspend(){ClearDefenders();if(objective!=null && objective.Exists())objective.Delete();objective=null;draft=null;player=null;profile=null;active=preparing=false;gate.Release(OwnerKey);}
+        public void Suspend(){try{StopAssault();}finally{ClearDefenders();if(objective!=null && objective.Exists())objective.Delete();objective=null;draft=null;player=null;profile=null;active=preparing=false;gate.Release(OwnerKey);}}
         void Fail(string reason){bool loss=Pending?.Mode==GangTurfMode.Defense;string attacker=Pending?.Attacker;if(Pending!=null && !GangTurfTransactions.End(state(),Pending.Id,true,save,out _))throw new InvalidOperationException("Territory failure not saved.");Suspend();signature=null;SyncMap();Notify.Show("Disputa encerrada: "+reason+(loss?". Territorio transferido a "+attacker+".":". Dono anterior conservado."));}
         public void Interact(){if(!active || Pending?.Ready!=true || !Safe || Game.IsPaused || !Game.Player.Character.IsOnFoot || !InArea(Pending) || pool.AreAnyVisible || InterfaceOptions.ModalOpen)return;bool defended=Pending.Mode==GangTurfMode.Defense;if(!GangTurfTransactions.Capture(state(),Pending.Id,save,out _))throw new InvalidOperationException("Territory ownership not saved.");Suspend();signature=null;SyncMap();Notify.Show((defended?"Defesa confirmada; territorio mantido por ":"Territorio capturado e gravado para ")+state().Gang+". Sem pagamento automatico.");}
         BlipColor ColorFor(string owner){var g=gangs().FirstOrDefault(a=>GangCrewRules.SameGang(a.Name,owner));return g?.GangColor=="Green"?BlipColor.Green:g?.GangColor=="Purple"?BlipColor.Purple:g?.GangColor=="Yellow"?BlipColor.Yellow:BlipColor.Blue;}
@@ -115,16 +117,18 @@ namespace RPCore
         }
         public void Tick()
         {
-            SyncMap();if(!Active)return;
+            DrainAssault();SyncMap();if(!Active)return;
+            if(convoyPreparing || convoyMoving){TickAssault();return;}
             if(profile!=Profile.Id || !state().TerritoriesEnabled || Pending!=null && !GangCrewRules.SameGang(state().Gang,Pending.Gang)){Suspend();return;}
-            if(Game.IsPaused){last=Game.GameTime;return;}
+            if(Game.IsPaused){last=Game.GameTime;assaultLast=Game.GameTime;assaultClockEligible=false;return;}
             if(preparing){if(!CanStart(draft) || player!=Game.Player.Character || unchecked(Game.GameTime-started)>10000){Suspend();return;}if(models.All(m=>m.IsLoaded))Spawn();return;}
             if(Pending==null){Suspend();return;}
             if(!GangCrewRules.SameGang(GangTurfRules.Owner(state().Turf,Pending.Area),Pending.PreviousOwner)){Suspend();return;}
             if(Pending.Ready){if(!Safe || !InArea(Pending) || !Game.Player.Character.IsOnFoot){Suspend();return;}if(!pool.AreAnyVisible && !InterfaceOptions.ModalOpen)GTA.UI.Screen.ShowHelpTextThisFrame(Pending.Mode==GangTurfMode.Defense?"E: confirmar defesa vitoriosa":"E: confirmar captura do territorio");return;}
             if(Game.IsMissionActive || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || player!=null && player!=Game.Player.Character){Suspend();return;}
             if(!Safe || !InArea(Pending) || !Game.Player.Character.IsOnFoot || player!=null && player!=Game.Player.Character){Fail("morte/missao, veiculo, troca de ped ou abandono da area");return;}
-            seconds+=Math.Min(1,Math.Max(0,unchecked(Game.GameTime-last)/1000f));last=Game.GameTime;if(seconds>=Pending.SecondsLimit){Fail("limite de tempo");return;}
+            TickAssaultBattle();if(!active)return;
+            if(Pending.Assault!=null)seconds=assaultProgress.BattleElapsed/1000f;else seconds+=Math.Min(1,Math.Max(0,unchecked(Game.GameTime-last)/1000f));last=Game.GameTime;if(seconds>=Pending.SecondsLimit){Fail("limite de tempo");return;}
             for(int i=0;i<defenders.Count;i++){if(Pending.Defeated.Contains(i))continue;var p=defenders[i];if(p==null || !p.Exists()){Suspend();Notify.Show("NPC indisponivel; disputa suspensa sem mudar a posse.");return;}if(p.IsDead){if(!GangTurfTransactions.Defeat(state(),Pending.Id,i,save,out _))throw new InvalidOperationException("Territory defeat not saved.");if(enemyBlips[i]!=null && enemyBlips[i].Exists())enemyBlips[i].Delete();}}
             if(Pending.Mode==GangTurfMode.Attack && GangWarRules.Reinforce(Pending.InitialDefenders,Pending.Defeated.Count,defenders.Count,Pending.Models.Length)){
                 int first=defenders.Count;SpawnBatch(first,Pending.Models.Length-first);FightBatch(first);ReleaseModels();Notify.Show("Reforcos rivais chegaram: elimine o segundo grupo antes de capturar.");
@@ -137,6 +141,6 @@ namespace RPCore
             World.DrawMarker(MarkerType.Cylinder,Pos(Pending.Area.Center)-new Vector3(0,0,1),Vector3.Zero,Vector3.Zero,new Vector3(3,3,1),Color.FromArgb(90,180,60,60));
         }
         public void Reload(){Suspend();ClearMap();menu.Visible=false;}
-        public void Dispose(){Reload();}
+        public void Dispose(){Reload();DisposeAssault();}
     }
 }

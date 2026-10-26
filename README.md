@@ -1,3 +1,9 @@
+## Atualização0.79.0 — assalto organizado com comboio
+
+[Baixar atualização0.79.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.79.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.79.0.zip) · [Roteiro único de teste](docs/FASE-6.5AK-0.79.0.md)
+
+F4 → Assalto organizado / comboio: a pé em território próprio, escolha alvo rival, dirija o líder com três escoltas e equipe de até15aliados, pare65m do alvo com uma escolta100m, desembarque e capture a pé com apoio. END/retomada conserva chegada, baixas e tempo; finalE concede apenas captura/+50rep existentes. Quatro carros próprios,60pontos/rumosPSRP, vagas alternativas sem apagar ambiente e limpeza protegida. Configs/saves/F2/F11/YTD/RPF mantidos.2931 testes aprovados e build sem erros/avisos; GTA precisa de teste. Drive-bys/diálogos e demais fases continuam;8/9 reservadas.
+
 ## Atualização 0.78.0 — guerras, diplomacia e reforços
 
 [Baixar atualização 0.78.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.78.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.78.0.zip) · [Roteiro único de teste](docs/FASE-6.5AJ-0.78.0.md) · [Pendências antes do refinamento](docs/PENDENCIAS-ANTES-REFINAMENTO.md)

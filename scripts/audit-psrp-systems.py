@@ -1396,5 +1396,27 @@ report['gang_warfare']={
     'rpcore_cycle':'Independent per-profile opt-in personal attacks, rival simulation and capture reinforcements. Source attack intervals,120s alert,85%/5-15min distant rival simulation,45/50/55 odds. Directed declaration in existing diplomacy Wallet book; agreements remain paid. Alert and ownership/history one GangState checkpoint; responding clears warning and creates existing defense in one save. Source maximum domination exception and global relationships not ported. Remote battles cannot involve player faction.',
     'differences':'Own bounded32-entry history; active safe free-world clock, pauses on menus/jobs/pending/mission/wanted/combat; no offline simulation. Alert progress checkpoints1s. Source reinforcements use vehicle; RPCore three extra owned foot actors, total<=6, snapshot per attempt and trigger at half initial casualties including all killed in one frame. Defaults disabled on legacy saves. Declaration is own explicit HQ interaction, no fee/global faction rewrite.',
     'remaining':'Vehicle convoys/reinforcements, organized assaults, drive-bys and full dialogue remain unfinished; no claim of complete gang parity, police,phase7,8 or9. GTA navigation/combat/streaming/map and compatibility tests required.'}
+assault_cfg=json.loads((Path(__file__).resolve().parents[1]/'config/Gangs/Assault.json').read_text())
+assault_origins=[]
+for m in re.finditer(r'\bID = (\d+),\s+TurfName =',war_source):
+    part=war_source[m.end():]
+    block=re.search(r'VehicleSpawnPostitions = new Dictionary<Vector3, float>\s*\{(.*?)\n\t\t\t\},',part,re.S)
+    if not block:continue
+    points=[dict(X=float(x),Y=float(y),Z=float(z),Heading=float(h)) for x,y,z,h in re.findall(r'new Vector3\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\),\s*([-\d.]+)f',block.group(1))]
+    assault_origins.append({'Area':int(m.group(1)),'Spawns':points[:4]})
+report['gang_organized_assault']={
+    'reference_source':'PSRP/GangSpawner.cs: OpenTurfAssaultSelection, StartTurfAssaultConvoy, FillTurfAssaultVehicle, UpdateTurfAssaultEscort, UpdateTurfAssaultMission, BeginConvoyTurfAttack, OrderTurfAssaultCrewToFight, CleanupTurfAssault',
+    'reference_fifteen_origins_sixty_first_vehicle_positions_headings_match':len(assault_origins)==15 and assault_cfg['Origins']==assault_origins,
+    'reference_four_cars_player_lead_three_drivers':'for (int num = 0; num < 4; num++)' in war_source and 'num == 0, out var driver' in war_source,
+    'reference_granger_fallback':'Model model2 = new Model("granger")' in war_source,
+    'reference_ten_minute_travel_and_sixty_five_meter_arrival':'Game.GameTime - turfAssaultMissionStartTime > 600000' in war_source and 'if (num <= 65f)' in war_source,
+    'reference_escort_native_4500ms':'turfAssaultEscortUpdateTime = Game.GameTime + 4500' in war_source and 'Hash.TASK_VEHICLE_ESCORT' in war_source,
+    'reference_crew_armor75_accuracy55':'ped.Armor = 75' in war_source and 'ped.Accuracy = 55' in war_source,
+    'reference_owned_turf_launch_and_owned_defender_targets':'Four vehicle spawn spots are required.' in war_source and 'private void OrderTurfAssaultCrewToFight()' in war_source,
+    'configuration_sha256':digest((Path(__file__).resolve().parents[1]/'config/Gangs/Assault.json').read_bytes()),
+    'rpcore_cycle':'One existing Turf pending: snapshot origin/target/rules/vehicle/fifteen crew seats and defenders; four owned cars, player lead and three escort drivers, stopped65m+one real escort within100m, voluntary foot advance starts existing capture. Own survivors target only own defenders; optional0.78 reinforcement flow retained. Final E grants existing capture+50 reputation once, no cash or stock. END/reload partial travel resumes origin with surviving cars/crew and spent time; arrived partial resumes target with living foot crew and combat time. Ready resumes only confirmation.',
+    'safety':'DECOR ownership, shared activity gate and job vehicle reservations; all four safe slots checked without clearing ambient traffic, source bays then nearby road nodes with actual heading and nine meter separation. Async bounded models, no player warp/ejection, no global relationships/police changes/script termination. Deferred cleanup only owned empty stopped unattached cars and foot crew, occupied actors wait; own entities naturally released on dispose.',
+    'differences':'Source fills every passenger seat and may delete/warp actors. RPCore caps three passengers/car (15 crew), granger configurable model,22m/s careful escort, keeps casualties/wrecks/clocks, requires one escort arrival and player voluntary foot advance. Six defenders maximum, no faction vehicle tuning import. Travel clock stops on saved arrival; combat has separate saved limit. Native travel position/vehicle damage/crew surviving health/ammo not fully snapshotted; no offline simulation. These physical refinements belong to phase9.',
+    'remaining':'Drive-bys, full leader dialogue, mobile weapon/supply robbery variants remain. Motorized enemy reinforcement variant not declared delivered;0.78 foot reinforcement stays. Police/phase7/8/9 still pending. GTA escort/navmesh/slots/combat/failures/cleanup/mod compatibility require actual playtest.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

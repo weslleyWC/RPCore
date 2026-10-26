@@ -1,7 +1,9 @@
-# Validação0.78.0 — guerras/diplomacia/reforços
+# Validação0.79.0 — assalto organizado/comboio
 
-2891 testes aprovados (2832anteriores+59novos), Release net48 sem erros ou avisos. TRX:DataTests-0.78.0.trx. Evidência estática PSRP-SYSTEMS-AUDIT-0.78.0.json; nenhuma DLL PSRP executada. Testes de transações/relógios/snapshot/defesa integrada, omissão seletiva, rivais sem envolver jogador, replay/overflow/rollback/metadados, reforços e declaração/acordo.
+2931 testes aprovados (2891 anteriores+40novos), Release net48 sem erros ou avisos. TRX:DataTests-0.79.0.trx. Auditoria estática:PSRP-SYSTEMS-AUDIT-0.79.0.json. Nenhuma DLL de referência executada.
 
-O código preserva arquitetura/saves e opções anteriores. Atualização apenas acrescenta Warfare.json e campos opcionais. GTA não executado: validar pelo roteiro FASE-6.5AJ-0.78.0.md. Fases8/9 reservadas.
+Cobertura:15origens/60pontos, plano/assentos, posse/origem/alvo, chegada física, tempo/baixas/reload, estado monotônico, bloqueio de combate antes da chegada, reforços e captura/+50rep/replay, cancelamento/falha sem transferência ou pagamento, erro de save/rollback/campos futuros e capturas antigas sem comboio.
 
-Instalador PowerShell7 em GTA simulado:duas execuções sobre0.77.0, **384 arquivos existentes preservados byte por byte**, inclusive alertas/segundos/snapshots/defesas/reforços e declarações; Warfare.json novo instalado e personalização preservada na segunda execução. Sem execução do GTA. ZIP/manifests e correspondência DLL/auditoria/TRX conferidos no empacotamento.
+GTA não executado na nuvem: testar condução/navmesh, vagas/modelos/embarque/desembarque/combate/cleanup e mods pelo roteiro FASE-6.5AK-0.79.0.md. F2/F11/saves/configs anteriores preservados. Drive-bys/diálogos/variantes e polícia/fase7 seguem; refinamentos8/9 reservados.
+
+Instalador PowerShell7 em diretório GTA simulado:duas execuções sobre0.78.0,399arquivos existentes preservados byte por byte. Novas fixtures:viagem/chegada/combate parcial/pronto/falha/concluído/cancelado com planos, regras, modelos, mortos, carros destruídos e relógios; Wallet/diplomacia/histórico anteriores intactos. Assault.json instalado e personalização conservada na segunda execução. Relatório:installer-validation-0.79.0.json. ZIP CRC/manifests, fonte/DLL/auditoria/TRX conferidos no empacotamento. Nenhum teste de gameplay inferido dessa simulação.
