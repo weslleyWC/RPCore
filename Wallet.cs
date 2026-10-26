@@ -33,6 +33,13 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangPierData GangPier=>data.GangPier;
+        public static bool GangPierOtherFree=>GangPierTransactions.OtherFree(data);
+        public static bool GangPierBegin(GangState s,GangTurfDefinition a,GangPierOptions c,string id,out bool changed)=>GangPierTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangPierUpdate(GangState s,GangTurfDefinition a,string id,GangPierProgress p,out bool changed)=>GangPierTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangPierWork(GangState s,GangTurfDefinition a,string id,int index,bool safe,bool foot,float distance,int milliseconds,out bool changed)=>GangPierTransactions.Work(data,s,a,id,index,safe,foot,distance,milliseconds,Save,out changed);
+        public static bool GangPierCancel(string id,out bool changed)=>GangPierTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangPierComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangPierTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangOffshoreData GangOffshore=>data.GangOffshore;
         public static bool GangOffshoreOtherFree=>GangOffshoreTransactions.OtherFree(data);
         public static bool GangOffshoreBegin(GangState s,GangTurfDefinition a,GangOffshoreOptions c,string id,out bool changed)=>GangOffshoreTransactions.Begin(data,s,a,c,id,Save,out changed);

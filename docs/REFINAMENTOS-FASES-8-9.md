@@ -211,3 +211,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.75.0 / fase6.5AG: entrega offshore do território13 implementada conforme PSRP. Refinar HUD/cinematografia compatível, água/ondas, acesso ao Seashark e comprador, transferência e retomada nas fases8/9 após teste no GTA. Guia FASE-6.5AG-0.75.0.md.
+
+
+0.76.0 / fase6.5AH: manutenção do píer no território14 implementada com21 pontos reais da PSRP(2 reposições+19 regas); toast da referência diz7 incorretamente. Refinar HUD, acesso/rumos/animação/regador e realismo nas fases8/9 após teste no GTA. Guia FASE-6.5AH-0.76.0.md.

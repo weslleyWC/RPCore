@@ -1,4 +1,10 @@
-# RPCore 0.75.0 — GTA V Legacy
+# RPCore 0.76.0 — GTA V Legacy
+
+## Fase6.5AH — manutenção Del Perro Pier
+
+[Atualização0.76.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.76.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.76.0.zip) · [Guia/teste](docs/FASE-6.5AH-0.76.0.md)
+
+F4, território14: E a pé em21 pontos da PSRP,2 reposições+19 regas,3s por ação antes do prazo5min. E final concede processamento2X por1h. Tarefas/tempo persistem ao suspender. Sem pagamento pessoal.2797 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AG — entrega em alto-mar
 
