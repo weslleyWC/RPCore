@@ -1,0 +1,131 @@
+{
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "Spawn": {
+    "Name": "Carro VIP",
+    "X": -83.87819,
+    "Y": 905.1129,
+    "Z": 234.9008,
+    "Heading": 41.74263
+  },
+  "Pickup": {
+    "Name": "Passageiro VIP",
+    "X": -132.5137,
+    "Y": 963.5354,
+    "Z": 236.0194,
+    "Heading": 160.8435
+  },
+  "Vehicles": [
+    "stingergt",
+    "stinger",
+    "Ztype",
+    "f620",
+    "adder",
+    "bullet",
+    "monroe"
+  ],
+  "Passengers": [
+    "a_m_y_business_01",
+    "a_m_m_business_01",
+    "a_m_y_business_02",
+    "a_f_y_business_01",
+    "a_f_y_business_02",
+    "a_f_m_business_02",
+    "a_m_y_vinewood_01",
+    "a_m_y_vinewood_02",
+    "a_m_y_vinewood_03",
+    "a_m_y_vinewood_04"
+  ],
+  "Destinations": [
+    {
+      "Name": "Eclipse Lounge",
+      "X": -84.96,
+      "Y": 235.74,
+      "Z": 100.56
+    },
+    {
+      "Name": "Gentry Manor Hotel",
+      "X": -53.93,
+      "Y": 356.92,
+      "Z": 113.06
+    },
+    {
+      "Name": "Vinewood Gardens Hotel",
+      "X": 328.71,
+      "Y": -70.77,
+      "Z": 72.25
+    },
+    {
+      "Name": "Richman Hotel",
+      "X": -1274.5,
+      "Y": 313.97,
+      "Z": 65.51
+    },
+    {
+      "Name": "Los Santos Golf Club",
+      "X": -1367.97,
+      "Y": 56.55,
+      "Z": 53.83
+    },
+    {
+      "Name": "Tequi-La-La",
+      "X": -567.94,
+      "Y": 274.83,
+      "Z": 83.02
+    },
+    {
+      "Name": "Pitchers On Vinewood",
+      "X": 225.0,
+      "Y": 337.6,
+      "Z": 105.6
+    },
+    {
+      "Name": "Eclipse Medical",
+      "X": -675.5,
+      "Y": 312.0,
+      "Z": 83.1
+    },
+    {
+      "Name": "Vinewood Cafe",
+      "X": -628.2,
+      "Y": 239.0,
+      "Z": 81.9
+    },
+    {
+      "Name": "Haute Restaurant",
+      "X": 4.5,
+      "Y": 242.0,
+      "Z": 109.6
+    },
+    {
+      "Name": "The Pink Sandwich",
+      "X": 101.0,
+      "Y": 210.1,
+      "Z": 107.8
+    },
+    {
+      "Name": "Split Sides West",
+      "X": -423.71,
+      "Y": 259.76,
+      "Z": 83.1
+    },
+    {
+      "Name": "Oriental Theater",
+      "X": 292.3,
+      "Y": 192.13,
+      "Z": 104.37
+    },
+    {
+      "Name": "Luxury Car Dealer",
+      "X": -69.3,
+      "Y": 62.9,
+      "Z": 71.9
+    },
+    {
+      "Name": "Rockford Hills Tennis Club",
+      "X": -1255.72,
+      "Y": 371.67,
+      "Z": 75.87
+    }
+  ]
+}

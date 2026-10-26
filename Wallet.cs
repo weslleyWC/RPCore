@@ -33,6 +33,14 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangChauffeurData GangChauffeur=>data.GangChauffeur;
+        public static bool GangChauffeurOtherFree=>GangChauffeurTransactions.OtherFree(data);
+        public static bool GangChauffeurBegin(GangState s,GangTurfDefinition a,GangChauffeurOptions c,string id,string car,string ped,int destination,int personality,out bool changed)=>GangChauffeurTransactions.Begin(data,s,a,c,id,car,ped,destination,personality,Save,out changed);
+        public static bool GangChauffeurUpdate(GangState s,GangTurfDefinition a,string id,GangChauffeurProgress p,out bool changed)=>GangChauffeurTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangChauffeurBoard(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangChauffeurTransactions.Board(data,s,a,id,Save,out changed);
+        public static bool GangChauffeurDeliver(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangChauffeurTransactions.Deliver(data,s,a,id,Save,out changed);
+        public static bool GangChauffeurCancel(string id,out bool changed)=>GangChauffeurTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangChauffeurComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangChauffeurTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangTheatreData GangTheatre=>data.GangTheatre;
         public static bool GangTheatreOtherFree=>GangTheatreTransactions.OtherFree(data);
         public static bool GangTheatreBegin(GangState s,GangTurfDefinition a,GangTheatreOptions c,string id,out bool changed)=>GangTheatreTransactions.Begin(data,s,a,c,id,Save,out changed);

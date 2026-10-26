@@ -1,4 +1,10 @@
-# RPCore 0.71.0 — GTA V Legacy
+# RPCore 0.72.0 — GTA V Legacy
+
+## Fase6.5AD — motorista particular VIP
+
+[Atualização0.72.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.72.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.72.0.zip) · [Guia/teste](docs/FASE-6.5AD-0.72.0.md)
+
+F4, território10: retire carro de luxo, busque VIP e entregue no prazo, com conforto e sem danos. Sete carros/15 destinos/três perfis da PSRP. Avaliação dá processamento1,25X/1,5X/2X por1h; nota/tempo preservados ao suspender. Sem pagamento pessoal.2640 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AC — estreia Oriental Theatre
 

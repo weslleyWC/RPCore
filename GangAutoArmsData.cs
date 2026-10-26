@@ -33,11 +33,11 @@ namespace RPCore
     // Session only: no wall/game clock catch-up and no saved entity/timer state.
     public sealed class GangAutoArmsClock
     {
-        int last;public int Milliseconds {get;private set;}public string Receipt {get;}=Guid.NewGuid().ToString("N");
+        int last;double progress;public int Milliseconds=> (int)progress;public string Receipt {get;}=Guid.NewGuid().ToString("N");
         public GangAutoArmsClock(int now){last=now;}
         public bool Step(int now,bool working,int seconds)=>Step(now,working,seconds,1);
-        public bool Step(int now,bool working,int seconds,int multiplier)
-        {uint delta=unchecked((uint)(now-last));last=now;if(seconds<30 || seconds>1800 || multiplier<1 || multiplier>2)return false;if(working && delta<=2000)Milliseconds=(int)Math.Min(seconds*1000L,(long)Milliseconds+delta*multiplier);return working && Milliseconds>=seconds*1000;}
+        public bool Step(int now,bool working,int seconds,double multiplier)
+        {uint delta=unchecked((uint)(now-last));last=now;if(seconds<30 || seconds>1800 || double.IsNaN(multiplier) || double.IsInfinity(multiplier) || multiplier<1 || multiplier>2)return false;if(working && delta<=2000)progress=Math.Min(seconds*1000.0,progress+delta*multiplier);return working && Milliseconds>=seconds*1000;}
     }
     public static class GangAutoArmsTransactions
     {

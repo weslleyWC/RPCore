@@ -44,6 +44,7 @@ namespace RPCore
         public GangPopUpData GangPopUp;
         public GangMowingData GangMowing;
         public GangTheatreData GangTheatre;
+        public GangChauffeurData GangChauffeur;
     }
 
     public class Portfolio : ExtensibleData

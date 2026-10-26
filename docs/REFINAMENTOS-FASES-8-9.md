@@ -199,3 +199,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.71.0 / fase6.5AC: estreia no território9 implementada conforme11 itens/caixa/instalações/IPL da PSRP. Refinar HUD/carregamento/instalações e realismo nas fases8/9 após teste no GTA. Confirmar modelo da última peça(label Red Carpet usa cerca na fonte) e visual do IPL, anim/bone/solo e convivência com outros recursos. Guia FASE-6.5AC-0.71.0.md.
+
+
+0.72.0 / fase6.5AD: motorista VIP no território10 implementado com modelos/destinos/perfis/prazo/nota da PSRP e bônus graduado. Refinar HUD, rota/acesso, porta e embarque IA, conforto/prazo e retomada parcial nas fases8/9 após teste no GTA. Guia FASE-6.5AD-0.72.0.md.
