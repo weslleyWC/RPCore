@@ -1157,5 +1157,32 @@ if popup_config.exists():
         'native_limits':'Only own DECOR-tagged props/customer; skip matching installed props, no ambient entities deleted, collision off cosmetics. Pause/menu freezes checkout. Unsafe/lost owner/35m departure/path failure suspends with saved order and sales. No clothing inventory debit, personal cash/bank/treasury credit, vehicle/global police modifications. GTA pathfinding, rendering, gestures, input and timing need gameplay validation.',
         'intentional_differences':'Persistent per-sale credit and request, END suspension/resume, optional props and native simple help/meter. FinalE confirms earned bonus instead of immediate source award; no cross-file MissionWin. Phase8 HUD/needs and phase9 job realism remain future.'}
     report['gang_automatic_processing']['intentional_differences']+=' Pop-up territory7 bonus from0.69 uses maximum2X with prior six activities.'
+mowing_config=Path(__file__).resolve().parents[1] / 'config/Gangs/Mowing.json'
+if mowing_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    config=json.loads(mowing_config.read_text())
+    start=source.split('private void StartMirrorParkMowing(Turf turf)',1)[1].split('private void UpdateMirrorParkMowing()',1)[0]
+    update=source.split('private void UpdateMirrorParkMowing()',1)[1].split('private void DrawMirrorParkMowingHud(',1)[0]
+    complete=source.split('private void CompleteMirrorParkMowing()',1)[1].split('public void CleanupMirrorParkMowing()',1)[0]
+    section=source.split('private readonly float[,] mirrorGrassLocations',1)[1].split('private const string TheatreIpl',1)[0]
+    rows=re.findall(r'\{ ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f \}',section)
+    report['gang_mirror_park_mowing']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_requires_owned_territory_eight':'turf.ID != 8 || !PlayerOwnsTurf(turf)' in start,
+        'reference_fifty_seven_patches_match':len(rows)==len(config['Patches'])==57 and all(all(abs(p[k]-float(v))<.0001 for k,v in zip(['X','Y','Z','Heading'],q)) for p,q in zip(config['Patches'],rows)),
+        'reference_mower_and_grass_models':'new Model("mower")' in start and 'new Model(992644101)' in start and config['VehicleModel']=='mower' and config['GrassModel']==992644101,
+        'reference_spawn_heading_matches':all(abs(config['Spawn'][k]-v)<.0001 for k,v in zip(['X','Y','Z','Heading'],[1140.882,-671.9385,56.51244,102.5347])),
+        'reference_own_driver_and_one_meter':'currentVehicle.Handle == mirrorMower.Handle && mirrorMower.Driver == character' in update and 'num2 * num2 + num3 * num3 > 1f' in update and config['MowRadius']==1,
+        'reference_nearest_remaining_blip':'mirrorNextBlipUpdate = Game.GameTime + 1200' in update and 'foreach (Vector3 item in mirrorGrassRemaining)' in update,
+        'reference_reward_two_x_one_utc_hour':'LaunderingBoostMultiplier = 2f' in complete and 'DateTime.UtcNow.AddHours(1.0)' in complete and config['BoostMinutes']==60,
+        'configuration_sha256':digest(mowing_config.read_bytes()),'defaults':config,
+        'rpcore_cycle':'F4 owned territory8 free start on foot near source mower spawn. Own DECOR-tagged/reserved mower and source grass props (optional Visuals.Enabled/UseProps), full57 source coordinates/headings. Only own player-driver passes within1mXY, within3mZ and at most8m/s save distinct index; props removed only after durable cut. Nearest remaining patch GPS refreshed1200ms. All57 saved then footE near empty stopped own mower or original point confirms2XUTC60min. Ready resume at source point needs no new mower.',
+        'persistence':'Optional extensible Wallet.GangMowing Pending Id/Gang/Area8/Options/Mowed unique indices, per-gang area8 Completed/StartedUtcTicks/ExpiresUtcTicks. No native handles/timers. Cloned one-book single Wallet save with rollback/replay/ownership/limits/overflow checks;256 receipts/640 accounts. Partial resume reconstructs only remaining grass and own new mower, preserving all cuts. Cancel clears pending without partial reward; prior bonus expiry retained. Final pending removal plus reward atomic, no direct bank/cash/treasury/stock/dirty/reputation/diplomacy or automatic opt-in.',
+        'integration':'Shared territorial blocker and direct OtherFree/bulk/arms guards include pending or invalid mowing without recursive validation. Eight earned activity bonuses observed at sameUTC, maximum2X, no stacking.85% cumulative treasury/15% fee and manual/autoarms unchanged; active-only production, no offline income.',
+        'native_ownership':'Only own tagged props/mower; async10s models, eight props per tick, free spawn requires player>=3m and no nearby vehicles/peds. No removal of installed props or ambient cars/peds, no global relation/police/script changes. Unsafe/wanted/owner/profile/actor loss/300m departure/mower loss or150m separation suspends. Cleanup defers deleting occupied/moving/attached mower until empty/stopped/unconnected, keeps job reservation until release, drains inactive, blocks new mower while old one awaits release. Dispose releases naturally without ejection. Cosmetic props collision off, fixed saved geometry remains required if props disabled.',
+        'intentional_differences':'Per-cut durable proof and partial resume, optional props, height/speed guard and explicit finalE. END suspension instead of G discard; no source forced exit/teleport/delete occupied mower or cross-file MissionWin. Simple native progress/help/nearest marker instead of finished custom HUD.',
+        'scope_limits':'GTA tests required for source grass asset render/positions, mower spawn and driving/access, actual one-meter hit radius/height/speed, route markers, E/END/reload/profile, occupied/moving cleanup and bonus expiry. Further territorial activities and phases8(interface/needs)/9(job realism) remain future.'}
+    report['gang_automatic_processing']['intentional_differences']+=' Mirror Park territory8 earned2X from0.70 uses maximum with all seven prior activities.'
+    report['gang_medical_courier']['scope_limits']=report['gang_medical_courier']['scope_limits'].replace('Pop-up shop/other work/','Other work/')
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

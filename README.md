@@ -1,4 +1,10 @@
-# RPCore 0.69.0 — GTA V Legacy
+# RPCore 0.70.0 — GTA V Legacy
+
+## Fase6.5AB — jardinagem Mirror Park
+
+[Atualização0.70.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.70.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.70.0.zip) · [Guia/teste](docs/FASE-6.5AB-0.70.0.md)
+
+F4, território8: dirija o cortador fornecido sobre57 pontos da PSRP. Cortes persistem ao suspender/recarregar; retomada conserva os pontos concluídos. Após todos, saia e E perto do cortador parado ou no início confirma processamento2X por1h. Limpeza preserva cortador ocupado/movendo.2545 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AA — loja temporária Legion
 

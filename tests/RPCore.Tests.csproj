@@ -56,6 +56,7 @@
     <Compile Include="../GangBulkData.cs" Link="GangBulkData.cs" />
     <Compile Include="../GangArmsData.cs" Link="GangArmsData.cs" />
     <Compile Include="../GangAutoArmsData.cs" Link="GangAutoArmsData.cs" />
+    <Compile Include="../GangMowingData.cs" Link="GangMowingData.cs" />
     <Compile Include="../GangPopUpData.cs" Link="GangPopUpData.cs" />
     <Compile Include="../GangMedicalData.cs" Link="GangMedicalData.cs" />
     <Compile Include="../GangCashRunData.cs" Link="GangCashRunData.cs" />

@@ -193,3 +193,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.69.0 / fase6.5AA: loja temporária Legion do território7 implementada conforme catálogo/props/clientes/checkout da PSRP. Refinar HUD, caminho dos clientes, gestos e realismo nas fases8/9, depois de validação no GTA. Receita suja por venda confirmada persiste ao cancelar; não converter em pagamento pessoal. Guia FASE-6.5AA-0.69.0.md.
+
+
+0.70.0 / fase6.5AB: jardinagem do território8 implementada conforme57 pontos/veículo/grama da PSRP. Refinar HUD e trabalho na fase8/9 após testar raio, props, acesso, caminho e limpeza no GTA. Sem pagamento pessoal ou renda criada; cortes persistem e meta concede bônus2X. Guia FASE-6.5AB-0.70.0.md.

@@ -33,6 +33,12 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangMowingData GangMowing=>data.GangMowing;
+        public static bool GangMowingOtherFree=>GangMowingTransactions.OtherFree(data);
+        public static bool GangMowingBegin(GangState s,GangTurfDefinition a,GangMowingOptions c,string id,out bool changed)=>GangMowingTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangMowingCut(GangState s,GangTurfDefinition a,string id,int index,bool safe,bool ownDriver,float speed,JobPoint position,out bool changed)=>GangMowingTransactions.Cut(data,s,a,id,index,safe,ownDriver,speed,position,Save,out changed);
+        public static bool GangMowingCancel(string id,out bool changed)=>GangMowingTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangMowingComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangMowingTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangPopUpData GangPopUp=>data.GangPopUp;
         public static bool GangPopUpOtherFree=>GangPopUpTransactions.OtherFree(data);
         public static bool GangPopUpBegin(GangState s,GangTurfDefinition a,GangPopUpOptions c,string id,out bool changed)=>GangPopUpTransactions.Begin(data,s,a,c,id,Save,out changed);
