@@ -205,3 +205,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.73.0 / fase6.5AE: frete do porto no território11 implementado conforme rig/carga/descarga/fórmula da PSRP. Refinar HUD, acesso/baia/rota, offsets de paletes e condição nas fases8/9 após teste no GTA. Fórmula da referência reduz dano a1/3, mínimo66,67% com base1000 e corpo não negativo; não confundir com carroceria bruta. Guia FASE-6.5AE-0.73.0.md.
+
+
+0.74.0 / fase6.5AF: circuito BMX do território12 implementado conforme11 pontos/modelo/raio/altura/prazo da PSRP. Refinar HUD, navegação em rampas, quedas/retomada/prazo nas fases8/9 após teste no GTA. Não inventar exigência de manobras ausente na validação da fonte. Guia FASE-6.5AF-0.74.0.md.

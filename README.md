@@ -1,4 +1,10 @@
-# RPCore 0.73.0 — GTA V Legacy
+# RPCore 0.74.0 — GTA V Legacy
+
+## Fase6.5AF — circuito promocional BMX
+
+[Atualização0.74.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.74.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.74.0.zip) · [Guia/teste](docs/FASE-6.5AF-0.74.0.md)
+
+F4, território12: use a BMX fornecida para passar pelos11 checkpoints da PSRP em75s ativos. Progresso/tempo persistem ao suspender. E final concede processamento2X por1h; sem pagamento pessoal.2726 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AE — frete do porto
 

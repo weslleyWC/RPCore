@@ -33,6 +33,13 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangBmxData GangBmx=>data.GangBmx;
+        public static bool GangBmxOtherFree=>GangBmxTransactions.OtherFree(data);
+        public static bool GangBmxBegin(GangState s,GangTurfDefinition a,GangBmxOptions c,string id,out bool changed)=>GangBmxTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangBmxUpdate(GangState s,GangTurfDefinition a,string id,GangBmxProgress p,out bool changed)=>GangBmxTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangBmxPass(GangState s,GangTurfDefinition a,string id,int index,bool safe,bool ownRider,JobPoint position,out bool changed)=>GangBmxTransactions.Pass(data,s,a,id,index,safe,ownRider,position,Save,out changed);
+        public static bool GangBmxCancel(string id,out bool changed)=>GangBmxTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangBmxComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangBmxTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangDockData GangDock=>data.GangDock;
         public static bool GangDockOtherFree=>GangDockTransactions.OtherFree(data);
         public static bool GangDockBegin(GangState s,GangTurfDefinition a,GangDockOptions c,string id,out bool changed)=>GangDockTransactions.Begin(data,s,a,c,id,Save,out changed);
