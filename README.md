@@ -1,4 +1,10 @@
-# RPCore 0.74.0 — GTA V Legacy
+# RPCore 0.75.0 — GTA V Legacy
+
+## Fase6.5AG — entrega em alto-mar
+
+[Atualização0.75.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.75.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.75.0.zip) · [Guia/teste](docs/FASE-6.5AG-0.75.0.md)
+
+F4, território13: E coleta pacote, use Seashark próprio e pare próximo do comprador no Squalo por5s antes do prazo5min. E final concede processamento2X por1h. Coleta/tempo/entrega persistem, retomada em terra. Sem pagamento pessoal.2759 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AF — circuito promocional BMX
 

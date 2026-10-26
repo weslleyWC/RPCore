@@ -1,0 +1,29 @@
+{
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "SecondsLimit": 300,
+  "JetModel": "seashark",
+  "BoatModel": "squalo",
+  "BuyerModel": "a_m_y_business_01",
+  "Pickup": {
+    "Name": "Pacote Vespucci",
+    "X": -1065.109,
+    "Y": -1158.42,
+    "Z": 1.383517,
+    "Heading": 232.1834
+  },
+  "Jet": {
+    "Name": "Seashark",
+    "X": -1103.408,
+    "Y": -1152.185,
+    "Z": -0.5149324,
+    "Heading": 27.82469
+  },
+  "Buyer": {
+    "Name": "Comprador em alto-mar",
+    "X": -2279.427,
+    "Y": -959.0692,
+    "Z": -0.5984672,
+    "Heading": 36.92299
+  }
+}

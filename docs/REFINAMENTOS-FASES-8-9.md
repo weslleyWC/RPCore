@@ -208,3 +208,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.74.0 / fase6.5AF: circuito BMX do território12 implementado conforme11 pontos/modelo/raio/altura/prazo da PSRP. Refinar HUD, navegação em rampas, quedas/retomada/prazo nas fases8/9 após teste no GTA. Não inventar exigência de manobras ausente na validação da fonte. Guia FASE-6.5AF-0.74.0.md.
+
+
+0.75.0 / fase6.5AG: entrega offshore do território13 implementada conforme PSRP. Refinar HUD/cinematografia compatível, água/ondas, acesso ao Seashark e comprador, transferência e retomada nas fases8/9 após teste no GTA. Guia FASE-6.5AG-0.75.0.md.

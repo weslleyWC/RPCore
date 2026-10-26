@@ -33,6 +33,15 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangOffshoreData GangOffshore=>data.GangOffshore;
+        public static bool GangOffshoreOtherFree=>GangOffshoreTransactions.OtherFree(data);
+        public static bool GangOffshoreBegin(GangState s,GangTurfDefinition a,GangOffshoreOptions c,string id,out bool changed)=>GangOffshoreTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangOffshoreUpdate(GangState s,GangTurfDefinition a,string id,GangOffshoreProgress p,out bool changed)=>GangOffshoreTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangOffshoreCollect(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangOffshoreTransactions.Collect(data,s,a,id,Save,out changed);
+        public static bool GangOffshoreBoard(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangOffshoreTransactions.Board(data,s,a,id,Save,out changed);
+        public static bool GangOffshoreDeliver(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangOffshoreTransactions.Deliver(data,s,a,id,Save,out changed);
+        public static bool GangOffshoreCancel(string id,out bool changed)=>GangOffshoreTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangOffshoreComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangOffshoreTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangBmxData GangBmx=>data.GangBmx;
         public static bool GangBmxOtherFree=>GangBmxTransactions.OtherFree(data);
         public static bool GangBmxBegin(GangState s,GangTurfDefinition a,GangBmxOptions c,string id,out bool changed)=>GangBmxTransactions.Begin(data,s,a,c,id,Save,out changed);

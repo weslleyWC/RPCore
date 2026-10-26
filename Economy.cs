@@ -47,6 +47,7 @@ namespace RPCore
         public GangChauffeurData GangChauffeur;
         public GangDockData GangDock;
         public GangBmxData GangBmx;
+        public GangOffshoreData GangOffshore;
     }
 
     public class Portfolio : ExtensibleData
