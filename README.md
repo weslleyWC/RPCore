@@ -1,4 +1,10 @@
-# RPCore 0.70.0 — GTA V Legacy
+# RPCore 0.71.0 — GTA V Legacy
+
+## Fase6.5AC — estreia Oriental Theatre
+
+[Atualização0.71.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.71.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.71.0.zip) · [Guia/teste](docs/FASE-6.5AC-0.71.0.md)
+
+F4, território9: E coleta equipamento na caixa, transporte a pé e E instala cada uma das11 peças da PSRP. Coleta/instalações persistem ao suspender/recarregar. E final solicita tapete vermelho por10min de jogo e libera processamento2X por1h. Cenário encontrado ativo não é removido por esta atividade.2588 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AB — jardinagem Mirror Park
 

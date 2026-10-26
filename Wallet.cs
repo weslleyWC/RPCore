@@ -33,6 +33,13 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangTheatreData GangTheatre=>data.GangTheatre;
+        public static bool GangTheatreOtherFree=>GangTheatreTransactions.OtherFree(data);
+        public static bool GangTheatreBegin(GangState s,GangTurfDefinition a,GangTheatreOptions c,string id,out bool changed)=>GangTheatreTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangTheatreCollect(GangState s,GangTurfDefinition a,string id,int index,out bool changed)=>GangTheatreTransactions.Collect(data,s,a,id,index,Save,out changed);
+        public static bool GangTheatreInstall(GangState s,GangTurfDefinition a,string id,int index,out bool changed)=>GangTheatreTransactions.Install(data,s,a,id,index,Save,out changed);
+        public static bool GangTheatreCancel(string id,out bool changed)=>GangTheatreTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangTheatreComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangTheatreTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangMowingData GangMowing=>data.GangMowing;
         public static bool GangMowingOtherFree=>GangMowingTransactions.OtherFree(data);
         public static bool GangMowingBegin(GangState s,GangTurfDefinition a,GangMowingOptions c,string id,out bool changed)=>GangMowingTransactions.Begin(data,s,a,c,id,Save,out changed);

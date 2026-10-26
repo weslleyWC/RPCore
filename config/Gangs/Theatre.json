@@ -1,0 +1,137 @@
+{
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "HandoverMilliseconds": 1500,
+  "InteractionDistance": 2.3,
+  "CrateModel": "prop_mb_crate_01a",
+  "Crate": {
+    "Name": "Equipamentos da estreia",
+    "X": 308.4233,
+    "Y": 197.2859,
+    "Z": 103.1828,
+    "Heading": -88.3205
+  },
+  "Items": [
+    {
+      "Name": "Studio light 1",
+      "Model": "prop_studio_light_02",
+      "Point": {
+        "Name": "Studio light 1",
+        "X": 305.6196,
+        "Y": 190.47,
+        "Z": 103.226,
+        "Heading": -86.9607
+      }
+    },
+    {
+      "Name": "Studio light 2",
+      "Model": "prop_studio_light_02",
+      "Point": {
+        "Name": "Studio light 2",
+        "X": 313.2229,
+        "Y": 193.113,
+        "Z": 103.3259,
+        "Heading": -115.9403
+      }
+    },
+    {
+      "Name": "Entrance fence 1",
+      "Model": "prop_premier_fence_02",
+      "Point": {
+        "Name": "Entrance fence 1",
+        "X": 302.5866,
+        "Y": 183.7614,
+        "Z": 104.277,
+        "Heading": -20.2221
+      }
+    },
+    {
+      "Name": "Entrance fence 2",
+      "Model": "prop_premier_fence_02",
+      "Point": {
+        "Name": "Entrance fence 2",
+        "X": 301.5858,
+        "Y": 185.3394,
+        "Z": 104.2858,
+        "Heading": -106.5602
+      }
+    },
+    {
+      "Name": "Entrance fence 3",
+      "Model": "prop_premier_fence_02",
+      "Point": {
+        "Name": "Entrance fence 3",
+        "X": 302.3372,
+        "Y": 187.743,
+        "Z": 104.2681,
+        "Heading": -107.4486
+      }
+    },
+    {
+      "Name": "Fence 1",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Fence 1",
+        "X": 296.0051,
+        "Y": 201.9328,
+        "Z": 103.5298,
+        "Heading": -110.0
+      }
+    },
+    {
+      "Name": "Fence 2",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Fence 2",
+        "X": 295.2214,
+        "Y": 199.7796,
+        "Z": 103.5298,
+        "Heading": -110.0
+      }
+    },
+    {
+      "Name": "Fence 3",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Fence 3",
+        "X": 294.4396,
+        "Y": 197.6318,
+        "Z": 103.5275,
+        "Heading": -110.0
+      }
+    },
+    {
+      "Name": "Fence 4",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Fence 4",
+        "X": 293.6559,
+        "Y": 195.4787,
+        "Z": 103.526,
+        "Heading": -110.0
+      }
+    },
+    {
+      "Name": "Fence 5",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Fence 5",
+        "X": 292.8725,
+        "Y": 193.326,
+        "Z": 103.5099,
+        "Heading": -110.0
+      }
+    },
+    {
+      "Name": "Red Carpet",
+      "Model": "prop_premier_fence_01",
+      "Point": {
+        "Name": "Red Carpet",
+        "X": 300.7819,
+        "Y": 200.0613,
+        "Z": 104.3407,
+        "Heading": 343.0669
+      }
+    }
+  ]
+}

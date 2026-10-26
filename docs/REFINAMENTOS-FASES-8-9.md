@@ -196,3 +196,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.70.0 / fase6.5AB: jardinagem do território8 implementada conforme57 pontos/veículo/grama da PSRP. Refinar HUD e trabalho na fase8/9 após testar raio, props, acesso, caminho e limpeza no GTA. Sem pagamento pessoal ou renda criada; cortes persistem e meta concede bônus2X. Guia FASE-6.5AB-0.70.0.md.
+
+
+0.71.0 / fase6.5AC: estreia no território9 implementada conforme11 itens/caixa/instalações/IPL da PSRP. Refinar HUD/carregamento/instalações e realismo nas fases8/9 após teste no GTA. Confirmar modelo da última peça(label Red Carpet usa cerca na fonte) e visual do IPL, anim/bone/solo e convivência com outros recursos. Guia FASE-6.5AC-0.71.0.md.
