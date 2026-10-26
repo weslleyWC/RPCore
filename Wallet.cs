@@ -33,6 +33,12 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangTowData GangTow=>data.GangTow;
+        public static bool GangTowOtherFree=>GangTowTransactions.OtherFree(data);
+        public static bool GangTowBegin(GangState s,GangTurfDefinition area,GangTowOptions c,IEnumerable<GangTowDispatch> d,string id,out bool changed)=>GangTowTransactions.Begin(data,s,area,c,d,id,Save,out changed);
+        public static bool GangTowDeliver(GangState s,GangTurfDefinition area,string id,int index,float damage,out bool changed)=>GangTowTransactions.Deliver(data,s,area,id,index,damage,Save,out changed);
+        public static bool GangTowCancel(string id,out bool changed)=>GangTowTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangTowComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangTowTransactions.Complete(data,s,area,id,utc,Save,out changed);
         public static GangMechanicData GangMechanic=>data.GangMechanic;
         public static bool GangMechanicOtherFree=>GangMechanicTransactions.OtherFree(data);
         public static bool GangMechanicBegin(GangState s,GangTurfDefinition area,GangMechanicOptions c,IEnumerable<string> models,string id,out bool changed)=>GangMechanicTransactions.Begin(data,s,area,c,models,id,Save,out changed);

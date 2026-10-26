@@ -1,4 +1,10 @@
-# RPCore 0.65.0 — GTA V Legacy
+# RPCore 0.66.0 — GTA V Legacy
+
+## Fase6.5X — recuperação com guincho territorial
+
+[Atualização0.66.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.66.0.zip) · [Código-fonte0.66.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.66.0.zip) · [Instalação e teste](docs/FASE-6.5X-0.66.0.md)
+
+F4 → Comercio, território3 controlado: GPS pátio → a pé/vaga livre → Recuperar veiculos /2 chamados. Guincho fornecido, NUM8/NUM2 braço, E engata carro próprio da missão, E parado no pátio descarrega/assenta. Duas entregas salvas e E final a pé liberam2X/60minUTC na área3, sem pagamento/estoque/auto-enable. Dados126 carros/24 clientes/15 locais PSRP; segue lógica2 apesar da notificação3 da fonte. Grade de dano informativa, soltura acidental não entrega, retomada conserva chamado/opções/entregas. Limpeza própria vazia/parada/sem ligação externa, sem ejetar/encerrar scripts GTA; H preservado. Livro/recibos/rollback/cancelamento grátis, bônus máximo2X/85% ao caixa/sem renda offline.2388 testes aprovados/build sem erros ou avisos; física e convivência no GTA pendentes. Demais sistemas/refinamentos/fases8/9 futuros.
 
 ## Fase6.5W — contratos da oficina territorial
 

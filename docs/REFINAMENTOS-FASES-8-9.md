@@ -175,3 +175,8 @@ Divulgação da tatuagem usa pedestres civis reais e animação do jogador, faix
 ## Base0.65.0 — oficina territorial
 
 Base reproduz três clientes,120 modelos, chegada/dano/capô/animação/minigame e2X da PSRP, sem teleporte do carro para vaga. Fase8 refinar painel/barra/legibilidade; fase9 estudar física e dimensões da vaga por modelo, motores dianteiros/traseiros, chegada/saída/navmesh, fumaça/animação/prop de ferramenta, dificuldade/faixa verde e ritmo. Preservar carros concluídos/snapshot/recibos/rollback, carro pessoal e cleanup sem ejetar, taxa85% e bônusUTC não cumulativo. IA/tráfego precisam de GTA; guincho/demais trabalhos seguem no roteiro.
+
+
+## Base0.66.0 — guincho territorial
+
+Engate físico nativo com guincho fornecido, duas recuperações e nota de danoPSRP. Fase8 refinar HUD/braço e atalhos configuráveis; fase9 estudar alinhamento por modelo, física de rodas/gancho, capacidade/danos/dificuldade, interação com cliente e trajetos/ocupação dos15 pontos. Preservar H, scripts nativos de guincho, carros pessoais, prova de descarga comandada, exclusão de ocupados/ligações externas, snapshots/recibos/rollback, recuperação salva e bônusUTC não cumulativo/85%. Coexistência controller_towing e física precisam de GTA; base não declara refinamento concluído.
