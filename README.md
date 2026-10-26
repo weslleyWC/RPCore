@@ -1,4 +1,10 @@
-# RPCore 0.64.0 — GTA V Legacy
+# RPCore 0.65.0 — GTA V Legacy
+
+## Fase6.5W — contratos da oficina territorial
+
+[Atualização0.65.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.65.0.zip) · [Código-fonte0.65.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.65.0.zip) · [Instalação e teste](docs/FASE-6.5W-0.65.0.md)
+
+F4 → Comercio, território2 controlado: GPS oficina → a pé/vaga livre → Atender oficina /3 carros. Cliente próprio chega dirigindo danificado; E na frente abre capô, acerte3 vezes a faixa verde. Reparo salvo/cliente sai/próximo carro. Após3, E final na oficina libera2X/60minUTC na área2, sem pagamento/estoque/auto-enable. Catálogo120/pontos/dano/animação/minigamePSRP, sem teleporte/deletar carro pessoal. Retomada conserva carros concluídos/modelos/opções e refaz só reparo em andamento; pronto retoma sem respawn. Livro/recibos/rollback/cancelamento grátis; máximo2X com café/tatuagem,85% ao caixa e produção ativa/sem offline. 2348 testes aprovados e build sem erros/avisos; gameplay pendente. Demais trabalhos/refinamentos/diálogo/guerras/polícia e fases8/9 futuros.
 
 ## Fase6.5V — divulgação da loja de tatuagem
 

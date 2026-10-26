@@ -37,6 +37,7 @@ namespace RPCore
         public GangAutoLaunderData GangAutoLaunder;
         public GangCafeData GangCafe;
         public GangPromotionData GangPromotion;
+        public GangMechanicData GangMechanic;
     }
 
     public class Portfolio : ExtensibleData

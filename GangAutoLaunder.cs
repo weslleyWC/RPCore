@@ -44,14 +44,14 @@ namespace RPCore
         public void Tick()
         {
             var actor=Game.Player.Character;if(profile!=Profile.Id || actor==null || player!=actor.Handle){Clear();profile=Profile.Id;player=actor?.Handle??0;}
-            if(Wallet.GangPromotion!=null && !Wallet.GangPromotion.Valid || Wallet.GangCafe!=null && !Wallet.GangCafe.Valid || !SafeWorld || gate.Owner!=null || !Wallet.GangAutoArmsFree || Wallet.GangAutoLaunder?.Valid!=true || Wallet.GangIllicit?.Valid!=true || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang))){clocks.Clear();return;}
+            if(Wallet.GangMechanic!=null && !Wallet.GangMechanic.Valid || Wallet.GangPromotion!=null && !Wallet.GangPromotion.Valid || Wallet.GangCafe!=null && !Wallet.GangCafe.Valid || !SafeWorld || gate.Owner!=null || !Wallet.GangAutoArmsFree || Wallet.GangAutoLaunder?.Valid!=true || Wallet.GangIllicit?.Valid!=true || Wallet.GangTreasury!=null && !Wallet.GangTreasury.Valid || !gangs().Any(g=>GangCrewRules.SameGang(g.Name,state().Gang))){clocks.Clear();return;}
             bool working=!Game.IsPaused && !pool.AreAnyVisible && !InterfaceOptions.ModalOpen;var live=new HashSet<string>();
             foreach(var area in areas().Where(a=>GangBusinessTransactions.Owns(state(),a)))
             {
                 string key=Key(state().Gang,area.Id);var a=GangAutoLaunderTransactions.Account(Wallet.GangAutoLaunder,state().Gang,area.Id);var income=GangIllicitTransactions.Account(Wallet.GangIllicit,state().Gang,area.Id);
                 if(a?.Enabled!=true || income==null || income.Dirty<1 || faulted.Contains(key)){clocks.Remove(key);continue;}live.Add(key);
                 if(!clocks.TryGetValue(key,out var clock)){clocks[key]=new GangAutoArmsClock(Game.GameTime);continue;}
-                if(!clock.Step(Game.GameTime,working,options.IntervalSeconds,Math.Max(GangCafeTransactions.Multiplier(Wallet.GangCafe,state().Gang,area.Id,DateTime.UtcNow),GangPromotionTransactions.Multiplier(Wallet.GangPromotion,state().Gang,area.Id,DateTime.UtcNow))))continue;
+                if(!clock.Step(Game.GameTime,working,options.IntervalSeconds,Math.Max(GangMechanicTransactions.Multiplier(Wallet.GangMechanic,state().Gang,area.Id,DateTime.UtcNow),Math.Max(GangCafeTransactions.Multiplier(Wallet.GangCafe,state().Gang,area.Id,DateTime.UtcNow),GangPromotionTransactions.Multiplier(Wallet.GangPromotion,state().Gang,area.Id,DateTime.UtcNow)))))continue;
                 try{long before=a.Net;if(Wallet.GangAutoLaunderProcess(state(),area,options,GangTreasury.Clock(),clock.Receipt,out bool changed) && changed){long credit=GangAutoLaunderTransactions.Account(Wallet.GangAutoLaunder,state().Gang,area.Id).Net-before;Notify.Show("Auto processar / "+area.Name+": $"+credit+" liquidos no caixa da gangue.");}clocks.Remove(key);}
                 catch(Exception ex){clocks.Remove(key);faulted.Add(key);Log.Error("automatic territorial processing",ex);Notify.Show("Processamento automatico suspenso nesta area. Confira log/dados e desligue/reative; saldos anteriores conservados.");}
             }

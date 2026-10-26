@@ -170,3 +170,8 @@ Opt-in, até500 por60s ativos e85% ao caixa; mesma contabilidade cumulativa do m
 ## Base0.64.0 — panfletagem sem antecipar fases8/9
 
 Divulgação da tatuagem usa pedestres civis reais e animação do jogador, faixa/contagem/loja da PSRP. Não congela/toma controle de NPC de rua e não cria clientes artificiais; densidade local/alcance precisam de teste GTA. Fase8 deve refinar painel/ícones/tempo visível; fase9 avaliar prop de papel, gesto/diálogo, ritmo de clientes e balanceamento, preservando exclusão de NPCs de missão/grupos/gangues, cinco clientes distintos, recompensa apenas na volta, taxa85%, atomicidade/snapshot/recibos e bônusUTC não cumulativo. Mecânico/guincho e demais atividades de território seguem no roteiro.
+
+
+## Base0.65.0 — oficina territorial
+
+Base reproduz três clientes,120 modelos, chegada/dano/capô/animação/minigame e2X da PSRP, sem teleporte do carro para vaga. Fase8 refinar painel/barra/legibilidade; fase9 estudar física e dimensões da vaga por modelo, motores dianteiros/traseiros, chegada/saída/navmesh, fumaça/animação/prop de ferramenta, dificuldade/faixa verde e ritmo. Preservar carros concluídos/snapshot/recibos/rollback, carro pessoal e cleanup sem ejetar, taxa85% e bônusUTC não cumulativo. IA/tráfego precisam de GTA; guincho/demais trabalhos seguem no roteiro.
