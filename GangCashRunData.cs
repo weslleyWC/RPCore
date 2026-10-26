@@ -42,7 +42,7 @@ namespace RPCore
         static T Copy<T>(T v)=>JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(v));
         static bool Id(string id)=>!string.IsNullOrWhiteSpace(id) && id.Length<=80;
         public static bool Blocked(WalletData w)=>w?.GangCashRun!=null && (!w.GangCashRun.Valid || w.GangCashRun.Pending!=null);
-        public static bool OtherFree(WalletData w)=>w!=null && !GangMedicalTransactions.Blocked(w) && !GangTowTransactions.Blocked(w) && !GangMechanicTransactions.Blocked(w) && !GangPromotionTransactions.Blocked(w) && (w.GangBulk==null || w.GangBulk.Valid && w.GangBulk.Pending==null) && (w.GangRaid==null || w.GangRaid.Valid && w.GangRaid.Pending==null) && (w.GangBusiness==null || w.GangBusiness.Valid && w.GangBusiness.Supply==null);
+        public static bool OtherFree(WalletData w)=>w!=null && !GangPopUpTransactions.Blocked(w) && !GangMedicalTransactions.Blocked(w) && !GangTowTransactions.Blocked(w) && !GangMechanicTransactions.Blocked(w) && !GangPromotionTransactions.Blocked(w) && (w.GangBulk==null || w.GangBulk.Valid && w.GangBulk.Pending==null) && (w.GangRaid==null || w.GangRaid.Valid && w.GangRaid.Pending==null) && (w.GangBusiness==null || w.GangBusiness.Valid && w.GangBusiness.Supply==null);
         public static GangCashRunAccount Account(GangCashRunData b,string gang)=>b?.Valid==true?b.Accounts.FirstOrDefault(a=>GangCrewRules.SameGang(a.Gang,gang)):null;
         public static int Multiplier(GangCashRunData b,string gang,int area,DateTime utc)
         {var a=Account(b,gang);return area==5 && utc.Kind==DateTimeKind.Utc && a!=null && utc.Ticks>=a.StartedUtcTicks && utc.Ticks<a.ExpiresUtcTicks?2:1;}

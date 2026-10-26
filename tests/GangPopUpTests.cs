@@ -1,0 +1,105 @@
+using System;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Xunit;
+namespace RPCore.Tests
+{
+    public class GangPopUpTests
+    {
+        static readonly Action Save=()=>{};static readonly DateTime Utc=new DateTime(2026,10,26,15,0,0,DateTimeKind.Utc);
+        static GangTurfDefinition A()=>GangTurfOptions.Defaults().Areas.Single(a=>a.Id==7);static GangState S()=>new GangState{Gang=A().DefaultOwner};static WalletData W()=>new WalletData{Bank=10000,Cash=123};
+        static bool Begin(WalletData w,string id="pop",GangPopUpOptions c=null,Action save=null)=>GangPopUpTransactions.Begin(w,S(),A(),c??new GangPopUpOptions(),id,save??Save,out _);
+        static GangPopUpOrder O(string id="customer",int item=0,int discount=0)=>new GangPopUpOrder{Id=id,Model=new GangPopUpOptions().Customers[0],Item=item,Discount=discount,Target=.5f};
+        static bool Customer(WalletData w,string customer="customer",int item=0,int discount=0,string id="pop",Action save=null)=>GangPopUpTransactions.Customer(w,S(),A(),id,O(customer,item,discount),save??Save,out _);
+        static bool Sale(WalletData w,string customer="customer",string id="pop",Action save=null)=>GangPopUpTransactions.Sale(w,S(),A(),id,customer,save??Save,out _);
+        static bool Complete(WalletData w,string id="pop",DateTime? utc=null,Action save=null)=>GangPopUpTransactions.Complete(w,S(),A(),id,utc??Utc,save??Save,out _);
+        static WalletData Ordered(GangPopUpOptions c=null){var w=W();Assert.True(Begin(w,c:c));Assert.True(Customer(w));return w;}
+        static WalletData Ready(){var w=W();Begin(w);for(int n=0;n<10;n++){Customer(w,"c"+n);Sale(w,"c"+n);}Assert.True(w.GangPopUp.Pending.Ready);return w;}
+        static GangPopUpAccount Account(WalletData w)=>GangPopUpTransactions.Account(w.GangPopUp,S().Gang);
+        [Fact] public void DefaultsMatchTenSalesThirtyProductsFiftyTwoModelsAndNineProps()
+        {var c=new GangPopUpOptions();Assert.True(c.Valid);Assert.Equal(10,c.Goal);Assert.Equal(60,c.BoostMinutes);Assert.Equal(30,c.Products.Count);Assert.Equal(52,c.Customers.Count);Assert.Equal(9,c.Props.Count);Assert.Equal("GRAPHIC T-SHIRT",c.Products[0].Name);Assert.Equal(40,c.Products[0].Price);Assert.Equal("CROSSBODY BAG",c.Products[29].Name);Assert.Equal(75,c.Products[29].Price);Assert.Equal(210.3288f,c.Shop.X);Assert.Equal(-932.3f,c.CustomerSpot.Y);}
+        [Fact] public void BeginAndRequestAreFreeAndDoNotCreateIncomeOrAutoEnable()
+        {var w=W();w.Bank=0;Assert.True(Begin(w));Assert.True(Customer(w));Assert.Equal(0,w.Bank);Assert.Equal(123,w.Cash);Assert.Empty(w.GangPopUp.Accounts);Assert.Null(w.GangIllicit);Assert.Null(w.GangAutoLaunder);Assert.Null(w.GangTreasury);Assert.Null(w.GangBusiness);}
+        [Fact] public void RequiresOwnedAreaSevenAndValidOptions()
+        {var w=W();var a=GangTurfOptions.Defaults().Areas[0];Assert.False(GangPopUpTransactions.Begin(w,new GangState{Gang=a.DefaultOwner},a,new GangPopUpOptions(),"bad",Save,out _));Assert.False(GangPopUpTransactions.Begin(w,new GangState{Gang="Other"},A(),new GangPopUpOptions(),"bad",Save,out _));Assert.False(Begin(w,c:new GangPopUpOptions{Goal=0}));Assert.Null(w.GangPopUp);}
+        [Fact] public void SnapshotDoesNotAliasCatalogPropsOrOrder()
+        {var w=W();var c=new GangPopUpOptions();Begin(w,c:c);var order=O();Assert.True(GangPopUpTransactions.Customer(w,S(),A(),"pop",order,Save,out _));order.Discount=15;c.Products[0].Price=100;c.Props.Clear();Assert.Equal(40,w.GangPopUp.Pending.Options.Products[0].Price);Assert.Equal(9,w.GangPopUp.Pending.Options.Props.Count);Assert.Equal(0,w.GangPopUp.Pending.Customer.Discount);}
+        [Fact] public void OrderMustMatchCatalogCustomerVoucherAndTargetRange()
+        {var w=W();Begin(w);foreach(var o in new[]{O(item:30),O(discount:20),new GangPopUpOrder{Id="x",Model="unknown",Item=0,Target=.5f},new GangPopUpOrder{Id="x",Model=O().Model,Item=0,Target=float.NaN}})Assert.False(GangPopUpTransactions.Customer(w,S(),A(),"pop",o,Save,out _));Assert.Null(w.GangPopUp.Pending.Customer);}
+        [Fact] public void QuoteUsesSourceIntegerPriceAfterExactVoucherDiscount()
+        {var c=new GangPopUpOptions();Assert.Equal(40,GangPopUpTransactions.Quote(c,O()));Assert.Equal(34,GangPopUpTransactions.Quote(c,O(discount:15)));Assert.Equal(72,GangPopUpTransactions.Quote(c,O(item:1,discount:15)));Assert.Equal(0,GangPopUpTransactions.Quote(c,O(discount:20)));}
+        [Fact] public void SuccessfulSaleAtomicallyUpdatesOwnHistoryAndDirtyBooks()
+        {var w=Ordered();int saves=0;Assert.True(Sale(w,save:()=>{saves++;Assert.Equal(1,w.GangPopUp.Pending.Sales);Assert.Equal(40,w.GangIllicit.Accounts[0].Dirty);}));Assert.Equal(1,saves);Assert.Equal(40,w.GangPopUp.Pending.Revenue);Assert.Equal(1,Account(w).Sales);Assert.Equal(40,Account(w).Revenue);Assert.Equal(0,Account(w).Contracts);Assert.Equal(40,w.GangIllicit.Accounts[0].Proceeds);Assert.Null(w.GangPopUp.Pending.Customer);Assert.Equal(10000,w.Bank);Assert.Equal(123,w.Cash);Assert.Null(w.GangTreasury);Assert.Null(w.GangBusiness);}
+        [Fact] public void SaleReplayDoesNotSaveRepeatRevenueOrCounters()
+        {var w=Ordered();Sale(w);var old=w.GangPopUp;var dirty=w.GangIllicit;Assert.True(Sale(w,save:()=>throw new Exception()));Assert.Same(old,w.GangPopUp);Assert.Same(dirty,w.GangIllicit);Assert.Equal(40,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(1,Account(w).Sales);}
+        [Fact] public void FailClearsOnlyCurrentOrderWithoutIncomeOrSaleCount()
+        {var w=Ordered();Assert.True(GangPopUpTransactions.Fail(w,"pop","customer",Save,out _));Assert.Null(w.GangPopUp.Pending.Customer);Assert.Equal(0,w.GangPopUp.Pending.Sales);Assert.Null(w.GangIllicit);Assert.True(GangPopUpTransactions.Fail(w,"pop","customer",()=>throw new Exception(),out bool changed));Assert.False(changed);}
+        [Fact] public void WrongOrAbsentCustomerCannotCreditDirtyIncome()
+        {var w=Ordered();Assert.False(Sale(w,"wrong"));Assert.True(GangPopUpTransactions.Fail(w,"pop","customer",Save,out _));Assert.False(Sale(w));Assert.Null(w.GangIllicit);Assert.Equal(0,w.GangPopUp.Pending.Sales);}
+        [Fact] public void PartialSalesCannotAwardButTenSalesBecomeReady()
+        {var w=Ordered();Sale(w);Assert.False(Complete(w));Assert.Equal(1,w.GangPopUp.Pending.Sales);w=Ready();Assert.Equal(10,w.GangPopUp.Pending.Sales);Assert.Equal(400,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(0,Account(w).Contracts);Assert.Null(w.GangAutoLaunder);}
+        [Fact] public void FinalConfirmationAwardsWithoutCreditingSalesAgain()
+        {var w=Ready();var dirty=w.GangIllicit;Assert.True(Complete(w));Assert.Null(w.GangPopUp.Pending);Assert.Equal(1,Account(w).Contracts);Assert.Equal(Utc.AddHours(1).Ticks,Account(w).ExpiresUtcTicks);Assert.Same(dirty,w.GangIllicit);Assert.Equal(400,w.GangIllicit.Accounts[0].Dirty);Assert.True(Complete(w,utc:Utc.AddMinutes(10),save:()=>throw new Exception()));Assert.Equal(1,Account(w).Contracts);}
+        [Fact] public void CancelPreservesAlreadyCreditedDirtyAndLifetimeSales()
+        {var w=Ordered();Sale(w);var dirty=w.GangIllicit;Assert.True(GangPopUpTransactions.Cancel(w,"pop",Save,out _));Assert.Null(w.GangPopUp.Pending);Assert.Equal(1,Account(w).Sales);Assert.Equal(40,Account(w).Revenue);Assert.Same(dirty,w.GangIllicit);Assert.Equal(40,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc));}
+        [Fact] public void PartialReloadKeepsSalesAndSamePendingRequestVoucherAndTarget()
+        {var w=Ordered();Sale(w);Customer(w,"second",item:1,discount:15);w=JsonConvert.DeserializeObject<WalletData>(JsonConvert.SerializeObject(w));Assert.True(w.GangPopUp.Valid);Assert.Equal(1,w.GangPopUp.Pending.Sales);Assert.Equal("second",w.GangPopUp.Pending.Customer.Id);Assert.Equal(1,w.GangPopUp.Pending.Customer.Item);Assert.Equal(15,w.GangPopUp.Pending.Customer.Discount);Assert.Equal(.5f,w.GangPopUp.Pending.Customer.Target);Assert.Equal(40,w.GangIllicit.Accounts[0].Dirty);}
+        [Fact] public void ReadyReloadCanConfirmWithoutAnotherSaleOrCustomer()
+        {var w=JsonConvert.DeserializeObject<WalletData>(JsonConvert.SerializeObject(Ready()));Assert.True(w.GangPopUp.Pending.Ready);Assert.True(Complete(w));Assert.Equal(10,Account(w).Sales);Assert.Equal(400,w.GangIllicit.Accounts[0].Dirty);}
+        [Fact] public void FailedBeginAndRequestRestoreOriginalReferences()
+        {var w=W();Assert.Throws<Exception>(()=>Begin(w,save:()=>throw new Exception()));Assert.Null(w.GangPopUp);Begin(w);var old=w.GangPopUp;Assert.Throws<Exception>(()=>Customer(w,save:()=>throw new Exception()));Assert.Same(old,w.GangPopUp);Assert.Null(w.GangPopUp.Pending.Customer);}
+        [Fact] public void FailedSaleRestoresBothBooksAndRequestWithAbsentDirtyBook()
+        {var w=Ordered();var old=w.GangPopUp;Assert.Throws<Exception>(()=>Sale(w,save:()=>throw new Exception()));Assert.Same(old,w.GangPopUp);Assert.Null(w.GangIllicit);Assert.NotNull(w.GangPopUp.Pending.Customer);Assert.Equal(0,w.GangPopUp.Pending.Sales);Assert.True(Sale(w));}
+        [Fact] public void FailedSaleWithExistingIncomeKeepsPreviouslyProcessedRounding()
+        {var w=Ordered();w.GangIllicit=new GangIllicitData();w.GangIllicit.Accounts.Add(new GangIllicitAccount{Gang=S().Gang,Area=7,Dirty=500,Proceeds=1000,Processed=500,Net=425,Fees=75});var old=w.GangPopUp;var dirty=w.GangIllicit;Assert.Throws<Exception>(()=>Sale(w,save:()=>throw new Exception()));Assert.Same(old,w.GangPopUp);Assert.Same(dirty,w.GangIllicit);Assert.Equal(500,w.GangIllicit.Accounts[0].Dirty);Sale(w);Assert.Equal(540,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(425,w.GangIllicit.Accounts[0].Net);}
+        [Fact] public void FailedFinalFailAndCancelPreserveReadyOrCurrentOrder()
+        {var w=Ready();var old=w.GangPopUp;Assert.Throws<Exception>(()=>Complete(w,save:()=>throw new Exception()));Assert.Same(old,w.GangPopUp);Assert.True(w.GangPopUp.Pending.Ready);Assert.Throws<Exception>(()=>GangPopUpTransactions.Cancel(w,"pop",()=>throw new Exception(),out _));Assert.Same(old,w.GangPopUp);w=Ordered();old=w.GangPopUp;Assert.Throws<Exception>(()=>GangPopUpTransactions.Fail(w,"pop","customer",()=>throw new Exception(),out _));Assert.Same(old,w.GangPopUp);}
+        [Fact] public void DirtyReceiptCollisionRefusesInsteadOfCreditingPartialSale()
+        {var w=Ordered();w.GangIllicit=new GangIllicitData{Receipts={"customer:pop-sale"}};var dirty=w.GangIllicit;Assert.False(Sale(w));Assert.Same(dirty,w.GangIllicit);Assert.Equal(0,w.GangPopUp.Pending.Sales);Assert.Empty(w.GangIllicit.Accounts);}
+        [Fact] public void DirtyCapacityAndInvalidBooksPreventUnfinishableStart()
+        {var w=W();w.GangIllicit=new GangIllicitData();w.GangIllicit.Accounts.Add(new GangIllicitAccount{Gang=S().Gang,Area=7,Dirty=int.MaxValue-10,Proceeds=int.MaxValue-10});Assert.False(Begin(w));Assert.Null(w.GangPopUp);w=W();w.GangIllicit=new GangIllicitData{Accounts=null};Assert.False(Begin(w));}
+        [Fact] public void SourcePricingAndDirtyProceedsRemainConservedOverTenSales()
+        {var w=W();Begin(w);long sum=0;for(int n=0;n<10;n++){Customer(w,"c"+n,item:n,discount:(n%4)*5);sum+=GangPopUpTransactions.Quote(w.GangPopUp.Pending.Options,w.GangPopUp.Pending.Customer);Assert.True(Sale(w,"c"+n));}Assert.Equal(sum,w.GangPopUp.Pending.Revenue);Assert.Equal(sum,Account(w).Revenue);Assert.Equal(sum,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(sum,w.GangIllicit.Accounts[0].Proceeds);}
+        [Fact] public void NewContractAndCancelDoNotEraseOldBonusOrOldIncome()
+        {var w=Ready();Complete(w);long expiry=Account(w).ExpiresUtcTicks;Begin(w,"again");Assert.True(GangPopUpTransactions.Cancel(w,"again",Save,out _));Assert.Equal(expiry,Account(w).ExpiresUtcTicks);Assert.Equal(400,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(10,Account(w).Sales);}
+        [Fact] public void UtcOnlyExpiryAndAreaGangProfileIsolationAreEnforced()
+        {var w=Ready();Assert.False(Complete(w,utc:DateTime.SpecifyKind(Utc,DateTimeKind.Unspecified)));Assert.False(Complete(w,utc:new DateTime(DateTime.MaxValue.Ticks,DateTimeKind.Utc)));Complete(w);Assert.Equal(2,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc));Assert.Equal(2,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc.AddHours(1).AddTicks(-1)));Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc.AddHours(1)));Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc.AddTicks(-1)));Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,"Other",7,Utc));Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,6,Utc));Assert.Equal(1,GangPopUpTransactions.Multiplier(W().GangPopUp,S().Gang,7,Utc));}
+        [Fact] public void LostOwnerCannotSellOrClaimButCanCancelWithIncomePreserved()
+        {var w=Ordered();var other=new GangState{Gang="Other"};Assert.False(GangPopUpTransactions.Sale(w,other,A(),"pop","customer",Save,out _));Assert.Null(w.GangIllicit);w=Ready();Assert.False(GangPopUpTransactions.Complete(w,other,A(),"pop",Utc,Save,out _));Assert.True(GangPopUpTransactions.Cancel(w,"pop",Save,out _));Assert.Equal(400,w.GangIllicit.Accounts[0].Dirty);}
+        [Fact] public void LegacyQueriesDoNotCreateBookOrBonus()
+        {var w=JsonConvert.DeserializeObject<WalletData>("{\"Bank\":100,\"Future\":42}");Assert.Null(w.GangPopUp);Assert.False(GangPopUpTransactions.Blocked(w));Assert.Null(GangPopUpTransactions.Account(w.GangPopUp,S().Gang));Assert.Equal(1,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc));Assert.Null(w.GangPopUp);}
+        [Fact] public void UnknownFieldsSurviveSaleOnBothBooksAndFinalAward()
+        {var w=Ordered();w.GangIllicit=new GangIllicitData();var j=JObject.FromObject(w);j["Future"]=42;j["GangPopUp"]["FutureShop"]="keep";j["GangIllicit"]["FutureDirty"]="keep";j["GangPopUp"]["Pending"]["Customer"]["FutureOrder"]=true;w=j.ToObject<WalletData>();Assert.True(Sale(w));for(int n=1;n<10;n++){Customer(w,"c"+n);Sale(w,"c"+n);}Complete(w);j=JObject.FromObject(w);Assert.Equal(42,(int)j["Future"]);Assert.Equal("keep",(string)j["GangPopUp"]["FutureShop"]);Assert.Equal("keep",(string)j["GangIllicit"]["FutureDirty"]);}
+        [Fact] public void PendingAndInvalidShopBlockOtherEconomicFlowsWithoutRecursion()
+        {var w=Ordered();Assert.True(GangBulkTransactions.Blocked(w));Assert.False(GangAutoArmsRules.Free(w));Assert.True(GangPopUpTransactions.OtherFree(w));Assert.False(GangMedicalTransactions.OtherFree(w));Assert.False(GangBusinessTransactions.Trade(w,S(),A(),new GangBusinessOptions(),false,Utc,"trade",Save,out _));Assert.False(GangSupplyTransactions.Begin(w,S(),A(),new GangBusinessOptions(),new GangSupplyOptions(),"supply",Save,out _));Assert.False(GangAutoLaunderTransactions.Configure(w,S(),A(),true,"auto",Save,out _));w=W();w.GangPopUp=new GangPopUpData{Accounts=null};Assert.True(GangBulkTransactions.Blocked(w));Assert.False(Begin(w));}
+        [Fact] public void OtherPendingOrInvalidBooksBlockShopEntry()
+        {var w=W();w.GangMedical=new GangMedicalData{Accounts=null};Assert.False(Begin(w));Assert.Null(w.GangPopUp);w=W();Assert.True(GangSupplyTransactions.Begin(w,S(),A(),new GangBusinessOptions(),new GangSupplyOptions(),"paid",Save,out _));Assert.False(Begin(w));Assert.Equal(9850,w.Bank);}
+        [Fact] public void HistoryOverflowAndFullAccountCapacityRefuseStart()
+        {var w=Ready();Complete(w);var account=Account(w);account.Contracts=long.MaxValue;account.Sales=long.MaxValue;account.Revenue=long.MaxValue;Assert.False(Begin(w,"again"));w=W();w.GangPopUp=new GangPopUpData();for(int n=0;n<640;n++)w.GangPopUp.Accounts.Add(new GangPopUpAccount{Gang="Other"+n});Assert.True(w.GangPopUp.Valid);Assert.False(Begin(w));}
+        [Fact] public void SaleReceiptsStayBoundedInBothBooks()
+        {var w=Ordered();w.GangPopUp.Receipts=Enumerable.Range(0,256).Select(n=>"old"+n).ToList();w.GangIllicit=new GangIllicitData{Receipts=Enumerable.Range(0,256).Select(n=>"d"+n).ToList()};Assert.True(Sale(w));Assert.Equal(256,w.GangPopUp.Receipts.Count);Assert.Equal(256,w.GangIllicit.Receipts.Count);Assert.DoesNotContain("old0",w.GangPopUp.Receipts);Assert.DoesNotContain("d0",w.GangIllicit.Receipts);}
+        [Fact] public void CheckoutRequiresCorrectPieceThenExactVoucherThenTiming()
+        {var o=O(discount:10);var c=new GangPopUpCheckout(0);c.Tick(350,true);Assert.True(c.Confirm(o,30,out _));Assert.Equal(1,c.Step);c.Tick(700,true);Assert.False(c.Confirm(o,30,out string message));Assert.Contains("cupom",message);c.Tick(1000,true);Assert.True(c.Move(1,30));c.Tick(1180,true);Assert.True(c.Move(1,30));c.Tick(1360,true);Assert.True(c.Confirm(o,30,out _));Assert.Equal(2,c.Step);c.Tick(1948,true);Assert.True(c.Confirm(o,30,out _));Assert.True(c.Locked);Assert.True(c.Success);}
+        [Fact] public void WrongPieceKeepsSameCustomerAndCannotSkipSelection()
+        {var c=new GangPopUpCheckout(0);var o=O(item:1);c.Tick(350,true);Assert.False(c.Confirm(o,30,out string message));Assert.Contains("Peca",message);Assert.Equal(0,c.Step);c.Tick(650,true);Assert.True(c.Move(1,30));c.Tick(830,true);Assert.True(c.Confirm(o,30,out _));Assert.Equal(1,c.Step);}
+        [Fact] public void CheckoutArrowWrapDiscountClampAndCooldownPreventSpam()
+        {var c=new GangPopUpCheckout(0);Assert.False(c.Move(1,30));c.Tick(350,true);Assert.True(c.Move(-1,30));Assert.Equal(29,c.Item);Assert.False(c.Move(1,30));c.Tick(530,true);Assert.True(c.Move(1,30));Assert.Equal(0,c.Item);c.Tick(710,true);Assert.True(c.Confirm(O(),30,out _));for(int n=1;n<=6;n++){c.Tick(1060+n*180,true);c.Move(1,30);}Assert.Equal(20,c.Discount);}
+        [Fact] public void TriangleCursorMatchesSourceSpeedAndBouncesAtOne()
+        {var c=new GangPopUpCheckout(0);c.Tick(350,true);c.Confirm(O(),30,out _);c.Tick(700,true);c.Confirm(O(),30,out _);c.Tick(1700,true);Assert.Equal(.85,c.Cursor,8);c.Tick(2700,true);Assert.Equal(.3,c.Cursor,8);}
+        [Fact] public void PauseAndLongGapsCannotAdvanceCheckoutOrCooldown()
+        {var c=new GangPopUpCheckout(0);c.Tick(1000,false);Assert.False(c.Confirm(O(),30,out _));c.Tick(5000,true);Assert.False(c.Confirm(O(),30,out _));c.Tick(5350,true);Assert.True(c.Confirm(O(),30,out _));}
+        [Fact] public void MissedMeterLocksFailureAndCannotConfirmAgain()
+        {var c=new GangPopUpCheckout(0);c.Tick(350,true);c.Confirm(O(),30,out _);c.Tick(700,true);c.Confirm(O(),30,out _);c.Tick(1050,true);Assert.True(c.Confirm(O(),30,out _));Assert.True(c.Locked);Assert.False(c.Success);c.Tick(2000,true);Assert.False(c.Confirm(O(),30,out _));}
+        [Fact] public void HitWindowAndInvalidCursorAreBounded()
+        {Assert.True(GangPopUpCheckout.Hit(.41,.5f));Assert.True(GangPopUpCheckout.Hit(.59,.5f));Assert.False(GangPopUpCheckout.Hit(.4,.5f));Assert.False(GangPopUpCheckout.Hit(double.NaN,.5f));Assert.False(GangPopUpCheckout.Hit(.5,float.NaN));Assert.False(GangPopUpCheckout.Hit(.5,.9f));}
+        [Fact] public void NewCheckoutRestartsSelectionForSamePersistedRequest()
+        {var w=Ordered();var o=w.GangPopUp.Pending.Customer;var c=new GangPopUpCheckout(0);c.Tick(350,true);c.Move(1,30);Assert.Equal(1,c.Item);var restored=JsonConvert.DeserializeObject<WalletData>(JsonConvert.SerializeObject(w));var next=new GangPopUpCheckout(0);Assert.Equal(0,next.Item);Assert.Equal(o.Id,restored.GangPopUp.Pending.Customer.Id);Assert.Equal(o.Target,restored.GangPopUp.Pending.Customer.Target);}
+        [Fact] public void EarnedBonusProcessesTheShopDirtyRevenueWithExistingFees()
+        {var w=Ready();Complete(w);Assert.True(GangAutoLaunderTransactions.Configure(w,S(),A(),true,"on",Save,out _));var c=new GangAutoArmsClock(0);for(int n=1;n<30;n++)Assert.False(c.Step(n*1000,true,60,GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc)));Assert.True(c.Step(30000,true,60,2));Assert.True(GangAutoLaunderTransactions.Process(w,S(),A(),new GangAutoLaunderOptions(),Utc,"process",Save,out _));Assert.Equal(0,w.GangIllicit.Accounts[0].Dirty);Assert.Equal(340,w.GangTreasury.Accounts[S().Gang].Balance);Assert.Equal(60,w.GangIllicit.Accounts[0].Fees);}
+        [Fact] public void InvalidOptionsDuplicateProductsAndCorruptRevenueAreProtected()
+        {Assert.False(new GangPopUpOptions{Goal=51}.Valid);var c=new GangPopUpOptions();c.Products.Add(c.Products[0]);Assert.False(c.Valid);Assert.False(new GangPopUpOptions{Props=null}.Valid);var w=Ordered();w.GangPopUp.Pending.Revenue=-1;Assert.False(w.GangPopUp.Valid);Assert.False(Sale(w));Assert.Null(w.GangIllicit);}
+        [Fact] public void MedicalBonusIsPreservedAndMultipliersUseMaximum()
+        {var w=Ready();w.GangMedical=new GangMedicalData();w.GangMedical.Accounts.Add(new GangMedicalAccount{Gang=S().Gang,Completed=1,StartedUtcTicks=Utc.Ticks,ExpiresUtcTicks=Utc.AddHours(1).Ticks});var old=w.GangMedical;Complete(w);Assert.Same(old,w.GangMedical);Assert.Equal(2,Math.Max(GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,7,Utc),GangMedicalTransactions.Multiplier(w.GangMedical,S().Gang,7,Utc)));Assert.Equal(2,Math.Max(GangPopUpTransactions.Multiplier(w.GangPopUp,S().Gang,6,Utc),GangMedicalTransactions.Multiplier(w.GangMedical,S().Gang,6,Utc)));}
+    }
+}

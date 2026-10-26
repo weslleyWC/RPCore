@@ -1132,5 +1132,30 @@ if medical_config.exists():
         'scope_limits':'GTA tests required for hospital resources/doctor access/clipboard/handovers/prop bone/render preferences, car entry/exit hidden paper, foot delivery, lost prop, E/END/reload/profile, other jobs and live UTC bonus/coexistence. Pop-up shop/other work/dialogue/wars/police/refinements and phases8/9 remain future.'}
     report['gang_automatic_processing']['intentional_differences']+=' Medical courier area6 earned2X from0.68 is combined by max with all earlier activities.'
     report['gang_gruppe_cash_run']['scope_limits']=report['gang_gruppe_cash_run']['scope_limits'].replace('Medical courier/other work/','Other work/')
+popup_config=Path(__file__).resolve().parents[1] / 'config/Gangs/PopUpShop.json'
+if popup_config.exists():
+    source=(a.reference_source / 'PSRP/GangSpawner.cs').read_text()
+    config=json.loads(popup_config.read_text())
+    names=re.findall(r'"([A-Z -]+)"',source.split('private readonly string[] legionClothingItems',1)[1].split('private readonly int[] legionClothingPrices',1)[0])
+    prices=[int(x) for x in re.findall(r'\b\d+\b',source.split('private readonly int[] legionClothingPrices = new int[30]',1)[1].split('private string legionRequestedItem',1)[0])]
+    people=re.findall(r'"([a-z0-9_]+)"',source.split('private void SpawnLegionCustomer()',1)[1].split('Model model =',1)[0])
+    section=source.split('public void SpawnLegionShopProps()',1)[1].split('public void CleanupLegionShopProps()',1)[0]
+    props=re.findall(r'\((-?\d+), ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)',section)
+    report['gang_pop_up_shop']={
+        'reference_source':'PSRP/GangSpawner.cs',
+        'reference_catalog_30_matches':len(names)==len(prices)==len(config['Products'])==30 and all(p['Name']==n and p['Price']==v for p,n,v in zip(config['Products'],names,prices)),
+        'reference_customer_models_52_match':len(people)==52 and config['Customers']==people,
+        'reference_nine_props_match':len(props)==len(config['Props'])==9 and all(p['Model']==int(q[0]) and all(abs(p['Point'][k]-float(v))<.0001 for k,v in zip(['X','Y','Z'],q[1:4])) and all(abs(p[k]-float(v))<.0001 for k,v in zip(['Pitch','Roll','Yaw'],q[4:])) for p,q in zip(config['Props'],props)),
+        'reference_integer_dirty_income':'turfData.Cash += legionItemPrice * (100 - legionRequiredDiscount) / 100' in source,
+        'reference_goal_and_meter':config['Goal']==10 and 'num * 0.85f % 2f' in source and 'legionCheckoutTarget) <= 0.09f' in source,
+        'reference_vouchers':'turfRandom.Next(0, 4) * 5' in source,
+        'reference_owned_area_seven':'turf.ID != 7' in source or 'turf.ID == 7' in source,
+        'reference_utc_boost':config['BoostMinutes']==60 and 'private void CompleteLegionShop()' in source and 'DateTime.UtcNow.AddHours(1.0)' in source,
+        'configuration_sha256':digest(popup_config.read_bytes()),'defaults':config,
+        'implementation':'F4 owned territory7, free start on foot at Legion source shop. Nine optional source props, own tagged customer walks from street. E starts checkout, arrows select exact item then voucher, E stops triangle meter speed.85 tolerance.09. Confirmed sale atomically updates PopUp and GangIllicit in one Wallet save; integer discounted price credits only territory dirty proceeds. Failed meter no income. Ten sales plus finalE grant2XUTC60min. Maximum of seven bonuses, never stacking or auto-enable.',
+        'persistence':'Pending captures catalog/options and immutable customer model/item/voucher/target. Confirmed Sales/Revenue and dirty credit persist through END/reload/cancel. Contracts0 history permits partial confirmed revenue without bonus. No native handles or transient selection/meter saved. Bounded receipts, rollback both books, replay/ownership/overflow/capacity guards; worst-case contract revenue checked before start.',
+        'native_limits':'Only own DECOR-tagged props/customer; skip matching installed props, no ambient entities deleted, collision off cosmetics. Pause/menu freezes checkout. Unsafe/lost owner/35m departure/path failure suspends with saved order and sales. No clothing inventory debit, personal cash/bank/treasury credit, vehicle/global police modifications. GTA pathfinding, rendering, gestures, input and timing need gameplay validation.',
+        'intentional_differences':'Persistent per-sale credit and request, END suspension/resume, optional props and native simple help/meter. FinalE confirms earned bonus instead of immediate source award; no cross-file MissionWin. Phase8 HUD/needs and phase9 job realism remain future.'}
+    report['gang_automatic_processing']['intentional_differences']+=' Pop-up territory7 bonus from0.69 uses maximum2X with prior six activities.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

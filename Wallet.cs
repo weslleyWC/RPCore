@@ -33,6 +33,14 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangPopUpData GangPopUp=>data.GangPopUp;
+        public static bool GangPopUpOtherFree=>GangPopUpTransactions.OtherFree(data);
+        public static bool GangPopUpBegin(GangState s,GangTurfDefinition a,GangPopUpOptions c,string id,out bool changed)=>GangPopUpTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangPopUpCustomer(GangState s,GangTurfDefinition a,string id,GangPopUpOrder o,out bool changed)=>GangPopUpTransactions.Customer(data,s,a,id,o,Save,out changed);
+        public static bool GangPopUpSale(GangState s,GangTurfDefinition a,string id,string customer,out bool changed)=>GangPopUpTransactions.Sale(data,s,a,id,customer,Save,out changed);
+        public static bool GangPopUpFail(string id,string customer,out bool changed)=>GangPopUpTransactions.Fail(data,id,customer,Save,out changed);
+        public static bool GangPopUpCancel(string id,out bool changed)=>GangPopUpTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangPopUpComplete(GangState s,GangTurfDefinition a,string id,DateTime utc,out bool changed)=>GangPopUpTransactions.Complete(data,s,a,id,utc,Save,out changed);
         public static GangMedicalData GangMedical=>data.GangMedical;
         public static bool GangMedicalOtherFree=>GangMedicalTransactions.OtherFree(data);
         public static bool GangMedicalBegin(GangState s,GangTurfDefinition area,GangMedicalOptions c,string id,out bool changed)=>GangMedicalTransactions.Begin(data,s,area,c,id,Save,out changed);

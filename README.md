@@ -1,4 +1,10 @@
-# RPCore 0.68.0 — GTA V Legacy
+# RPCore 0.69.0 — GTA V Legacy
+
+## Fase6.5AA — loja temporária Legion
+
+[Atualização0.69.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.69.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.69.0.zip) · [Guia/teste](docs/FASE-6.5AA-0.69.0.md)
+
+F4, território7: clientes pedem peça e cupom; setas selecionam e E confirma/para a barra. Cada acerto gera receita suja local;10 vendas e confirmação final liberam2X por1h. Vendas/pedido persistem ao suspender; cancelamento conserva receita confirmada.2510 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem futuras.
 
 ## Fase6.5Z — documentos médicos
 

@@ -1,0 +1,305 @@
+{
+  "Goal": 10,
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "ArrivalSeconds": 90,
+  "Shop": {
+    "Name": "Loja temporaria Legion",
+    "X": 210.3288,
+    "Y": -933.1739,
+    "Z": 30.69181
+  },
+  "CustomerSpot": {
+    "Name": "Balcao",
+    "X": 208.0823,
+    "Y": -932.3,
+    "Z": 30.69178,
+    "Heading": 230.0376
+  },
+  "Products": [
+    {
+      "Name": "GRAPHIC T-SHIRT",
+      "Price": 40
+    },
+    {
+      "Name": "HOODIE",
+      "Price": 85
+    },
+    {
+      "Name": "BASEBALL CAP",
+      "Price": 25
+    },
+    {
+      "Name": "SWEATSHIRT",
+      "Price": 65
+    },
+    {
+      "Name": "STREETWEAR",
+      "Price": 120
+    },
+    {
+      "Name": "CARGO PANTS",
+      "Price": 75
+    },
+    {
+      "Name": "DENIM JEANS",
+      "Price": 90
+    },
+    {
+      "Name": "TRACKSUIT",
+      "Price": 150
+    },
+    {
+      "Name": "BOMBER JACKET",
+      "Price": 180
+    },
+    {
+      "Name": "PUFFER JACKET",
+      "Price": 220
+    },
+    {
+      "Name": "DENIM JACKET",
+      "Price": 130
+    },
+    {
+      "Name": "LEATHER JACKET",
+      "Price": 250
+    },
+    {
+      "Name": "TANK TOP",
+      "Price": 25
+    },
+    {
+      "Name": "POLO SHIRT",
+      "Price": 55
+    },
+    {
+      "Name": "FLANNEL SHIRT",
+      "Price": 70
+    },
+    {
+      "Name": "LONG SLEEVE TEE",
+      "Price": 50
+    },
+    {
+      "Name": "JOGGERS",
+      "Price": 65
+    },
+    {
+      "Name": "SWEATPANTS",
+      "Price": 55
+    },
+    {
+      "Name": "CARGO SHORTS",
+      "Price": 60
+    },
+    {
+      "Name": "BASKETBALL SHORTS",
+      "Price": 45
+    },
+    {
+      "Name": "BUCKET HAT",
+      "Price": 30
+    },
+    {
+      "Name": "BEANIE",
+      "Price": 20
+    },
+    {
+      "Name": "SNAPBACK CAP",
+      "Price": 35
+    },
+    {
+      "Name": "SUNGLASSES",
+      "Price": 80
+    },
+    {
+      "Name": "SNEAKERS",
+      "Price": 140
+    },
+    {
+      "Name": "HIGH TOPS",
+      "Price": 160
+    },
+    {
+      "Name": "SLIDERS",
+      "Price": 35
+    },
+    {
+      "Name": "WORK BOOTS",
+      "Price": 120
+    },
+    {
+      "Name": "CHAIN NECKLACE",
+      "Price": 95
+    },
+    {
+      "Name": "CROSSBODY BAG",
+      "Price": 75
+    }
+  ],
+  "Customers": [
+    "a_m_y_business_01",
+    "a_m_y_business_02",
+    "a_m_y_hipster_01",
+    "a_m_y_hipster_02",
+    "a_m_y_hipster_03",
+    "a_m_y_skater_01",
+    "a_m_y_skater_02",
+    "a_m_y_stwhi_01",
+    "a_m_y_stwhi_02",
+    "a_m_y_beach_01",
+    "a_m_y_beach_02",
+    "a_m_y_genstreet_01",
+    "a_m_y_genstreet_02",
+    "a_m_y_downtown_01",
+    "a_m_y_eastsa_01",
+    "a_m_y_eastsa_02",
+    "a_m_y_soucent_01",
+    "a_m_y_soucent_02",
+    "a_m_y_vinewood_01",
+    "a_m_y_vinewood_02",
+    "a_m_m_bevhills_01",
+    "a_m_m_bevhills_02",
+    "a_m_m_business_01",
+    "a_m_m_eastsa_01",
+    "a_m_m_eastsa_02",
+    "a_m_m_genfat_01",
+    "a_m_m_socenlat_01",
+    "a_m_m_soucent_01",
+    "a_m_m_soucent_02",
+    "a_f_y_business_01",
+    "a_f_y_business_02",
+    "a_f_y_business_03",
+    "a_f_y_hipster_01",
+    "a_f_y_hipster_02",
+    "a_f_y_hipster_03",
+    "a_f_y_hipster_04",
+    "a_f_y_beach_01",
+    "a_f_y_eastsa_01",
+    "a_f_y_eastsa_02",
+    "a_f_y_soucent_01",
+    "a_f_y_soucent_02",
+    "a_f_y_soucent_03",
+    "a_f_y_tourist_01",
+    "a_f_y_vinewood_01",
+    "a_f_y_vinewood_02",
+    "a_f_m_bevhills_01",
+    "a_f_m_bevhills_02",
+    "a_f_m_business_02",
+    "a_f_m_eastsa_01",
+    "a_f_m_eastsa_02",
+    "a_f_m_soucent_01",
+    "a_f_m_soucent_02"
+  ],
+  "Props": [
+    {
+      "Model": -1478135602,
+      "Point": {
+        "Name": "Banca 1",
+        "X": 211.7501,
+        "Y": -932.0195,
+        "Z": 29.69485
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -77.6011
+    },
+    {
+      "Model": -1184096195,
+      "Point": {
+        "Name": "Banca 2",
+        "X": 209.0232,
+        "Y": -933.0248,
+        "Z": 30.13969
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": 54.75916
+    },
+    {
+      "Model": -1251029815,
+      "Point": {
+        "Name": "Banca 3",
+        "X": 210.3468,
+        "Y": -934.1182,
+        "Z": 29.83701
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -125.7955
+    },
+    {
+      "Model": 296207441,
+      "Point": {
+        "Name": "Banca 4",
+        "X": 211.0929,
+        "Y": -933.1302,
+        "Z": 29.69367
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -122.5539
+    },
+    {
+      "Model": -1478135602,
+      "Point": {
+        "Name": "Banca 5",
+        "X": 211.0302,
+        "Y": -931.5827,
+        "Z": 29.69485
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -28.80613
+    },
+    {
+      "Model": 1560277278,
+      "Point": {
+        "Name": "Banca 6",
+        "X": 210.4808,
+        "Y": -932.674,
+        "Z": 30.38482
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -174.2936
+    },
+    {
+      "Model": -1184096195,
+      "Point": {
+        "Name": "Banca 7",
+        "X": 209.8883,
+        "Y": -931.795,
+        "Z": 30.13969
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": 54.65314
+    },
+    {
+      "Model": 172569958,
+      "Point": {
+        "Name": "Banca 8",
+        "X": 209.3963,
+        "Y": -935.4008,
+        "Z": 29.76275
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": 77.43171
+    },
+    {
+      "Model": -962367694,
+      "Point": {
+        "Name": "Banca 9",
+        "X": 209.9902,
+        "Y": -931.6437,
+        "Z": 30.69781
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -96.66871
+    }
+  ]
+}

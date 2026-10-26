@@ -190,3 +190,6 @@ Stockade/cinco seguranças/moneybags carregados fisicamente com offsetsPSRP e en
 ## Base0.68.0 — documentos médicos
 
 Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre em veículo, persistênciaCollect/Delivered. Fase8 refinar HUD/painel/ícones/estado de documento; fase9 avaliar diálogos, recepção no destino, gestos/offset por ped, ocultação na entrada/saída e risco/tempo/dificuldade. Preservar coleta salva, carros pessoais, preferências de props, provaDelivered/replay/rollback,85% e bônusUTC não cumulativo. Hospital/MLO/gestos/bones e carro precisam de GTA; base não declara fases8/9 concluídas.
+
+
+0.69.0 / fase6.5AA: loja temporária Legion do território7 implementada conforme catálogo/props/clientes/checkout da PSRP. Refinar HUD, caminho dos clientes, gestos e realismo nas fases8/9, depois de validação no GTA. Receita suja por venda confirmada persiste ao cancelar; não converter em pagamento pessoal. Guia FASE-6.5AA-0.69.0.md.
