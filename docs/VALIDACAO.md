@@ -1,9 +1,9 @@
-# Validação0.79.0 — assalto organizado/comboio
+# Validação0.80.0 — emboscadas rivais e líderes
 
-2931 testes aprovados (2891 anteriores+40novos), Release net48 sem erros ou avisos. TRX:DataTests-0.79.0.trx. Auditoria estática:PSRP-SYSTEMS-AUDIT-0.79.0.json. Nenhuma DLL de referência executada.
+2992 testes aprovados (2931 anteriores+61novos), Release net48 sem erros/avisos. TRX:DataTests-0.80.0.trx. Auditoria estáticaPSRP-SYSTEMS-AUDIT-0.80.0.json; nenhuma DLL de referência executada.
 
-Cobertura:15origens/60pontos, plano/assentos, posse/origem/alvo, chegada física, tempo/baixas/reload, estado monotônico, bloqueio de combate antes da chegada, reforços e captura/+50rep/replay, cancelamento/falha sem transferência ou pagamento, erro de save/rollback/campos futuros e capturas antigas sem comboio.
+Cobertura:book optativo/snapshot/limites/counters/histórico32/replay/rollback/campos futuros/recuperação interrompida, bloqueios de disputa/atividade, clocks de aproximação/tiro/fuga/pausa/rollover, envelope/zonas/interior, tipo de iniciação imutável/distâncias e saída do líder preservando demais dados. Sem prêmio financeiro/territorial por emboscada ou conversa.
 
-GTA não executado na nuvem: testar condução/navmesh, vagas/modelos/embarque/desembarque/combate/cleanup e mods pelo roteiro FASE-6.5AK-0.79.0.md. F2/F11/saves/configs anteriores preservados. Drive-bys/diálogos/variantes e polícia/fase7 seguem; refinamentos8/9 reservados.
+GTA não executado:seguir FASE-6.5AL-0.80.0.md para tiros/navmesh/escape/cleanup, líder/atalhos/iniciações, perfis e recursos instalados. F2/F11/saves/configs preservados; interface global/necessidades e realismo dos trabalhos continuam fases8/9. Polícia/prisão e fase7 ainda pendentes.
 
-Instalador PowerShell7 em diretório GTA simulado:duas execuções sobre0.78.0,399arquivos existentes preservados byte por byte. Novas fixtures:viagem/chegada/combate parcial/pronto/falha/concluído/cancelado com planos, regras, modelos, mortos, carros destruídos e relógios; Wallet/diplomacia/histórico anteriores intactos. Assault.json instalado e personalização conservada na segunda execução. Relatório:installer-validation-0.79.0.json. ZIP CRC/manifests, fonte/DLL/auditoria/TRX conferidos no empacotamento. Nenhum teste de gameplay inferido dessa simulação.
+Instalador PowerShell7 em diretório GTA simulado:duas execuções sobre0.79.0, **414 arquivos existentes preservados byte por byte**. Fixtures de emboscada desativada/ativa/repelida/fuga/interrupção/morte, snapshots de carro/modelos/regras, histórico e iniciação pendente/tipos/presença/Wallet/territórios conservados. NovoDriveBy.json instalado; personalização mantida na segunda execução, sem modificar snapshot pendente. Relatório:installer-validation-0.80.0.json. CRC/manifests e correspondência de fonte/DLL/auditoria/TRX verificados no empacotamento; isso não constitui teste de gameplay.

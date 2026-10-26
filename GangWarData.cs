@@ -32,7 +32,7 @@ namespace RPCore
         public static int WinChance(int attackers,int defenders)=>attackers<defenders?55:attackers>defenders?45:50;
         public static bool Reinforce(int initial,int defeated,int spawned,int total)=>initial>=1 && initial<=3 && total>initial && total<=6 && spawned==initial && defeated>=((initial+1)/2) && defeated<=initial;
         public static int Delta(int previous,int current,bool eligible)=>eligible?(int)Math.Min(1000,Math.Max(0,(long)unchecked(current-previous))):0;
-        public static bool Free(GangState s)=>s!=null && (s.Turf==null || s.Turf.Valid && s.Turf.Pending==null) && s.Loyalty?.Pending==null && s.Strength?.Pending==null && s.Driving?.Pending==null;
+        public static bool Free(GangState s)=>s!=null && (s.DriveBys==null || s.DriveBys.Valid && s.DriveBys.Pending==null) && (s.Turf==null || s.Turf.Valid && s.Turf.Pending==null) && s.Loyalty?.Pending==null && s.Strength?.Pending==null && s.Driving?.Pending==null;
         internal static void Record(GangWarData book,string id,string attacker,string defender,int area,string result)
         {book.History.Add(new GangWarRecord{Id=id,Attacker=attacker,Defender=defender,Area=area,Result=result});if(book.History.Count>32)book.History.RemoveAt(0);}
     }

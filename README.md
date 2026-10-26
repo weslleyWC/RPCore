@@ -1,3 +1,9 @@
+## Atualização0.80.0 — emboscadas rivais e líderes
+
+[Baixar atualização0.80.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.80.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.80.0.zip) · [Roteiro único de teste](docs/FASE-6.5AL-0.80.0.md)
+
+F4 → Emboscadas rivais de carro:opção desligada nos saves antigos, teste real ou intervalo5–15min/85%, um motorista/três atiradores, aproximação/tiro/fuga e histórico sem prêmio. Fora de HQs/territórios e sem outra atividade. END/desligar interrompe; reload registra interrupção sem recriar ataque. E a1,5m do líder com presença ligada abre iniciação conforme tipo da gangue, retomada ou gestão/saída da própria gangue; outras afiliações não recrutam. Menus/saves/F2/F11 e recursos visuais preservados.2992 testes aprovados, build sem erros/avisos; tiros/navegação/conversa precisam do GTA. Polícia/prisão e fase7 seguem; refinamentos8/9 reservados.
+
 ## Atualização0.79.0 — assalto organizado com comboio
 
 [Baixar atualização0.79.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.79.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.79.0.zip) · [Roteiro único de teste](docs/FASE-6.5AK-0.79.0.md)

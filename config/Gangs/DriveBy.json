@@ -1,0 +1,10 @@
+{
+  "VehicleModel": "granger",
+  "MinIntervalSeconds": 300,
+  "MaxIntervalSeconds": 900,
+  "Chance": 85,
+  "ApproachSeconds": 45,
+  "ShootingMilliseconds": 7500,
+  "EscapeSeconds": 20,
+  "ShootDistance": 35
+}
