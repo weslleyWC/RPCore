@@ -33,6 +33,15 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangCashierData GangCashier=>data.GangCashier;
+        public static bool GangCashierOtherFree=>GangCashierTransactions.OtherFree(data);
+        public static bool GangCashierBegin(GangState s,GangTurfDefinition a,GangCashierOptions c,string id,out bool changed)=>GangCashierTransactions.Begin(data,s,a,c,id,Save,out changed);
+        public static bool GangCashierUpdate(GangState s,GangTurfDefinition a,string id,GangCashierProgress p,out bool changed)=>GangCashierTransactions.Update(data,s,a,id,p,Save,out changed);
+        public static bool GangCashierCustomer(GangState s,GangTurfDefinition a,string id,GangCashierOrder o,out bool changed)=>GangCashierTransactions.Customer(data,s,a,id,o,Save,out changed);
+        public static bool GangCashierScan(GangState s,GangTurfDefinition a,string id,string customer,int index,out bool changed)=>GangCashierTransactions.Scan(data,s,a,id,customer,index,Save,out changed);
+        public static bool GangCashierPay(GangState s,GangTurfDefinition a,string id,string customer,out bool changed)=>GangCashierTransactions.Pay(data,s,a,id,customer,Save,out changed);
+        public static bool GangCashierCancel(string id,out bool changed)=>GangCashierTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangCashierComplete(GangState s,GangTurfDefinition a,string id,out bool changed)=>GangCashierTransactions.Complete(data,s,a,id,()=>Cash,n=>Cash=n,Save,out changed);
         public static GangPierData GangPier=>data.GangPier;
         public static bool GangPierOtherFree=>GangPierTransactions.OtherFree(data);
         public static bool GangPierBegin(GangState s,GangTurfDefinition a,GangPierOptions c,string id,out bool changed)=>GangPierTransactions.Begin(data,s,a,c,id,Save,out changed);

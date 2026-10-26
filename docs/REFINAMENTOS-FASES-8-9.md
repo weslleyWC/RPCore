@@ -214,3 +214,6 @@ Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre e
 
 
 0.76.0 / fase6.5AH: manutenção do píer no território14 implementada com21 pontos reais da PSRP(2 reposições+19 regas); toast da referência diz7 incorretamente. Refinar HUD, acesso/rumos/animação/regador e realismo nas fases8/9 após teste no GTA. Guia FASE-6.5AH-0.76.0.md.
+
+
+0.77.0 / fase6.5AI: caixa24/7 do território15 implementado com52 produtos/40 modelos/scans e salário400 da PSRP; mensagem da fonte anuncia bônus sem código para ativá-lo, não inventar recompensa. Refinar painel/cesta, rota/atendente/uso externo do balcão e realismo nas fases8/9 após teste no GTA. Guia FASE-6.5AI-0.77.0.md.

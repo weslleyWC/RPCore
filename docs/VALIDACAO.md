@@ -1,7 +1,7 @@
-# Validação 0.76.0
+# Validação 0.77.0
 
-2797 testes aprovados, zero falhas(2759 anteriores +38 novos). Build Release net48: zero erros/avisos.21 tarefas em ordem,3s/duração/alcance/a pé, prazo/pausa/rollover, snapshots/campos futuros, rollback/replay, limites/bloqueios/UTC e bônus anteriores.
+2832 testes aprovados, zero falhas(2797 anteriores +35 novos). Build Release net48: zero erros/avisos. Pedidos/scans/pagamento do cliente, salário400/MP/protagonista, rollback/replay/overflow, snapshots/campos futuros, bloqueios/limites e prazo10min.
 
-Auditoria PSRP-SYSTEMS-AUDIT-0.76.0.json compara referência estática,21 pontos/rumos/animações/regador/regras e DLL compilada. TRX: DataTests-0.76.0.trx. GTA não executado: seguir FASE-6.5AH-0.76.0.md para teste real.
+Auditoria PSRP-SYSTEMS-AUDIT-0.77.0.json compara fonte estática,52 preços/40 modelos/prateleiras/pagamento real e DLL compilada. TRX: DataTests-0.77.0.trx. GTA não executado: seguir FASE-6.5AI-0.77.0.md para teste real.
 
-Instalador PowerShell7/Linux em GTA simulado: duas execuções, 354 arquivos existentes preservados byte a byte. Perfis com reposições/regas parciais/prontas/reprovadas, tempo, bônus vigente/expirado/cancelado e snapshot/configuração personalizados mantidos. Bônus anteriores, receita suja, celularF2 e saves/recursos instalados preservados. Não substitui teste no GTA.
+Instalador PowerShell7/Linux em GTA simulado: duas execuções, 371 arquivos existentes preservados byte a byte. Perfis com cesta/scans parciais/completos, clientes pagos, pronto5/5, turno pago/reprovado/cancelado e salário histórico/saldos cash+banco mantidos. Snapshots e configuração personalizada, bônus anteriores, celularF2 e saves/recursos instalados preservados. Não substitui teste no GTA.

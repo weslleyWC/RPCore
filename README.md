@@ -1,4 +1,10 @@
-# RPCore 0.76.0 — GTA V Legacy
+# RPCore 0.77.0 — GTA V Legacy
+
+## Fase6.5AI — turno de caixa 24/7
+
+[Atualização0.77.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.77.0.zip) · [Fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.77.0.zip) · [Guia/teste](docs/FASE-6.5AI-0.77.0.md)
+
+F4, território15: clientes compram nas prateleiras, E registra cada item e recebe pagamento. Cinco clientes em10min, E final paga$400 em dinheiro pessoal; sem bônus de processamento, conforme código real da PSRP. Atendente original preservado, pode trabalhar pelo lado externo. Cestas/scans/tempo persistem.2832 testes aprovados; GTA requer teste do usuário. Fases8/9 permanecem reservadas.
 
 ## Fase6.5AH — manutenção Del Perro Pier
 

@@ -47,8 +47,8 @@ namespace RPCore
             systems.Add(ach);
             systems.Add(needs);
             systems.Add(inv);
-            systems.Add(new ShopSystem(pool, inv, ach));
             var shifts = new ShiftGate();
+            systems.Add(new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier"));
             var pizza = new PizzaJob(pool, ach, shifts); systems.Add(pizza);
             var postOp = new PostOpJob(pool, ach, shifts); systems.Add(postOp);
             var uber = new UberJob(pool, ach, shifts); systems.Add(uber);
@@ -128,7 +128,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.76.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.77.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

@@ -1,0 +1,388 @@
+{
+  "Goal": 5,
+  "Wage": 80,
+  "SecondsLimit": 600,
+  "StartRadius": 8,
+  "Stand": {
+    "Name": "Caixa 24/7",
+    "X": -3040.46,
+    "Y": 583.7421,
+    "Z": 7.908928,
+    "Heading": 26.97503
+  },
+  "Till": {
+    "Name": "Cliente no caixa",
+    "X": -3041.154,
+    "Y": 585.3275,
+    "Z": 7.908927,
+    "Heading": 205.6297
+  },
+  "Exit": {
+    "Name": "Saida",
+    "X": -3043.564,
+    "Y": 592.288,
+    "Z": 7.908928
+  },
+  "Spawns": [
+    {
+      "Name": "Chegada1",
+      "X": -3034.21,
+      "Y": 582.9148,
+      "Z": 7.801618
+    },
+    {
+      "Name": "Chegada2",
+      "X": -3041.081,
+      "Y": 597.0467,
+      "Z": 7.664927
+    }
+  ],
+  "Shelves": [
+    {
+      "Name": "Prateleira 1",
+      "X": -3042.437,
+      "Y": 588.0391,
+      "Z": 7.908928,
+      "Heading": 205.6258
+    },
+    {
+      "Name": "Prateleira 2",
+      "X": -3044.809,
+      "Y": 589.4162,
+      "Z": 7.908928,
+      "Heading": 106.147
+    },
+    {
+      "Name": "Prateleira 3",
+      "X": -3045.081,
+      "Y": 590.8381,
+      "Z": 7.908928,
+      "Heading": 108.9958
+    },
+    {
+      "Name": "Prateleira 4",
+      "X": -3043.564,
+      "Y": 592.288,
+      "Z": 7.908928,
+      "Heading": 17.362
+    },
+    {
+      "Name": "Prateleira 5",
+      "X": -3041.027,
+      "Y": 590.6803,
+      "Z": 7.908928,
+      "Heading": 109.9793
+    },
+    {
+      "Name": "Prateleira 6",
+      "X": -3038.758,
+      "Y": 586.5665,
+      "Z": 7.908928,
+      "Heading": 291.7615
+    }
+  ],
+  "Customers": [
+    "a_m_y_business_01",
+    "a_m_y_business_02",
+    "a_m_y_business_03",
+    "a_f_y_business_01",
+    "a_f_y_business_02",
+    "a_f_m_business_02",
+    "a_m_y_hipster_01",
+    "a_m_y_hipster_02",
+    "a_m_y_hipster_03",
+    "a_m_y_hipster_04",
+    "a_f_y_hipster_01",
+    "a_f_y_hipster_02",
+    "a_f_y_hipster_03",
+    "a_f_y_hipster_04",
+    "a_m_y_tourist_01",
+    "a_m_y_tourist_02",
+    "a_f_y_tourist_01",
+    "a_f_y_tourist_02",
+    "a_m_y_beach_01",
+    "a_m_y_beach_02",
+    "a_m_y_beach_03",
+    "a_f_y_beach_01",
+    "a_m_y_stbla_01",
+    "a_m_y_stbla_02",
+    "a_f_y_eastsa_01",
+    "a_f_y_eastsa_02",
+    "a_m_y_eastsa_01",
+    "a_m_y_eastsa_02",
+    "a_m_y_soucent_01",
+    "a_m_y_soucent_02",
+    "a_f_y_soucent_01",
+    "a_f_y_soucent_02",
+    "a_m_m_bevhills_01",
+    "a_m_m_bevhills_02",
+    "a_f_m_bevhills_01",
+    "a_f_m_bevhills_02",
+    "a_m_m_genfat_01",
+    "a_m_m_genfat_02",
+    "a_f_m_fatbla_01",
+    "a_f_m_fatwhite_01"
+  ],
+  "Products": [
+    {
+      "Id": "Water",
+      "Name": "Water",
+      "Price": 2
+    },
+    {
+      "Id": "Milk",
+      "Name": "Milk",
+      "Price": 2
+    },
+    {
+      "Id": "Coke",
+      "Name": "Coke",
+      "Price": 2
+    },
+    {
+      "Id": "Pepsi",
+      "Name": "Pepsi",
+      "Price": 2
+    },
+    {
+      "Id": "MountainDew",
+      "Name": "Mountain Dew",
+      "Price": 2
+    },
+    {
+      "Id": "Sprite",
+      "Name": "Sprite",
+      "Price": 2
+    },
+    {
+      "Id": "Redbull",
+      "Name": "Redbull",
+      "Price": 3
+    },
+    {
+      "Id": "Monster",
+      "Name": "Monster",
+      "Price": 3
+    },
+    {
+      "Id": "Coffee",
+      "Name": "Coffee",
+      "Price": 3
+    },
+    {
+      "Id": "RedWine",
+      "Name": "Red Wine",
+      "Price": 12
+    },
+    {
+      "Id": "WhiteWine",
+      "Name": "White Wine",
+      "Price": 12
+    },
+    {
+      "Id": "Corona",
+      "Name": "Corona",
+      "Price": 8
+    },
+    {
+      "Id": "Vodka",
+      "Name": "Vodka",
+      "Price": 18
+    },
+    {
+      "Id": "Rum",
+      "Name": "Rum",
+      "Price": 18
+    },
+    {
+      "Id": "Whiskey",
+      "Name": "Whiskey",
+      "Price": 20
+    },
+    {
+      "Id": "Tequila",
+      "Name": "Tequila",
+      "Price": 20
+    },
+    {
+      "Id": "Hershey",
+      "Name": "Hershey",
+      "Price": 3
+    },
+    {
+      "Id": "HersheyCookie",
+      "Name": "Hershey Cookie",
+      "Price": 3
+    },
+    {
+      "Id": "Twix",
+      "Name": "Twix",
+      "Price": 2
+    },
+    {
+      "Id": "Snickers",
+      "Name": "Snickers",
+      "Price": 2
+    },
+    {
+      "Id": "Reeses",
+      "Name": "Reeses",
+      "Price": 2
+    },
+    {
+      "Id": "MarsBar",
+      "Name": "Mars Bar",
+      "Price": 2
+    },
+    {
+      "Id": "BabyRuth",
+      "Name": "Baby Ruth",
+      "Price": 2
+    },
+    {
+      "Id": "GalaxyBar",
+      "Name": "Galaxy Bar",
+      "Price": 2
+    },
+    {
+      "Id": "MilkyWay",
+      "Name": "Milky Way",
+      "Price": 2
+    },
+    {
+      "Id": "SandwichBLT",
+      "Name": "Sandwich BLT",
+      "Price": 5
+    },
+    {
+      "Id": "SandwichChickSalad",
+      "Name": "Sandwich Chick Salad",
+      "Price": 5
+    },
+    {
+      "Id": "SandwichEggMayo",
+      "Name": "Sandwich Egg Mayo",
+      "Price": 5
+    },
+    {
+      "Id": "SandwichPBJelly",
+      "Name": "Sandwich PBJelly",
+      "Price": 5
+    },
+    {
+      "Id": "Donut",
+      "Name": "Donut",
+      "Price": 4
+    },
+    {
+      "Id": "Bagel",
+      "Name": "Bagel",
+      "Price": 4
+    },
+    {
+      "Id": "ChocMuffin",
+      "Name": "Choc Muffin",
+      "Price": 3
+    },
+    {
+      "Id": "Apple",
+      "Name": "Apple",
+      "Price": 2
+    },
+    {
+      "Id": "Orange",
+      "Name": "Orange",
+      "Price": 2
+    },
+    {
+      "Id": "Lime",
+      "Name": "Lime",
+      "Price": 2
+    },
+    {
+      "Id": "Pear",
+      "Name": "Pear",
+      "Price": 2
+    },
+    {
+      "Id": "Kiwi",
+      "Name": "Kiwi",
+      "Price": 2
+    },
+    {
+      "Id": "Phone",
+      "Name": "Phone",
+      "Price": 600
+    },
+    {
+      "Id": "Cigarettes",
+      "Name": "Cigarettes",
+      "Price": 17
+    },
+    {
+      "Id": "Cigar",
+      "Name": "Cigar",
+      "Price": 28
+    },
+    {
+      "Id": "BakingSoda",
+      "Name": "Baking Soda",
+      "Price": 4
+    },
+    {
+      "Id": "GrapeSyrup",
+      "Name": "Grape Syrup",
+      "Price": 6
+    },
+    {
+      "Id": "CoughMedicine",
+      "Name": "Cough Medicine",
+      "Price": 5
+    },
+    {
+      "Id": "FirstAidKit",
+      "Name": "First Aid Kit",
+      "Price": 15
+    },
+    {
+      "Id": "Shaker",
+      "Name": "Shaker",
+      "Price": 10
+    },
+    {
+      "Id": "ProteinStrawberry",
+      "Name": "Protein Strawberry",
+      "Price": 5
+    },
+    {
+      "Id": "ProtienChocolate",
+      "Name": "Protien Chocolate",
+      "Price": 5
+    },
+    {
+      "Id": "ProteinBanana",
+      "Name": "Protein Banana",
+      "Price": 5
+    },
+    {
+      "Id": "ProtienVanilla",
+      "Name": "Protien Vanilla",
+      "Price": 5
+    },
+    {
+      "Id": "Umbrella",
+      "Name": "Umbrella",
+      "Price": 10
+    },
+    {
+      "Id": "Screwdriver",
+      "Name": "Screwdriver",
+      "Price": 6
+    },
+    {
+      "Id": "FuelCan",
+      "Name": "Fuel Can",
+      "Price": 50
+    }
+  ]
+}

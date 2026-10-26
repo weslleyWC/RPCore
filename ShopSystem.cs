@@ -16,6 +16,7 @@ namespace RPCore
         public string Name { get { return "shop"; } }
 
         readonly ObjectPool pool;
+        readonly Func<bool> suppressInteraction;
         readonly InventorySystem inv;
         readonly AchievementSystem ach;
         readonly NativeMenu menu = new NativeMenu("Store", "");
@@ -25,9 +26,10 @@ namespace RPCore
 
         static Vector3 Pos(ShopDef s) { return new Vector3(s.X, s.Y, s.Z); }
 
-        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach)
+        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null)
         {
             this.pool = pool;
+            this.suppressInteraction = suppressInteraction;
             this.inv = inv;
             this.ach = ach;
             shops = ShopLocations.Resolve(Store.LoadDef("Shops.json", ShopLocations.Defaults));
@@ -78,6 +80,7 @@ namespace RPCore
 
         public void Tick()
         {
+            if (suppressInteraction?.Invoke() == true) { menu.Visible = false; return; }
             if (InterfaceOptions.ModalOpen) return;
             Ped p = Game.Player.Character;
             Vector3 pos = p.Position;
