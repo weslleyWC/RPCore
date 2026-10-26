@@ -185,3 +185,8 @@ Engate físico nativo com guincho fornecido, duas recuperações e nota de danoP
 ## Base0.67.0 — transporte de valores
 
 Stockade/cinco seguranças/moneybags carregados fisicamente com offsetsPSRP e entrega ao recebedor. Fase8 refinar HUD/ícones/carga/bônus; fase9 avaliar segurança simultânea/diálogos/ritmo/gestos/props por ped e modelo, portas do blindado, acompanhante/rota/ameaças/danos/dificuldade e embarque/saída. Preservar preferênciasUseProps, carro pessoal, cleanup de ocupados, provaDelivered/replay/rollback, parcialrefaz e pronto persistido,85% e bônusUTC não cumulativo. Gameplays/native armored-truck coexistence ainda precisam do GTA; não declara refinamentos concluídos.
+
+
+## Base0.68.0 — documentos médicos
+
+Base segue médico/papel/locaisPSRP com coleta/entrega a pé e trânsito livre em veículo, persistênciaCollect/Delivered. Fase8 refinar HUD/painel/ícones/estado de documento; fase9 avaliar diálogos, recepção no destino, gestos/offset por ped, ocultação na entrada/saída e risco/tempo/dificuldade. Preservar coleta salva, carros pessoais, preferências de props, provaDelivered/replay/rollback,85% e bônusUTC não cumulativo. Hospital/MLO/gestos/bones e carro precisam de GTA; base não declara fases8/9 concluídas.

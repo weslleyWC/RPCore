@@ -1,0 +1,20 @@
+{
+  "BoostMinutes": 60,
+  "StartRadius": 8,
+  "HandoverMilliseconds": 1500,
+  "DoctorModel": "s_m_m_doctor_01",
+  "DocumentModel": "prop_cs_documents_01",
+  "Doctor": {
+    "Name": "Coleta de documentos",
+    "X": -940.9167,
+    "Y": -337.9953,
+    "Z": 38.97752,
+    "Heading": 109.513
+  },
+  "Destination": {
+    "Name": "Centro medico",
+    "X": 342.6898,
+    "Y": -1397.448,
+    "Z": 32.50928
+  }
+}

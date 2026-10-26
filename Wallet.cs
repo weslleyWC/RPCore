@@ -33,6 +33,13 @@ namespace RPCore
         public static GangBulkData GangBulk=>data.GangBulk;
         public static GangArmsData GangArms=>data.GangArms;
         public static GangAutoArmsData GangAutoArms=>data.GangAutoArms;
+        public static GangMedicalData GangMedical=>data.GangMedical;
+        public static bool GangMedicalOtherFree=>GangMedicalTransactions.OtherFree(data);
+        public static bool GangMedicalBegin(GangState s,GangTurfDefinition area,GangMedicalOptions c,string id,out bool changed)=>GangMedicalTransactions.Begin(data,s,area,c,id,Save,out changed);
+        public static bool GangMedicalCollect(GangState s,GangTurfDefinition area,string id,out bool changed)=>GangMedicalTransactions.Collect(data,s,area,id,Save,out changed);
+        public static bool GangMedicalDeliver(GangState s,GangTurfDefinition area,string id,out bool changed)=>GangMedicalTransactions.Deliver(data,s,area,id,Save,out changed);
+        public static bool GangMedicalCancel(string id,out bool changed)=>GangMedicalTransactions.Cancel(data,id,Save,out changed);
+        public static bool GangMedicalComplete(GangState s,GangTurfDefinition area,string id,DateTime utc,out bool changed)=>GangMedicalTransactions.Complete(data,s,area,id,utc,Save,out changed);
         public static GangCashRunData GangCashRun=>data.GangCashRun;
         public static bool GangCashRunOtherFree=>GangCashRunTransactions.OtherFree(data);
         public static bool GangCashRunBegin(GangState s,GangTurfDefinition area,GangCashRunOptions c,string id,out bool changed)=>GangCashRunTransactions.Begin(data,s,area,c,id,Save,out changed);

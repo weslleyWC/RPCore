@@ -1,4 +1,10 @@
-# RPCore 0.67.0 — GTA V Legacy
+# RPCore 0.68.0 — GTA V Legacy
+
+## Fase6.5Z — documentos médicos
+
+[Atualização0.68.0 — DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.68.0.zip) · [Código-fonte0.68.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.68.0.zip) · [Instalação e teste](docs/FASE-6.5Z-0.68.0.md)
+
+F4 → Comercio, território6 controlado: GPS médico → a pé/ponto livre → Entregar documentos medicos. E<=2m/troca1,5s coleta com médico/prancheta/papel na mão. Viaje a pé ou em veículo; papel oculto no carro/visível ao sair. E<=2m no centro médico salva entrega, E final2XUTC60min área6. Coleta preservada emEND/reload, retoma a pé sem refazer médico; entregue confirma sem respawn. Livro/snapshot/recibos/rollback/cancelamento grátis, sem tocar carro pessoal/estoque/dinheiro ou auto-enable. Props respeitam preferências. Máximo2X/85%/produção ativa intactos.2468 testes/build sem erros ou avisos; gameplay pendente. Loja temporária/demais atividades/refinamentos/diálogo/guerras/polícia e fases8/9 futuros.
 
 ## Fase6.5Y — transporte de valores Gruppe
 
