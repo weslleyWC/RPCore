@@ -20,6 +20,11 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
+        public static CustodyData Custody=>data.Custody;
+        public static bool CustodyConfigure(bool enabled,out bool changed)=>CustodyTransactions.Configure(data,enabled,Save,out changed);
+        public static bool CustodyBook(string id,int stars,CustodyOptions options,out bool changed)=>CustodyTransactions.Book(data,id,stars,options,Save,out changed);
+        public static bool CustodyCheckpoint(string id,int remaining,out bool changed)=>CustodyTransactions.Checkpoint(data,id,remaining,Save,out changed);
+        public static bool CustodyRelease(string id,bool bail,out bool changed)=>CustodyTransactions.Release(data,id,bail,Save,out changed);
         public static TrafficData Traffic=>data.Traffic;
         public static bool TrafficConfigure(bool enabled,out bool changed)=>TrafficTransactions.Configure(data,enabled,Save,out changed);
         public static bool TrafficBegin(TrafficTicket ticket,out bool changed)=>TrafficTransactions.Begin(data,ticket,Save,out changed);

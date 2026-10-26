@@ -13,7 +13,7 @@ namespace RPCore
     {
         public string Name=>"traffic";const string Decor="RPCore_TrafficOwner";
         sealed class Retired{public Vehicle Car;public Ped Officer;public int Token,Last;}
-        readonly TrafficWitnessMeter witnessMeter=new TrafficWitnessMeter();readonly List<Retired> retired=new List<Retired>();readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> belt,gangFree;readonly TrafficOptions options;readonly NativeMenu menu;
+        readonly TrafficWitnessMeter witnessMeter=new TrafficWitnessMeter();readonly List<Retired> retired=new List<Retired>();readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> belt,gangFree;readonly Action custody;readonly TrafficOptions options;readonly NativeMenu menu;
         Vehicle cruiser,vehicle;Ped officer,actor;Model carModel,pedModel;Blip blip;string profile,ticketId,recovered;TrafficTicket detected;int token,requested,last,elapsed,scanAt,taskAt,stopped,inspection,cooldown,sampleElapsed;bool preparing,observer,walking,eligibleBefore;
         bool Active=>preparing || officer!=null;bool Driver=>actor!=null && actor.Exists() && actor==Game.Player.Character && vehicle!=null && vehicle.Exists() && actor.CurrentVehicle==vehicle && vehicle.Driver==actor;
         static bool Tagged(Entity e,int t)=>e!=null && e.Exists() && e.Handle!=Game.Player.Character.Handle && Function.Call<bool>(Hash.DECOR_EXIST_ON,e,Decor) && Function.Call<int>(Hash.DECOR_GET_INT,e,Decor)==t;
@@ -21,15 +21,16 @@ namespace RPCore
         static bool Road(Vehicle v)=>v!=null && v.Exists() && (v.Model.IsCar || v.Model.IsBike) && !v.Model.IsBicycle && !v.Model.IsLawEnforcementVehicle && !JobVehicles.Contains(v);
         bool Safe=>Game.Player.Character.IsHuman && Game.Player.Character.IsAlive && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsRagdoll && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.Wanted.WantedLevel==0;
         bool StartSafe=>Wallet.Traffic?.Enabled==true && Wallet.Traffic.Valid && Wallet.Traffic.Pending==null && Safe && !Game.IsPaused && !InterfaceOptions.ModalOpen && gate.Owner==null && Wallet.GangWarEconomyFree && gangFree() && retired.Count==0 && Game.Player.Character.IsInVehicle() && Road(Game.Player.Character.CurrentVehicle) && Game.Player.Character.CurrentVehicle.Driver==Game.Player.Character && Function.Call<int>(Hash.GET_INTERIOR_FROM_ENTITY,Game.Player.Character)==0;
-        public TrafficSystem(ObjectPool pool,ShiftGate gate,Func<bool> belt,Func<bool> gangFree=null)
+        public TrafficSystem(ObjectPool pool,ShiftGate gate,Func<bool> belt,Func<bool> gangFree=null,Action custody=null)
         {
-            this.pool=pool;this.gate=gate;this.belt=belt;this.gangFree=gangFree??(()=>true);options=Store.LoadDef("Police/Traffic.json",TrafficOptions.Defaults);if(options?.Valid!=true){options=TrafficOptions.Defaults();Log.Write("Invalid traffic options retained; embedded defaults used.");}
+            this.custody=custody;this.pool=pool;this.gate=gate;this.belt=belt;this.gangFree=gangFree??(()=>true);options=Store.LoadDef("Police/Traffic.json",TrafficOptions.Defaults);if(options?.Valid!=true){options=TrafficOptions.Defaults();Log.Write("Invalid traffic options retained; embedded defaults used.");}
             menu=new NativeMenu("Policia / transito","FISCALIZACAO / ABORDAGENS / MULTAS");pool.Add(menu);Visuals.Register(menu,"core");last=Game.GameTime;
         }
         void Add(string title,string description,Action action,bool enabled=true){var row=new NativeItem(title,description){Enabled=enabled};row.Activated+=(s,e)=>{try{action();}catch(Exception ex){Close("interrupted");Log.Error("traffic menu",ex);Notify.Show("Operacao nao concluida; saldo e registros gravados conservados.");}};menu.Add(row);}
         public void OpenMenu()
         {
-            pool.HideAll();menu.Clear();var book=Wallet.Traffic;if(book!=null && !book.Valid){Add("Dados de transito protegidos","Confira Wallet.json/backup. Nenhuma multa ou saldo sera substituido.",()=>{});menu.Visible=true;return;}
+            pool.HideAll();menu.Clear();var book=Wallet.Traffic;if(book!=null && !book.Valid){Add("Dados de transito protegidos","Confira Wallet.json/backup. Nenhuma multa ou saldo sera substituido.",()=>{});if(custody!=null)Add("Custodia / prisao / fianca","Sistema independente das autuacoes protegidas.",custody);menu.Visible=true;return;}
+            if(custody!=null)Add("Custodia / prisao / fianca","Rendicao voluntaria a policial na perseguicao nativa, fichamento, cumprimento de pena e liberacao.",custody);
             Add("Fiscalizacao: "+(book?.Enabled==true?"LIGADA":"DESLIGADA"),"Opcional. Observa infracoes reais vistas por policial em viatura proxima; resposta usa somente agente/viatura proprios. Sem alterar policia nativa. Comeca desligada em saves antigos.",()=>{bool enabled=Wallet.Traffic?.Enabled!=true;if(Wallet.TrafficConfigure(enabled,out _)){if(!enabled)Close("interrupted");OpenMenu();}});
             Add("Solicitar patrulha observadora (teste)","Dirija seu carro/moto fora de missao/trabalho/procurado. Patrulha segue por ate"+options.ObserverSeconds+"s e so autua se observar infracao real. Usar cinto/limites evita autuacao. Sem multa inventada pelo botao.",()=>{if(Begin(null))menu.Visible=false;else Notify.Show("Confira fiscalizacao ligada, motorista, carro/moto pessoal, area externa e ausencia de atividade/pendencias.");},!Active && book?.Enabled==true);
             if(Active)Add("Encerrar patrulha / abordagem","Recolhe apenas recursos proprios. Infracao ja registrada continua consultavel e nao e perdoada por encerrar/desligar.",()=>{Close("interrupted");OpenMenu();});

@@ -82,6 +82,7 @@
     <Compile Include="../GangLeaderData.cs" Link="GangLeaderData.cs" />
     <Compile Include="../GangWarData.cs" Link="GangWarData.cs" />
     <Compile Include="../GangData.cs" Link="GangData.cs" />
+    <Compile Include="../CustodyData.cs" Link="CustodyData.cs" />
     <Compile Include="../TrafficData.cs" Link="TrafficData.cs" />
     <Compile Include="../Economy.cs" Link="Economy.cs" />
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="../InventoryData.cs" Link="InventoryData.cs" />
     <Compile Include="../VisualAssetDefaults.cs" Link="VisualAssetDefaults.cs" />
     <EmbeddedResource Include="../config/Gangs/Assault.json" LogicalName="RPCore.JobDefaults.GangAssault.json" />
+    <EmbeddedResource Include="../config/Police/Custody.json" LogicalName="RPCore.JobDefaults.Custody.json" />
     <EmbeddedResource Include="../config/Police/Traffic.json" LogicalName="RPCore.JobDefaults.Traffic.json" />
     <EmbeddedResource Include="../config/Gangs/Territories.json" LogicalName="RPCore.JobDefaults.GangTerritories.json" />
     <EmbeddedResource Include="../config/Gangs/Driving.json" LogicalName="RPCore.JobDefaults.GangDriving.json" />

@@ -1,3 +1,9 @@
+## Atualização0.82.0 — custódia, pena e fiança
+
+[Baixar DLL pronta](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.82.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.82.0.zip) · [Roteiro de teste](docs/FASE-6.6B-0.82.0.md)
+
+F11 → Polícia/trânsito → Custódia: opção por perfil, rendição explícita durante perseguição nativa, policial a pé próximo/visão, fichamento, cela verificada, pena salva sem tempo offline, fiança bancária e liberação. Recarga exige retomada explícita; novas estrelas não são apagadas. Sem desligar polícia globalmente, confiscar inventário ou alterar multas anteriores.3070 testes aprovados; build sem erros/avisos. Interior Mission Row e reação da polícia precisam de teste no GTA. F2/F11/saves/configs/visuais mantidos. Fases8/9 reservadas.
+
 ## Atualização0.81.0 — fiscalização, abordagem e multas
 
 [Baixar atualização0.81.0](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.81.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.81.0.zip) · [Roteiro único de teste](docs/FASE-6.6A-0.81.0.md)

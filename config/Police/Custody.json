@@ -1,0 +1,19 @@
+{
+  "SecondsPerStar": 60,
+  "BailPerStar": 500,
+  "Cell": {
+    "Name": "Mission Row / cela",
+    "X": 459.85,
+    "Y": -994.38,
+    "Z": 24.91,
+    "Heading": 90
+  },
+  "Exit": {
+    "Name": "Mission Row / saida",
+    "X": 425.12,
+    "Y": -979.56,
+    "Z": 30.71,
+    "Heading": 90
+  },
+  "Radius": 5
+}
