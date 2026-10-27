@@ -105,6 +105,7 @@ namespace RPCore
             var passenger = new PassengerSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity);systems.Add(passenger);
             var world = new WorldSystem(pool, shifts);world.ClockChanged+=needs.IgnoreNativeBedClock;systems.Add(world);
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu, passenger.OpenMenu); systems.Add(phone);
+            inv.PhoneRequested=()=>phone.OnKey(new KeyEventArgs(Visuals.PhoneKey));
             var housing = new HousingSystem(pool, shifts); systems.Add(housing);
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
             var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
@@ -139,7 +140,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.92.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.93.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -215,6 +216,7 @@ namespace RPCore
                 catch (Exception ex) { faulted.Add(inventory); Log.Error("inventory.grid.key", ex); inventory.Dispose(); }
                 return;
             }
+            if(inventory.UsingItem)return;
             if (!phone.Visible && !faulted.Contains(radial) && (radial.Visible || e.KeyCode == InterfaceOptions.RadialKey))
             {
                 try { radial.OnKey(e); }
@@ -230,6 +232,7 @@ namespace RPCore
                 }
                 return;
             }
+            if(!pool.AreAnyVisible && !faulted.Contains(inventory))try{if(inventory.TryQuickUse(e))return;}catch(Exception ex){Log.Error("inventory.quick.key",ex);return;}
             if (e.KeyCode == Cfg.DumpKey)
             {
                 var p = Game.Player.Character;

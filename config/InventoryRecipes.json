@@ -1,0 +1,91 @@
+[
+  {
+    "Id": "shake_strawberry_water",
+    "Name": "Shaker strawberry / water",
+    "Result": "psrp_shakerstrawberry",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_proteinstrawberry": 1,
+      "water": 1
+    }
+  },
+  {
+    "Id": "shake_strawberry_milk",
+    "Name": "Shaker strawberry / milk",
+    "Result": "psrp_shakerstrawberry",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_proteinstrawberry": 1,
+      "milk": 1
+    }
+  },
+  {
+    "Id": "shake_chocolate_water",
+    "Name": "Shaker chocolate / water",
+    "Result": "psrp_shakerchocolate",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_protienchocolate": 1,
+      "water": 1
+    }
+  },
+  {
+    "Id": "shake_chocolate_milk",
+    "Name": "Shaker chocolate / milk",
+    "Result": "psrp_shakerchocolate",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_protienchocolate": 1,
+      "milk": 1
+    }
+  },
+  {
+    "Id": "shake_banana_water",
+    "Name": "Shaker banana / water",
+    "Result": "psrp_shakerbanana",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_proteinbanana": 1,
+      "water": 1
+    }
+  },
+  {
+    "Id": "shake_banana_milk",
+    "Name": "Shaker banana / milk",
+    "Result": "psrp_shakerbanana",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_proteinbanana": 1,
+      "milk": 1
+    }
+  },
+  {
+    "Id": "shake_vanilla_water",
+    "Name": "Shaker vanilla / water",
+    "Result": "psrp_shakervanilla",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_protienvanilla": 1,
+      "water": 1
+    }
+  },
+  {
+    "Id": "shake_vanilla_milk",
+    "Name": "Shaker vanilla / milk",
+    "Result": "psrp_shakervanilla",
+    "Ingredients": {
+      "psrp_shaker": 1,
+      "psrp_protienvanilla": 1,
+      "milk": 1
+    }
+  },
+  {
+    "Id": "wash_shaker",
+    "Name": "Lavar shaker",
+    "Result": "psrp_shaker",
+    "Ingredients": {
+      "psrp_shakerdirty": 1,
+      "water": 1
+    }
+  }
+]

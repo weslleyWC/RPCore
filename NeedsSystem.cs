@@ -23,7 +23,7 @@ namespace RPCore
         public float Sleep { get { return d.Sleep; } }
 
         public NeedsSystem(ShiftGate gate=null,Func<bool> menusOpen=null) { this.gate=gate;this.menusOpen=menusOpen;Reload(); }
-        public NeedsConsumption PrepareFood(string id,float hunger,float thirst)=>NeedsRules.Food(d,id,hunger,thirst);
+        public NeedsConsumption PrepareFood(string id,float hunger,float thirst,float energy=0)=>NeedsRules.Food(d,id,hunger,thirst,energy);
         public bool Consumed(string id)=>d.LastConsumptionId==id;
         public bool ApplyConsumption(NeedsConsumption receipt)=>NeedsRules.Apply(ref d,receipt,next=>Store.Write("Needs.json",next));
 

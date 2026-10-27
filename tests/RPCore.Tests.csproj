@@ -12,6 +12,10 @@
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <EmbeddedResource Include="../config/InventoryRecipes.json" LogicalName="RPCore.Inventory.Recipes" />
+    <EmbeddedResource Include="../config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
+    <Compile Include="../InventoryInteractionData.cs" Link="InventoryInteractionData.cs" />
+    <Compile Include="../InventoryReference.cs" Link="InventoryReference.cs" />
     <Compile Include="../InventoryArmoryData.cs" Link="InventoryArmoryData.cs" />
     <Compile Include="../BankTransfer.cs" Link="BankTransfer.cs" />
     <Compile Include="../RoleplayDefaults.cs" Link="RoleplayDefaults.cs" />

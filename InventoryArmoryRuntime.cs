@@ -11,6 +11,7 @@ namespace RPCore
         readonly ShiftGate armoryGate;
         readonly Dictionary<int,int> ammoBaseline=new Dictionary<int,int>();
         readonly HashSet<int> temporaryWeapons=new HashSet<int>();
+        readonly HashSet<int> nativeSeen=new HashSet<int>();
         bool armoryTracking,armoryApplyPending;
         int armoryScan,armoryError;
         int armoryActor;
@@ -19,7 +20,8 @@ namespace RPCore
             foreach(WeaponHash hash in Enum.GetValues(typeof(WeaponHash)))
             {
                 if(hash==WeaponHash.Unarmed)continue;string id=InventoryArmoryRules.WeaponId(unchecked((int)(uint)hash));
-                if(!Defs.ContainsKey(id))Defs[id]=new ItemDef{Id=id,Name=hash.ToString(),Icon=hash.ToString().ToLowerInvariant(),Weapon=(uint)hash,Weight=0,Desc="ENTER: equipar / guardar. Municao separada no inventario."};
+                InventoryReference.Weapons.TryGetValue(hash.ToString(),out var presentation);
+                if(!Defs.ContainsKey(id))Defs[id]=new ItemDef{Id=id,Name=presentation?[0]??hash.ToString(),Icon=presentation?[1]??hash.ToString().ToLowerInvariant(),Weapon=(uint)hash,Weight=0,Desc="ENTER: equipar / guardar. Municao separada no inventario."};
             }
         }
         void RegisterAmmo()
@@ -38,11 +40,12 @@ namespace RPCore
                 else if(group==WeaponGroup.SMG){name="Submetralhadoras";icon="smgammo";}
                 else if(group==WeaponGroup.Shotgun){name="Escopetas";icon="shotgunammo";}
                 else if(group==WeaponGroup.Sniper){name="Precisao";icon="sniperammo";}
-                else if(group==WeaponGroup.Heavy)icon=name.IndexOf("Grenade",StringComparison.OrdinalIgnoreCase)>=0?"glammo":"rocketammo";
+                else if(group==WeaponGroup.Heavy)icon=name.IndexOf("Grenade",StringComparison.OrdinalIgnoreCase)>=0?"glammo":name=="Minigun"?"pistolammo":"rocketammo";
                 Defs[id]=new ItemDef{Id=id,Name="Municao / "+name,Icon=icon,Weight=.05f,Desc="Reserva compartilhada por armas com este tipo de municao. Nao consome ao equipar; desconta os disparos reais."};
             }
         }
-        void ResetArmory(){ammoBaseline.Clear();temporaryWeapons.Clear();armoryTracking=false;armoryApplyPending=true;armoryActor=0;armoryScan=Game.GameTime;armoryError=Game.GameTime;RegisterAmmo();}
+        void RememberNative(Ped p){nativeSeen.Clear();if(p!=null && p.Exists())foreach(var w in p.Weapons)nativeSeen.Add(unchecked((int)(uint)w.Hash));}
+        void ResetArmory(){ammoBaseline.Clear();temporaryWeapons.Clear();armoryTracking=false;armoryApplyPending=true;armoryActor=0;armoryScan=Game.GameTime;armoryError=Game.GameTime;RememberNative(Game.Player.Character);RegisterAmmo();}
         bool ArmorySafe()
         {
             var p=Game.Player.Character;
@@ -69,7 +72,7 @@ namespace RPCore
             if(!ArmorySafe())
             {
                 // Do not import a temporary firearm acquired during an activity when it ends.
-                if(d.Armory!=null && p!=null && p.Exists() && !p.IsDead && (armoryGate?.Owner!=null && armoryGate.Owner!="needs_sleep" || Game.IsMissionActive))
+                if(d.Armory!=null && p!=null && p.Exists() && !p.IsDead && (armoryGate?.Owner!=null && armoryGate.Owner!="needs_sleep" && !InventoryArmoryRules.ActivityAllows(armoryGate.Owner) || Game.IsMissionActive))
                     foreach(var w in p.Weapons)if(d.Armory?.Weapons.ContainsKey(InventoryArmoryRules.WeaponId(unchecked((int)(uint)w.Hash)))!=true)temporaryWeapons.Add(unchecked((int)(uint)w.Hash));
                 armoryTracking=false;ammoBaseline.Clear();return;
             }
@@ -82,15 +85,17 @@ namespace RPCore
                 {
                     armoryScan=Game.GameTime+500;
                     temporaryWeapons.RemoveWhere(h=>!p.Weapons.HasWeapon((WeaponHash)unchecked((uint)h)));
-                    var observations=p.Weapons.Where(w=>Supported(w) && !temporaryWeapons.Contains(unchecked((int)(uint)w.Hash)) && d.Armory?.Weapons.ContainsKey(InventoryArmoryRules.WeaponId(unchecked((int)(uint)w.Hash)))!=true).Select(w=>{var row=CaptureWeapon(w);return new ArmoryObservation{Weapon=row,Ammo=row.AmmoType==0?0:Function.Call<int>(Hash.GET_PED_AMMO_BY_TYPE,p,row.AmmoType),Stacked=(WeaponGroup)Function.Call<uint>(Hash.GET_WEAPONTYPE_GROUP,row.Hash)==WeaponGroup.Thrown};}).ToList();
+                    bool fresh=armoryTracking && !armoryApplyPending;
+                    var observations=p.Weapons.Where(w=>Supported(w) && !temporaryWeapons.Contains(unchecked((int)(uint)w.Hash)) && (d.Armory?.Weapons.ContainsKey(InventoryArmoryRules.WeaponId(unchecked((int)(uint)w.Hash)))!=true || fresh && !nativeSeen.Contains(unchecked((int)(uint)w.Hash)) && InventoryArmoryRules.CanReacquire(d,InventoryArmoryRules.WeaponId(unchecked((int)(uint)w.Hash))))).Select(w=>{var row=CaptureWeapon(w);return new ArmoryObservation{Weapon=row,Ammo=row.AmmoType==0?0:Function.Call<int>(Hash.GET_PED_AMMO_BY_TYPE,p,row.AmmoType),Stacked=(WeaponGroup)Function.Call<uint>(Hash.GET_WEAPONTYPE_GROUP,row.Hash)==WeaponGroup.Thrown,Reacquired=d.Armory?.Weapons.ContainsKey(InventoryArmoryRules.WeaponId(row.Hash))==true,NewAmmo=fresh && row.AmmoType!=0 && !ammoBaseline.ContainsKey(row.AmmoType)};}).ToList();
                     var before=d;
                     if(!InventoryArmoryRules.Import(ref d,observations,n=>Store.Write("Inventory.json",n)))throw new InvalidOperationException("Armory import rejected.");
                     if(!ReferenceEquals(before,d)){armoryApplyPending=true;RegisterAmmo();dirty=true;}
                     if(!armoryTracking || armoryApplyPending)ApplyNativeInventory();
                     armoryTracking=true;
+                    RememberNative(p);
                 }
                 if(InterfaceOptions.HideWeaponWheel && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p))
-                    foreach(var c in new[]{GTA.Control.SelectWeapon,GTA.Control.SelectPrevWeapon,GTA.Control.SelectNextWeapon,GTA.Control.SelectWeaponAutoRifle,GTA.Control.SelectWeaponHandgun,GTA.Control.SelectWeaponHeavy,GTA.Control.SelectWeaponShotgun,GTA.Control.SelectWeaponSmg,GTA.Control.SelectWeaponSniper,GTA.Control.NextWeapon,GTA.Control.PrevWeapon})Game.DisableControlThisFrame(c);
+                    foreach(var c in new[]{GTA.Control.SelectWeapon,GTA.Control.SelectPrevWeapon,GTA.Control.SelectNextWeapon,GTA.Control.SelectWeaponUnarmed,GTA.Control.SelectWeaponMelee,GTA.Control.SelectWeaponAutoRifle,GTA.Control.SelectWeaponHandgun,GTA.Control.SelectWeaponHeavy,GTA.Control.SelectWeaponShotgun,GTA.Control.SelectWeaponSmg,GTA.Control.SelectWeaponSniper,GTA.Control.NextWeapon,GTA.Control.PrevWeapon})Game.DisableControlThisFrame(c);
             }
             catch(Exception ex){Game.DisableControlThisFrame(GTA.Control.Attack);Game.DisableControlThisFrame(GTA.Control.Attack2);ReportArmory(ex);}
         }
@@ -126,6 +131,7 @@ namespace RPCore
                 ammoBaseline[type]=Function.Call<int>(Hash.GET_PED_AMMO_BY_TYPE,p,type);
             }
             armoryApplyPending=false;
+            RememberNative(p);
         }
         bool PrepareArmoryEdit(string id)
         {

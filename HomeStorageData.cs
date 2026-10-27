@@ -35,7 +35,7 @@ namespace RPCore
             Dictionary<string,int> box;if(!next.Containers.TryGetValue(container,out box) || box==null) next.Containers[container]=box=new Dictionary<string,int>();
             if(double.IsNaN(Weight(next.Items,weight)) || double.IsNaN(Weight(box,weight)))return false;
             if(!ItemTransfer.Move(deposit?next.Items:box,deposit?box:next.Items,item,quantity,weight,deposit?capacity:maxWeight))return false;
-            next.GridSlots=InventoryLayout.Reconcile(next.GridSlots,next.Items.Where(p=>p.Value>0).Select(p=>p.Key));
+            next.GridSlots=InventoryLayout.Reconcile(next.GridSlots,next.Items.Where(p=>p.Value>0).Select(p=>p.Key),24);
             save(next);result=next;return true;
         }
     }

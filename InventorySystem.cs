@@ -25,6 +25,9 @@ namespace RPCore
         InvData d;
         bool dirty;int consumptionRetry;
         public event Action<ItemDef> Used;
+        public Action PhoneRequested;
+        public readonly List<InventoryRecipe> Recipes;
+        public bool StorageGridVisible=>grid.StorageOpen;
 
         static List<ItemDef> DefaultItems()
         {
@@ -47,6 +50,7 @@ namespace RPCore
             armoryGate = gate;
 
             var items = Store.LoadDef("Items.json", DefaultItems);
+            Store.LoadDef("Inventory/ReferenceItems.json",()=>InventoryReference.Load<List<ItemDef>>("Items"));
             string packs = Path.Combine(Cfg.Dir, "Inventory");
             if (Directory.Exists(packs)) foreach (string pack in Directory.GetFiles(packs, "*.json").OrderBy(p => p))
             {
@@ -55,6 +59,7 @@ namespace RPCore
             }
             Defs = items.Where(i => i != null && !string.IsNullOrEmpty(i.Id) && i.Weight >= 0 && !float.IsNaN(i.Weight) && !float.IsInfinity(i.Weight)).GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.Last());
             RegisterWeapons();
+            Recipes=Store.LoadDef("InventoryRecipes.json",()=>InventoryReference.Load<List<InventoryRecipe>>("Recipes")).Where(r=>r?.Valid==true && Defs.ContainsKey(r.Result) && r.Ingredients.Keys.All(Defs.ContainsKey)).ToList();
             pool.Add(menu); Visuals.Register(menu, "inventory");
             grid = new InventoryGridView(this, needs);
             Reload();
@@ -62,6 +67,7 @@ namespace RPCore
 
         public void Reload()
         {
+            StopUsing();
             d = Store.Load("Inventory.json", () => new InvData());
             ResetArmory();
             if (d.Items == null) d.Items = new Dictionary<string, int>();
@@ -110,17 +116,24 @@ namespace RPCore
         }
 
         void Use(ItemDef def)
-        {try{if(def?.Weapon!=null){EquipInventoryWeapon(def);return;}if(def!=null && def.Id.StartsWith("ammo_",StringComparison.Ordinal)){Notify.Show(def.Desc);return;}Consume(def);}catch(Exception ex){Log.Error("inventory use",ex);Notify.Show("Uso nao concluido. Confira arquivos/permissoes.");}}
+        {try{if(def==null || Count(def.Id)<=0)return;if(!CanUseItem()){Notify.Show("Aguarde: use itens a pe, fora de menus/atividade e com controle do personagem.");return;}if(def.Weapon!=null){EquipInventoryWeapon(def);return;}if(def.Id.StartsWith("ammo_",StringComparison.Ordinal)){Notify.Show(def.Desc);return;}if(def.Action=="phone"){grid.Close();menu.Visible=false;PhoneRequested?.Invoke();return;}if(def.Hunger==0 && def.Thirst==0 && def.Health==0 && Energy(def)==0){Notify.Show("Este item e material ou ferramenta; consulte a receita/atividade correspondente.");return;}Consume(def);}catch(Exception ex){StopUsing();Log.Error("inventory use",ex);Notify.Show("Uso nao concluido. Confira arquivos/permissoes.");}}
         void Consume(ItemDef def)
         {
-            if(def==null || def.Hunger==0 && def.Thirst==0 && def.Health==0 || Game.Player.Character.IsDead)return;
+            if(def==null || Game.Player.Character.IsDead)return;
+            if(Game.Player.Character.IsInCombat || Game.Player.Character.IsShooting){Notify.Show("Guarde o item e saia do combate para consumir.");return;}
             if(!RecoverConsumption())return;
-            string id=Guid.NewGuid().ToString("N");var receipt=needs.PrepareFood(id,def.Hunger,def.Thirst);var next=NeedsRules.Consume(d,def,receipt);if(next==null)return;
+            string id=Guid.NewGuid().ToString("N");var receipt=needs.PrepareFood(id,def.Hunger,def.Thirst,Energy(def));
+            var effective=Newtonsoft.Json.JsonConvert.DeserializeObject<ItemDef>(Newtonsoft.Json.JsonConvert.SerializeObject(def));
+            if(effective.ReturnItem==null && InventoryReference.Returns.TryGetValue(def.Id,out var returned))effective.ReturnItem=returned;
+            if(!string.IsNullOrEmpty(effective.ReturnItem) && !Defs.ContainsKey(effective.ReturnItem))throw new InvalidOperationException("Return item definition unavailable.");
+            var next=NeedsRules.Consume(d,effective,receipt);if(next==null)return;
+            if(armoryGate!=null && !armoryGate.Acquire("inventory_use"))return;
             // Commit removal and its recovery receipt before applying any benefit.
             Store.Write("Inventory.json",next);d=next;dirty=true;
-            if(!RecoverConsumption())return;
+            if(!RecoverConsumption()){StopUsing();return;}
             if(def.Health>0){var p=Game.Player.Character;p.Health=(int)Math.Min((long)p.MaxHealth,(long)p.Health+Math.Min(def.Health,10000));}
             Notify.Show("Used " + def.Name);
+            try{BeginUsing(def);}catch(Exception ex){Log.Error("item presentation",ex);StopUsing();}
             try{ach.Bump("items_used");if(def.Health>0)ach.Bump("first_aid");}catch(Exception ex){Log.Error("consumption achievement",ex);}
             if(Used!=null)foreach(Action<ItemDef> callback in Used.GetInvocationList())try{callback(def);}catch(Exception ex){Log.Error("consumption presentation",ex);}
         }
@@ -153,7 +166,7 @@ namespace RPCore
                     menu.Add(new NativeItem(kv.Key, "Definition missing; item preserved.") { AltTitle = "x" + kv.Value, Enabled = false });
                     continue;
                 }
-                var item = new NativeItem(def.Name, def.Desc) { AltTitle = "x" + kv.Value };
+                var item = new NativeItem(def.Name, Describe(def)) { AltTitle = "x" + kv.Value };
                 Visuals.Badge(menu, item, def.Icon ?? def.Id);
                 item.Activated += (s, e) => { Use(def); };
                 menu.Add(item);
@@ -163,6 +176,7 @@ namespace RPCore
 
         public void Tick()
         {
+            try{UsingTick();}catch(Exception ex){Log.Error("item presentation tick",ex);StopUsing();}BlockNumberControls();
             ArmoryTick();
             if(d.Consumption!=null && !needs.Consumed(d.Consumption.Id) && unchecked(Game.GameTime-consumptionRetry)>=0){consumptionRetry=Game.GameTime+5000;RecoverConsumption();}
             // rebuild outside LemonUI's event dispatch, not inside the Activated handler
@@ -197,11 +211,10 @@ namespace RPCore
         public bool Transfer(string container,string id,bool deposit,float capacity,int quantity)
         {
             if(!PrepareArmoryEdit(id))return false;
-            var old=d;
             bool moved=InventoryTransfers.Move(d,container,id,quantity,deposit,capacity,Cfg.MaxWeight,key=>Defs.ContainsKey(key)?Defs[key].Weight:.1f,
-                next=>{ try{d=next;Save();}catch{d=old;throw;} },out var result);
+                next=>Store.Write("Inventory.json",next),out var result);
             if(moved){d=result;dirty=true;ApplyArmoryEdit(id);}return moved;
         }
-        public void Dispose() { grid.Close(false); menu.Visible = false; }
+        public void Dispose() { StopUsing();grid.Close(false); menu.Visible = false; }
     }
 }

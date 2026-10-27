@@ -14,6 +14,8 @@ namespace RPCore
         public int Health;
         public uint? Weapon;
         public string Icon;
+        public float? Energy;
+        public string ReturnItem,Action;
     }
 
     public class InvData : ExtensibleData

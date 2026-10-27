@@ -60,7 +60,7 @@ namespace RPCore
             {
                 ItemDef item = def;
                 var row = new NativeItem(item.Name, item.Desc) { AltTitle = "$" + item.Price };
-                Visuals.Badge(menu, row, item.Id);
+                Visuals.Badge(menu, row, item.Icon??item.Id);
                 row.Activated += (sender, e) => Buy(item);
                 menu.Add(row);
             }
@@ -73,12 +73,10 @@ namespace RPCore
                 var actor=Game.Player.Character;bool here=(editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(p=>p.Kind==EditorPointKind.Grocery && p.Name==current.Name && Math.Abs(p.Pose.X-current.X)<.01f && Math.Abs(p.Pose.Y-current.Y)<.01f && Math.Abs(p.Pose.Z-current.Z)<.01f);
                 if(!here || actor.IsInVehicle() || actor.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || actor.Position.DistanceTo(Pos(current))>1.8f){menu.Visible=false;Notify.Show("Retorne a loja do mapa ativo, a pe e sem procurado.");return;}
             }
-            if (Wallet.Cash < item.Price) { Notify.Show("~r~Not enough cash."); return; }
-            if (!inv.Add(item.Id)) { Notify.Show("~r~Too heavy, can't carry that."); return; }
-            if (!Wallet.Debit(item.Price)) { inv.Remove(item.Id); return; }
-            Sfx.Play("buy");
-            ach.Bump("items_bought");
-            ach.Bump("cash_spent", item.Price);
+            var player=Game.Player.Character;
+            if(current==null || player.IsDead || player.IsInVehicle() || Game.IsMissionActive || Game.IsPaused || Profile.Detect()!=Profile.Id || player.Position.DistanceTo(Pos(current))>4){menu.Visible=false;return;}
+            if(!inv.BuySaved(item)){Notify.Show("Compra nao confirmada. Confira saldo, peso e RPCore.log.");return;}
+            try{Sfx.Play("buy");ach.Bump("items_bought");ach.Bump("cash_spent", item.Price);}catch(Exception ex){Log.Error("purchase presentation",ex);}
             menu.Name = current.Name + "   $" + Wallet.Cash;
         }
 

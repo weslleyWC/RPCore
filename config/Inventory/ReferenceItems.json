@@ -1,0 +1,284 @@
+[
+  {
+    "Id": "psrp_coke",
+    "Name": "Coke",
+    "Icon": "coke",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 22.0,
+    "Energy": 2.0
+  },
+  {
+    "Id": "psrp_mountaindew",
+    "Name": "Mt Dew",
+    "Icon": "mtdew",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 21.0,
+    "Energy": 2.0
+  },
+  {
+    "Id": "psrp_shakerstrawberry",
+    "Name": "Shaker Strawberry",
+    "Icon": "shaker",
+    "Weight": 0.3,
+    "Price": 4,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 40.0,
+    "Energy": 17.0,
+    "ReturnItem": "psrp_shakerdirty"
+  },
+  {
+    "Id": "psrp_shakerchocolate",
+    "Name": "Shaker Chocolate",
+    "Icon": "shaker",
+    "Weight": 0.3,
+    "Price": 4,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 40.0,
+    "Energy": 17.0,
+    "ReturnItem": "psrp_shakerdirty"
+  },
+  {
+    "Id": "psrp_shakerbanana",
+    "Name": "Shaker Banana",
+    "Icon": "shaker",
+    "Weight": 0.3,
+    "Price": 4,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 40.0,
+    "Energy": 17.0,
+    "ReturnItem": "psrp_shakerdirty"
+  },
+  {
+    "Id": "psrp_shakervanilla",
+    "Name": "Shaker Vanilla",
+    "Icon": "shaker",
+    "Weight": 0.3,
+    "Price": 4,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Thirst": 40.0,
+    "Energy": 17.0,
+    "ReturnItem": "psrp_shakerdirty"
+  },
+  {
+    "Id": "psrp_hershey",
+    "Name": "Hershey",
+    "Icon": "hershey",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_hersheycookie",
+    "Name": "Hershey Cookie",
+    "Icon": "hersheycookie",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_twix",
+    "Name": "Twix",
+    "Icon": "twix",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_snickers",
+    "Name": "Snickers",
+    "Icon": "snickers",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_reeses",
+    "Name": "Reeses",
+    "Icon": "reeses",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_milkyway",
+    "Name": "Milky Way",
+    "Icon": "milkyway",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_babyruth",
+    "Name": "Baby Ruth",
+    "Icon": "babyruth",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_galaxybar",
+    "Name": "Galaxy",
+    "Icon": "galaxybar",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_marsbar",
+    "Name": "Mars Bar",
+    "Icon": "marsbar",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 18.0
+  },
+  {
+    "Id": "psrp_donut",
+    "Name": "Donut",
+    "Icon": "donut",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 22.0
+  },
+  {
+    "Id": "psrp_bagel",
+    "Name": "Bagel",
+    "Icon": "bagel",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 22.0
+  },
+  {
+    "Id": "psrp_sandwichblt",
+    "Name": "BLT",
+    "Icon": "blt",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 30.0
+  },
+  {
+    "Id": "psrp_sandwichpbjelly",
+    "Name": "PB Jelly",
+    "Icon": "pbjelly",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 30.0
+  },
+  {
+    "Id": "psrp_sandwicheggmayo",
+    "Name": "Egg & Mayonnaise",
+    "Icon": "eggmayo",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 30.0
+  },
+  {
+    "Id": "psrp_sandwichchicksalad",
+    "Name": "Chicken Salad",
+    "Icon": "chicksalad",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 30.0
+  },
+  {
+    "Id": "psrp_orange",
+    "Name": "Orange",
+    "Icon": "orange",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 24.0
+  },
+  {
+    "Id": "psrp_lime",
+    "Name": "Lime",
+    "Icon": "lime",
+    "Weight": 0.2,
+    "Price": 3,
+    "Desc": "Consumir para recuperar necessidades.",
+    "Hunger": 24.0
+  },
+  {
+    "Id": "psrp_phone",
+    "Name": "Phone",
+    "Icon": "phone",
+    "Weight": 0.18,
+    "Price": 200,
+    "Desc": "Abre o celular. Item reutilizavel.",
+    "Action": "phone"
+  },
+  {
+    "Id": "psrp_shaker",
+    "Name": "Shaker Bottle",
+    "Icon": "shaker",
+    "Weight": 0.3,
+    "Price": 18,
+    "Desc": "Garrafa para preparar whey com leite ou agua."
+  },
+  {
+    "Id": "psrp_shakerdirty",
+    "Name": "Shaker Dirty",
+    "Icon": "shakerdirty",
+    "Weight": 0.3,
+    "Price": 0,
+    "Desc": "Lave com agua na area de receitas para reutilizar."
+  },
+  {
+    "Id": "psrp_proteinstrawberry",
+    "Name": "Whey Strawberry",
+    "Icon": "proteinpowder",
+    "Weight": 0.05,
+    "Price": 12,
+    "Desc": "Ingrediente para whey. Combine com shaker e leite ou agua."
+  },
+  {
+    "Id": "psrp_protienchocolate",
+    "Name": "Whey Chocolate",
+    "Icon": "proteinpowder",
+    "Weight": 0.05,
+    "Price": 12,
+    "Desc": "Ingrediente para whey. Combine com shaker e leite ou agua."
+  },
+  {
+    "Id": "psrp_proteinbanana",
+    "Name": "Whey Banana",
+    "Icon": "proteinpowder",
+    "Weight": 0.05,
+    "Price": 12,
+    "Desc": "Ingrediente para whey. Combine com shaker e leite ou agua."
+  },
+  {
+    "Id": "psrp_protienvanilla",
+    "Name": "Whey Vanilla",
+    "Icon": "proteinpowder",
+    "Weight": 0.05,
+    "Price": 12,
+    "Desc": "Ingrediente para whey. Combine com shaker e leite ou agua."
+  },
+  {
+    "Id": "psrp_emptybottle",
+    "Name": "Empty Bottle",
+    "Icon": "emptybottle",
+    "Weight": 0.12,
+    "Price": 0,
+    "Desc": "Embalagem vazia conservada apos beber."
+  }
+]

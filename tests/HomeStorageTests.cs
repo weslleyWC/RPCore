@@ -38,8 +38,9 @@ namespace RPCore.Tests
         { var d=Data();d.Items["unknown_mod"]=7;Assert.True(InventoryTransfers.Move(d,"home:eclipse","unknown_mod",7,true,200,30,Weight,_=>{},out d));Assert.Equal(7,d.Containers["home:eclipse"]["unknown_mod"]);Assert.True(InventoryTransfers.Move(d,"home:eclipse","unknown_mod",7,false,200,30,Weight,_=>{},out d));Assert.Equal(7,d.Items["unknown_mod"]); }
         [Fact] public void UnknownRootFieldsOtherContainersAndLayoutPositionsAreRetained()
         { var d=Data();var j=JObject.Parse(JsonConvert.SerializeObject(d));j["Future"]=JObject.Parse("{\"retain\":true}");d=j.ToObject<InvData>();Move(d,1,true,200,out var next);var result=JObject.Parse(JsonConvert.SerializeObject(next));Assert.True((bool)result["Future"]["retain"]);Assert.True(JToken.DeepEquals(j["Containers"]["trunk:old"],result["Containers"]["trunk:old"]));Assert.Equal("water",next.GridSlots[0]);Assert.Equal("burger",next.GridSlots[1]); }
+        // Runtime storage follows the six-column, four-row inventory; the legacy layout helper remains separate.
         [Fact] public void EntireStackRemovalUpdatesGridWithoutChangingOtherItems()
-        { var d=Data();Move(d,10,true,200,out var next);Assert.DoesNotContain("water",next.GridSlots);Assert.Contains("burger",next.GridSlots);Assert.Equal(2,next.Items["burger"]);Assert.Equal(25,next.GridSlots.Count); }
+        { var d=Data();Move(d,10,true,200,out var next);Assert.DoesNotContain("water",next.GridSlots);Assert.Contains("burger",next.GridSlots);Assert.Equal(2,next.Items["burger"]);Assert.Equal(24,next.GridSlots.Count); }
         [Theory] [InlineData(float.NaN)] [InlineData(float.PositiveInfinity)] [InlineData(-1)]
         public void InvalidWeightOrCapacityNeverMutates(float value)
         { var d=Data();Assert.False(Move(d,1,true,value,out _,_=>throw new Exception()));Assert.False(InventoryTransfers.Move(d,"home:eclipse","water",1,true,200,30,_=>value,_=>throw new Exception(),out _));Assert.Equal(10,d.Items["water"]); }

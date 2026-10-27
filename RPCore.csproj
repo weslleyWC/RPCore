@@ -15,6 +15,8 @@
     <GTAV Condition="'$(GTAV)'==''">C:\Program Files\Rockstar Games\Grand Theft Auto V</GTAV>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="config/InventoryRecipes.json" LogicalName="RPCore.Inventory.Recipes" />
+    <EmbeddedResource Include="config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
     <EmbeddedResource Include="config/Services/Taxi.json" LogicalName="RPCore.JobDefaults.Passenger.json" />
     <EmbeddedResource Include="config/World/Defaults.json" LogicalName="RPCore.JobDefaults.World.json" />
     <EmbeddedResource Include="config/Gangs/Assault.json" LogicalName="RPCore.JobDefaults.GangAssault.json" />

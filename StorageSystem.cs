@@ -30,7 +30,7 @@ namespace RPCore
         string container;
         Vector3 origin;
         float capacity;
-        bool dirty;
+        bool dirty,gridOpen,closing;
         Func<bool> privateAccess; Action privateClosed; string ownerProfile, privateLabel;
 
         public StorageSystem(ObjectPool pool, InventorySystem inventory, AchievementSystem ach)
@@ -54,7 +54,7 @@ namespace RPCore
             var stash = locations.FirstOrDefault(s => s != null && !string.IsNullOrWhiteSpace(s.Id) && s.Capacity > 0 && p.Position.DistanceTo(new Vector3(s.X, s.Y, s.Z)) < 3);
             if (stash != null)
             {
-                container = "stash:" + stash.Id; capacity = stash.Capacity; origin = new Vector3(stash.X, stash.Y, stash.Z);
+                privateLabel="Deposito / "+stash.Name;container = "stash:" + stash.Id; capacity = stash.Capacity; origin = new Vector3(stash.X, stash.Y, stash.Z);
             }
             else
             {
@@ -64,14 +64,21 @@ namespace RPCore
                 if (Function.Call<int>(Hash.GET_VEHICLE_DOOR_LOCK_STATUS, vehicle) > 1) { Notify.Show("Vehicle locked."); return; }
                 string plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, vehicle).Trim();
                 if (plate.Length == 0) { Notify.Show("A license plate is required for persistent trunk storage."); return; }
-                container = "trunk:" + vehicle.Model.Hash + ":" + plate; capacity = 100;
+                privateLabel="Porta-malas / "+plate;container = "trunk:" + vehicle.Model.Hash + ":" + plate; capacity = 100;
             }
-            Rebuild(); menu.Visible = true; ach.Bump("storage_used");
+            ShowStorage(); ach.Bump("storage_used");
+        }
+        void ShowStorage()
+        {
+            if(!InterfaceOptions.GridInventory){Rebuild();menu.Visible=true;return;}
+            menu.Visible=false;gridOpen=true;
+            try{inventory.OpenStorageView(privateLabel??container,capacity,()=>inventory.ContainerSnapshot(container),TransferSaved,Accessible,()=>{gridOpen=false;CloseCurrent();});}
+            catch{gridOpen=false;CloseCurrent();throw;}
         }
 
         void Rebuild()
         {
-            int selected = menu.SelectedIndex; menu.Clear(); menu.Name = privateAccess == null ? container : privateLabel + " / " + inventory.ContainerWeight(container).ToString("0.0") + "/" + capacity.ToString("0.0") + " kg";
+            int selected = menu.SelectedIndex; menu.Clear(); menu.Name = (privateLabel??"Deposito") + " / " + inventory.ContainerWeight(container).ToString("0.0") + "/" + capacity.ToString("0.0") + " kg";
             Visuals.ClearItems(menu);
             AddRows(inventory.Snapshot(), true);
             AddRows(inventory.ContainerSnapshot(container), false);
@@ -86,11 +93,10 @@ namespace RPCore
             {
                 string id = pair.Key;
                 var row = new NativeItem((privateAccess!=null ? (deposit?"Guardar: ":"Retirar: ") : (deposit ? "Store: " : "Take: ")) + (inventory.Defs.ContainsKey(id) ? inventory.Defs[id].Name : id), (privateAccess!=null?"Escolha uma unidade, ate cinco ou a pilha inteira. Sem transferencia parcial.":"Transfer one item. Inventory and storage are saved together.")) { AltTitle = "x" + pair.Value };
-                Visuals.Badge(menu, row, id);
+                Visuals.Badge(menu, row, inventory.Defs.TryGetValue(id,out var def)?def.Icon??id:id);
                 row.Activated += (s, e) => {
                     if (!Accessible()) { menu.Visible = false; return; }
-                    if(privateAccess!=null){Quantities(id,deposit);return;}
-                    Transfer(id,deposit,1);
+                    Quantities(id,deposit);
                 };
                 menu.Add(row);
             }
@@ -100,11 +106,11 @@ namespace RPCore
         {
             if(string.IsNullOrWhiteSpace(id) || !id.StartsWith("home:",StringComparison.Ordinal) || id.Length>100 || string.IsNullOrWhiteSpace(label) || float.IsNaN(maxWeight) || float.IsInfinity(maxWeight) || maxWeight<=0 || access==null || closed==null || !access())return false;
             CloseCurrent();pool.HideAll();container=id;privateLabel=label;capacity=maxWeight;privateAccess=access;privateClosed=closed;ownerProfile=Profile.Id;vehicle=null;
-            try{Rebuild();menu.Visible=true;ach.Bump("storage_used");return true;}catch{CloseCurrent();throw;}
+            try{ShowStorage();ach.Bump("storage_used");return true;}catch{CloseCurrent();throw;}
         }
         public void ClosePrivate(){if(privateAccess!=null)CloseCurrent();}
         void CloseCurrent()
-        { var closed=privateClosed;privateClosed=null;privateAccess=null;ownerProfile=null;privateLabel=null;menu.Visible=false;vehicle=null;container=null;dirty=false;closed?.Invoke(); }
+        {if(closing)return;closing=true;try{if(gridOpen){gridOpen=false;inventory.CloseStorageView();}var closed=privateClosed;privateClosed=null;privateAccess=null;ownerProfile=null;privateLabel=null;menu.Visible=false;vehicle=null;container=null;dirty=false;closed?.Invoke();}finally{closing=false;} }
         void Quantities(string id,bool deposit)
         {
             if(!Accessible()){CloseCurrent();return;}
@@ -115,20 +121,23 @@ namespace RPCore
             var back=new NativeItem("Voltar","Itens do inventario/deposito.");back.Activated+=(s,e)=>{if(Accessible())Rebuild();else CloseCurrent();};menu.Add(back);menu.Visible=true;
         }
         void Transfer(string id,bool deposit,int quantity)
+        {TransferSaved(id,deposit,quantity);}
+        bool TransferSaved(string id,bool deposit,int quantity)
         {
-            if(!Accessible()){CloseCurrent();return;}
-            try{if(!inventory.Transfer(container,id,deposit,capacity,quantity))Notify.Show("Sem espaco ou quantidade indisponivel. Nada transferido.");dirty=true;}
-            catch(Exception ex){dirty=true;Log.Error("storage transfer",ex);Notify.Show("Falha ao gravar: transferencia revertida; confira o log.");}
+            if(!Accessible()){CloseCurrent();return false;}
+            try{bool done=inventory.Transfer(container,id,deposit,capacity,quantity);if(!done)Notify.Show("Sem espaco ou quantidade indisponivel. Nada transferido.");dirty=true;return done;}
+            catch(Exception ex){dirty=true;Log.Error("storage transfer",ex);Notify.Show("Falha ao gravar: transferencia revertida; confira o log.");return false;}
         }
         bool Accessible()
         {
             var p = Game.Player.Character;
             if (p.IsDead || p.IsInVehicle()) return false;
-            if(privateAccess!=null)return ownerProfile==Profile.Id && !InterfaceOptions.ModalOpen && !Game.IsPaused && privateAccess();
+            if(Game.IsPaused || Game.IsMissionActive || Profile.Detect()!=Profile.Id)return false;
+            if(privateAccess!=null)return ownerProfile==Profile.Id && (!InterfaceOptions.ModalOpen || gridOpen && inventory.StorageGridVisible) && privateAccess();
             if (vehicle == null) return p.Position.DistanceTo(origin) < 4;
             return vehicle.Exists() && !vehicle.IsDead && vehicle.Speed < 1 && Function.Call<int>(Hash.GET_VEHICLE_DOOR_LOCK_STATUS, vehicle) <= 1 && p.Position.DistanceTo(vehicle.GetOffsetPosition(new Vector3(0, -2.5f, 0))) < 3;
         }
-        public void Tick() { if(privateAccess!=null && (!menu.Visible || !Accessible())){CloseCurrent();return;} if(menu.Visible && !Accessible())CloseCurrent(); if(menu.Visible && dirty)Rebuild(); }
+        public void Tick() { if(gridOpen){if(!inventory.StorageGridVisible || !Accessible())CloseCurrent();return;}if(privateAccess!=null && (!menu.Visible || !Accessible())){CloseCurrent();return;} if(menu.Visible && !Accessible())CloseCurrent(); if(menu.Visible && dirty)Rebuild(); }
         public void Reload() { CloseCurrent(); }
         public void Save() { }
         public void Dispose() { CloseCurrent(); foreach (var b in blips) if (b.Exists()) b.Delete(); blips.Clear(); }

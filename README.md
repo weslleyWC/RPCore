@@ -1,3 +1,9 @@
+## Atualização0.93.0 — inventário: atalhos e revisão agrupada
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.93.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.93.0.zip) · [Comparação completa e testes GTA](docs/INVENTARIO-REVISAO-0.93.0.md)
+
+Teclas1..6 acima das letras usam os seis primeiros slots, sem repetição por tecla mantida ou uso por baixo de modais. Rolagem6x4 por linhas, numeração/peso, depósito/porta-malas/apartamento lado a lado com unidade/pilha, correção de slots antigos,63 apresentações de armas e31 novos itens sem sobrescrever19 IDs existentes. Nove receitas pessoais de shaker/lavagem; consumo6,5s com animação/prop próprio, retorno de recipientes e energia idempotente sem desfazer repouso. Compras gravadas imediatamente com rollback de falha normal.3541 testes aprovados; Release sem erros/avisos. Roteiro GTA pendente e diferenças restantes de ferramentas/intoxicação/atividades explicitadas no guia; não declara paridade integral da PSRP.
+
 ## Atualização 0.92.0 — armas e munição no inventário
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.92.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.92.0.zip) · [Como usar e testar](docs/REFINAMENTO-ARMAS-0.92.0.md)
