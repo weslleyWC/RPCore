@@ -12,11 +12,14 @@ namespace RPCore
         public float Hunger;
         public float Thirst;
         public int Health;
+        public uint? Weapon;
+        public string Icon;
     }
 
     public class InvData : ExtensibleData
     {
         public NeedsConsumption Consumption;
+        public InventoryArmory Armory;
         public Dictionary<string, int> Items = new Dictionary<string, int>();
         public Dictionary<string, Dictionary<string, int>> Containers = new Dictionary<string, Dictionary<string, int>>();
         public List<string> GridSlots = new List<string>();

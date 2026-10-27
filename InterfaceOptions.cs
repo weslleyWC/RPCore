@@ -12,12 +12,14 @@ namespace RPCore
         public static bool GridInventory = true, MetricSpeed, RespectSafeZone, LocationHud = true;
         public static bool ModalOpen;
         public static bool AdvancedMenus;
+        public static bool HideWeaponWheel = true;
         public static bool AnimateSettingsBanner = true;
         static string PathName { get { return Path.Combine(Cfg.Dir, "Interface.ini"); } }
         public static void Load()
         {
             var s = ScriptSettings.Load(PathName);
             AdvancedMenus=s.GetValue("Interface","AdvancedMenus",false);
+            HideWeaponWheel=s.GetValue("Interface","HideWeaponWheel",true);
             RadialKey = s.GetValue("Keys", "Radial", Keys.J); SettingsKey = s.GetValue("Keys", "Settings", Keys.F11);
             RadialEnabled = s.GetValue("Interface", "Radial", true); HideRadarOnFoot = s.GetValue("Interface", "HideRadarOnFoot", false);
             GridInventory = s.GetValue("Interface", "GridInventory", true);

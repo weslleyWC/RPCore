@@ -94,7 +94,7 @@ namespace RPCore
                 if (id == null) continue;
                 ItemDef def; inventory.Defs.TryGetValue(id,out def);
                 text(def?.Name ?? id,cell.X+67.5f,cell.Y+14.5f,.28f,Color.White,GTA.UI.Alignment.Center,125);
-                string icon; if (Visuals.Bindings.ItemIcons == null || !Visuals.Bindings.ItemIcons.TryGetValue(id,out icon)) icon = id;
+                string icon; if (Visuals.Bindings.ItemIcons == null || !Visuals.Bindings.ItemIcons.TryGetValue(id,out icon)) icon = def?.Icon ?? id;
                 if (!Visuals.Sprite("PSRP_Inventory",icon,ox+(cell.X+28)*s,oy+(cell.Y+34)*s,80*s,80*s,Color.White))
                     text("?",cell.X+67.5f,cell.Y+58,.7f,Color.Gray,GTA.UI.Alignment.Center,0);
                 text("x"+inventory.Count(id),cell.X+17,cell.Y+107,.23f,Color.White,GTA.UI.Alignment.Left,0);
@@ -108,9 +108,9 @@ namespace RPCore
                 Visuals.Rect(ox+1000*s,oy+230*s,270*s,280*s,Color.FromArgb(200,0,0,0));
                 text(def?.Name ?? current,1014,245,.32f,Color.White,GTA.UI.Alignment.Left,246);
                 text("Amount in Inventory: "+inventory.Count(current),1014,279,.28f,Color.White,GTA.UI.Alignment.Left,246);
-                text("Durability: n/a",1014,307,.28f,Color.White,GTA.UI.Alignment.Left,246);
+                text(def?.Weapon!=null ? "ENTER: equipar / guardar" : "Durability: n/a",1014,307,.28f,Color.White,GTA.UI.Alignment.Left,246);
                 text("Description: " + (def?.Desc ?? "Definition missing; item preserved."),1014,343,.28f,Color.White,GTA.UI.Alignment.Left,246);
-                if (def != null) text("~y~+ "+def.Thirst.ToString("0.#")+" hydration~n~+ "+def.Hunger.ToString("0.#")+" hunger~n~+ "+def.Health+" health",1014,427,.27f,Color.White,GTA.UI.Alignment.Left,246);
+                if (def != null && def.Weapon==null && !current.StartsWith("ammo_",StringComparison.Ordinal)) text("~y~+ "+def.Thirst.ToString("0.#")+" hydration~n~+ "+def.Hunger.ToString("0.#")+" hunger~n~+ "+def.Health+" health",1014,427,.27f,Color.White,GTA.UI.Alignment.Left,246);
             }
             text("Press ~y~ENTER~s~ to use~n~Press ~y~DELETE~s~ to delete (HOLD FOR STACK)",140,805,.25f,Color.White,GTA.UI.Alignment.Left,0);
             text("Press ~y~BACKSPACE~s~ to close~n~Press ~y~C~s~ to move item",540,805,.25f,Color.White,GTA.UI.Alignment.Left,0);

@@ -107,6 +107,7 @@ namespace RPCore
             Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.HideRadarOnFoot = v; InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); });
             Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { Visuals.Scale = Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale", Visuals.Scale); Notify.Show("Escala: " + Visuals.Scale); });
             var game = Menu("Game Settings"); Link(root, game);
+            Toggle(game,"Ocultar roda de armas do GTA",()=>InterfaceOptions.HideWeaponWheel,v=>{InterfaceOptions.Set("Interface.ini","Interface","HideWeaponWheel",v);InterfaceOptions.HideWeaponWheel=v;});
             if(studio!=null) Add(game,"Contratos / assalto ao estudio","The Hollywood Act: cinco preparacoes, final e pagamento persistente.",()=>{pool.HideAll();studio();});
             if(halloween!=null) Add(game,"Halloween / The Last Ride","GPS/inicio, sustos opcionais e corrida do Romero com pulso defensivo.",()=>{pool.HideAll();halloween();});
             if(traffic!=null) Add(game,"Policia / transito e multas","Fiscalizacao opcional, patrulha observadora e autuacoes com pagamento bancario.",()=>{pool.HideAll();traffic();});

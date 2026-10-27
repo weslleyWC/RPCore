@@ -45,7 +45,7 @@ namespace RPCore
             var ach = new AchievementSystem(pool);
             var shifts = new ShiftGate();
             var needs = new NeedsSystem(shifts,()=>pool.AreAnyVisible);survival=needs;
-            var inv = new InventorySystem(pool, needs, ach);
+            var inv = new InventorySystem(pool, needs, ach, shifts);
             inventory = inv;
             systems.Add(ach);
             systems.Add(needs);
@@ -139,7 +139,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.91.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.92.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

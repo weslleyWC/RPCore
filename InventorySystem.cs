@@ -10,7 +10,7 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public class InventorySystem : ISystem
+    public partial class InventorySystem : ISystem
     {
         public string Name { get { return "inventory"; } }
         public readonly Dictionary<string, ItemDef> Defs;
@@ -39,11 +39,12 @@ namespace RPCore
             };
         }
 
-        public InventorySystem(ObjectPool pool, NeedsSystem needs, AchievementSystem ach)
+        public InventorySystem(ObjectPool pool, NeedsSystem needs, AchievementSystem ach, ShiftGate gate = null)
         {
             this.pool = pool;
             this.needs = needs;
             this.ach = ach;
+            armoryGate = gate;
 
             var items = Store.LoadDef("Items.json", DefaultItems);
             string packs = Path.Combine(Cfg.Dir, "Inventory");
@@ -53,6 +54,7 @@ namespace RPCore
                 catch (Exception ex) { Log.Error("item pack " + Path.GetFileName(pack), ex); }
             }
             Defs = items.Where(i => i != null && !string.IsNullOrEmpty(i.Id) && i.Weight >= 0 && !float.IsNaN(i.Weight) && !float.IsInfinity(i.Weight)).GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.Last());
+            RegisterWeapons();
             pool.Add(menu); Visuals.Register(menu, "inventory");
             grid = new InventoryGridView(this, needs);
             Reload();
@@ -61,6 +63,7 @@ namespace RPCore
         public void Reload()
         {
             d = Store.Load("Inventory.json", () => new InvData());
+            ResetArmory();
             if (d.Items == null) d.Items = new Dictionary<string, int>();
             if (d.Containers == null) d.Containers = new Dictionary<string, Dictionary<string, int>>();
             // Unknown item IDs remain in the save, so temporarily removed custom definitions do not delete inventory.
@@ -72,7 +75,7 @@ namespace RPCore
         internal void UseSelected(string id) { ItemDef def; if (id != null && Defs.TryGetValue(id, out def)) { Use(def); } }
 
         internal bool DropSaved(string id,int quantity)
-        {try{bool ok=InventoryEdits.Drop(ref d,id,quantity,n=>Store.Write("Inventory.json",n));dirty|=ok;return ok;}catch(Exception ex){Log.Error("inventory discard",ex);Notify.Show("Item conservado; descarte nao foi gravado.");return false;}}
+        {try{if(!PrepareArmoryEdit(id))return false;bool ok=InventoryEdits.Drop(ref d,id,quantity,n=>Store.Write("Inventory.json",n));dirty|=ok;if(ok)ApplyArmoryEdit(id);return ok;}catch(Exception ex){Log.Error("inventory discard",ex);Notify.Show("Confira o inventario e o log; descarte nao concluido.");return false;}}
         internal bool MoveSlotSaved(int from,int to)
         {try{bool ok=InventoryEdits.Move(ref d,from,to,n=>Store.Write("Inventory.json",n));dirty|=ok;return ok;}catch(Exception ex){Log.Error("inventory move",ex);Notify.Show("Posicao anterior conservada; movimento nao foi gravado.");return false;}}
 
@@ -107,7 +110,7 @@ namespace RPCore
         }
 
         void Use(ItemDef def)
-        {try{Consume(def);}catch(Exception ex){Log.Error("inventory use",ex);Notify.Show("Consumo nao concluido. Confira arquivos/permissoes; sem beneficio antes de gravar.");}}
+        {try{if(def?.Weapon!=null){EquipInventoryWeapon(def);return;}if(def!=null && def.Id.StartsWith("ammo_",StringComparison.Ordinal)){Notify.Show(def.Desc);return;}Consume(def);}catch(Exception ex){Log.Error("inventory use",ex);Notify.Show("Uso nao concluido. Confira arquivos/permissoes.");}}
         void Consume(ItemDef def)
         {
             if(def==null || def.Hunger==0 && def.Thirst==0 && def.Health==0 || Game.Player.Character.IsDead)return;
@@ -136,7 +139,7 @@ namespace RPCore
             Visuals.ClearItems(menu);
             menu.Name = string.Format("{0:0.0} / {1:0} kg", Weight, Cfg.MaxWeight);
 
-            if (d.Items.Count == 0)
+            if (!d.Items.Any(k=>k.Value>0))
             {
                 menu.Add(new NativeItem("Empty", "Nothing on you."));
                 return;
@@ -151,7 +154,7 @@ namespace RPCore
                     continue;
                 }
                 var item = new NativeItem(def.Name, def.Desc) { AltTitle = "x" + kv.Value };
-                Visuals.Badge(menu, item, def.Id);
+                Visuals.Badge(menu, item, def.Icon ?? def.Id);
                 item.Activated += (s, e) => { Use(def); };
                 menu.Add(item);
             }
@@ -160,6 +163,7 @@ namespace RPCore
 
         public void Tick()
         {
+            ArmoryTick();
             if(d.Consumption!=null && !needs.Consumed(d.Consumption.Id) && unchecked(Game.GameTime-consumptionRetry)>=0){consumptionRetry=Game.GameTime+5000;RecoverConsumption();}
             // rebuild outside LemonUI's event dispatch, not inside the Activated handler
             if (dirty && menu.Visible) Rebuild();
@@ -179,7 +183,7 @@ namespace RPCore
             menu.Visible = true;
         }
 
-        public void Save() { ReconcileLayout(); Store.Write("Inventory.json", d); }
+        public void Save() { var p=Game.Player.Character;if(armoryTracking && !armoryApplyPending && p!=null && armoryActor==p.Handle && ArmorySafe())TrackAmmo();ReconcileLayout(); Store.Write("Inventory.json", d); }
         public Dictionary<string, int> Snapshot() { return new Dictionary<string, int>(d.Items); }
         public Dictionary<string, int> Container(string id)
         {
@@ -192,10 +196,11 @@ namespace RPCore
         public bool Transfer(string container,string id,bool deposit,float capacity) => Transfer(container,id,deposit,capacity,1);
         public bool Transfer(string container,string id,bool deposit,float capacity,int quantity)
         {
+            if(!PrepareArmoryEdit(id))return false;
             var old=d;
             bool moved=InventoryTransfers.Move(d,container,id,quantity,deposit,capacity,Cfg.MaxWeight,key=>Defs.ContainsKey(key)?Defs[key].Weight:.1f,
                 next=>{ try{d=next;Save();}catch{d=old;throw;} },out var result);
-            if(moved){d=result;dirty=true;}return moved;
+            if(moved){d=result;dirty=true;ApplyArmoryEdit(id);}return moved;
         }
         public void Dispose() { grid.Close(false); menu.Visible = false; }
     }

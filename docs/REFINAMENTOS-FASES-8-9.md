@@ -249,3 +249,8 @@ Transição0.89: base independente encerrada conforme FECHAMENTO-BASE-0.89.0.md.
 Pedido atual: RP ativo por padrão, menos comandos/toggles no fluxo normal, menus organizados/fidelidade PSRP e investigação de bugs.0.90 inicia8 com preset uma vez por perfil, necessidades/consumo durável, stamina/oxigênio/avisosFitness, F11 oito categorias/F10 quatro grupos e grade6x4. Novos falsos antigos de perfil são habilitados conforme pedido; ajustes avançados posteriores preservados. Não conclui todos os menus/bugs ou a fase8 inteira.
 
 Correção solicitada após0.90: usuário confirmou queda repetida apesar de comer/dormir na casa Franklin.0.91 troca queda30s sem restauração por episódio10s com sono/fôlego cheios, protege veículo/embarque e correlaciona cama nativa com cena/relógio. Teste GTA pendente; não é aceite da fase8 inteira.
+
+
+Diretriz permanente confirmada pelo usuario: todo refinamento deve partir da leitura dos handlers e fluxos relevantes da PSRP.dll. Registrar comportamento da referencia, implementacao RPCore, divergencias deliberadas e roteiro GTA; corrigir bugs da referencia, sem declarar paridade por nomes de classes.
+
+0.92: armas/municao no inventario, equipar/guardar, roda de armas opcional, pilhas de arremessaveis e transferencias com metadados. Baseada em NewInventorySystem/SettingsMenu/ItemDatabase, sem Give250 ou desconto por simples botao. Usa tipos reais de municao GTA. Ferramentas utilitarias continuam nativas; lojas nativas observadas, sem nova loja paralela. Fase8 continua; fase9 preservada.

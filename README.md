@@ -1,3 +1,9 @@
+## Atualização 0.92.0 — armas e munição no inventário
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.92.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.92.0.zip) · [Como usar e testar](docs/REFINAMENTO-ARMAS-0.92.0.md)
+
+Baseado nos fluxos da PSRP.dll: armas atuais importadas para o inventário, ENTER equipa/guarda sem consumir a arma ou conceder balas; munição separada por tipo nativo e arremessáveis como pilhas. Desconto pela variação real da munição; acessórios e pintura registrados no armazenamento. Roda oculta por padrão a pé em livre exploração, opção em F11 → Game Settings. Atividades, veículos e missões mantêm seus controles/equipamentos. 3482 testes aprovados e Release sem erros/avisos; testes físicos GTA pendentes. Todo próximo refinamento seguirá a comparação com a PSRP, corrigindo os problemas identificados.
+
 ## Atualização0.91.0 — correção do desmaio de sono
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.91.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.91.0.zip) · [Teste no GTA](docs/CORRECAO-SONO-0.91.0.md)
