@@ -1,3 +1,9 @@
+## Atualização0.86.0 — Map Builder persistente
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.86.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.86.0.zip) · [Guia de teste](docs/FASE-7.3-0.86.0.md)
+
+F11 → Map Builder: props próprios/transformações/chão/duplicação/remoção, ícones e pontos de loja/combustível/reparo-lavagem. Rascunho com salvar/cancelar, biblioteca por perfil, carregar/descarregar/auto-carregar opcional e importar/exportarJSON. Arquivos originais e props/ícones ambiente preservados; arquivo corrompido/alterado externamente protegido.3229 testes aprovados, build sem erros/avisos. GTA precisa de teste; tuning completo não é substituído pelo reparo/lavagem do editor. Próxima etapa: revisão final de paridade antes dos refinamentos8/9.
+
 ## Atualização0.85.0 — Halloween / The Last Ride
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.85.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.85.0.zip) · [Guia de teste](docs/FASE-7.2-0.85.0.md)

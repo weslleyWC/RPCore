@@ -84,6 +84,7 @@
     <Compile Include="../GangData.cs" Link="GangData.cs" />
     <Compile Include="../CustodyData.cs" Link="CustodyData.cs" />
     <Compile Include="../TrafficPursuitData.cs" Link="TrafficPursuitData.cs" />
+    <Compile Include="../MapEditorData.cs" Link="MapEditorData.cs" />
     <Compile Include="../HalloweenData.cs" Link="HalloweenData.cs" />
     <Compile Include="../StudioHeistData.cs" Link="StudioHeistData.cs" />
     <Compile Include="../TrafficData.cs" Link="TrafficData.cs" />
@@ -103,6 +104,7 @@
     <EmbeddedResource Include="../config/Gangs/Assault.json" LogicalName="RPCore.JobDefaults.GangAssault.json" />
     <EmbeddedResource Include="../config/Police/Custody.json" LogicalName="RPCore.JobDefaults.Custody.json" />
     <EmbeddedResource Include="../config/Police/TrafficPursuit.json" LogicalName="RPCore.JobDefaults.TrafficPursuit.json" />
+    <EmbeddedResource Include="../config/Editor/Defaults.json" LogicalName="RPCore.JobDefaults.MapEditor.json" />
     <EmbeddedResource Include="../config/Missions/Halloween.json" LogicalName="RPCore.JobDefaults.Halloween.json" />
     <EmbeddedResource Include="../config/Missions/StudioHeist.json" LogicalName="RPCore.JobDefaults.StudioHeist.json" />
     <EmbeddedResource Include="../config/Police/Traffic.json" LogicalName="RPCore.JobDefaults.Traffic.json" />

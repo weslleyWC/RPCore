@@ -1,0 +1,17 @@
+{
+  "MaxMaps": 12,
+  "MaxObjects": 64,
+  "MaxPoints": 32,
+  "LoadRadius": 120,
+  "UnloadRadius": 160,
+  "Models": [
+    "prop_roadcone02a",
+    "prop_barrier_work05",
+    "prop_bench_01a",
+    "prop_table_03",
+    "prop_chair_01a",
+    "prop_bin_01a",
+    "prop_boxpile_06b",
+    "prop_beachflag_01"
+  ]
+}

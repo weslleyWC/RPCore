@@ -31,6 +31,7 @@ namespace RPCore
         readonly SettingsSystem settings;
         readonly PdmSurveillanceSystem surveillance;
         readonly InventorySystem inventory;
+        readonly MapEditorSystem editor;
 
         public Main()
         {
@@ -48,7 +49,7 @@ namespace RPCore
             systems.Add(needs);
             systems.Add(inv);
             var shifts = new ShiftGate();
-            systems.Add(new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier"));
+            systems.Add(new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier" || editor?.Editing==true, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>()));
             var pizza = new PizzaJob(pool, ach, shifts); systems.Add(pizza);
             var postOp = new PostOpJob(pool, ach, shifts); systems.Add(postOp);
             var uber = new UberJob(pool, ach, shifts); systems.Add(uber);
@@ -85,10 +86,11 @@ namespace RPCore
             var storage = new StorageSystem(pool, inv, ach); systems.Add(storage);
             AddOptional(() => new StockMarketSystem(pool));
             FuelSystem fuel = null;
-            if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach); return fuel; });
+            if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>()); return fuel; });
             VehicleControlSystem controls = null;
             if (Cfg.EnableVehicleControls) AddOptional(() => { controls = new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)); return controls; });
-            if (Cfg.EnableGarages) AddOptional(() => new GarageSystem(pool, ach));
+            GarageSystem garages=null;
+            if (Cfg.EnableGarages) AddOptional(() => {garages=new GarageSystem(pool, ach);return garages;});
             if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
             GangSystem gangs = null;
             if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach, shifts); return gangs; });
@@ -96,6 +98,7 @@ namespace RPCore
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
+            editor = new MapEditorSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity, point => {if(garages!=null)garages.OpenCustomWorkshop(point);else Notify.Show("Ative Garages em Settings.ini para reparo/lavagem.");});systems.Add(editor);
             var studio = new StudioHeistSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(studio);
             var halloween = new HalloweenSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(halloween);
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu); systems.Add(phone);
@@ -109,8 +112,8 @@ namespace RPCore
             var dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
             var custody = new CustodySystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(custody);
             var traffic = new TrafficSystem(pool, shifts, () => belt.IsBelted, () => gangs==null || !gangs.HasPendingActivity, custody.OpenMenu); systems.Add(traffic);
-            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu); systems.Add(core);
-            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu); systems.Add(settings);
+            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu); systems.Add(core);
+            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -132,7 +135,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.85.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.86.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -168,7 +171,7 @@ namespace RPCore
 
             // World Context is polled by shops before the late radial/phone draw ticks.
             // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
-            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing;
+            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             try { pool.Process(); }
             catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
@@ -198,6 +201,7 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if(editor.Manipulating){editor.OnKey(e);return;}
             if (surveillance.Viewing) { surveillance.OnKey(e); return; }
             if (inventory.GridVisible && !faulted.Contains(inventory))
             {

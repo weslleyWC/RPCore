@@ -16,7 +16,7 @@ namespace RPCore
         public string Name { get { return "shop"; } }
 
         readonly ObjectPool pool;
-        readonly Func<bool> suppressInteraction;
+        readonly Func<bool> suppressInteraction;readonly Func<IEnumerable<EditorPoint>> editorPoints;
         readonly InventorySystem inv;
         readonly AchievementSystem ach;
         readonly NativeMenu menu = new NativeMenu("Store", "");
@@ -26,10 +26,10 @@ namespace RPCore
 
         static Vector3 Pos(ShopDef s) { return new Vector3(s.X, s.Y, s.Z); }
 
-        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null)
+        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null, Func<IEnumerable<EditorPoint>> editorPoints = null)
         {
             this.pool = pool;
-            this.suppressInteraction = suppressInteraction;
+            this.suppressInteraction = suppressInteraction;this.editorPoints=editorPoints;
             this.inv = inv;
             this.ach = ach;
             shops = ShopLocations.Resolve(Store.LoadDef("Shops.json", ShopLocations.Defaults));
@@ -69,6 +69,10 @@ namespace RPCore
 
         void Buy(ItemDef item)
         {
+            if(current!=null && !shops.Contains(current)){
+                var actor=Game.Player.Character;bool here=(editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(p=>p.Kind==EditorPointKind.Grocery && p.Name==current.Name && Math.Abs(p.Pose.X-current.X)<.01f && Math.Abs(p.Pose.Y-current.Y)<.01f && Math.Abs(p.Pose.Z-current.Z)<.01f);
+                if(!here || actor.IsInVehicle() || actor.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || actor.Position.DistanceTo(Pos(current))>1.8f){menu.Visible=false;Notify.Show("Retorne a loja do mapa ativo, a pe e sem procurado.");return;}
+            }
             if (Wallet.Cash < item.Price) { Notify.Show("~r~Not enough cash."); return; }
             if (!inv.Add(item.Id)) { Notify.Show("~r~Too heavy, can't carry that."); return; }
             if (!Wallet.Debit(item.Price)) { inv.Remove(item.Id); return; }
@@ -89,8 +93,9 @@ namespace RPCore
             if (menu.Visible || pool.AreAnyVisible || p.IsInVehicle() || p.IsDead || Game.IsMissionActive) return;
 
             if (WorkContext.ShopDelivery.Contains(pos.X,pos.Y,pos.Z)) return;
-            foreach (ShopDef s in shops)
+            foreach (ShopDef s in shops.Concat((editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Where(p=>p.Kind==EditorPointKind.Grocery).Select(p=>new ShopDef{Name=p.Name,X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z})))
             {
+                if(!shops.Contains(s) && Game.Player.Wanted.WantedLevel>0)continue;
                 Vector3 sp = Pos(s);
                 float dist = pos.DistanceTo(sp);
                 if (dist > 30f) continue;
@@ -107,7 +112,7 @@ namespace RPCore
         }
 
         public void OnKey(KeyEventArgs e) { }
-        public void Reload() { }
+        public void Reload() { menu.Visible=false;current=null; }
         public void Save() { }
 
         public void Dispose()

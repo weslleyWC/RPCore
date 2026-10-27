@@ -21,11 +21,11 @@ namespace RPCore
         readonly Action barber;
         readonly Action characters;
         readonly Action insurance;
-        readonly Action dmv,traffic,studio,halloween;
+        readonly Action dmv,traffic,studio,halloween,editor;
         readonly NativeMenu menu = new NativeMenu("RPCore", "");
         public string RequestedProfile;
         bool dirty;
-        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null, Action studio = null, Action halloween = null) { this.halloween=halloween; this.studio=studio; this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null, Action studio = null, Action halloween = null, Action editor = null) { this.editor=editor; this.halloween=halloween; this.studio=studio; this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
 
         void Add(string title, string description, Action action)
         {
@@ -34,7 +34,8 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.85.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.86.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            if(editor!=null) Add("Map Builder / objetos e locais","Editor persistente por perfil, props proprios, icones e pontos de servico.",()=>{menu.Visible=false;editor();});
             if(halloween!=null) Add("Halloween / The Last Ride","Romero, corrida ao cemiterio, perseguidores fantasmas e pulso defensivo.",()=>{menu.Visible=false;halloween();});
             if(studio!=null) Add("Contratos / assalto ao estudio","Cinco preparacoes e final de The Hollywood Act.",()=>{menu.Visible=false;studio();});
             if(traffic!=null) Add("Policia / transito e multas","Fiscalizacao opcional, patrulha observadora, autuacoes e pagamento bancario.",()=>{menu.Visible=false;traffic();});

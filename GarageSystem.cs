@@ -32,7 +32,7 @@ namespace RPCore
         readonly Dictionary<string, Vehicle> live = new Dictionary<string, Vehicle>();
         readonly Dictionary<string, Vehicle> created = new Dictionary<string, Vehicle>();
         TransportData data;
-        GarageDefinition current, pendingGarage;
+        GarageDefinition current, pendingGarage;Vector3? customPoint;Vehicle customCar;Ped customActor;string customProfile;
         Vehicle pending;
         int timeout;
         bool dirty;
@@ -67,7 +67,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); var p = Game.Player.Character;
+            customPoint=null;customCar=null;customActor=null;menu.Clear(); var p = Game.Player.Character;
             current = garages.OrderBy(g => p.Position.DistanceTo(g.Position)).FirstOrDefault(g => p.Position.DistanceTo(g.Position) < 15);
             if (current == null)
             {
@@ -207,10 +207,17 @@ namespace RPCore
             }
             finally { model.MarkAsNoLongerNeeded(); }
         }
+        bool CustomAccess=>Cfg.EnableGarages && customPoint.HasValue && customProfile==Profile.Id && customActor==Game.Player.Character && customActor!=null && customActor.Exists() && customActor.IsAlive && customCar!=null && customCar.Exists() && customCar.Driver==customActor && customActor.CurrentVehicle==customCar && (customCar.Model.IsCar || customCar.Model.IsBike && !customCar.Model.IsBicycle) && customCar.Speed<.5f && customCar.Position.DistanceTo(customPoint.Value)<=4.5f && !JobVehicles.Contains(customCar) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0;
+        public void OpenCustomWorkshop(JobPoint point)
+        {
+            customPoint=new Vector3(point.X,point.Y,point.Z);customProfile=Profile.Id;customActor=Game.Player.Character;customCar=customActor.CurrentVehicle;current=null;dirty=false;
+            if(!CustomAccess){menu.Visible=false;Notify.Show("Pare como motorista de carro pessoal, sem procurado/missao.");return;}pool.HideAll();menu.Clear();menu.Name=point.Name;
+            Add("Reparar: $500","Servico existente; preserva combustivel.",()=>Service(false));Add("Lavar: $25","Servico existente de lavagem.",()=>Service(true));Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
+        }
         void Service(bool wash)
         {
             var p = Game.Player.Character; var v = p.IsInVehicle() ? p.CurrentVehicle : null;
-            if (current == null || !MayStore(v, current, true)) { Notify.Show("Stop in your garage as driver. Mission vehicles are protected."); return; }
+            if (customPoint.HasValue ? !CustomAccess : current == null || !MayStore(v, current, true)) { Notify.Show("Stop in your garage as driver. Mission vehicles are protected."); return; }
             int cost = wash ? 25 : 500;
             if (!Wallet.Debit(cost)) { Notify.Show("Not enough cash."); return; }
             try
@@ -226,9 +233,10 @@ namespace RPCore
         {
             if (!Cfg.EnableGarages || Game.IsMissionActive) { pending = null; menu.Visible = false; return; }
             if (Game.IsPaused) return;
+            if(customPoint.HasValue && menu.Visible && !CustomAccess)menu.Visible=false;
             if (pending != null) FinishStore();
             if (menu.Visible && current != null && !Nearby(current)) menu.Visible = false;
-            if (dirty && menu.Visible) Rebuild();
+            if (dirty && menu.Visible){if(customPoint.HasValue)dirty=false;else Rebuild();}
             var p = Game.Player.Character;
             foreach (var g in garages.Where(g => p.Position.DistanceTo(g.Position) < 35))
             {
@@ -242,7 +250,7 @@ namespace RPCore
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible && pending == null) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { menu.Visible = false; pending = null; ReleaseCreated(); live.Clear(); data = Wallet.Transport; }
+        public void Reload() { customPoint=null;customCar=null;customActor=null;menu.Visible=false; pending = null; ReleaseCreated(); live.Clear(); data = Wallet.Transport; }
         public void Save()
         {
             if (pending != null) return;

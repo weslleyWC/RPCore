@@ -24,7 +24,7 @@ namespace RPCore
         public string Name { get { return "fuel"; } }
         readonly ObjectPool pool;
         readonly AchievementSystem ach;
-        readonly List<FuelStation> stations;
+        readonly List<FuelStation> stations;readonly Func<IEnumerable<EditorPoint>> editorPoints;
         readonly HashSet<int> exclusions = new HashSet<int>();
         readonly List<Blip> blips = new List<Blip>();
         TransportData data;
@@ -34,9 +34,9 @@ namespace RPCore
         bool pumping, boughtFuel, warned;
         int last, nextPump;
 
-        public FuelSystem(ObjectPool pool, AchievementSystem ach)
+        public FuelSystem(ObjectPool pool, AchievementSystem ach, Func<IEnumerable<EditorPoint>> editorPoints = null)
         {
-            this.pool = pool; this.ach = ach;
+            this.pool = pool; this.ach = ach;this.editorPoints=editorPoints;
             stations = Store.LoadDef("Fuel/Stations.json", DefaultStations).Where(s => s != null && s.Radius > 0 && s.Radius <= 50 && new[] { s.X, s.Y, s.Z }.All(n => !float.IsNaN(n) && !float.IsInfinity(n))).ToList();
             string excluded = Path.Combine(Cfg.SaveDir, "ExcludedGasList.json");
             if (!File.Exists(excluded)) excluded = Path.Combine(Cfg.Dir, "Legacy", "SaveData", "ExcludedGasList.json");
@@ -126,16 +126,17 @@ namespace RPCore
                 Game.DisableControlThisFrame(GTA.Control.VehicleAccelerate);
             }
             if (!warned && tank.Liters / tank.Capacity < .1f) { warned = true; Notify.Show("~o~Low fuel. Stop at a station and press " + Cfg.FuelKey + " with the engine off."); }
-            if (current.Speed < .5f && stations.Any(s => p.Position.DistanceTo(s.Position) < s.Radius)) Prompt.Help("Engine off, then " + Cfg.FuelKey + " to refuel. $" + Cfg.FuelPrice + "/L.");
+            if (current.Speed < .5f && AtStation(p.Position)) Prompt.Help("Engine off, then " + Cfg.FuelKey + " to refuel. $" + Cfg.FuelPrice + "/L.");
             Draw();
         }
 
+        bool AtStation(Vector3 pos)=>stations.Any(s=>pos.DistanceTo(s.Position)<s.Radius) || (editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(p=>p.Kind==EditorPointKind.Fuel && pos.DistanceTo(new Vector3(p.Pose.X,p.Pose.Y,p.Pose.Z))<4.5f);
         bool PumpAccessible(Ped p)
         {
             if (!Supported(vehicle) || vehicle.Speed >= .5f || vehicle.IsEngineRunning || p.Position.DistanceTo(vehicle.Position) > 5) return false;
             if (p.IsInVehicle() && (p.CurrentVehicle != vehicle || vehicle.Driver != p)) return false;
             if (vehicle.Driver != null && vehicle.Driver.Exists() && vehicle.Driver != p) return false;
-            return stations.Any(s => vehicle.Position.DistanceTo(s.Position) < s.Radius);
+            return AtStation(vehicle.Position);
         }
         void Pump()
         {
