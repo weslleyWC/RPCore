@@ -1,16 +1,13 @@
-# Pendências antes dos refinamentos — base0.88.0
+# Pendências e transição — base0.89.0
 
-A fila agrupa sistemas relacionados. Não representa uma atualização por item; tamanho das entregas depende da implementação e dos testes. Diferenças de um sistema que já tem ciclo funcional vão para o refinamento correspondente, sem reabrir indefinidamente sua fase.
+**Inventário da base independente encerrado; próximo bloco é a fase8.** Sem declarar paridade exata PSRP ou GTA homologado. FECHAMENTO-BASE-0.89.0.md separa funções entregues, variantes ausentes, diferenças deliberadas e integração externa opcional.
 
-| Bloco | Já entregue | Ausência funcional a concluir/verificar |
-| --- | --- | --- |
-| Gangues / fase6 | Presença, equipe, iniciações, captura/defesa, economia/estoques/armas, relações,15atividades;0.78 acrescenta declaração, alertas automáticos, simulação rival e reforços a pé;0.79 entrega comboio físico de quatro carros/assalto organizado;0.80 entrega emboscadas rivais e conversa presencial com líderes/iniciações/gestão | Blocos de emboscada/conversa desta etapa entregues; variantes móveis de roubo/reforço motorizado, tuning, fallback de co-líder e diferenças físicas seguem na revisão final/refinamento, sem declarar paridade total |
-| Polícia/prisão / fase6 | Transporte prisional como trabalho;0.81:fiscalização7infrações/162limites, patrulha própria, abordagem, autuações/pagamento; polícia nativa preservada;0.82:custódia/fichamento/pena/fiança/liberação integrados à perseguição nativa;0.83:quatro infrações restantes, perseguição própria carro/pé e reforço nativo opcional | Núcleo independente desta entrega concluído; teste físico GTA pendente. Suborno/BOLO automático e painel/integração opcionalLSPDFR seguem como diferenças explícitas para revisão final, sem declarar paridade total |
-| Missões/editor / fase7 | Infraestrutura de atividades, GPS e configurações próprias;0.84:The Hollywood Act(cinco preparações/final, persistência/prêmio/retomada);0.85:Halloween/Romero/perseguidores próprios/pulso/sustos/histórico;0.86:editor persistente de props/ícones/locais/import-export e cleanup próprio | Teste GTA das missões/editor; 0.87 acrescenta personalização de peças/desempenho/pintura/rodas/equipamentos nas garagens/oficinas; conversão de locais PSRP e diferenças de opções ficam explícitas |
-| Revisão final / fase7 | Auditorias estáticas e testes de cada entrega | 0.88 implementa táxi/limousine como passageiro e clima/tempo. Diferenças policiais/gangues e demais apps ainda precisam classificação explícita antes do fechamento |
-| Refinamento / fase8 | Reservado pelo usuário | HUD/menus e mecânicas, incluindo fome/sede; F11/radialJ/F2/inventário e demais interfaces |
-| Refinamento / fase9 | Reservado pelo usuário | Todos os trabalhos/atividades, comparaçãoPSRP, etapas/realismo/NPCs/veículos/animações/riscos e falhas |
+| Bloco | Estado / trabalho restante |
+| --- | --- |
+| Base polícia/gangues | Suborno/BOLO e fallback de co-líder configurado acrescentados0.89; teste GTA pendente |
+| Base missões/editor/serviços | Estúdio0.84, Halloween0.85, editor0.86, oficina0.87, transporte/mundo0.88 implementados. Guias GTA continuam aplicáveis |
+| Fase8 — próxima | Interfaces **e mecânicas**: fome/sede/sono/vida/armadura, HUD, F11, radialJ, F2, inventário/demais menus |
+| Fase9 | Todos os trabalhos/atividades/missões/gangues: realismo/etapas/NPCs/veículos/animações/riscos/falhas; inclui variantes ausentes de alvos móveis/reforços motorizados/tuning de gangues |
+| Fora da base independente | Integração opcional LSPDFR/RagePluginHook/painel não implementada nem exigida; diferença explícita da referência |
 
-A0.86 não declara paridade total das gangues nem antecipa8/9. Câmeras/apresentação, ajuste de duração/preço, detalhes físicos e variantes de atividades com ciclo já implementado ficam explicitamente nos refinamentos; sistemas inteiros ausentes seguem na revisão de paridade. Não há percentual ou prazo garantido sem inventário final validado.
-
-Próximo fechamento: diferenças remanescentes de gangues/polícia, separando implementação ausente de variante/refinamento e integração opcional externa. Transporte de passageiro e controles de mundo foram implementados juntos na0.88, com teste GTA pendente; a revisão não pode continuar tratando-os como ausentes. Sem declarar paridade total/fechamento de toda revisão. Fases8/9 permanecem conforme pedido do usuário.
+Não abrir nova fase-base para cada variante/cor/animação. Preservar saves/configurações/arquitetura e registrar diferenças reais durante refinamento. Sem percentual/prazo inventado nem contar “próxima fase” como teste GTA aprovado.

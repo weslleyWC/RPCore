@@ -58,14 +58,15 @@ namespace RPCore
     }
     public sealed class TrafficTicket : ExtensibleData
     {
-        public string Id,Street,Plate,Outcome="open";public int Model,LimitMph;public List<TrafficLine> Lines=new List<TrafficLine>();public bool Paid;public TrafficPursuitOptions Pursuit;public int BackupLevel;
+        public string Id,Street,Plate,Outcome="open";public int Model,LimitMph;public List<TrafficLine> Lines=new List<TrafficLine>();public bool Paid;public TrafficBribe Bribe;public bool BoloAtStop;public TrafficPursuitOptions Pursuit;public int BackupLevel;
         [JsonIgnore] public int Total=>Lines?.Sum(l=>l.Amount)??0;
-        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !string.IsNullOrWhiteSpace(Street) && Street.Length<=100 && !string.IsNullOrWhiteSpace(Plate) && Plate.Length<=16 && Model!=0 && LimitMph>=0 && LimitMph<=200 && TrafficRules.Outcome(Outcome) && (!Paid || Outcome!="open") && Lines!=null && Lines.Count>=1 && Lines.Count<=11 && Lines.All(l=>l?.Valid==true) && Lines.Select(l=>l.Code).Distinct().Count()==Lines.Count && (Pursuit==null || Pursuit.Valid) && BackupLevel>=0 && BackupLevel<=3 && (BackupLevel==0 || Outcome=="evaded" && Pursuit!=null && BackupLevel<=Pursuit.BackupStars) && (!Lines.Any(l=>l.Code==TrafficOffence.Speeding) || LimitMph>0);
+        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=80 && !string.IsNullOrWhiteSpace(Street) && Street.Length<=100 && !string.IsNullOrWhiteSpace(Plate) && Plate.Length<=16 && Model!=0 && LimitMph>=0 && LimitMph<=200 && TrafficRules.Outcome(Outcome) && (!Paid || Outcome!="open") && Lines!=null && Lines.Count>=1 && Lines.Count<=11 && Lines.All(l=>l?.Valid==true) && Lines.Select(l=>l.Code).Distinct().Count()==Lines.Count && (Pursuit==null || Pursuit.Valid) && BackupLevel>=0 && BackupLevel<=3 && (BackupLevel==0 || Outcome=="evaded" && Pursuit!=null && BackupLevel<=Pursuit.BackupStars) && (!Lines.Any(l=>l.Code==TrafficOffence.Speeding) || LimitMph>0) && (Bribe==null || Bribe.Valid(this));
     }
     public sealed class TrafficData : ExtensibleData
     {
+        public bool BribesEnabled,BoloEnabled;public List<TrafficBolo> Bolos;
         public bool Enabled,AdvancedOffences,PursuitEnabled;public string Pending;public long Issued,Paid,Collected;public List<TrafficTicket> Tickets=new List<TrafficTicket>();
-        [JsonIgnore] public bool Valid=>Issued>=0 && Paid>=0 && Paid<=Issued && Collected>=Paid && Tickets!=null && Tickets.Count<=256 && Tickets.All(t=>t?.Valid==true) && Tickets.Select(t=>t.Id).Distinct().Count()==Tickets.Count && Issued>=Tickets.Count && Paid>=Tickets.Count(t=>t.Paid) && (decimal)Collected>=Tickets.Where(t=>t.Paid).Sum(t=>(decimal)t.Total) && (Pending==null?Tickets.All(t=>t.Outcome!="open"):Tickets.Count(t=>t.Id==Pending && t.Outcome=="open" && !t.Paid)==1 && Tickets.Count(t=>t.Outcome=="open")==1);
+        [JsonIgnore] public bool Valid=>(Bolos==null || Bolos.Count<=256 && Bolos.All(b=>b?.Valid==true) && Bolos.Select(b=>b.TicketId).Distinct().Count()==Bolos.Count) && Issued>=0 && Paid>=0 && Paid<=Issued && Collected>=Paid && Tickets!=null && Tickets.Count<=256 && Tickets.All(t=>t?.Valid==true) && Tickets.Select(t=>t.Id).Distinct().Count()==Tickets.Count && Issued>=Tickets.Count && Paid>=Tickets.Count(t=>t.Paid) && (decimal)Collected>=Tickets.Where(t=>t.Paid).Sum(t=>(decimal)t.Total) && (Pending==null?Tickets.All(t=>t.Outcome!="open"):Tickets.Count(t=>t.Id==Pending && t.Outcome=="open" && !t.Paid)==1 && Tickets.Count(t=>t.Outcome=="open")==1);
     }
     public static class TrafficTransactions
     {
@@ -80,20 +81,20 @@ namespace RPCore
         public static bool Refer(WalletData w,string id,int level,Action save,out bool changed)
         {
             changed=false;if(w?.Traffic?.Valid!=true || level<1 || level>3)return false;var t=w.Traffic.Tickets.FirstOrDefault(a=>a.Id==id);if(t==null || t.Pursuit?.Valid!=true || level>t.Pursuit.BackupStars)return false;if(t.BackupLevel!=0)return t.BackupLevel==level;
-            return Apply(w,save,b=>{if(!b.Enabled || !b.PursuitEnabled || b.Pending!=id || t.Outcome!="open")return false;var next=b.Tickets.First(a=>a.Id==id);next.Outcome="evaded";next.BackupLevel=level;b.Pending=null;return true;},out changed);
+            return Apply(w,save,b=>{if(!b.Enabled || !b.PursuitEnabled || b.Pending!=id || t.Outcome!="open")return false;var next=b.Tickets.First(a=>a.Id==id);next.Outcome="evaded";next.BackupLevel=level;b.Pending=null;return PoliceResolutionRules.Mark(b,next,"evasion");},out changed);
         }
         public static bool Begin(WalletData w,TrafficTicket ticket,Action save,out bool changed)=>Apply(w,save,b=>{
             if(!b.Enabled || b.Pending!=null || ticket?.Valid!=true || ticket.Paid || ticket.Outcome!="open" || b.Issued==long.MaxValue || b.Tickets.Any(t=>t.Id==ticket.Id))return false;
-            if(b.Tickets.Count==256){var remove=b.Tickets.FirstOrDefault(t=>t.Paid);if(remove==null)return false;b.Tickets.Remove(remove);}
+            if(b.Tickets.Count==256){var remove=b.Tickets.FirstOrDefault(PoliceResolutionRules.Settled);if(remove==null)return false;b.Tickets.Remove(remove);}
             b.Tickets.Add(JsonConvert.DeserializeObject<TrafficTicket>(JsonConvert.SerializeObject(ticket)));b.Pending=ticket.Id;b.Issued++;return true;},out changed);
         public static bool Finish(WalletData w,string id,string outcome,Action save,out bool changed)
         {
             changed=false;if(outcome=="open" || !TrafficRules.Outcome(outcome) || w?.Traffic?.Valid!=true)return false;var ticket=w.Traffic.Tickets.FirstOrDefault(t=>t.Id==id);if(ticket==null)return false;if(ticket.Outcome!="open")return ticket.Outcome==outcome;
-            return Apply(w,save,b=>{if(b.Pending!=id)return false;b.Tickets.First(t=>t.Id==id).Outcome=outcome;b.Pending=null;return true;},out changed);
+            return Apply(w,save,b=>{if(b.Pending!=id)return false;var next=b.Tickets.First(t=>t.Id==id);next.Outcome=outcome;b.Pending=null;return outcome!="evaded" || PoliceResolutionRules.Mark(b,next,"evasion");},out changed);
         }
         public static bool Pay(WalletData w,string id,Action save,out bool changed)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || w.Traffic?.Valid!=true)return false;var t=w.Traffic.Tickets.FirstOrDefault(a=>a.Id==id);if(t==null || t.Outcome=="open")return false;if(t.Paid)return true;
+            changed=false;if(w==null || w.Bank<0 || save==null || w.Traffic?.Valid!=true)return false;var t=w.Traffic.Tickets.FirstOrDefault(a=>a.Id==id);if(t==null || t.Outcome=="open")return false;if(PoliceResolutionRules.Settled(t))return true;
             if(w.Bank<t.Total || w.Traffic.Paid==long.MaxValue || w.Traffic.Collected>long.MaxValue-t.Total)return false;var old=w.Traffic;int bank=w.Bank;var n=Copy(old);var next=n.Tickets.First(a=>a.Id==id);next.Paid=true;n.Paid++;n.Collected+=next.Total;if(!n.Valid)return false;
             try{w.Traffic=n;w.Bank-=next.Total;save();changed=true;return true;}catch{w.Traffic=old;w.Bank=bank;throw;}
         }

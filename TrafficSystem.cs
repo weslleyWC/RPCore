@@ -13,6 +13,7 @@ namespace RPCore
     {
         public string Name=>"traffic";const string Decor="RPCore_TrafficOwner";
         sealed class Retired{public Vehicle Car;public Ped Officer;public int Token,Last;}
+        readonly Random bribeRandom=new Random();
         readonly TrafficWitnessMeter witnessMeter=new TrafficWitnessMeter();readonly List<Retired> retired=new List<Retired>();readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> belt,gangFree;readonly TrafficBehaviourMeter behaviour=new TrafficBehaviourMeter();readonly TrafficPursuitOptions pursuitOptions;TrafficPursuitOptions pursuitPlan;TrafficPursuitClock pursuitClock;readonly Action custody;readonly TrafficOptions options;readonly NativeMenu menu;
         Vehicle cruiser,vehicle;Ped officer,actor;Model carModel,pedModel;Blip blip;string profile,ticketId,recovered;TrafficTicket detected;int token,requested,last,elapsed,scanAt,taskAt,stopped,inspection,cooldown,sampleElapsed;bool preparing,observer,walking,eligibleBefore;
         bool Active=>preparing || officer!=null;bool Driver=>actor!=null && actor.Exists() && actor==Game.Player.Character && vehicle!=null && vehicle.Exists() && actor.CurrentVehicle==vehicle && vehicle.Driver==actor;
@@ -31,6 +32,10 @@ namespace RPCore
         public void OpenMenu()
         {
             pool.HideAll();menu.Clear();string menuProfile=Profile.Id;var book=Wallet.Traffic;if(book!=null && !book.Valid){Add("Dados de transito protegidos","Confira Wallet.json/backup. Nenhuma multa ou saldo sera substituido.",()=>{});if(custody!=null)Add("Custodia / prisao / fianca","Sistema independente das autuacoes protegidas.",custody);menu.Visible=true;return;}
+            Add("Suborno: "+(book?.BribesEnabled==true?"LIGADO":"DESLIGADO"),"Uma tentativa por abordagem presencial. Banco:1.5x multa se aceito; rejeicao conserva multa e pode gerar BOLO. Ate2estrelas somente com perseguicao/reforco ja habilitados. Desligado em saves antigos.",()=>{if(menuProfile!=Profile.Id)return;if(Wallet.PoliceResolutionConfigure(book?.BribesEnabled!=true,book?.BoloEnabled==true))OpenMenu();else Notify.Show("Encerre a abordagem antes de mudar regras.");},!Active);
+            Add("BOLO por fuga: "+(book?.BoloEnabled==true?"LIGADO":"DESLIGADO"),"Registro persistente por modelo+placa ao fugir/rejeitar suborno. Nao acrescenta multa automatica nem altera seguro/policia nativa. Regularize apos resolver autuacoes de origem.",()=>{if(menuProfile!=Profile.Id)return;if(Wallet.PoliceResolutionConfigure(book?.BribesEnabled==true,book?.BoloEnabled!=true))OpenMenu();},!Active);
+            if(CanBribe)Add("Oferecer suborno / $"+BribeQuote,"Tentativa unica ao agente proximo; banco exige1.5x multa. Resultado salvo antes de encerrar a abordagem.",OfferBribe);
+            foreach(var entry in book?.Bolos??new List<TrafficBolo>()){var b=entry;Add((b.Active?"BOLO ATIVO: ":"BOLO REGULARIZADO: ")+b.Plate,b.Reason+" / modelo "+b.Model+". Regularizacao sem taxa extra; exige resolver autuacoes de origem.",()=>{if(menuProfile!=Profile.Id || Active || !Safe || gate.Owner!=null)return;if(Wallet.TrafficClearBolo(b.Model,b.Plate))Notify.Show("Registro regularizado; seguro e estrelas nativas preservados.");else Notify.Show("Resolva primeiro as autuacoes que originaram este BOLO.");OpenMenu();});}
             if(custody!=null)Add("Custodia / prisao / fianca","Rendicao voluntaria a policial na perseguicao nativa, fichamento, cumprimento de pena e liberacao.",custody);
             Add("Fiscalizacao: "+(book?.Enabled==true?"LIGADA":"DESLIGADA"),"Opcional. Observa infracoes reais vistas por policial em viatura proxima; resposta usa somente agente/viatura proprios. Sem assumir policiais do ambiente; reforco opcional separado. Comeca desligada em saves antigos.",()=>{bool enabled=Wallet.Traffic?.Enabled!=true;if(Wallet.TrafficConfigure(enabled,out _)){if(!enabled)Close("interrupted");OpenMenu();}});
             Add("Infracoes adicionais: "+(book?.AdvancedOffences==true?"LIGADAS":"DESLIGADAS"),"Celular nativo $100, distancia insegura $120, arma apontada $350 e buzina continua10s $125. Exigem testemunha/evidencia real. Celular F2 e menus continuam protegidos. Sem alterar multas antigas.",()=>{if(menuProfile!=Profile.Id)return;if(Wallet.TrafficPreferences(book?.AdvancedOffences!=true,book?.PursuitEnabled==true,out _))OpenMenu();else Notify.Show("Encerre a abordagem antes de mudar regras.");},!Active);
@@ -39,7 +44,7 @@ namespace RPCore
             if(Active)Add("Encerrar patrulha / abordagem","Recolhe apenas recursos proprios. Infracao ja registrada continua consultavel e nao e perdoada por encerrar/desligar.",()=>{Close("interrupted");OpenMenu();});
             Add("Documentos C / M1 / A",(Wallet.Dmv.Licensed?"C: emitida":"C: nao emitida")+" / "+(Wallet.DmvM1.Licensed?"M1: emitida":"M1: nao emitida")+" / "+(Wallet.DmvA.Licensed?"A: emitida":"A: nao emitida")+". Consulta do DMV existente; nenhuma nova exigencia para empregos antigos.",()=>{});
             Add("Autuacoes "+(book?.Issued??0)+" / pagas "+(book?.Paid??0)+" / banco $"+Wallet.Bank,"Total pago $"+(book?.Collected??0)+". Multas nao debitam automaticamente; pagamento exato pelo banco, sem juros offline ou desconto parcial de dinheiro.",()=>{});
-            foreach(var t in (book?.Tickets??new List<TrafficTicket>()).AsEnumerable().Reverse().Where(t=>!t.Paid).Concat((book?.Tickets??new List<TrafficTicket>()).AsEnumerable().Reverse().Where(t=>t.Paid).Take(20))){var invoice=t;Add((t.Paid?"PAGA: ":"PENDENTE: ")+t.Plate+" / $"+t.Total,t.Street+" / "+Outcome(t.Outcome)+(t.BackupLevel>0?" / reforco solicitado: "+t.BackupLevel+" estrela(s)":"")+". "+string.Join("; ",t.Lines.Select(l=>TrafficRules.Label(l.Code)+" $"+l.Amount)),()=>Invoice(invoice.Id));}
+            foreach(var t in (book?.Tickets??new List<TrafficTicket>()).AsEnumerable().Reverse().Where(t=>!t.Paid).Concat((book?.Tickets??new List<TrafficTicket>()).AsEnumerable().Reverse().Where(t=>t.Paid).Take(20))){var invoice=t;Add((t.Bribe?.Accepted==true?"ACORDO: ":t.Paid?"PAGA: ":"PENDENTE: ")+t.Plate+" / $"+t.Total,t.Street+" / "+Outcome(t.Outcome)+(t.BackupLevel>0?" / reforco solicitado: "+t.BackupLevel+" estrela(s)":"")+". "+string.Join("; ",t.Lines.Select(l=>TrafficRules.Label(l.Code)+" $"+l.Amount)),()=>Invoice(invoice.Id));}
             Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
         }
         static string Outcome(string s)=>s=="served"?"abordagem concluida":s=="evaded"?"nao parou / registro por placa":s=="interrupted"?"registro apos interrupcao":"abordagem em andamento";
@@ -47,7 +52,8 @@ namespace RPCore
         {
             var t=Wallet.Traffic?.Tickets.FirstOrDefault(i=>i.Id==id);if(t==null)return;string payerProfile=Profile.Id;pool.HideAll();menu.Clear();Add("Placa "+t.Plate+" / $"+t.Total,t.Street+" / "+Outcome(t.Outcome),()=>{});
             foreach(var line in t.Lines){var l=line;Add(TrafficRules.Label(l.Code)+" / $"+l.Amount,l.Code==TrafficOffence.Speeding?"Excesso observado "+l.Value.ToString("0.0")+"mph; limite "+t.LimitMph+"mph ("+(t.LimitMph*1.609344).ToString("0")+"km/h).":"Infracao capturada no momento da observacao.",()=>{});}
-            Add(t.Paid?"Ja paga":"Pagar $"+t.Total+" pelo banco","CONFIRMA AO SELECIONAR. Cobra exatamente uma vez. Saldo insuficiente conserva a divida; dinheiro em maos nao e debitado. Aguarde encerrar a abordagem atual.",()=>{if(payerProfile!=Profile.Id || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null){Notify.Show("Pague sem abordagem/outra atividade, procurado ou missao.");return;}if(Wallet.TrafficPay(id,out bool changed))Notify.Show(changed?"Multa paga pelo banco.":"Pagamento ja registrado; sem debito repetido.");else Notify.Show("Confira saldo bancario e estado da autuacao.");Invoice(id);},!t.Paid && t.Outcome!="open");
+            if(t.Bribe!=null)Add(t.Bribe.Accepted?"Suborno aceito / $"+t.Bribe.Price:"Tentativa de suborno recusada","Recibo persistente; nao ha nova tentativa nem pagamento duplicado.",()=>{});
+            Add(PoliceResolutionRules.Settled(t)?"Ja resolvida":"Pagar $"+t.Total+" pelo banco","CONFIRMA AO SELECIONAR. Cobra exatamente uma vez. Saldo insuficiente conserva a divida; dinheiro em maos nao e debitado. Aguarde encerrar a abordagem atual.",()=>{if(payerProfile!=Profile.Id || !Safe || Game.IsPaused || InterfaceOptions.ModalOpen || gate.Owner!=null){Notify.Show("Pague sem abordagem/outra atividade, procurado ou missao.");return;}if(Wallet.TrafficPay(id,out bool changed))Notify.Show(changed?"Multa paga pelo banco.":"Pagamento ja registrado; sem debito repetido.");else Notify.Show("Confira saldo bancario e estado da autuacao.");Invoice(id);},!PoliceResolutionRules.Settled(t) && t.Outcome!="open");
             Add("Voltar","Lista de autuacoes.",OpenMenu);menu.Visible=true;
         }
         TrafficFrame Frame(Vehicle v)
@@ -85,6 +91,7 @@ namespace RPCore
         }
         bool Register(TrafficTicket t)
         {
+            t.BoloAtStop=Wallet.Traffic.BoloEnabled && PoliceResolutionRules.Bolo(Wallet.Traffic,t.Model,t.Plate);
             t.Pursuit=Wallet.Traffic.PursuitEnabled?pursuitOptions:null;
             if(!Wallet.TrafficBegin(t,out bool saved) || !saved)return false;ticketId=t.Id;pursuitPlan=t.Pursuit;pursuitClock=pursuitPlan==null?null:new TrafficPursuitClock();observer=false;elapsed=stopped=inspection=0;cruiser.IsSirenActive=true;taskAt=0;Notify.Show("FISCALIZACAO: encoste com seguranca e permaneca ao volante. Autuacao registrada por $"+t.Total+"; sem debito automatico.");return true;
         }
@@ -97,6 +104,18 @@ namespace RPCore
         {
             var v=Game.Player.Character.CurrentVehicle;bool actual=eligible && Wallet.Traffic?.AdvancedOffences==true && v!=null && v.Exists() && v.Driver==Game.Player.Character;
             behaviour.Observe(actual?v.Handle:0,actual && Function.Call<bool>(Hash.IS_HORN_ACTIVE,v),delta,actual);
+        }
+        int BribeQuote=>PoliceResolutionRules.Price(Wallet.Traffic?.Tickets.FirstOrDefault(t=>t.Id==ticketId)?.Total??0);
+        bool CanBribe=>Active && !preparing && walking && ticketId!=null && profile==Profile.Id && Safe && Driver && Tagged(officer,token) && Tagged(cruiser,token) && officer.IsAlive && officer.IsOnFoot && !Connected(cruiser) && cruiser.Occupants.All(p=>p==officer) && vehicle.Speed<.5f && officer.Position.DistanceTo(actor.Position)<=2.5f && Wallet.Traffic?.BribesEnabled==true && Wallet.Traffic.Pending==ticketId && Wallet.Traffic.Tickets.Any(t=>t.Id==ticketId && t.Bribe==null);
+        void OfferBribe()
+        {
+            if(!CanBribe){Notify.Show("Aguarde o agente a pe, junto ao carro parado, durante a abordagem.");return;}
+            string oldProfile=profile;var oldActor=actor;string id=ticketId;
+            int stars=pursuitPlan==null?0:TrafficPursuitRules.BackupLevel(0,Function.Call<int>(Hash.GET_MAX_WANTED_LEVEL),Math.Min(2,pursuitPlan.BackupStars));
+            if(!Wallet.TrafficBribe(id,bribeRandom.Next(10000),stars,out bool changed) || !changed){Notify.Show("Sem tentativa: confira saldo bancario e autuacao atual.");return;}
+            var receipt=Wallet.Traffic.Tickets.First(t=>t.Id==id).Bribe;Close(receipt.Accepted?"served":"evaded");pool.HideAll();
+            if(!receipt.Accepted && receipt.NativeStars>0 && oldProfile==Profile.Id && oldActor==Game.Player.Character && Game.Player.Wanted.WantedLevel==0 && !Game.IsMissionActive && Function.Call<int>(Hash.GET_MAX_WANTED_LEVEL)>=receipt.NativeStars){Game.Player.Wanted.SetWantedLevel(receipt.NativeStars,delayLawResponse:false);Game.Player.Wanted.ApplyWantedLevelChangeNow(delayLawResponse:false);}
+            Notify.Show(receipt.Accepted?"Suborno aceito. Banco -$"+receipt.Price+"; autuacao resolvida sem apagar historico.":"Suborno recusado; multa conservada. BOLO/reforco conforme opcoes habilitadas.");
         }
         void ReferAndClose(string reason)
         {
@@ -148,6 +167,8 @@ namespace RPCore
                 if(!walking){if(TrafficRules.Stopped(Driver,vehicle.Speed,cruiser.Speed,cruiser.Position.DistanceTo(vehicle.Position)))stopped+=dt;else stopped=0;if(stopped>=2000){walking=true;JobActors.Leave(officer,cruiser);taskAt=0;}}
                 if(walking){if(officer.IsOnFoot && (taskAt==0 || unchecked(Game.GameTime-taskAt)>=0)){var point=vehicle.GetOffsetPosition(new Vector3(-1.6f,0,0));Function.Call(Hash.TASK_FOLLOW_NAV_MESH_TO_COORD,officer,point.X,point.Y,point.Z,1f,10000,.6f,0,actor.Heading);taskAt=Game.GameTime+4000;}
                     if(officer.IsOnFoot && TrafficRules.Inspect(Driver,!officer.IsDead,vehicle.Speed,officer.Position.DistanceTo(actor.Position)))inspection+=dt;else inspection=0;
+                    if(CanBribe && Game.IsControlJustPressed(GTA.Control.Context)){OfferBribe();return;}
+                    if(CanBribe)GTA.UI.Screen.ShowHelpTextThisFrame("~INPUT_CONTEXT~: oferecer suborno $"+BribeQuote+" pelo banco (tentativa unica)");
                     if(inspection>=options.InspectionMilliseconds){Close("served");Notify.Show("Abordagem concluida. Consulte e pague a autuacao em F11 > Policia / transito. Banco nao foi debitado automaticamente.");return;}
                 }
                 GTA.UI.Screen.ShowSubtitle(walking?"POLICIA: permaneça parado ao volante para conferencia dos documentos.":"POLICIA: encoste e pare com seguranca; aguarde o agente. END encerra sem apagar a autuacao.",100);

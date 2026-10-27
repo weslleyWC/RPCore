@@ -1,3 +1,9 @@
+## Atualização0.89.0 — resolução policial e fechamento da base
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.89.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.89.0.zip) · [Guia de teste](docs/FASE-7.6-0.89.0.md)
+
+F11Polícia: suborno opcional durante inspeção, uma tentativa salva/cobrança bancária só se aceito; BOLO opcional por fuga/rejeição, modelo+placa e regularização após resolver autuações de origem. Até2estrelas na rejeição só com perseguição/reforço habilitados, sem replay/limpar procurado. Co-líder configurado substitui LeaderModel ausente nos contatos/iniciações existentes.3372 testes aprovados; build sem erros/avisos. GTA pendente. [Fechamento da base](docs/FECHAMENTO-BASE-0.89.0.md): variantes físicas seguem9; LSPDFR opcional não implementado. **Próxima entrega: fase8, interfaces e mecânicas de necessidades.** Sem declarar paridade total PSRP.
+
 ## Atualização0.88.0 — táxi/limousine de passageiro e mundo
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.88.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.88.0.zip) · [Guia de teste](docs/FASE-7.5-0.88.0.md)

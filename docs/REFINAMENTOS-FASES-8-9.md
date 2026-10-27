@@ -243,3 +243,5 @@ Atualização0.86.0 /7.3: editor próprio de props/ícones/locais com biblioteca
 Base0.87: oficina personalizada funcional; fase8 também tratará apresentação/paletas/RGB e opções adicionais, sem afirmar equivalência total da PSRP. Táxi/limousine de passageiro e controles de clima/tempo ainda são sistemas ausentes para implementação anterior ao refinamento. Consulte REVISAO-PARIDADE-0.87.0.md.
 
 Base0.88: transporte de passageiro e controles de mundo agora têm ciclo funcional próprio, guia e testes de dados; a nota0.87 de ausência é histórica. IA/taxímetro físico, clima/relógio e HTTP no GTA não foram homologados. Variantes de apresentação/realismo ficam8/9 depois da classificação final de gangues/polícia.
+
+Transição0.89: base independente encerrada conforme FECHAMENTO-BASE-0.89.0.md. Próxima entrega inicia8: mecânicas/HUD/menus, incluindo fome/sede.9 inclui todas as atividades/gangues/missões e variantes ausentes de alvos móveis/reforços motorizados/tuning. LSPDFR opcional não implementado/fora da base; sem afirmar paridade total.

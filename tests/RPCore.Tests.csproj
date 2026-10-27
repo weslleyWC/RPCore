@@ -12,6 +12,7 @@
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../PoliceResolutionData.cs" Link="PoliceResolutionData.cs" />
     <Compile Include="../PassengerData.cs" Link="PassengerData.cs" />
     <Compile Include="../WorldData.cs" Link="WorldData.cs" />
     <Compile Include="../WorkshopData.cs" Link="WorkshopData.cs" />

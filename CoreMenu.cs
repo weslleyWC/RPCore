@@ -34,7 +34,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.88.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.89.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
             if(passenger!=null)Add("Transporte / taxi e limousine","Contratar motorista como passageiro.",()=>{menu.Visible=false;passenger();});
             if(world!=null)Add("Mundo / clima e horario","Controles opcionais de clima e relogio.",()=>{menu.Visible=false;world();});
             if(editor!=null) Add("Map Builder / objetos e locais","Editor persistente por perfil, props proprios, icones e pontos de servico.",()=>{menu.Visible=false;editor();});

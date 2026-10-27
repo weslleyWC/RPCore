@@ -32,11 +32,17 @@ namespace RPCore
         public static double Distance(GangSpot a,GangSpot b)=>Math.Sqrt(Math.Pow(a.X-b.X,2)+Math.Pow(a.Y-b.Y,2)+Math.Pow(a.Z-b.Z,2));
         public static GangSpot HQ(GangDefinition g)=>new GangSpot{X=g.HQX,Y=g.HQY,Z=g.HQZ};
         public static bool AtHQ(GangDefinition g,GangSpot p)=>g!=null && Position(HQ(g)) && Position(p) && Distance(HQ(g),p)<=70;
+        public static string ContactModel(GangDefinition g)
+        {
+            if(g==null)return null;if(!string.IsNullOrWhiteSpace(g.LeaderModel))return ModelName(g.LeaderModel)?g.LeaderModel:null;
+            if(g.Extra==null || !g.Extra.TryGetValue("CoLeaderModel",out var value) || value?.Type!=Newtonsoft.Json.Linq.JTokenType.String)return null;
+            string co=(string)value;return ModelName(co)?co:null;
+        }
         public static List<GangPost> Plan(GangDefinition g,int limit)
         {
             var posts=new List<GangPost>();if(g==null || string.IsNullOrWhiteSpace(g.Name) || limit<1 || limit>8 || !Position(HQ(g)))return posts;
             Action<string,string,GangSpot,bool> add=(key,model,spot,leader)=>{if(posts.Count<limit && ModelName(model) && AtHQ(g,spot) && posts.All(p=>Distance(p.Spot,spot)>=2))posts.Add(new GangPost{Key=key,Model=model,Spot=spot,Leader=leader});};
-            add("leader",g.LeaderModel,g.LeaderSpawnPostion==null?null:new GangSpot{X=g.LeaderSpawnPostion.X,Y=g.LeaderSpawnPostion.Y,Z=g.LeaderSpawnPostion.Z,Heading=g.LeaderSpawnHeading},true);
+            add("leader",ContactModel(g),g.LeaderSpawnPostion==null?(string.IsNullOrWhiteSpace(g.LeaderModel) && ContactModel(g)!=null?new GangSpot{X=g.HQX+1.5f,Y=g.HQY,Z=g.HQZ,Heading=g.LeaderSpawnHeading}:null):new GangSpot{X=g.LeaderSpawnPostion.X,Y=g.LeaderSpawnPostion.Y,Z=g.LeaderSpawnPostion.Z,Heading=g.LeaderSpawnHeading},true);
             var models=(g.PedModels??Array.Empty<string>()).Where(ModelName).ToArray();
             if(models.Length>0 && g.PedSpawnSpots!=null)for(int i=0;i<g.PedSpawnSpots.Count && posts.Count<limit;i++)add("member:"+i,models[i%models.Length],g.PedSpawnSpots[i],false);
             return posts;
