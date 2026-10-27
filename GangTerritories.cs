@@ -28,7 +28,7 @@ namespace RPCore
         {
             pool.HideAll();menu.Clear();
             if(state().Turf!=null && !state().Turf.Valid){Add("Dados de territorio protegidos","Confira GangState.json/backup; nenhum dono sera substituido.",()=>{});menu.Visible=true;return;}
-            Add("Mapa de territorios: "+(state().TerritoriesEnabled?"LIGADO":"DESLIGADO"),"15 pontos da referencia; opcional por perfil. Desligar suspende a disputa sem apagar donos.",()=>{var next=CharacterRules.Copy(state());next.TerritoriesEnabled=!next.TerritoriesEnabled;save(next);if(!next.TerritoriesEnabled)Suspend();SyncMap();Open();});
+            if(InterfaceOptions.AdvancedMenus)Add("Mapa de territorios: "+(state().TerritoriesEnabled?"LIGADO":"DESLIGADO"),"15 pontos da referencia; opcional por perfil. Desligar suspende a disputa sem apagar donos.",()=>{var next=CharacterRules.Copy(state());next.TerritoriesEnabled=!next.TerritoriesEnabled;save(next);if(!next.TerritoriesEnabled)Suspend();SyncMap();Open();});
             Add("Guerras / alertas e reforcos","Ataques automaticos opcionais, mapa dinamico e reforcos nas capturas.",()=>OpenWarfare?.Invoke());
             Add("Assalto organizado / comboio","Quatro carros e equipe propria: partir de area sob seu controle, escoltar e capturar alvo rival.",OpenAssault);
             Add("Capturas: "+(state().Turf?.Captures??0)+" / defesas: "+(state().Turf?.Defenses??0)+" / perdas: "+(state().Turf?.LostDefenses??0),"Contadores deste perfil; sem renda ou premio automatico.",()=>{});

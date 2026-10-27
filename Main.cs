@@ -42,13 +42,13 @@ namespace RPCore
             Wallet.Reload();
 
             var ach = new AchievementSystem(pool);
-            var needs = new NeedsSystem();
+            var shifts = new ShiftGate();
+            var needs = new NeedsSystem(shifts);
             var inv = new InventorySystem(pool, needs, ach);
             inventory = inv;
             systems.Add(ach);
             systems.Add(needs);
             systems.Add(inv);
-            var shifts = new ShiftGate();
             systems.Add(new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier" || editor?.Editing==true, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>()));
             var pizza = new PizzaJob(pool, ach, shifts); systems.Add(pizza);
             var postOp = new PostOpJob(pool, ach, shifts); systems.Add(postOp);
@@ -114,6 +114,7 @@ namespace RPCore
             var dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
             var custody = new CustodySystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(custody);
             var traffic = new TrafficSystem(pool, shifts, () => belt.IsBelted, () => gangs==null || !gangs.HasPendingActivity, custody.OpenMenu); systems.Add(traffic);
+            systems.Add(new RoleplayBootstrap(shifts));
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
@@ -137,7 +138,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.89.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.90.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -203,6 +204,7 @@ namespace RPCore
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
+            if(Profile.Detect()!=Profile.Id)return;
             if(editor.Manipulating){editor.OnKey(e);return;}
             if (surveillance.Viewing) { surveillance.OnKey(e); return; }
             if (inventory.GridVisible && !faulted.Contains(inventory))

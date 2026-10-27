@@ -10,24 +10,30 @@ namespace RPCore
     public class NeedsSystem : ISystem
     {
         public string Name { get { return "needs"; } }
+        public event Action<string,string> Alert;
 
         NeedsData d;
-        int last, nextHurt;
+        int last, hurtClock, collapseClock, saveClock;
+        bool lowFood,lowWater,lowSleep,wasSprinting;
+        readonly ShiftGate gate;
         bool wasDead;
         bool resting;
         public float Hunger { get { return d.Hunger; } }
         public float Thirst { get { return d.Thirst; } }
         public float Sleep { get { return d.Sleep; } }
 
-        public NeedsSystem() { Reload(); }
+        public NeedsSystem(ShiftGate gate=null) { this.gate=gate;Reload(); }
+        public NeedsConsumption PrepareFood(string id,float hunger,float thirst)=>NeedsRules.Food(d,id,hunger,thirst);
+        public bool Consumed(string id)=>d.LastConsumptionId==id;
+        public bool ApplyConsumption(NeedsConsumption receipt)=>NeedsRules.Apply(ref d,receipt,next=>Store.Write("Needs.json",next));
 
         public void Reload()
         {
             d = Store.Load("Needs.json", () => new NeedsData());
             last = Game.GameTime;
             d.Hunger = Clamp(d.Hunger); d.Thirst = Clamp(d.Thirst);
-            d.Sleep = Clamp(d.Sleep); resting = false;
-            wasDead = false;
+            d.Sleep = Clamp(d.Sleep);d.Stamina=Clamp(d.Stamina);d.StaminaCooldown=Math.Max(0,Math.Min(5000,d.StaminaCooldown));wasSprinting=false; resting = false;
+            wasDead = false;hurtClock=collapseClock=saveClock=0;lowFood=lowWater=lowSleep=false;
         }
 
         public void Feed(float hunger, float thirst)
@@ -36,7 +42,7 @@ namespace RPCore
             d.Thirst = Clamp(d.Thirst + thirst);
         }
 
-        static float Clamp(float v) { return float.IsNaN(v) || float.IsInfinity(v) ? 100 : Math.Max(0f, Math.Min(100f, v)); }
+        static float Clamp(float v) => NeedsRules.Clamp(v);
 
         public void ToggleRest()
         {
@@ -48,10 +54,8 @@ namespace RPCore
         public void Tick()
         {
             int now = Game.GameTime;
-            // clamp dt so pause / loading screens don't dump the bars
-            float dtMin = Math.Min(Math.Max(now - last, 0) / 60000f, 0.05f);
-            last = now;
-            if (Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) return;
+            int delta=NeedsRules.Delta(now,last,!Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE));last=now;
+            if(Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))return;
 
             Ped p = Game.Player.Character;
             if (!p.Exists()) return;
@@ -61,32 +65,42 @@ namespace RPCore
             {
                 wasDead = false; // respawned at hospital, don't leave them starving
                 d.Hunger = Math.Max(d.Hunger, 60f);
-                d.Thirst = Math.Max(d.Thirst, 60f);
+                d.Thirst = Math.Max(d.Thirst, 60f);d.Sleep=Math.Max(d.Sleep,60f);d.Stamina=100;d.StaminaCooldown=0;
             }
 
             float mult = p.IsSprinting ? Cfg.SprintMult : (p.IsRunning ? 1.4f : 1f);
             if (resting && (p.Speed > .3f || p.IsInVehicle() || p.IsInCombat || Game.IsMissionActive)) resting = false;
-            d.Sleep = Clamp(d.Sleep + (resting ? 60 : -.25f) * dtMin);
-            d.Hunger = Clamp(d.Hunger - Cfg.HungerPerMin * mult * dtMin);
-            d.Thirst = Clamp(d.Thirst - Cfg.ThirstPerMin * mult * dtMin);
-
-            // starving/dehydrated drains health but never finishes you off
-            if ((d.Hunger <= 0f || d.Thirst <= 0f) && unchecked(now - nextHurt) >= 0 && p.Health > Math.Min(p.MaxHealth, 101))
+            float food=Math.Abs(Cfg.HungerPerMin-1.1f)<.0001f?1:Cfg.HungerPerMin;
+            float water=Math.Abs(Cfg.ThirstPerMin-1.6f)<.0001f?1:Cfg.ThirstPerMin;
+            NeedsRules.Advance(d,delta,food,water,mult,resting);
+            bool sprinting=p.IsSprinting && !p.IsSwimmingUnderWater;NeedsRules.Stamina(d,delta,sprinting,wasSprinting);wasSprinting=sprinting;
+            if(d.StaminaCooldown>0 && !Game.IsMissionActive)Game.DisableControlThisFrame(GTA.Control.Sprint);
+            Warn(d.Hunger,ref lowFood,"Fome baixa. Coma algo no inventario.");
+            Warn(d.Thirst,ref lowWater,"Sede baixa. Beba algo no inventario.");
+            Warn(d.Sleep,ref lowSleep,"Energia baixa. Pare em seguranca para descansar.");
+            bool depleted=d.Hunger<=0 || d.Thirst<=0 || d.Sleep<=0;
+            hurtClock=depleted?Math.Min(1500,hurtClock+delta):0;
+            collapseClock=Math.Max(0,collapseClock-delta);
+            if(depleted && !Game.IsMissionActive)
             {
-                p.Health -= 1;
-                nextHurt = now + 1500;
+                if(hurtClock>=1500){int floor=Math.Min(p.MaxHealth,101);if(p.Health>floor)p.Health=Math.Max(floor,p.Health-1);hurtClock=0;}
+                Game.DisableControlThisFrame(GTA.Control.Sprint);
+                if(collapseClock==0 && (gate==null || gate.Owner==null) && p.IsOnFoot && !p.IsInCombat && !p.IsRagdoll && p.Speed<.5f && Game.Player.Wanted.WantedLevel==0 && !InterfaceOptions.ModalOpen){p.Ragdoll(2500);collapseClock=30000;Notify.Show("Voce esta exausto. Alimente-se, hidrate-se e descanse.");}
             }
+            saveClock+=delta;if(saveClock>=5000){saveClock=0;try{Save();}catch(Exception ex){Log.Error("needs checkpoint",ex);}}
 
             DrawHud();
         }
+
+        void Warn(float value,ref bool warned,string message){if(value>20)warned=false;if(value<=10 && !warned){warned=true;Notify.Show(message);try{Alert?.Invoke("Fitness",message);}catch(Exception ex){Log.Error("needs alert history",ex);}}}
 
         void DrawHud()
         {
             if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE) || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || Function.Call<bool>(Hash.IS_HUD_HIDDEN)) return;
             var p = Game.Player.Character;
             if (!Visuals.NeedsHud) return;
-            float stamina = Function.Call<float>(Hash.GET_PLAYER_SPRINT_STAMINA_REMAINING, Game.Player.Handle);
-            if (Visuals.TryNeeds(d.Hunger, d.Thirst, p.MaxHealth > 100 ? (p.Health - 100) * 100f / (p.MaxHealth - 100) : p.Health * 100f / Math.Max(1, p.MaxHealth), p.Armor, stamina, d.Sleep)) return;
+            float stamina = p.IsSwimmingUnderWater?Clamp(Game.Player.RemainingUnderwaterTime*4.1f):d.Stamina;
+            if (Visuals.TryNeeds(d.Hunger, d.Thirst, NeedsRules.Health(p.Health,p.MaxHealth), p.Armor, stamina, d.Sleep)) return;
             Bar(Cfg.HudX, Cfg.HudY, "FOOD", d.Hunger);
             Bar(Cfg.HudX, Cfg.HudY + 22f, "WATER", d.Thirst);
         }

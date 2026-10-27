@@ -23,7 +23,7 @@ namespace RPCore
         public bool GridVisible { get { return grid.Visible; } }
         internal List<string> Layout { get { return d.GridSlots; } set { d.GridSlots = value; } }
         InvData d;
-        bool dirty;
+        bool dirty;int consumptionRetry;
         public event Action<ItemDef> Used;
 
         static List<ItemDef> DefaultItems()
@@ -66,10 +66,15 @@ namespace RPCore
             // Unknown item IDs remain in the save, so temporarily removed custom definitions do not delete inventory.
             if (menu.Visible) menu.Visible = false;
             grid.Close(false);
-            ReconcileLayout();
+            ReconcileLayout();RecoverConsumption();
         }
-        internal void ReconcileLayout() { d.GridSlots = InventoryLayout.Reconcile(d.GridSlots, d.Items.Where(p => p.Value > 0).Select(p => p.Key)); }
-        internal void UseSelected(string id) { ItemDef def; if (id != null && Defs.TryGetValue(id, out def)) { Use(def); Save(); needs.Save(); } }
+        internal void ReconcileLayout() { d.GridSlots = InventoryLayout.Reconcile(d.GridSlots, d.Items.Where(p => p.Value > 0).Select(p => p.Key),RoleplayInventoryLayout.PageSize); }
+        internal void UseSelected(string id) { ItemDef def; if (id != null && Defs.TryGetValue(id, out def)) { Use(def); } }
+
+        internal bool DropSaved(string id,int quantity)
+        {try{bool ok=InventoryEdits.Drop(ref d,id,quantity,n=>Store.Write("Inventory.json",n));dirty|=ok;return ok;}catch(Exception ex){Log.Error("inventory discard",ex);Notify.Show("Item conservado; descarte nao foi gravado.");return false;}}
+        internal bool MoveSlotSaved(int from,int to)
+        {try{bool ok=InventoryEdits.Move(ref d,from,to,n=>Store.Write("Inventory.json",n));dirty|=ok;return ok;}catch(Exception ex){Log.Error("inventory move",ex);Notify.Show("Posicao anterior conservada; movimento nao foi gravado.");return false;}}
 
         public float Weight
         {
@@ -102,19 +107,26 @@ namespace RPCore
         }
 
         void Use(ItemDef def)
+        {try{Consume(def);}catch(Exception ex){Log.Error("inventory use",ex);Notify.Show("Consumo nao concluido. Confira arquivos/permissoes; sem beneficio antes de gravar.");}}
+        void Consume(ItemDef def)
         {
-            if (def.Hunger == 0 && def.Thirst == 0 && def.Health == 0) return;
-            if (Game.Player.Character.IsDead || !Remove(def.Id)) return;
-            needs.Feed(def.Hunger, def.Thirst);
-            if (def.Health > 0)
-            {
-                Ped p = Game.Player.Character;
-                p.Health = Math.Min(p.MaxHealth, p.Health + def.Health);
-            }
+            if(def==null || def.Hunger==0 && def.Thirst==0 && def.Health==0 || Game.Player.Character.IsDead)return;
+            if(!RecoverConsumption())return;
+            string id=Guid.NewGuid().ToString("N");var receipt=needs.PrepareFood(id,def.Hunger,def.Thirst);var next=NeedsRules.Consume(d,def,receipt);if(next==null)return;
+            // Commit removal and its recovery receipt before applying any benefit.
+            Store.Write("Inventory.json",next);d=next;dirty=true;
+            if(!RecoverConsumption())return;
+            if(def.Health>0){var p=Game.Player.Character;p.Health=(int)Math.Min((long)p.MaxHealth,(long)p.Health+Math.Min(def.Health,10000));}
             Notify.Show("Used " + def.Name);
-            ach.Bump("items_used");
-            if (def.Health > 0) ach.Bump("first_aid");
-            Used?.Invoke(def);
+            try{ach.Bump("items_used");if(def.Health>0)ach.Bump("first_aid");}catch(Exception ex){Log.Error("consumption achievement",ex);}
+            if(Used!=null)foreach(Action<ItemDef> callback in Used.GetInvocationList())try{callback(def);}catch(Exception ex){Log.Error("consumption presentation",ex);}
+        }
+
+        bool RecoverConsumption()
+        {
+            if(d.Consumption==null)return true;
+            try{if(!needs.ApplyConsumption(d.Consumption))throw new InvalidOperationException("Recibo de consumo invalido.");return true;}
+            catch(Exception ex){Log.Error("inventory consumption recovery",ex);return false;}
         }
 
         void Rebuild()
@@ -148,6 +160,7 @@ namespace RPCore
 
         public void Tick()
         {
+            if(d.Consumption!=null && !needs.Consumed(d.Consumption.Id) && unchecked(Game.GameTime-consumptionRetry)>=0){consumptionRetry=Game.GameTime+5000;RecoverConsumption();}
             // rebuild outside LemonUI's event dispatch, not inside the Activated handler
             if (dirty && menu.Visible) Rebuild();
             if (dirty) ReconcileLayout();

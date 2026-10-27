@@ -22,36 +22,54 @@ namespace RPCore
         readonly Action characters;
         readonly Action insurance;
         readonly Action dmv,traffic,studio,halloween,editor,passenger,world;
+        NativeMenu target;readonly NativeMenu services,bank,profiles,tools;
         readonly NativeMenu menu = new NativeMenu("RPCore", "");
         public string RequestedProfile;
         bool dirty;
-        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null, Action studio = null, Action halloween = null, Action editor = null, Action passenger = null, Action world = null) { this.passenger=passenger;this.world=world; this.editor=editor; this.halloween=halloween; this.studio=studio; this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core"); }
+        public CoreMenu(ObjectPool pool, AchievementSystem ach, Action save, Action diagnose = null, Action jobs = null, Action housing = null, Action barber = null, Action characters = null, Action insurance = null, Action dmv = null, Action traffic = null, Action studio = null, Action halloween = null, Action editor = null, Action passenger = null, Action world = null) { this.passenger=passenger;this.world=world; this.editor=editor; this.halloween=halloween; this.studio=studio; this.traffic=traffic; this.dmv = dmv; this.insurance = insurance; this.characters = characters; this.barber = barber; this.housing = housing; this.jobs = jobs; this.pool = pool; this.ach = ach; this.save = save; this.diagnose = diagnose; pool.Add(menu); Visuals.Register(menu, "core");services=Group("Servicos e trabalho");bank=Group("Banco");profiles=Group("Personagens e perfis");tools=Group("Avancado / manutencao"); }
+        NativeMenu Group(string name){var child=new NativeMenu("RPCore",name);pool.Add(child);Visuals.Register(child,"core");return child;}
 
         void Add(string title, string description, Action action)
         {
             var item = new NativeItem(title, description);
-            item.Activated += (s, e) => { action(); dirty = true; }; menu.Add(item);
+            item.Activated += (s, e) => { action(); dirty = true; }; (target??menu).Add(item);
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.89.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
-            if(passenger!=null)Add("Transporte / taxi e limousine","Contratar motorista como passageiro.",()=>{menu.Visible=false;passenger();});
-            if(world!=null)Add("Mundo / clima e horario","Controles opcionais de clima e relogio.",()=>{menu.Visible=false;world();});
-            if(editor!=null) Add("Map Builder / objetos e locais","Editor persistente por perfil, props proprios, icones e pontos de servico.",()=>{menu.Visible=false;editor();});
-            if(halloween!=null) Add("Halloween / The Last Ride","Romero, corrida ao cemiterio, perseguidores fantasmas e pulso defensivo.",()=>{menu.Visible=false;halloween();});
-            if(studio!=null) Add("Contratos / assalto ao estudio","Cinco preparacoes e final de The Hollywood Act.",()=>{menu.Visible=false;studio();});
-            if(traffic!=null) Add("Policia / transito e multas","Fiscalizacao opcional, patrulha observadora, autuacoes e pagamento bancario.",()=>{menu.Visible=false;traffic();});
-            if (dmv != null) Add("DMV / habilitacoes C, M1 e A", "GPS, teoria e pratica de carros/motos, com documentos separados por perfil.", () => { menu.Visible = false; dmv(); });
-            if (insurance != null) Add("Seguro veicular / recuperacao", "Cadastro gratuito, GPS e recuperacao de destruido por franquia. Veiculos pessoais registrados nas garagens.", () => { menu.Visible = false; insurance(); });
-            if (characters != null) Add("Personagens / criar e carregar", "Freemode masculino/feminino com perfil proprio; confirmacao antes de trocar o ped.", () => { menu.Visible = false; characters(); });
-            if (barber != null) Add("Barbearias / cortes e olhos", "GPS, previa reversivel e confirmacao do atendimento.", () => { menu.Visible = false; barber(); });
-            if (housing != null) Add("Moradia / Eclipse Towers", "Compra, GPS e acesso ao apartamento do perfil ativo.", () => { menu.Visible = false; housing(); });
-            if (jobs != null) Add("Trabalhos / contratos", "Contratos de entregas e motoristas: GPS, contratar e cancelar.", () => { menu.Visible = false; jobs(); });
+            int selected=menu.SelectedIndex;
+            menu.Clear();services.Clear();bank.Clear();profiles.Clear();tools.Clear();menu.Name="RPCore";bank.Name="Banco / saldo $"+Wallet.Bank;
+            menu.AddSubMenu(services);menu.AddSubMenu(bank);menu.AddSubMenu(profiles);menu.AddSubMenu(tools);
+            target=services;
+            if(passenger!=null)Add("Transporte / taxi e limousine","Contratar motorista como passageiro.",()=>{pool.HideAll();passenger();});
+            target=tools;
+            if(world!=null)Add("Mundo / clima e horario","Controles opcionais de clima e relogio.",()=>{pool.HideAll();world();});
+            target=tools;
+            if(editor!=null) Add("Map Builder / objetos e locais","Editor persistente por perfil, props proprios, icones e pontos de servico.",()=>{pool.HideAll();editor();});
+            target=services;
+            if(halloween!=null) Add("Halloween / The Last Ride","Romero, corrida ao cemiterio, perseguidores fantasmas e pulso defensivo.",()=>{pool.HideAll();halloween();});
+            target=services;
+            if(studio!=null) Add("Contratos / assalto ao estudio","Cinco preparacoes e final de The Hollywood Act.",()=>{pool.HideAll();studio();});
+            target=services;
+            if(traffic!=null) Add("Policia / transito e multas","Fiscalizacao opcional, patrulha observadora, autuacoes e pagamento bancario.",()=>{pool.HideAll();traffic();});
+            target=services;
+            if (dmv != null) Add("DMV / habilitacoes C, M1 e A", "GPS, teoria e pratica de carros/motos, com documentos separados por perfil.", () => { pool.HideAll(); dmv(); });
+            if (insurance != null) Add("Seguro veicular / recuperacao", "Cadastro gratuito, GPS e recuperacao de destruido por franquia. Veiculos pessoais registrados nas garagens.", () => { pool.HideAll(); insurance(); });
+            target=profiles;
+            if (characters != null) Add("Personagens / criar e carregar", "Freemode masculino/feminino com perfil proprio; confirmacao antes de trocar o ped.", () => { pool.HideAll(); characters(); });
+            target=services;
+            if (barber != null) Add("Barbearias / cortes e olhos", "GPS, previa reversivel e confirmacao do atendimento.", () => { pool.HideAll(); barber(); });
+            if (housing != null) Add("Moradia / Eclipse Towers", "Compra, GPS e acesso ao apartamento do perfil ativo.", () => { pool.HideAll(); housing(); });
+            if (jobs != null) Add("Trabalhos / contratos", "Contratos de entregas e motoristas: GPS, contratar e cancelar.", () => { pool.HideAll(); jobs(); });
+            target=tools;
             if (diagnose != null) Add("Visual assets: diagnose", "Requests installed YTDs and checks every catalog texture's native dimensions. Writes VisualDiagnostics.json; does not verify rendered appearance.", diagnose);
+            target=tools;
             Add("Save now", "Writes the active profile; keeps previous versions as .bak.", () => { save(); Notify.Show("Save requested. Check RPCore.log for any write errors."); });
-            Add("Bank: deposit $100", "RPCore bank balance is separate from other mods.", () => { if (Wallet.Deposit(100)) BankUsed(); else Notify.Show("Insufficient cash or balance limit."); });
-            Add("Bank: withdraw $100", "Withdraw to the active character wallet.", () => { if (Wallet.Withdraw(100)) BankUsed(); else Notify.Show("Insufficient bank balance or cash limit."); });
+            target=bank;
+            Add("Bank: deposit $100", "RPCore bank balance is separate from other mods.", () => { if (Wallet.DepositSaved(100)) BankUsed(); else Notify.Show("Insufficient cash or balance limit."); });
+            Add("Bank: withdraw $100", "Withdraw to the active character wallet.", () => { if (Wallet.WithdrawSaved(100)) BankUsed(); else Notify.Show("Insufficient bank balance or cash limit."); });
+            target=tools;
             Add("Reload configuration", "Reads Settings.ini and Keys.ini. Feature switches take effect after script restart.", () => { Cfg.Load(); Notify.Show("Configuration reloaded."); });
+            target=profiles;
             foreach (var directory in new[] { Path.Combine(Cfg.SaveDir, "Players"), Path.Combine(Cfg.Dir, "Legacy", "SaveData", "Players"), Path.Combine("scripts", "PSRP", "SaveData", "Players") }.Distinct())
             {
                 if (!Directory.Exists(directory)) continue;
@@ -69,16 +87,17 @@ namespace RPCore
                     if (Profile.IsProtagonist(id) || CharacterRules.ValidId(id) && File.Exists(Path.Combine(directory, "Character.json"))) continue;
                     Add("Use profile: " + id, "For freemode peds only. Does not change appearance, position or vehicles.", () => {
                         if (Profile.IsProtagonist(Profile.Detect())) { Notify.Show("Switch to a freemode ped first."); return; }
-                        RequestedProfile = id; menu.Visible = false;
+                        RequestedProfile = id; pool.HideAll();
                     });
                 }
+            menu.SelectedIndex=Math.Max(0,Math.Min(selected,menu.Items.Count-1));
             dirty = false;
         }
 
         void BankUsed()
         {
             ach.Bump("bank_used"); if (Wallet.Bank >= 1000000) ach.Bump("bank_million");
-            Wallet.Save(); ach.Save();
+            ach.Save();bank.Name="Banco / saldo $"+Wallet.Bank;
         }
 
         void Import(string source, string id)
@@ -113,9 +132,9 @@ namespace RPCore
             catch (Exception ex) { Log.Error("PSRP import", ex); Notify.Show("Import incomplete or profile already exists. Originals preserved; see RPCore.log."); }
         }
         public void Tick() { if (dirty && menu.Visible) Rebuild(); }
-        public void OnKey(KeyEventArgs e) { if (e.KeyCode != Cfg.CoreKey) return; if (menu.Visible) menu.Visible = false; else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; } }
-        public void Reload() { menu.Visible = false; }
+        public void OnKey(KeyEventArgs e) {if(e.KeyCode!=Cfg.CoreKey)return;if(menu.Visible || services.Visible || bank.Visible || profiles.Visible || tools.Visible)Reload();else if(!pool.AreAnyVisible){Rebuild();menu.Visible=true;}}
+        public void Reload() { menu.Visible=services.Visible=bank.Visible=profiles.Visible=tools.Visible=false; }
         public void Save() { }
-        public void Dispose() { menu.Visible = false; }
+        public void Dispose() { Reload(); }
     }
 }

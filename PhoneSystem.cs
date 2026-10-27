@@ -25,7 +25,7 @@ namespace RPCore
         string page = "Home", query = "", result = "0";
         public bool Visible { get; private set; }
         public PhoneSystem(ObjectPool pool, Action<Keys> dispatch, PropPresentation props, InventorySystem inventory, NeedsSystem needs, Action jobs = null, UberJob uber = null, StreamerJob streamer = null, Action studio = null, Action passenger = null)
-        { this.passenger=passenger; this.studio=studio; this.streamer = streamer; if (streamer != null) streamer.Activity += JobActivity; this.uber = uber; if (uber != null) uber.Activity += JobActivity; this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; Reload(); inventory.Used += ItemUsed; }
+        { this.passenger=passenger; this.studio=studio; this.streamer = streamer; if (streamer != null) streamer.Activity += JobActivity; this.uber = uber; if (uber != null) uber.Activity += JobActivity; this.jobs = jobs; this.pool = pool; this.dispatch = dispatch; this.props = props; this.inventory = inventory; this.needs = needs; needs.Alert+=JobActivity; Reload(); inventory.Used += ItemUsed; }
         void JobActivity(string title, string body)
         {
             try { data.History.Insert(0,new PhoneEntry { Title=title,Body=body }); if(data.History.Count>64)data.History.RemoveRange(64,data.History.Count-64);Save(); }
@@ -213,6 +213,6 @@ namespace RPCore
             data.Wallpaper = Math.Max(1,Math.Min(10,data.Wallpaper)); row = 0; stopwatchStart = -1;
         }
         public void Save() { Store.Write("Phone.json",data); }
-        public void Dispose() { if (uber != null) uber.Activity -= JobActivity; if (streamer != null) streamer.Activity -= JobActivity; inventory.Used -= ItemUsed; Close(); }
+        public void Dispose() { if (uber != null) uber.Activity -= JobActivity; if (streamer != null) streamer.Activity -= JobActivity; inventory.Used -= ItemUsed;needs.Alert-=JobActivity; Close(); }
     }
 }

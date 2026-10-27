@@ -16,6 +16,7 @@ namespace RPCore
         public static Portfolio Exchange { get { return data.Exchange; } set { data.Exchange = value; } }
         public static TransportData Transport { get { if (data.Transport == null) data.Transport = new TransportData(); data.Transport.Validate(); return data.Transport; } }
         public static void Reload() { data = Store.Load("Wallet.json", () => new WalletData()); data.Cash = Math.Max(0, data.Cash); data.Bank = Math.Max(0, data.Bank); }
+        public static bool RoleplayDefaults()=>RPCore.RoleplayDefaults.Wallet(data,Save);
         public static void Save() { Store.Write("Wallet.json", data); }
         public static bool WorkshopBuy(int cost, Func<bool> access, Func<bool> already, Action apply, Func<bool> verified, Action rollback) => WorkshopRules.Buy(data, cost, access, already, apply, verified, rollback, Save);
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
@@ -352,6 +353,8 @@ namespace RPCore
             if (data.Jobs.Jobs != null && data.Jobs.Jobs.TryGetValue("pizza", out existing) && existing != null) return;
             var stats = data.Jobs.Get("pizza"); stats.Deliveries = Math.Max(0, legacy.Deliveries); stats.Earned = Math.Max(0, legacy.Earned);
         }
+        public static bool DepositSaved(int amount)=>BankTransfer.Commit(data,()=>Cash,n=>Cash=n,amount,true,Save);
+        public static bool WithdrawSaved(int amount)=>BankTransfer.Commit(data,()=>Cash,n=>Cash=n,amount,false,Save);
         public static bool Deposit(int amount)
         {
             if (amount <= 0 || data.Bank > int.MaxValue - amount || !Debit(amount)) return false;

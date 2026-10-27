@@ -174,7 +174,7 @@ namespace RPCore
         {
             try
             {
-                if (!Active || !NeedsHud || !Has("PSRP", "OutBar100") || !Has("PSRP", "FoodIcon") || !Has("PSRP", "DrinkIcon")) return false;
+                if (!Active || !NeedsHud || !Has("PSRP", "OutBar100") || !Has("PSRP", "FoodIcon") || !Has("PSRP", "DrinkVisual") || !Has("PSRP","HealthIcon") || !Has("PSRP","ArmorIcon") || !Has("PSRP","LungIcon") || !Has("PSRP","SleepIcon") || !Has("PSRP","CircleWhite")) return false;
                 float unit = 47 * Scale, x = ReferenceLayout.StatusX(Width,Scale,InsetX), y = InsetY + NeedsOffsetY * Scale;
                 Gauge("HealthIcon", health, x, y, Color.FromArgb(255,255,51,51));
                 Gauge("ArmorIcon", armor, x + unit, y, Color.FromArgb(255,102,102,255));

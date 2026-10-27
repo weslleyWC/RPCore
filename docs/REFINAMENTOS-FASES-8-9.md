@@ -245,3 +245,5 @@ Base0.87: oficina personalizada funcional; fase8 também tratará apresentação
 Base0.88: transporte de passageiro e controles de mundo agora têm ciclo funcional próprio, guia e testes de dados; a nota0.87 de ausência é histórica. IA/taxímetro físico, clima/relógio e HTTP no GTA não foram homologados. Variantes de apresentação/realismo ficam8/9 depois da classificação final de gangues/polícia.
 
 Transição0.89: base independente encerrada conforme FECHAMENTO-BASE-0.89.0.md. Próxima entrega inicia8: mecânicas/HUD/menus, incluindo fome/sede.9 inclui todas as atividades/gangues/missões e variantes ausentes de alvos móveis/reforços motorizados/tuning. LSPDFR opcional não implementado/fora da base; sem afirmar paridade total.
+
+Pedido atual: RP ativo por padrão, menos comandos/toggles no fluxo normal, menus organizados/fidelidade PSRP e investigação de bugs.0.90 inicia8 com preset uma vez por perfil, necessidades/consumo durável, stamina/oxigênio/avisosFitness, F11 oito categorias/F10 quatro grupos e grade6x4. Novos falsos antigos de perfil são habilitados conforme pedido; ajustes avançados posteriores preservados. Não conclui todos os menus/bugs ou a fase8 inteira.

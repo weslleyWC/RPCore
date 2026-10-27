@@ -1,3 +1,9 @@
+## Atualização0.90.0 — fase8: roleplay pronto, necessidades e menus
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.90.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.90.0.zip) · [Guia de teste](docs/FASE-8.1-0.90.0.md)
+
+RP por perfil já ativo quando nao ha atividade ativa, sem sequência de liga/desliga. F11 nas oito categorias PSRP; F10 separado em serviços/banco/perfis/manutenção. Teleporte em F11CheatMenu e testes/opções técnicas no avançado. Fome/sede/sono, fôlego ligado ao sono/oxigênio, avisosFitness, consumo persistido antes de benefícios, grade6x4 PSRP com itens/posições preservados; rollback de banco e proteção de hotkeys na troca de personagem.3415 testes aprovados; build sem erros/avisos. Guia detalha diferenças e teste GTA pendente. Fase8 continua para menus específicos/detalhes; não declara todo bug eliminado ou paridade visual total.
+
 ## Atualização0.89.0 — resolução policial e fechamento da base
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.89.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.89.0.zip) · [Guia de teste](docs/FASE-7.6-0.89.0.md)

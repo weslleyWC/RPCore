@@ -5,6 +5,7 @@ namespace RPCore
 {
     public class WalletData : ExtensibleData
     {
+        public int RoleplayVersion;
         public int Cash;
         public int Bank;
         public Portfolio Exchange;

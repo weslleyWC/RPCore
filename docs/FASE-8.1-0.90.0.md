@@ -1,0 +1,32 @@
+# 0.90.0 — roleplay pronto, necessidades e menus
+
+Refinamento baseado em HungerSystem/HydrationSystem, UiSystem, SettingsMenu e NewInventorySystem exportados da PSRP.dll. Os ícones/texturas originais são reutilizados. GTA não foi executado neste ambiente: o roteiro abaixo é a verificação física necessária, não aceite presumido.
+
+## O que mudou
+
+- **Roleplay ativo por perfil**, sem sequência de liga/desliga: fiscalização/infrações/perseguição/suborno/BOLO/custódia e presença/territórios/ataques/simulação rival/reforços/emboscadas. Upgrade uma vez (`RoleplayVersion=1`), com backup; aguarda atividades em execucao e conserva etapas/recibos de pendencias validas e não troca dinheiro, itens, donos ou progresso. Depois disso, ajustes explícitos avançados não são reativados a cada recarga. Configs globais de Features desativadas pelo usuário continuam respeitadas. Missões, rendição, clima real e relógio continuam ações deliberadas.
+- **F11 com as oito categorias PSRP**: Gang Creation, Ped Settings, Survival Settings, Vehicle Settings, UI Settings, Game Settings, Cheat Menu, Map Builder. Serviços/contratos/polícia/transporte/mundo ficam em Game Settings; editor em Map Builder. Teleporte permanece em **F11 → Cheat Menu → Teleportar para o waypoint**.
+- **F10 em quatro grupos**: serviços/trabalho, banco, personagens/perfis e manutenção. Diagnósticos/importações não ficam espalhados nas ações de jogo. Liga/desliga e patrulhas/emboscadas de teste ficam em **F11 → UI Settings → Advanced Settings → Mostrar opções técnicas nos sistemas**. Não são necessários para iniciar roleplay.
+- **Necessidades reais**: tempo ativo sem saltos/offline/pausa; padrões antigos1.1/1.6 reconhecidos como padrão legado e ajustados em memória a1ponto/min, como referência. Taxas personalizadas permanecem válidas (até10/min). Sprint ainda aumenta gasto conforme configuração existente. Sono cai1ponto/90s; descanso recupera10/min, sem adiantar relógio. Sem fome extra a cada quinto tick da referência.
+- **Fôlego**: estado próprio ligado ao sono, recuperação por tempo e cooldown5s; debaixo d'água mostra oxigênio real. Baixos níveis avisam uma vez por faixa e entram no histórico Fitness do F2. Exaustão impede sprint e pode causar queda breve a pé, fora de missão/trabalho/procurado; não força animação ao volante. Dano é não letal. Respawn também recupera um mínimo de sono.
+- **Consumo seguro nos dois inventários**: item e recibo gravados antes de fome/sede/cura. Recarga conclui recibo pendente uma vez; não repete cura nativa. Falhas de efeitos visuais/histórico não desfazem o consumo já concluído. Não se declara transação atômica entre dois arquivos ou arquivo e natives; uma queda entre gravações tem protocolo de recuperação.
+- **Grade6×4 da DLL**: Background/Top/InventoryBox originais, posições140/230 e passo130, seleção azul, paginação24; itens/containers/metadados e posições salvas preservados. Helper antigo5×5 mantido para compatibilidade, sem limitar inventário a90itens nem apagar IDs desconhecidos.
+- **Descarte/movimentacao**: gravacao antes de trocar quantidade/posicao em memoria; erro conserva o estado anterior e nao desativa o inventario ao fechar.
+- **Correções adicionais**: retorno/fechamento F10 funciona nos grupos; depósito/saque desfazem saldo em falha normal de gravação; hotkeys aguardam vincular o perfil correto durante troca de personagem; validação dos sprites realmente desenhados no HUD.
+
+## Roteiro de teste no GTA
+
+1. Faça backup normal e instale a atualização. Abra o mesmo perfil: confira dinheiro, banco, itens, gangue, reputação/territórios e multas anteriores. Ao ficar sem atividade em execucao, as regras devem ativar; pendencias suspensas conservam etapas e podem ser retomadas. O preset grava preferências, não inicia missões/compra itens ou aciona polícia sem evento observado.
+2. Abra F11: confirme oito categorias, voltar/fechar/reabrir e banner. Teste serviços em Game Settings, editor em Map Builder e teleporte em Cheat Menu. F10 deve mostrar quatro grupos; deposite/saque$100 e confirme saldo, retorno e fechamento pelo próprio F10. F2 e radialJ continuam nos atalhos existentes.
+3. Parado, acompanhe fome/sede pelo HUD, inventário e F2Fitness: aproximadamente1ponto/min no padrão. Sprint aumenta gasto. ESC/cutscene/grande travamento não deve descontar tempo atrasado. Recarregue e troque perfil sem misturar valores.
+4. Coma/beba pela grade e pela lista (UI Settings permite escolher). Confira redução de **uma** unidade e os mesmos valores no HUD/Fitness. Recarregar não deve reaplicar o último alimento. Teste item/slot na segunda página e um item desconhecido; mover, consumir e reabrir não deve deslocar/perder o item restante no final da página.
+5. Corra até reduzir fôlego; pare, confira recuperação e cooldown; repita com pouco sono. Mergulhe e confira oxigênio. Descanse a pé parado; mover/entrar no carro/combate interrompe. Sono não deve continuar zerado após morte/respawn.
+6. Para testar extremos, com GTA fechado edite somente seu Needs.json para percentuais baixos, mantendo backup. Verifique avisos sem spam, histórico no F2, limite de vida não letal e queda breve em local seguro; não deve derrubar ao volante, em missão nativa ou atividade reservada. Comida/água/descanso devem recuperar os efeitos correspondentes.
+7. Confira HUD e grade em resoluções/aspectos distintos e zona segura. Grade6×4 não deve sobrepor descrição/footer. As texturas dependem dos YTD já instalados; nenhum OIV/RPF foi alterado.
+8. No modo avançado, desligue uma regra, recarregue e confira que sua escolha posterior ao preset persiste. Teste abordagem/fuga/BOLO/custódia e encontro de gangue agora ativos por padrão. São eventos de gameplay reais; os roteiros anteriores continuam válidos.
+
+## Limites e continuidade
+
+A recuperação pendente de comida/sede é idempotente; cura nativa não é repetida após recarga, para evitar duplicação. Uma falha/encerramento precisamente entre consumo persistido e cura pode deixar a cura sem aplicação. Depois de corrigir uma falha temporária, o recibo de necessidades é tentado novamente em até5s, no próximo consumo ou na recarga.
+
+Esta entrega corrige o conjunto acima. Não declara “todos os bugs do mod eliminados” ou toda a fase8 concluída: menus específicos dos serviços, detalhes do celular/inventário e apresentação ainda passam pela revisão; realismo dos trabalhos/atividades permanece na9. Diferenças deliberadas: taxas/regen por tempo, nenhum reset global de stamina/velocidade de nado/câmera e nenhum passout permanente da referência.

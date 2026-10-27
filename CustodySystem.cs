@@ -33,7 +33,7 @@ namespace RPCore
         {
             pool.HideAll();menu.Clear();string owner=Profile.Id;var b=Wallet.Custody;
             if(b!=null && !b.Valid){Add("Registro protegido","Wallet.json contem custodia invalida; nao sera substituida.",()=>{});menu.Visible=true;return;}
-            Add("Custodia: "+(b?.Enabled==true?"LIGADA":"DESLIGADA"),"Opcional. Perseguicao e policia continuam nativas. Rendicao explicita perto de policial, pena ativa na cela e fianca pelo banco. Nao confisca armas/inventario.",()=>{if(owner!=Profile.Id)return;if(Wallet.CustodyConfigure(b?.Enabled!=true,out _))OpenMenu();else Notify.Show("Conclua a pena ou pague fianca antes de desligar.");});
+            if(InterfaceOptions.AdvancedMenus)Add("Custodia: "+(b?.Enabled==true?"LIGADA":"DESLIGADA"),"Opcional. Perseguicao e policia continuam nativas. Rendicao explicita perto de policial, pena ativa na cela e fianca pelo banco. Nao confisca armas/inventario.",()=>{if(owner!=Profile.Id)return;if(Wallet.CustodyConfigure(b?.Enabled!=true,out _))OpenMenu();else Notify.Show("Conclua a pena ou pague fianca antes de desligar.");});
             var c=b?.Pending;
             if(c==null)Add("Render-se a policial proximo","CONFIRMA transferencia para cela. Com 1 a 5 estrelas, pare a pe e desarmado perto de policial a pe (15m/visao). Permaneça assim 3s. Fichamento antes de limpar apenas a perseguicao entregue. Sem trabalho ativo.",()=>{if(owner==Profile.Id)Begin(true);},b?.Enabled==true && !preparing && !active);
             else{
@@ -44,7 +44,7 @@ namespace RPCore
             }
             var lastRelease=b?.History.LastOrDefault();
             if(c==null && lastRelease!=null)Add("Recuperar saida ja liberada","Se houve falha/reload depois de gravar liberacao e voce ainda esta na cela, sai sem pagar outra vez. So funciona dentro da cela do ultimo processo, sem procurado ou atividade.",()=>{if(owner==Profile.Id)RecoverExit(lastRelease.Id);});
-            if(active || preparing)Add("Suspender custodia (teste)","Grava tempo cumprido e solta reserva da atividade. Nao perdoa pena nem teleporta. Retome por este menu; END tambem suspende.",()=>{Suspend();OpenMenu();});
+            if(InterfaceOptions.AdvancedMenus && (active || preparing))Add("Suspender custodia (teste)","Grava tempo cumprido e solta reserva da atividade. Nao perdoa pena nem teleporta. Retome por este menu; END tambem suspende.",()=>{Suspend();OpenMenu();});
             Add("Fichamentos "+(b?.Booked??0)+" / penas "+(b?.Served??0)+" / fiancas "+(b?.Bailed??0),"Fiancas pagas $"+(b?.BailPaid??0)+". Historico dos ultimos 32 processos; totais preservados.",()=>{});
             foreach(var item in (b?.History??new System.Collections.Generic.List<CustodyCase>()).AsEnumerable().Reverse())Add(item.Stars+" estrela(s) / "+(item.Outcome=="served"?"PENA CUMPRIDA":"FIANCA PAGA"),item.Id+" / fianca definida $"+item.Bail,()=>{});
             Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;

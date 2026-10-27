@@ -63,7 +63,7 @@ namespace RPCore
         }
         void Rate(NativeMenu menu, string title, Func<float> get, Action<float> set, float step)
         {
-            var row = new NativeItem(title, "Enter alterna entre 0, 1, 2, 3, 4 e 5 vezes o passo indicado.") { AltTitle = get().ToString("0.##") };
+            var row = new NativeItem(title, "Ajuste tecnico. Em necessidades, zero usa o padrao de roleplay.") { AltTitle = get().ToString("0.##") };
             row.Activated += (s, e) => { set(get() >= step * 5 ? 0 : get() + step); row.AltTitle = get().ToString("0.##"); }; menu.Add(row);
         }
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
@@ -73,13 +73,6 @@ namespace RPCore
         {
             this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot; this.hunting = hunting; this.huntingForest = huntingForest; this.fishing = fishing; this.crafting = crafting; this.dealer = dealer; this.drag = drag; this.pdm = pdm;
             root = Menu("Settings Menu");
-            if(passenger!=null)Add(root,"Transporte / taxi e limousine","Contratar motorista como passageiro; reserva bancaria e taximetro.",()=>{pool.HideAll();passenger();});
-            if(world!=null)Add(root,"Mundo / clima e horario","Modos manual/dinamico/real opcionais e relogio.",()=>{pool.HideAll();world();});
-            Add(root, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
-            if(traffic!=null) Add(root,"Policia / transito e multas","Fiscalizacao opcional, patrulha observadora e autuacoes com pagamento bancario.",()=>{pool.HideAll();traffic();});
-            if(editor!=null) Add(root,"Map Builder / objetos e locais","Criar/editar/salvar/carregar/importar/exportar mapas por perfil.",()=>{pool.HideAll();editor();});
-            if(halloween!=null) Add(root,"Halloween / The Last Ride","GPS/inicio, sustos opcionais e corrida do Romero com pulso defensivo.",()=>{pool.HideAll();halloween();});
-            if(studio!=null) Add(root,"Contratos / assalto ao estudio","The Hollywood Act: cinco preparacoes, final e pagamento persistente.",()=>{pool.HideAll();studio();});
             var gang = Menu("Gang Creation"); Link(root, gang);
             Add(gang, "Criar gangue neste local", "Define nome e HQ. Cadastro proprio; nao cria guerras ou NPCs.", () => {
                 if (this.gangs == null || !Cfg.EnableGangs) { Notify.Show("Ative Gangs em Settings.ini e reinicie o script."); return; }
@@ -92,16 +85,20 @@ namespace RPCore
             Shortcut(ped, "Perfis / importar saves / banco", () => Cfg.CoreKey);
             Add(ped, "Salvar posicao do personagem", "Grava somente um marcador RPCore; nao altera o save nativo.", SavePin);
             var survival = Menu("Survival Settings"); Link(root, survival);
-            Rate(survival, "Fome por minuto (passo 0.5)", () => Cfg.HungerPerMin, v => { Cfg.HungerPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "HungerPerMin", v); }, .5f);
-            Rate(survival, "Sede por minuto (passo 0.5)", () => Cfg.ThirstPerMin, v => { Cfg.ThirstPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "ThirstPerMin", v); }, .5f);
+            var technical=Menu("Advanced Settings");
+            Add(survival,"Estado das necessidades","Os mesmos valores do HUD e do inventario.",()=>Notify.Show("Fome "+needs.Hunger.ToString("0")+" / sede "+needs.Thirst.ToString("0")+" / energia "+needs.Sleep.ToString("0")));
+            Rate(technical, "Fome por minuto (passo 0.5)", () => Cfg.HungerPerMin, v => { Cfg.HungerPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "HungerPerMin", v); }, .5f);
+            Rate(technical, "Sede por minuto (passo 0.5)", () => Cfg.ThirstPerMin, v => { Cfg.ThirstPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "ThirstPerMin", v); }, .5f);
             Add(survival, "Descansar / parar descanso", "A pe, parado e fora de combate. Recupera sono gradualmente sem adiantar o relogio.", () => { pool.HideAll(); needs.ToggleRest(); });
             var vehicle = Menu("Vehicle Settings"); Link(root, vehicle);
             Toggle(vehicle,"Velocimetro em km/h",()=>InterfaceOptions.MetricSpeed,v=> { InterfaceOptions.MetricSpeed=v; InterfaceOptions.Set("Interface.ini","VehicleHud","Metric",v); });
             Shortcut(vehicle, "Controles do veiculo", () => Cfg.VehicleMenuKey, () => Cfg.EnableVehicleControls);
             Shortcut(vehicle, "Garagens", () => Cfg.GarageKey, () => Cfg.EnableGarages);
             Shortcut(vehicle, "Concessionaria", () => Cfg.DealerKey, () => Cfg.EnableGarages);
-            Rate(vehicle, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { Cfg.FuelPer100Km = v; InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); }, 4);
+            Rate(technical, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { Cfg.FuelPer100Km = v; InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); }, 4);
             var ui = Menu("UI Settings"); Link(root, ui);
+            Link(ui,technical);
+            Toggle(technical,"Mostrar opcoes tecnicas nos sistemas",()=>InterfaceOptions.AdvancedMenus,v=>{InterfaceOptions.AdvancedMenus=v;InterfaceOptions.Set("Interface.ini","Interface","AdvancedMenus",v);});
             Toggle(ui,"Inventario em grade",()=>InterfaceOptions.GridInventory,v=> { InterfaceOptions.GridInventory=v; InterfaceOptions.Set("Interface.ini","Interface","GridInventory",v); });
             Toggle(ui,"Zona segura de tela",()=>InterfaceOptions.RespectSafeZone,v=> { InterfaceOptions.RespectSafeZone=v; InterfaceOptions.Set("Interface.ini","Layout","RespectSafeZone",v); foreach(var menu in menus) menu.SafeZoneAware=v; });
             VisualToggle(ui, "HUD de necessidades", "NeedsHud", () => Visuals.NeedsHud, v => Visuals.NeedsHud = v);
@@ -110,16 +107,23 @@ namespace RPCore
             Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.HideRadarOnFoot = v; InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); });
             Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { Visuals.Scale = Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale", Visuals.Scale); Notify.Show("Escala: " + Visuals.Scale); });
             var game = Menu("Game Settings"); Link(root, game);
+            if(studio!=null) Add(game,"Contratos / assalto ao estudio","The Hollywood Act: cinco preparacoes, final e pagamento persistente.",()=>{pool.HideAll();studio();});
+            if(halloween!=null) Add(game,"Halloween / The Last Ride","GPS/inicio, sustos opcionais e corrida do Romero com pulso defensivo.",()=>{pool.HideAll();halloween();});
+            if(traffic!=null) Add(game,"Policia / transito e multas","Fiscalizacao opcional, patrulha observadora e autuacoes com pagamento bancario.",()=>{pool.HideAll();traffic();});
+            if(world!=null)Add(game,"Mundo / clima e horario","Modos manual/dinamico/real opcionais e relogio.",()=>{pool.HideAll();world();});
+            if(passenger!=null)Add(game,"Transporte / taxi e limousine","Contratar motorista como passageiro; reserva bancaria e taximetro.",()=>{pool.HideAll();passenger();});
             if (jobs != null) Add(game, "Trabalhos / contratos", "Contratos de entregas e motoristas: contratar, GPS e cancelar.", () => { pool.HideAll(); jobs(); });
             Shortcut(game, "Salvar / configurar / diagnosticar", () => Cfg.CoreKey);
             Shortcut(game, "Radio", () => Cfg.RadioKey, () => Cfg.EnableRadio);
             Shortcut(game, "Conquistas", () => Cfg.AchKey);
             var cheats = Menu("Cheat Menu"); Link(root, cheats);
+            Add(cheats, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             Add(cheats, "Recuperar saude", "Altera a saude somente quando solicitado, fora de missao.", () => Cheat(() => Game.Player.Character.Health = Game.Player.Character.MaxHealth));
             Add(cheats, "Colete 100", "Entrega colete quando solicitado, fora de missao.", () => Cheat(() => Game.Player.Character.Armor = 100));
             Add(cheats, "Adicionar $1000", "Altera a carteira RPCore/nativa do perfil ativo.", () => Cheat(() => { if (Wallet.Cash <= int.MaxValue - 1000) { Wallet.Credit(1000); Wallet.Save(); } }));
             var builder = Menu("Map Builder"); Link(root, builder);
-            Add(builder, "Salvar marcador aqui", "Editor inicial de pontos nomeados e GPS; ainda nao coloca objetos ou edificios.", SavePin);
+            if(editor!=null) Add(builder,"Map Builder / objetos e locais","Criar/editar/salvar/carregar/importar/exportar mapas por perfil.",()=>{pool.HideAll();editor();});
+            Add(builder, "Salvar marcador aqui", "Marcador pessoal simples. Objetos e locais estao no editor acima.", SavePin);
             gps = Menu("Fast GPS");
             Add(builder, "Meus pontos / GPS / excluir", "Somente pontos criados pelo RPCore.", () => { builder.Visible = false; OpenGps(); });
             emotes = Menu("Emotes");
@@ -129,7 +133,7 @@ namespace RPCore
             interactions = Menu("Interactions");
             Shortcut(interactions, "Armazenamento / porta-malas", () => Cfg.StorageKey);
             Shortcut(interactions, "Inventario", () => Cfg.InventoryKey);
-            Shortcut(interactions, "Turno de pizza: iniciar / cancelar", () => Cfg.JobKey);
+            if(jobs!=null)Add(interactions,"Trabalhos / contratos","Consultar trabalhos e destinos.",()=>{pool.HideAll();jobs();});
             Add(interactions, "Descansar / parar", "Recupera sono enquanto permanece parado a pe.", () => { pool.HideAll(); needs.ToggleRest(); });
             Reload();
         }
