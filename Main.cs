@@ -101,7 +101,9 @@ namespace RPCore
             editor = new MapEditorSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity, point => {if(garages!=null)garages.OpenCustomWorkshop(point);else Notify.Show("Ative Garages em Settings.ini para reparo/lavagem.");});systems.Add(editor);
             var studio = new StudioHeistSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(studio);
             var halloween = new HalloweenSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(halloween);
-            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu); systems.Add(phone);
+            var passenger = new PassengerSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity);systems.Add(passenger);
+            var world = new WorldSystem(pool, shifts);systems.Add(world);
+            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu, passenger.OpenMenu); systems.Add(phone);
             var housing = new HousingSystem(pool, shifts); systems.Add(housing);
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
             var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
@@ -112,8 +114,8 @@ namespace RPCore
             var dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
             var custody = new CustodySystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(custody);
             var traffic = new TrafficSystem(pool, shifts, () => belt.IsBelted, () => gangs==null || !gangs.HasPendingActivity, custody.OpenMenu); systems.Add(traffic);
-            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu); systems.Add(core);
-            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu); systems.Add(settings);
+            core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(core);
+            settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(settings);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -135,7 +137,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.87.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.88.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

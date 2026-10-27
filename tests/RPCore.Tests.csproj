@@ -6,10 +6,14 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../config/Services/Taxi.json" LogicalName="RPCore.JobDefaults.Passenger.json" />
+    <EmbeddedResource Include="../config/World/Defaults.json" LogicalName="RPCore.JobDefaults.World.json" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../PassengerData.cs" Link="PassengerData.cs" />
+    <Compile Include="../WorldData.cs" Link="WorldData.cs" />
     <Compile Include="../WorkshopData.cs" Link="WorkshopData.cs" />
     <Compile Include="../Persistence.cs" Link="Persistence.cs" />
     <Compile Include="../DrivingJobData.cs" Link="DrivingJobData.cs" />

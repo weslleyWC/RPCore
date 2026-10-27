@@ -69,10 +69,12 @@ namespace RPCore
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
 
-        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default, Vector3 hunting = default, Vector3 huntingForest = default, Vector3 fishing = default, Vector3 crafting = default, Vector3 dealer = default, Vector3 drag = default, Vector3 pdm = default, Action traffic = null, Action studio = null, Action halloween = null, Action editor = null)
+        public SettingsSystem(ObjectPool pool, Action<Keys> dispatch, NeedsSystem needs, GangSystem gangs, Action jobs = null, Vector3 postOp = default, Vector3 valet = default, Vector3 supply = default, Vector3 tanker = default, Vector3 prison = default, Vector3 pilot = default, Vector3 hunting = default, Vector3 huntingForest = default, Vector3 fishing = default, Vector3 crafting = default, Vector3 dealer = default, Vector3 drag = default, Vector3 pdm = default, Action traffic = null, Action studio = null, Action halloween = null, Action editor = null, Action passenger = null, Action world = null)
         {
             this.pool = pool; this.dispatch = dispatch; this.needs = needs; this.gangs = gangs; this.jobs = jobs; this.postOp = postOp; this.valet = valet; this.supply = supply; this.tanker = tanker; this.prison = prison; this.pilot = pilot; this.hunting = hunting; this.huntingForest = huntingForest; this.fishing = fishing; this.crafting = crafting; this.dealer = dealer; this.drag = drag; this.pdm = pdm;
             root = Menu("Settings Menu");
+            if(passenger!=null)Add(root,"Transporte / taxi e limousine","Contratar motorista como passageiro; reserva bancaria e taximetro.",()=>{pool.HideAll();passenger();});
+            if(world!=null)Add(root,"Mundo / clima e horario","Modos manual/dinamico/real opcionais e relogio.",()=>{pool.HideAll();world();});
             Add(root, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             if(traffic!=null) Add(root,"Policia / transito e multas","Fiscalizacao opcional, patrulha observadora e autuacoes com pagamento bancario.",()=>{pool.HideAll();traffic();});
             if(editor!=null) Add(root,"Map Builder / objetos e locais","Criar/editar/salvar/carregar/importar/exportar mapas por perfil.",()=>{pool.HideAll();editor();});

@@ -21,6 +21,12 @@ namespace RPCore
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }
         public static bool GangWarEconomyFree=>!GangBulkTransactions.Blocked(data) && (data.GangBusiness==null || data.GangBusiness.Valid && data.GangBusiness.Supply==null) && (data.GangRaid==null || data.GangRaid.Valid && data.GangRaid.Pending==null);
+        public static PassengerData Passenger=>data.Passenger;
+        public static bool PassengerBegin(string id,bool limo,PassengerOptions c)=>PassengerTransactions.Begin(data,id,limo,c,Save);
+        public static bool PassengerBoard(string id)=>PassengerTransactions.Board(data,id,Save);
+        public static bool PassengerCheckpoint(string id,int elapsed)=>PassengerTransactions.Checkpoint(data,id,elapsed,Save);
+        public static bool PassengerFinish(string id,string result)=>PassengerTransactions.Finish(data,id,result,Save);
+        public static bool PassengerTemplate(SavedVehicle car)=>PassengerTransactions.Template(data,car,Save);
         public static HalloweenData Halloween=>data.Halloween;
         public static bool HalloweenConfigure(bool scares,out bool changed)=>HalloweenTransactions.Configure(data,scares,Save,out changed);
         public static bool HalloweenBegin(string id,HalloweenOptions options,out bool changed)=>HalloweenTransactions.Begin(data,id,options,Save,out changed);

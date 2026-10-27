@@ -1,3 +1,9 @@
+## Atualização0.88.0 — táxi/limousine de passageiro e mundo
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.88.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.88.0.zip) · [Guia de teste](docs/FASE-7.5-0.88.0.md)
+
+F2Contacts/F11/F10 → Transporte: contratar motorista, embarcar, viajar ao waypoint, mudar destino/velocidade, encerrar e receber o saldo não gasto da reserva bancária. Táxi/limousine/modelo visual próprio, taxímetro coerente, histórico e recuperação sem duplicar devoluções. F11/F10 → Mundo: clima manual/dinâmico/real, coordenadas/C-F, horário manual/sincronização local; tudo desativado por padrão nos saves antigos. Consulta meteorológica assíncrona com timeout/fallback; online precisa teste no GTA (proxy daqui bloqueou HTTP).3340 testes aprovados; build sem erros/avisos. IA, clima e integração física precisam do roteiro GTA. Diferenças restantes de gangues/polícia seguem no fechamento anterior aos refinamentos8/9.
+
 ## Atualização0.87.0 — personalização de veículos
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.87.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.87.0.zip) · [Guia de teste](docs/FASE-7.4-0.87.0.md)
