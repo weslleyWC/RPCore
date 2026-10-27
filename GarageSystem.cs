@@ -25,6 +25,7 @@ namespace RPCore
     {
         public string Name { get { return "garages"; } }
         readonly ObjectPool pool;
+        readonly WorkshopSystem workshop;
         readonly NativeMenu menu = new NativeMenu("Garages", "");
         readonly AchievementSystem ach;
         readonly List<GarageDefinition> garages;
@@ -37,9 +38,9 @@ namespace RPCore
         int timeout;
         bool dirty;
 
-        public GarageSystem(ObjectPool pool, AchievementSystem ach)
+        public GarageSystem(ObjectPool pool, AchievementSystem ach, ShiftGate gate = null)
         {
-            this.pool = pool; this.ach = ach;
+            this.pool = pool; this.ach = ach; workshop = new WorkshopSystem(pool, gate);
             garages = Store.LoadDef("Garages/Locations.json", DefaultGarages).Where(ValidDefinition).GroupBy(g => g.Id).Select(g => g.First()).ToList();
             Reload();
             foreach (var g in garages)
@@ -84,6 +85,7 @@ namespace RPCore
             if (!data.Garages.Contains(current.Id)) Add("Buy garage: $" + current.Price, current.Capacity + " vehicle slots. Purchase requires being nearby.", () => Buy(selected));
             else
             {
+                Add("Personalizar veiculo", "Pecas, desempenho, rodas, cores e equipamentos; pagamento pelo banco.", () => workshop.Open(() => Nearby(selected) && data.Garages.Contains(selected.Id)));
                 Add("Store current vehicle", "Stop in the garage area as driver. RPCore asks you to exit before storing. Mission vehicles are protected by default.", () => BeginStore(selected));
                 Add("Repair current vehicle: $500", "At this garage, stopped in the driver seat. Fuel is preserved.", () => Service(false));
                 Add("Wash current vehicle: $25", "At this garage, stopped in the driver seat.", () => Service(true));
@@ -212,6 +214,7 @@ namespace RPCore
         {
             customPoint=new Vector3(point.X,point.Y,point.Z);customProfile=Profile.Id;customActor=Game.Player.Character;customCar=customActor.CurrentVehicle;current=null;dirty=false;
             if(!CustomAccess){menu.Visible=false;Notify.Show("Pare como motorista de carro pessoal, sem procurado/missao.");return;}pool.HideAll();menu.Clear();menu.Name=point.Name;
+            Add("Personalizar veiculo","Pecas, pintura e equipamentos; banco.",()=>{var point=customPoint.Value;workshop.Open(()=>Game.Player.Character.Position.DistanceTo(point)<=4.5f);});
             Add("Reparar: $500","Servico existente; preserva combustivel.",()=>Service(false));Add("Lavar: $25","Servico existente de lavagem.",()=>Service(true));Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
         }
         void Service(bool wash)
@@ -231,6 +234,7 @@ namespace RPCore
 
         public void Tick()
         {
+            workshop.Tick();
             if (!Cfg.EnableGarages || Game.IsMissionActive) { pending = null; menu.Visible = false; return; }
             if (Game.IsPaused) return;
             if(customPoint.HasValue && menu.Visible && !CustomAccess)menu.Visible=false;
@@ -250,7 +254,7 @@ namespace RPCore
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible && pending == null) { Rebuild(); menu.Visible = true; }
         }
-        public void Reload() { customPoint=null;customCar=null;customActor=null;menu.Visible=false; pending = null; ReleaseCreated(); live.Clear(); data = Wallet.Transport; }
+        public void Reload() { workshop.Close(); customPoint=null;customCar=null;customActor=null;menu.Visible=false; pending = null; ReleaseCreated(); live.Clear(); data = Wallet.Transport; }
         public void Save()
         {
             if (pending != null) return;
@@ -264,6 +268,7 @@ namespace RPCore
         }
         public void Dispose()
         {
+            workshop.Close();
             menu.Visible = false; pending = null;
             // Leave occupied vehicles and other mods' entities in place during a script reload.
             ReleaseCreated();

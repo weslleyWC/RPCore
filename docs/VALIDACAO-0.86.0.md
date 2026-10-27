@@ -1,0 +1,9 @@
+# Validação0.86.0 — editor de props/ícones/locais
+
+3229 testes aprovados (3193 anteriores+36novos), Release net48 sem erros/avisos. TRX:DataTests-0.86.0.trx. AuditoriaPSRP-SYSTEMS-AUDIT-0.86.0.json comparaMapBuilder474linhas: serviços/blips por personagem, estilos/cores/alcance/legenda, raio5m e limpeza global_C não portada. Editor de props é implementação própria; não existe emMapBuilder da referência. Nenhuma DLL de referência executada.
+
+Cobertura: limites/biblioteca/seleção/auto-load desligado, rascunho sem mutação, gravação/revisão/rollback/exclusão, importação com remapeamento/metadados/roundtrip, nomes de arquivos sem caminhos, coordenadas/modelos/formatos/IDs/seleção inválidos, rotação/movimento atômico, duplicata5m, overflow de revisão, IO real/bak/proteção de JSON inválido e gate com missões/polícia. Progresso emMapEditor.json separado deWallet; preços/regras dos serviços existentes reutilizados.
+
+GTA não executado. FASE-7.3-0.86.0.md cobre todos os controles/colisão/streaming/pisos/propsDLC, markers/legenda, perfis/reload, compras/abastecimento/reparo/lavagem, saldos/combustível e cleanup próprio. Não escaneia/deleta blips por nome, não cria/modifica ambiente ou arquivos originais de locais. Tuning completo e conversão automática deMapBuilderData PSRP não estão entregues; revisão final deve tratar ausências reais separadas das fases8/9. F2/F11, saves e atividades anteriores mantidos.
+
+Instalador PowerShell7/Linux: duas atualizações sobre0.85.0 em GTA simulado, **470 arquivos existentes preservados byte por byte**, incluindo bibliotecas vazias/salvas/auto-load/dois mapas, transformações/colisão/ícones/serviços, formatos desconhecidos/JSON inválido, backup e exportação de usuário. NovaEditor/Defaults.json instalada e personalização preservada na segunda execução. Perfil antigo semMapEditor.json continua sem arquivo até salvar explicitamente. Relatório:installer-validation-0.86.0.json. Isso não valida gameplay.

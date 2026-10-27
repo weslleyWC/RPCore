@@ -19,6 +19,7 @@ namespace RPCore
             var color = Colors(v, Hash.GET_VEHICLE_COLOURS, 2); var extra = Colors(v, Hash.GET_VEHICLE_EXTRA_COLOURS, 2);
             var record = new SavedVehicle {
                 Model = v.Model.Hash, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim(), Name = v.LocalizedName,
+                TiresCanBurst = Function.Call<bool>(Hash.GET_VEHICLE_TYRES_CAN_BURST, v),
                 PlateStyle = Function.Call<int>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT_INDEX, v),
                 PrimaryColor = color[0], SecondaryColor = color[1], PearlColor = extra[0], WheelColor = extra[1],
                 DashboardColor = Colors(v, Hash.GET_VEHICLE_EXTRA_COLOUR_5, 1)[0], InteriorColor = Colors(v, Hash.GET_VEHICLE_EXTRA_COLOUR_6, 1)[0],
@@ -46,6 +47,7 @@ namespace RPCore
         public static void Apply(Vehicle v, SavedVehicle r)
         {
             Function.Call(Hash.SET_VEHICLE_MOD_KIT, v, 0);
+            if (r.TiresCanBurst.HasValue) Function.Call(Hash.SET_VEHICLE_TYRES_CAN_BURST, v, r.TiresCanBurst.Value);
             Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, r.Plate);
             Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX, v, r.PlateStyle);
             Function.Call(Hash.SET_VEHICLE_WHEEL_TYPE, v, r.WheelType);

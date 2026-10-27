@@ -34,7 +34,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            menu.Clear(); menu.Name = "0.86.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
+            menu.Clear(); menu.Name = "0.87.0 / " + Profile.Id + " / cash $" + Wallet.Cash + " / bank $" + Wallet.Bank;
             if(editor!=null) Add("Map Builder / objetos e locais","Editor persistente por perfil, props proprios, icones e pontos de servico.",()=>{menu.Visible=false;editor();});
             if(halloween!=null) Add("Halloween / The Last Ride","Romero, corrida ao cemiterio, perseguidores fantasmas e pulso defensivo.",()=>{menu.Visible=false;halloween();});
             if(studio!=null) Add("Contratos / assalto ao estudio","Cinco preparacoes e final de The Hollywood Act.",()=>{menu.Visible=false;studio();});

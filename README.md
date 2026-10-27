@@ -1,3 +1,9 @@
+## Atualização0.87.0 — personalização de veículos
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.87.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.87.0.zip) · [Guia de teste](docs/FASE-7.4-0.87.0.md)
+
+Garagem comprada ou oficina do editor → Personalizar veículo: peças suportadas pelo modelo, desempenho, rodas, pintura/interior/perolado, xenon, neon/fumaça, extras, vidros/estilos de placa e proteção de pneus. Compra pelo banco após verificação, sem alteração ao navegar; snapshot dos carros cadastrados salvo com a compra, rollback de falhas normais.3255 testes aprovados; Release sem erros/avisos. Teste físico GTA pendente. Revisão confirma táxi/limousine de passageiro e clima/tempo como próximos blocos funcionais, antes dos refinamentos8/9.
+
 ## Atualização0.86.0 — Map Builder persistente
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.86.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.86.0.zip) · [Guia de teste](docs/FASE-7.3-0.86.0.md)

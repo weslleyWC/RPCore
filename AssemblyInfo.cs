@@ -1,5 +1,5 @@
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.86.0.0")]
-[assembly: AssemblyFileVersion("0.86.0.0")]
-[assembly: AssemblyInformationalVersion("0.86.0-persistent-object-map-editor-phase7-3")]
+[assembly: AssemblyVersion("0.87.0.0")]
+[assembly: AssemblyFileVersion("0.87.0.0")]
+[assembly: AssemblyInformationalVersion("0.87.0-vehicle-customization-parity-phase7-4")]

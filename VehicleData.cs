@@ -52,6 +52,7 @@ namespace RPCore
         public float EngineHealth, BodyHealth, TankHealth, Dirt, Fuel;
         public float X, Y, Z, Heading;
         public bool Stored, PendingRemoval;
+        public bool? TiresCanBurst;
         public int[] CustomPrimary, CustomSecondary, NeonColor, SmokeColor;
         public Dictionary<int, int> Mods = new Dictionary<int, int>();
         public Dictionary<int, bool> Variations = new Dictionary<int, bool>();
