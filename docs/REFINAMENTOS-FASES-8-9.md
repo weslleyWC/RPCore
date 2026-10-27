@@ -247,3 +247,5 @@ Base0.88: transporte de passageiro e controles de mundo agora têm ciclo funcion
 Transição0.89: base independente encerrada conforme FECHAMENTO-BASE-0.89.0.md. Próxima entrega inicia8: mecânicas/HUD/menus, incluindo fome/sede.9 inclui todas as atividades/gangues/missões e variantes ausentes de alvos móveis/reforços motorizados/tuning. LSPDFR opcional não implementado/fora da base; sem afirmar paridade total.
 
 Pedido atual: RP ativo por padrão, menos comandos/toggles no fluxo normal, menus organizados/fidelidade PSRP e investigação de bugs.0.90 inicia8 com preset uma vez por perfil, necessidades/consumo durável, stamina/oxigênio/avisosFitness, F11 oito categorias/F10 quatro grupos e grade6x4. Novos falsos antigos de perfil são habilitados conforme pedido; ajustes avançados posteriores preservados. Não conclui todos os menus/bugs ou a fase8 inteira.
+
+Correção solicitada após0.90: usuário confirmou queda repetida apesar de comer/dormir na casa Franklin.0.91 troca queda30s sem restauração por episódio10s com sono/fôlego cheios, protege veículo/embarque e correlaciona cama nativa com cena/relógio. Teste GTA pendente; não é aceite da fase8 inteira.

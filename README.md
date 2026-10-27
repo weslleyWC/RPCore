@@ -1,3 +1,9 @@
+## Atualização0.91.0 — correção do desmaio de sono
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.91.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.91.0.zip) · [Teste no GTA](docs/CORRECAO-SONO-0.91.0.md)
+
+Corrige quedas repetidas da0.90: sono zerado causa uma recuperação de10s a pé/seguro; acorda com sono e fôlego100. Veículos/embarque protegidos, sem ejetar ou travar controles; episódio/tempo restantes persistidos. Cama nativa do Franklin reconhecida por contexto+salto do relógio; comida pendente não reverte descanso.3449 testes aprovados, build sem erros/avisos. Física e reconhecimento da cama precisam teste GTA. Correção pontual antes de continuar refinamento8.
+
 ## Atualização0.90.0 — fase8: roleplay pronto, necessidades e menus
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.90.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.90.0.zip) · [Guia de teste](docs/FASE-8.1-0.90.0.md)

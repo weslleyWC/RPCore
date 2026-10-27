@@ -104,6 +104,7 @@
     <Compile Include="../VehicleInsuranceData.cs" Link="VehicleInsuranceData.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
     <Compile Include="../VisualData.cs" Link="VisualData.cs" />
+    <Compile Include="../SleepRecoveryData.cs" Link="SleepRecoveryData.cs" />
     <Compile Include="../NeedsData.cs" Link="NeedsData.cs" />
     <Compile Include="../InterfaceData.cs" Link="InterfaceData.cs" />
     <Compile Include="../ShopData.cs" Link="ShopData.cs" />

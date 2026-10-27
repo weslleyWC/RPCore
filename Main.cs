@@ -29,6 +29,7 @@ namespace RPCore
         readonly PhoneSystem phone;
         readonly RadialSystem radial;
         readonly SettingsSystem settings;
+        readonly NeedsSystem survival;
         readonly PdmSurveillanceSystem surveillance;
         readonly InventorySystem inventory;
         readonly MapEditorSystem editor;
@@ -43,7 +44,7 @@ namespace RPCore
 
             var ach = new AchievementSystem(pool);
             var shifts = new ShiftGate();
-            var needs = new NeedsSystem(shifts);
+            var needs = new NeedsSystem(shifts,()=>pool.AreAnyVisible);survival=needs;
             var inv = new InventorySystem(pool, needs, ach);
             inventory = inv;
             systems.Add(ach);
@@ -102,7 +103,7 @@ namespace RPCore
             var studio = new StudioHeistSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(studio);
             var halloween = new HalloweenSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(halloween);
             var passenger = new PassengerSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity);systems.Add(passenger);
-            var world = new WorldSystem(pool, shifts);systems.Add(world);
+            var world = new WorldSystem(pool, shifts);world.ClockChanged+=needs.IgnoreNativeBedClock;systems.Add(world);
             phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu, passenger.OpenMenu); systems.Add(phone);
             var housing = new HousingSystem(pool, shifts); systems.Add(housing);
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
@@ -138,7 +139,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.90.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.91.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -205,6 +206,7 @@ namespace RPCore
             var character = Game.Player.Character;
             if (character == null || !character.Exists() || character.IsDead) return;
             if(Profile.Detect()!=Profile.Id)return;
+            if(survival.Sleeping)return;
             if(editor.Manipulating){editor.OnKey(e);return;}
             if (surveillance.Viewing) { surveillance.OnKey(e); return; }
             if (inventory.GridVisible && !faulted.Contains(inventory))

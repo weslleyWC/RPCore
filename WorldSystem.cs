@@ -14,6 +14,7 @@ namespace RPCore
     public sealed class WorldSystem : ISystem
     {
         public string Name=>"world_controls";
+        public event Action ClockChanged;
         readonly ObjectPool pool;readonly ShiftGate gate;readonly JsonFiles files=new JsonFiles();readonly Random random=new Random();
         readonly NativeMenu menu=new NativeMenu("Mundo","Clima e horario");readonly HttpClient client=new HttpClient{Timeout=TimeSpan.FromSeconds(8)};
         readonly string path;WorldOptions options;bool protectedFile;string signature,lastWeather,status="Sem consulta";int last,dynamicClock,realClock,clock,version,requestVersion;
@@ -45,7 +46,7 @@ namespace RPCore
             foreach(string mode in new[]{"Off","Manual","Dynamic","Real"}){string value=mode;Row("Modo "+value,value=="Real"?"Consulta Open-Meteo por HTTPS para coordenadas configuradas, a cada5min ativos; sem usar localizacao automatica.":"Manual usa a escolha abaixo; Dynamic varia gradualmente a cada8min ativos.",()=>Change(n=>n.Mode=value));}
             foreach(string weather in WorldRules.Weathers){string value=weather;Row("Aplicar: "+value,"Seleciona clima manual e grava preferencia. Nao altera durante atividade/missao; aguarda ficar livre.",()=>Change(n=>{n.Weather=value;n.Mode="Manual";}));}
             Row("Relogio real: "+(options.SyncClock?"ON":"OFF"),"Usa hora local do Windows; independente do clima. Desligado nos saves antigos.",()=>Change(n=>n.SyncClock=!n.SyncClock));
-            Row("Ajustar hora manual","Digite HH:mm (00:00..23:59). Desliga sincronizacao; aplica somente fora de missao/atividade.",()=>{if(!Safe){Notify.Show("Encerre a atividade antes de alterar a hora.");return;}var value=Game.GetUserInput(WindowTitle.EnterMessage60,"12:00",5);if(!DateTime.TryParseExact(value,"HH:mm",CultureInfo.InvariantCulture,DateTimeStyles.None,out var time)){Notify.Show("Use HH:mm.");return;}Change(n=>n.SyncClock=false);Function.Call(Hash.SET_CLOCK_TIME,time.Hour,time.Minute,0);});
+            Row("Ajustar hora manual","Digite HH:mm (00:00..23:59). Desliga sincronizacao; aplica somente fora de missao/atividade.",()=>{if(!Safe){Notify.Show("Encerre a atividade antes de alterar a hora.");return;}var value=Game.GetUserInput(WindowTitle.EnterMessage60,"12:00",5);if(!DateTime.TryParseExact(value,"HH:mm",CultureInfo.InvariantCulture,DateTimeStyles.None,out var time)){Notify.Show("Use HH:mm.");return;}Change(n=>n.SyncClock=false);ClockChanged?.Invoke();Function.Call(Hash.SET_CLOCK_TIME,time.Hour,time.Minute,0);});
             Row("Latitude: "+options.Latitude.ToString(CultureInfo.InvariantCulture),"Graus -90..90. Use ponto decimal.",()=>Number(true));
             Row("Longitude: "+options.Longitude.ToString(CultureInfo.InvariantCulture),"Graus -180..180. Oeste e negativo; use ponto decimal.",()=>Number(false));
             Row("Local: "+options.Location,"Nome exibido no resultado; nao geocodifica nem descobre sua posicao.",()=>{string name=Game.GetUserInput(WindowTitle.EnterMessage60,options.Location,60);if(!string.IsNullOrWhiteSpace(name))Change(n=>n.Location=name.Trim());});
@@ -77,7 +78,7 @@ namespace RPCore
                 catch(Exception ex){if(requestVersion==version && options.Mode=="Real"){status="Indisponivel; clima mantido";Log.Error("weather request",ex);}}
                 cancel?.Dispose();cancel=null;
             }
-            clock=Math.Min(1000,clock+dt);if(options.SyncClock && clock>=1000){var local=DateTime.Now;Function.Call(Hash.SET_CLOCK_TIME,local.Hour,local.Minute,local.Second);clock=0;}
+            clock=Math.Min(1000,clock+dt);if(options.SyncClock && clock>=1000 && Function.Call<bool>(Hash.IS_PLAYER_CONTROL_ON,Game.Player) && !Function.Call<bool>(Hash.IS_SCREEN_FADED_OUT) && !Function.Call<bool>(Hash.IS_SCREEN_FADING_OUT) && !Function.Call<bool>(Hash.IS_SCREEN_FADING_IN)){var local=DateTime.Now;ClockChanged?.Invoke();Function.Call(Hash.SET_CLOCK_TIME,local.Hour,local.Minute,local.Second);clock=0;}
             if(options.Mode=="Manual"){if(lastWeather!=options.Weather)ApplyWeather(options.Weather);}
             else if(options.Mode=="Dynamic"){dynamicClock+=dt;if(dynamicClock>=options.DynamicSeconds*1000){ApplyWeather(WorldRules.Next(World.Weather.ToString(),random.Next(100)));dynamicClock=0;}}
             else if(options.Mode=="Real")

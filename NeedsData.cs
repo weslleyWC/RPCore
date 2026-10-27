@@ -6,6 +6,7 @@ namespace RPCore
     {
         public float Hunger=100f,Thirst=100f,Sleep=100f,Stamina=100f;
         public int StaminaCooldown;
+        public SleepRecovery SleepRecovery;
         public string LastConsumptionId;
     }
     public sealed class NeedsConsumption : ExtensibleData
@@ -26,7 +27,7 @@ namespace RPCore
         public static bool Apply(ref NeedsData d,NeedsConsumption receipt,Action<NeedsData> save)
         {
             if(d==null || receipt?.Valid!=true || save==null)return false;if(d.LastConsumptionId==receipt.Id)return true;
-            var next=JsonConvert.DeserializeObject<NeedsData>(JsonConvert.SerializeObject(d));next.Hunger=receipt.Hunger;next.Thirst=receipt.Thirst;next.Sleep=receipt.Sleep;next.LastConsumptionId=receipt.Id;save(next);d=next;return true;
+            var next=JsonConvert.DeserializeObject<NeedsData>(JsonConvert.SerializeObject(d));next.Hunger=receipt.Hunger;next.Thirst=receipt.Thirst;next.LastConsumptionId=receipt.Id;save(next);d=next;return true;
         }
         public static InvData Consume(InvData original,ItemDef item,NeedsConsumption receipt)
         {

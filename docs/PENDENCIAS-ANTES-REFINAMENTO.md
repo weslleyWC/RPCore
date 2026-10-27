@@ -13,3 +13,5 @@
 Não abrir nova fase-base para cada variante/cor/animação. Preservar saves/configurações/arquitetura e registrar diferenças reais durante refinamento. Sem percentual/prazo inventado nem contar “próxima fase” como teste GTA aprovado.
 
 0.90: F11/F10 reorganizados, RP pronto por perfil, comida/sede/sono/stamina/oxigênio e recibos/grade6x4 revisados. Continuam revisão dos menus específicos e detalhes do telefone/inventário; validar roteiro GTA antes de assumir aparência/efeitos corretos. Pedido atual do usuário prioriza RP ativo, menos toggles e fidelidade PSRP.
+
+0.91 é correção pontual do sono relatado no GTA antes de continuar: teste único10s, retorno do sprint, cama Franklin e proteção de veículos/embarque. Não foi presumido aceite físico.
