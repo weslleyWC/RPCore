@@ -140,7 +140,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.93.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.94.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

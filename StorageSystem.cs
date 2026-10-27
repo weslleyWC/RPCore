@@ -72,7 +72,7 @@ namespace RPCore
         {
             if(!InterfaceOptions.GridInventory){Rebuild();menu.Visible=true;return;}
             menu.Visible=false;gridOpen=true;
-            try{inventory.OpenStorageView(privateLabel??container,capacity,()=>inventory.ContainerSnapshot(container),TransferSaved,Accessible,()=>{gridOpen=false;CloseCurrent();});}
+            try{inventory.OpenStorageView(privateLabel??container,capacity,()=>inventory.ContainerSnapshot(container),TransferSaved,Accessible,()=>{gridOpen=false;CloseCurrent();},(id,deposit)=>inventory.TransferFits(container,id,deposit,capacity));}
             catch{gridOpen=false;CloseCurrent();throw;}
         }
 

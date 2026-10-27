@@ -18,6 +18,17 @@ namespace RPCore
     }
     public static class InventoryTransfers
     {
+        public static int Fits(InvData data,string container,string id,bool deposit,float capacity,float maxWeight,Func<string,float> weight)
+        {
+            if(data?.Items==null || data.Containers==null || string.IsNullOrWhiteSpace(container) || string.IsNullOrWhiteSpace(id) || weight==null)return 0;
+            var box=Snapshot(data,container);var source=deposit?data.Items:box;var target=deposit?box:data.Items;
+            if(!source.TryGetValue(id,out int available) || available<=0)return 0;
+            target.TryGetValue(id,out int held);if(held<0)return 0;
+            double limit=deposit?capacity:maxWeight,total=Weight(target,weight);float unit=weight(id);
+            if(double.IsNaN(limit) || double.IsInfinity(limit) || limit<0 || double.IsNaN(total) || float.IsNaN(unit) || float.IsInfinity(unit) || unit<0 || total>limit)return 0;
+            int count=Math.Min(available,int.MaxValue-held);if(unit==0)return count;
+            return (int)Math.Min(count,Math.Max(0,Math.Floor((limit-total)/unit)));
+        }
         public static Dictionary<string,int> Snapshot(InvData d,string container)
         { Dictionary<string,int> items; return d?.Containers != null && d.Containers.TryGetValue(container,out items) && items != null ? new Dictionary<string,int>(items) : new Dictionary<string,int>(); }
         public static double Weight(Dictionary<string,int> items,Func<string,float> weight)

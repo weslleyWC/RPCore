@@ -14,25 +14,27 @@ namespace RPCore
         readonly InventorySystem inventory;readonly NeedsSystem needs;
         readonly InventoryNavigation personal=new InventoryNavigation(),storage=new InventoryNavigation();
         readonly List<string> ingredients=new List<string>();
+        readonly InventoryMouseDrag mouse=new InventoryMouseDrag();
+        bool mouseReady,mouseHeld,cancelledMouseForController;PointF mousePoint;
         List<string> storageLayout=new List<string>();Dictionary<string,int> stored=new Dictionary<string,int>();
-        Func<Dictionary<string,int>> contents;Func<string,bool,int,bool> transfer;Func<bool> access;Action closed;
+        Func<Dictionary<string,int>> contents;Func<string,bool,int,bool> transfer;Func<string,bool,int> fits;Func<bool> access;Action closed;
         string storageLabel,dropping;float storageCapacity;int moving=-1,dropStarted,craftIndex,craftAmount=1;bool storageSide,craftFocus,controllerDrop;
         public bool Visible{get;private set;}
         public bool StorageOpen=>Visible && contents!=null;
-        public bool Editing=>moving>=0 || dropping!=null || craftFocus || StorageOpen;
+        public bool Editing=>moving>=0 || dropping!=null || craftFocus || StorageOpen || mouse.Active;
         InventoryNavigation Nav=>storageSide?storage:personal;
         List<string> Slots=>storageSide?storageLayout:inventory.Layout;
         string Selected=>Nav.Selected>=0 && Nav.Selected<Slots.Count?Slots[Nav.Selected]:null;
         public InventoryGridView(InventorySystem inventory,NeedsSystem needs){this.inventory=inventory;this.needs=needs;}
-        public void Open(){Visible=true;InterfaceOptions.ModalOpen=true;moving=-1;dropping=null;craftFocus=false;ingredients.Clear();personal.Select(personal.Selected,inventory.Layout.Count);}
-        public void OpenStorage(string label,float capacity,Func<Dictionary<string,int>> snapshot,Func<string,bool,int,bool> move,Func<bool> permitted,Action onClose)
+        public void Open(){Visible=true;InterfaceOptions.ModalOpen=true;moving=-1;dropping=null;craftFocus=false;ingredients.Clear();mouse.Cancel();mouseReady=false;personal.Select(personal.Selected,inventory.Layout.Count);}
+        public void OpenStorage(string label,float capacity,Func<Dictionary<string,int>> snapshot,Func<string,bool,int,bool> move,Func<bool> permitted,Action onClose,Func<string,bool,int> fitting=null)
         {
             if(snapshot==null || move==null || permitted==null || onClose==null || !permitted())throw new InvalidOperationException("Storage unavailable.");
-            if(Visible)Close();Open();storageLabel=label;storageCapacity=capacity;contents=snapshot;transfer=move;access=permitted;closed=onClose;storageSide=false;RefreshStorage();
+            if(Visible)Close();Open();storageLabel=label;storageCapacity=capacity;contents=snapshot;transfer=move;fits=fitting;access=permitted;closed=onClose;storageSide=false;RefreshStorage();
         }
         public void Close(bool save=true)
         {
-            var callback=closed;closed=null;Visible=false;contents=null;transfer=null;access=null;storageSide=false;stored.Clear();storageLayout.Clear();ingredients.Clear();dropping=null;moving=-1;craftFocus=false;
+            var callback=closed;closed=null;Visible=false;contents=null;transfer=null;fits=null;access=null;storageSide=false;stored.Clear();storageLayout.Clear();ingredients.Clear();dropping=null;moving=-1;craftFocus=false;mouse.Cancel();mouseReady=false;
             try{if(save)inventory.Save();}catch(Exception ex){Log.Error("inventory close save",ex);Notify.Show("Nao foi possivel gravar o inventario; confira RPCore.log.");}
             finally{callback?.Invoke();}
         }
@@ -40,9 +42,9 @@ namespace RPCore
         void Move(int dx,int dy){if(craftFocus){if(craftIndex==3 && dy!=0)craftAmount=Math.Max(1,Math.Min(Math.Max(1,inventory.CraftMaximum(inventory.Recipe(ingredients))),craftAmount-dy));else craftIndex=Math.Max(0,Math.Min(3,craftIndex+dx));return;}Nav.Move(dx,dy,Slots.Count);}
         void Relocate(){if(StorageOpen || craftFocus)return;if(moving<0){if(Selected!=null)moving=personal.Selected;return;}inventory.MoveSlotSaved(moving,personal.Selected);moving=-1;}
         void AddIngredient(){if(StorageOpen || craftFocus || moving>=0 || Selected==null || ingredients.Count==3 || ingredients.Contains(Selected))return;ingredients.Add(Selected);craftAmount=1;}
-        void Activate(bool stack=false)
+        void Activate(bool stack=false,bool fitting=false)
         {
-            if(StorageOpen){if(Selected==null)return;int n=stack?(storageSide?stored[Selected]:inventory.Count(Selected)):1;if(transfer(Selected,!storageSide,n))RefreshStorage();return;}
+            if(StorageOpen){if(Selected==null)return;int n=fitting && fits!=null?fits(Selected,!storageSide):stack?(storageSide?stored[Selected]:inventory.Count(Selected)):1;if(n<=0){Notify.Show("Nao cabe outra unidade no destino.");return;}if(transfer(Selected,!storageSide,n))RefreshStorage();return;}
             if(craftFocus)
             {
                 if(craftIndex<3){if(craftIndex<ingredients.Count)ingredients.RemoveAt(craftIndex);return;}
@@ -54,13 +56,14 @@ namespace RPCore
         public void OnKey(KeyEventArgs e)
         {
             if(e.KeyCode==Cfg.InventoryKey || e.KeyCode==Keys.Back || e.KeyCode==Keys.Escape || StorageOpen && e.KeyCode==Cfg.StorageKey){Close();return;}
+            if(mouse.Active && e.KeyCode!=Keys.PageUp && e.KeyCode!=Keys.PageDown){mouse.Cancel();return;}
             if(dropping!=null)return;
             if(!Editing && inventory.TryQuickUse(e))return;
             if(e.KeyCode==Keys.Tab){if(StorageOpen)storageSide=!storageSide;else{craftFocus=!craftFocus;moving=-1;}return;}
             if(e.KeyCode==Keys.Left)Move(-1,0);else if(e.KeyCode==Keys.Right)Move(1,0);else if(e.KeyCode==Keys.Up)Move(0,-1);else if(e.KeyCode==Keys.Down)Move(0,1);
             else if(e.KeyCode==Keys.PageDown)Nav.Select(Nav.Selected+24,Slots.Count);else if(e.KeyCode==Keys.PageUp)Nav.Select(Nav.Selected-24,Slots.Count);
             else if(e.KeyCode==Keys.Home)Nav.Select(0,Slots.Count);else if(e.KeyCode==Keys.End)Nav.Select(Slots.Count-1,Slots.Count);
-            else if(e.KeyCode==Keys.Enter)Activate(e.Shift);
+            else if(e.KeyCode==Keys.Enter)Activate(e.Shift,e.Control);
             else if(e.KeyCode==Keys.C)Relocate();else if(e.KeyCode==Keys.T)AddIngredient();
             else if(e.KeyCode==Keys.Delete && !StorageOpen && !craftFocus && moving<0 && Selected!=null){dropping=Selected;dropStarted=Game.GameTime;controllerDrop=false;}
         }
@@ -70,9 +73,10 @@ namespace RPCore
             personal.Select(personal.Selected,inventory.Layout.Count);
             if(p.IsDead || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || StorageOpen && !access()){Close();return;}
             if(StorageOpen)RefreshStorage();
+            MouseTick();
             foreach(var c in new[]{GTA.Control.Attack,GTA.Control.Attack2,GTA.Control.Aim,GTA.Control.SelectWeapon,GTA.Control.NextWeapon,GTA.Control.PrevWeapon,GTA.Control.Context,GTA.Control.Phone,GTA.Control.FrontendPause,GTA.Control.FrontendPauseAlternate})Game.DisableControlThisFrame(c);
             if(dropping!=null){bool held=controllerDrop?Game.IsControlPressed(GTA.Control.FrontendLb):Game.IsKeyPressed(Keys.Delete);if(!held)Discard(false);else if(unchecked(Game.GameTime-dropStarted)>=900)Discard(true);}
-            if(!Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0))
+            if(!cancelledMouseForController && !Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0))
             {
                 if(dropping==null){if(Game.IsControlJustPressed(GTA.Control.FrontendLeft))Move(-1,0);if(Game.IsControlJustPressed(GTA.Control.FrontendRight))Move(1,0);if(Game.IsControlJustPressed(GTA.Control.FrontendUp))Move(0,-1);if(Game.IsControlJustPressed(GTA.Control.FrontendDown))Move(0,1);
                 if(Game.IsControlJustPressed(GTA.Control.FrontendAccept))Activate(Game.IsControlPressed(GTA.Control.FrontendLb));
@@ -81,12 +85,54 @@ namespace RPCore
                 if(Game.IsControlJustPressed(GTA.Control.FrontendLb) && !StorageOpen && !craftFocus && moving<0 && Selected!=null){dropping=Selected;dropStarted=Game.GameTime;controllerDrop=true;}}
                 if(Game.IsControlJustPressed(GTA.Control.FrontendCancel)){Close();return;}
             }
-            if(Visible)Draw();
+            if(Visible){Draw();DrawMouse();}
+        }
+        void MouseTick()
+        {
+            cancelledMouseForController=false;
+            if(!Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0)){cancelledMouseForController=mouse.Active;mouse.Cancel();mouseReady=false;return;}
+            GTA.UI.Hud.ShowCursorThisFrame();
+            foreach(var c in new[]{GTA.Control.LookLeftRight,GTA.Control.LookUpDown,GTA.Control.CursorAccept,GTA.Control.CursorCancel,GTA.Control.CursorScrollUp,GTA.Control.CursorScrollDown})Game.DisableControlThisFrame(c);
+            bool held=Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.CursorAccept);
+            float scale=InventoryMouseLayout.Scale(StorageOpen,Visuals.Width,Visuals.InsetX,Visuals.InsetY,Visuals.Scale);
+            if(!InventoryMouseLayout.Point(Function.Call<float>(Hash.GET_CONTROL_NORMAL,0,(int)GTA.Control.CursorX),Function.Call<float>(Hash.GET_CONTROL_NORMAL,0,(int)GTA.Control.CursorY),Visuals.Width,Visuals.InsetX,Visuals.InsetY,scale,out var point)){mouse.Cancel();mouseReady=false;return;}
+            bool changed=Math.Abs(point.X-mousePoint.X)+Math.Abs(point.Y-mousePoint.Y)>.25f;mousePoint=point;
+            if(!mouseReady){mouseReady=true;mouseHeld=held;return;}
+            bool pressed=held && !mouseHeld,released=!held && mouseHeld;mouseHeld=held;
+            if(dropping!=null || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)GTA.Control.CursorCancel)){mouse.Cancel();return;}
+            if(mouse.Active && (mouse.Source>=inventory.Layout.Count || inventory.Layout[mouse.Source]!=mouse.Item || inventory.Count(mouse.Item)<=0))mouse.Cancel();
+            int hit=InventoryMouseLayout.Hit(point,false,personal.FirstRow,inventory.Layout.Count);
+            int other=StorageOpen?InventoryMouseLayout.Hit(point,true,storage.FirstRow,storageLayout.Count):-1;
+            int scroll=Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)GTA.Control.CursorScrollDown)?1:Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)GTA.Control.CursorScrollUp)?-1:0;
+            if(scroll!=0)
+            {
+                if(hit>=0)personal.Scroll(scroll,inventory.Layout.Count);else if(other>=0)storage.Scroll(scroll,storageLayout.Count);
+                hit=InventoryMouseLayout.Hit(point,false,personal.FirstRow,inventory.Layout.Count);other=StorageOpen?InventoryMouseLayout.Hit(point,true,storage.FirstRow,storageLayout.Count):-1;
+            }
+            // A stationary pointer must not undo keyboard/controller navigation.
+            if((changed && !craftFocus || pressed || mouse.Active || scroll!=0) && hit>=0){storageSide=false;personal.Select(hit,inventory.Layout.Count);}
+            else if(!mouse.Active && (changed && !craftFocus || pressed || scroll!=0) && other>=0){storageSide=true;storage.Select(other,storageLayout.Count);}
+            if(pressed)
+            {
+                mouse.Cancel();moving=-1;
+                if(hit>=0){craftFocus=false;string id=inventory.Layout[hit];if(id!=null && inventory.Count(id)>0)mouse.Begin(hit,id,point);}
+            }
+            if(held)mouse.Move(point);
+            if(released)mouse.Drop(inventory.Layout,hit,inventory.MoveSlotSaved);
+        }
+        void DrawMouse()
+        {
+            if(!mouse.Dragging || !mouseReady)return;
+            float s=InventoryMouseLayout.Scale(StorageOpen,Visuals.Width,Visuals.InsetX,Visuals.InsetY,Visuals.Scale);
+            float x=Visuals.InsetX+mousePoint.X*s+12*s,y=Visuals.InsetY+mousePoint.Y*s+12*s;
+            inventory.Defs.TryGetValue(mouse.Item,out var def);string icon=def?.Icon;
+            if(icon==null && (Visuals.Bindings.ItemIcons==null || !Visuals.Bindings.ItemIcons.TryGetValue(mouse.Item,out icon)))icon=mouse.Item;
+            Visuals.Rect(x-2*s,y-2*s,60*s,60*s,Color.FromArgb(190,15,15,20));
+            if(!Visuals.Sprite("PSRP_Inventory",icon,x,y,56*s,56*s,Color.FromArgb(210,255,255,255)))Visuals.Label(def?.Name??mouse.Item,x,y,.23f*s,Color.White,GTA.UI.Font.ChaletLondon,GTA.UI.Alignment.Left,170*s);
         }
         void Draw()
         {
-            float design=StorageOpen?1920:1320;
-            float s=Math.Min(Math.Min(1,Visuals.Scale),Math.Min((Visuals.Width-2*Visuals.InsetX)/design,(1080-2*Visuals.InsetY)/1080)),ox=Visuals.InsetX,oy=Visuals.InsetY;
+            float s=InventoryMouseLayout.Scale(StorageOpen,Visuals.Width,Visuals.InsetX,Visuals.InsetY,Visuals.Scale),ox=Visuals.InsetX,oy=Visuals.InsetY;
             Action<string,float,float,float,Color,GTA.UI.Alignment,float> text=(t,x,y,z,c,a,w)=>Visuals.Label(t,ox+x*s,oy+y*s,z*s,c,GTA.UI.Font.ChaletLondon,a,w*s);
             if(!Visuals.Sprite("PSRP_Inventory","Background",ox,oy,1920*s,1080*s,Color.FromArgb(245,17,17,20)))Visuals.Rect(ox+107*s,oy+126*s,(StorageOpen?1770:1200)*s,780*s,Color.FromArgb(235,17,17,20));
             Visuals.Sprite("PSRP_Inventory","Top",ox,oy,1920*s,1080*s,Color.FromArgb(255,25,25,31));
@@ -101,7 +147,7 @@ namespace RPCore
                 text(storageLabel+" / "+stored.Sum(k=>(inventory.Defs.TryGetValue(k.Key,out var def)?def.Weight:.1f)*k.Value).ToString("0.##")+" / "+storageCapacity+" kg",1040,150,.32f,Color.White,GTA.UI.Alignment.Left,800);
                 DrawGrid(true,1040,storage,storageLayout,s,ox,oy,text);
                 text("TAB / RB: alternar lado   ENTER / A: transferir 1   SHIFT+ENTER / LB+A: pilha",140,815,.27f,Color.White,GTA.UI.Alignment.Left,1650);
-                text("BACKSPACE / B: fechar armazenamento",140,855,.27f,Color.White,GTA.UI.Alignment.Left,1650);return;
+                text("CTRL+ENTER: transferir o que couber   Mouse: organizar mochila   BACKSPACE / B: fechar",140,855,.27f,Color.White,GTA.UI.Alignment.Left,1650);return;
             }
             if(Selected!=null)
             {
@@ -112,9 +158,10 @@ namespace RPCore
                 if(def!=null && def.Weapon==null && !Selected.StartsWith("ammo_",StringComparison.Ordinal))text("Fome +"+def.Hunger+"~n~Sede +"+def.Thirst+"~n~Sono +"+inventory.Energy(def)+"~n~Vida +"+def.Health,1014,490,.27f,Color.White,GTA.UI.Alignment.Left,246);
             }
             DrawCraft(s,ox,oy,text);
+            if(inventory.Overweight)text("Sobrepeso: movimento lento / sem sprint e salto",1000,715,.25f,Color.OrangeRed,GTA.UI.Alignment.Left,270);
             bool keyboard=Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0);
             text(keyboard?"1-6: primeira linha   ENTER: usar   C: mover   T: ingrediente   TAB: receitas":"A: usar   X: mover   Y: ingrediente   RB: receitas   B: fechar",140,920,.25f,Color.White,GTA.UI.Alignment.Left,1150);
-            text(keyboard?"DELETE: descartar 1 / segure: pilha   PGUP/PGDN: rolar   BACKSPACE: fechar":"LB: descartar 1 / segure: pilha   Direcional: navegar / quantidade",140,953,.25f,Color.White,GTA.UI.Alignment.Left,1150);
+            text(keyboard?"Mouse: arrastar / roda: rolar   DELETE: descartar   BACKSPACE: fechar":"LB: descartar 1 / segure: pilha   Direcional: navegar / quantidade",140,953,.25f,Color.White,GTA.UI.Alignment.Left,1150);
             if(inventory.UsingItem)text("Usando item...",1000,720,.3f,Color.Yellow,GTA.UI.Alignment.Left,270);
         }
         void DrawGrid(bool container,float start,InventoryNavigation nav,List<string> slots,float s,float ox,float oy,Action<string,float,float,float,Color,GTA.UI.Alignment,float> text)
@@ -131,7 +178,7 @@ namespace RPCore
                 string icon=def?.Icon;if(icon==null && (Visuals.Bindings.ItemIcons==null || !Visuals.Bindings.ItemIcons.TryGetValue(id,out icon)))icon=id;
                 if(!Visuals.Sprite("PSRP_Inventory",icon,ox+(x+28)*s,oy+(y+34)*s,80*s,80*s,Color.White))text("?",x+67.5f,y+58,.7f,Color.Gray,GTA.UI.Alignment.Center,0);
                 text("x"+count,x+17,y+107,.23f,Color.White,GTA.UI.Alignment.Left,0);text(((def?.Weight??.1f)*count).ToString("0.##")+"kg",x+122,y+107,.23f,Color.White,GTA.UI.Alignment.Right,0);
-                if(!container && moving==index)Visuals.Rect(ox+x*s,oy+(y+136)*s,140*s,4*s,Color.Yellow);
+                if(!container && (moving==index || mouse.Active && mouse.Source==index))Visuals.Rect(ox+x*s,oy+(y+136)*s,140*s,4*s,Color.Yellow);
             }
             int rows=Math.Max(4,(slots.Count+5)/6);if(rows>4){float x=start+790;Visuals.Rect(ox+x*s,oy+250*s,10*s,500*s,Color.DimGray);Visuals.Rect(ox+x*s,oy+(250+400f*nav.FirstRow/(rows-4))*s,10*s,100*s,Color.White);}
         }

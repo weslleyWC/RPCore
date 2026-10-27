@@ -1,3 +1,9 @@
+## Atualização0.94.0 — mouse e peso funcional
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.94.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.94.0.zip) · [Uso e teste](docs/INVENTARIO-MOUSE-0.94.0.md)
+
+Clique para selecionar; segure o botão esquerdo, arraste e solte para mover a pilha ou trocar com outro slot da mochila. Cursor/ícone de arraste, roda para rolar e botão direito para cancelar; posições salvas pelo caminho existente, quantidades preservadas. Teclado/controle continuam disponíveis; arrastar entre mochila e depósito cancela, transferências continuam por Enter/Shift+Enter.3602 testes aprovados; Release sem erros/avisos. Sobrecarga reduz movimento progressivamente e bloqueia sprint/salto a pé; liberar peso remove a restrição. Ctrl+Enter transfere o que cabe no depósito. Cursor/gestos e locomoção precisam teste no GTA.
+
 ## Atualização0.93.0 — inventário: atalhos e revisão agrupada
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.93.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.93.0.zip) · [Comparação completa e testes GTA](docs/INVENTARIO-REVISAO-0.93.0.md)

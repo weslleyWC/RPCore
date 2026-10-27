@@ -257,3 +257,8 @@ Diretriz permanente confirmada pelo usuario: todo refinamento deve partir da lei
 
 
 0.93, revisão agrupada do inventário solicitada pelo usuário: atalhos1..6, filtro de input/modais, rolagem/peso/numeração, duas grades de armazenamento e correção24slots/posições altas,63 nomes/ícones,31 itens novos e9 receitas pessoais, uso6.5s/props próprios, energia incremental idempotente/retornos no consumo, compras salvas. Varredura315métodos/5arquivos da referência. Guia INVENTARIO-REVISAO-0.93.0.md lista explicitamente ferramentas/intoxicação ainda distintas e as integrações de estoque/caça/pesca/drogas/roubos da9; nenhum estoque/pagamento de trabalho foi convertido automaticamente. Não declara toda a fase8 ou a paridade PSRP concluídas.
+
+
+0.94: mouse na grade pessoal solicitado após aceite do inventário0.93. Extensão própria sobre a geometria PSRP: selecionar/arrastar/trocar posições, roda, cancelamento, mesmo salvamento existente. Sem mudar quantidades, configurações ou fluxo de transferência/receitas.3602 testes de dados aprovados; cursor e gestos GTA pendentes. As demais diferenças da revisão0.93 continuam listadas no guia, sem abrir nova revisão de atividades.
+
+Antes da publicação0.94, usuário pediu peso funcional: sobrecarga automática com redução progressiva de movimento, sprint/salto bloqueados a pé, exclusões de veículo/missão/controle/água/ar e efeito por frame sem multiplicadores globais. Quantidade/pesos/limites existentes conservados. Ctrl+Enter no depósito transfere o que couber para facilitar aliviar estoques legados. Incluído no mesmo pacote de mouse; teste físico GTA pendente.

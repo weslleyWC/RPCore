@@ -14,6 +14,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <EmbeddedResource Include="../config/InventoryRecipes.json" LogicalName="RPCore.Inventory.Recipes" />
     <EmbeddedResource Include="../config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
+    <Compile Include="../InventoryMouseData.cs" Link="InventoryMouseData.cs" />
+    <Compile Include="../InventoryBurdenData.cs" Link="InventoryBurdenData.cs" />
     <Compile Include="../InventoryInteractionData.cs" Link="InventoryInteractionData.cs" />
     <Compile Include="../InventoryReference.cs" Link="InventoryReference.cs" />
     <Compile Include="../InventoryArmoryData.cs" Link="InventoryArmoryData.cs" />

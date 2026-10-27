@@ -68,6 +68,7 @@ namespace RPCore
         public void Reload()
         {
             StopUsing();
+            weightWarned=false;
             d = Store.Load("Inventory.json", () => new InvData());
             ResetArmory();
             if (d.Items == null) d.Items = new Dictionary<string, int>();
@@ -87,7 +88,7 @@ namespace RPCore
 
         public float Weight
         {
-            get { return d.Items.Where(kv => kv.Value > 0).Sum(kv => (Defs.ContainsKey(kv.Key) ? Defs[kv.Key].Weight : 0.1f) * kv.Value); }
+            get { return (float)Math.Min(float.MaxValue,InventoryBurdenRules.Total(d.Items,id=>Defs.TryGetValue(id,out var def)?def.Weight:.1f)); }
         }
 
         public int Count(string id)
@@ -178,6 +179,7 @@ namespace RPCore
         {
             try{UsingTick();}catch(Exception ex){Log.Error("item presentation tick",ex);StopUsing();}BlockNumberControls();
             ArmoryTick();
+            BurdenTick();
             if(d.Consumption!=null && !needs.Consumed(d.Consumption.Id) && unchecked(Game.GameTime-consumptionRetry)>=0){consumptionRetry=Game.GameTime+5000;RecoverConsumption();}
             // rebuild outside LemonUI's event dispatch, not inside the Activated handler
             if (dirty && menu.Visible) Rebuild();
@@ -207,6 +209,7 @@ namespace RPCore
         }
         public Dictionary<string,int> ContainerSnapshot(string id) => InventoryTransfers.Snapshot(d,id);
         public double ContainerWeight(string id) => InventoryTransfers.Weight(ContainerSnapshot(id), key => Defs.ContainsKey(key)?Defs[key].Weight:.1f);
+        public int TransferFits(string container,string id,bool deposit,float capacity)=>InventoryTransfers.Fits(d,container,id,deposit,capacity,Cfg.MaxWeight,key=>Defs.TryGetValue(key,out var def)?def.Weight:.1f);
         public bool Transfer(string container,string id,bool deposit,float capacity) => Transfer(container,id,deposit,capacity,1);
         public bool Transfer(string container,string id,bool deposit,float capacity,int quantity)
         {

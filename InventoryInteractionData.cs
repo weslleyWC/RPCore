@@ -26,6 +26,11 @@ namespace RPCore
         }
         public void Move(int dx,int dy,int count)
         {int row=Selected/6,col=Selected%6;Select(Math.Max(0,Math.Min(Math.Max(0,(count-1)/6),row+dy))*6+Math.Max(0,Math.Min(5,col+dx)),count);}
+        public void Scroll(int rows,int count)
+        {
+            FirstRow=Math.Max(0,Math.Min(Math.Max(0,(count+5)/6-4),FirstRow+rows));
+            Selected=Math.Max(FirstRow*6,Math.Min(Selected,Math.Min(Math.Max(0,count-1),(FirstRow+4)*6-1)));
+        }
     }
     public sealed class InventoryRecipe : ExtensibleData
     {

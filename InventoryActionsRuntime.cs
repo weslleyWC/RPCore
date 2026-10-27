@@ -99,8 +99,8 @@ namespace RPCore
             try{bool done=InventoryPurchases.Buy(ref d,item,count,Cfg.MaxWeight,id=>Defs.TryGetValue(id,out var def)?def.Weight:.1f,()=>Wallet.Cash,Wallet.Debit,Wallet.Credit,Wallet.Save,n=>Store.Write("Inventory.json",n));dirty|=done;return done;}
             catch(Exception ex){Log.Error("inventory purchase",ex);Notify.Show("Compra nao concluida. Confira saldo/inventario e RPCore.log.");return false;}
         }
-        public void OpenStorageView(string label,float capacity,Func<Dictionary<string,int>> contents,Func<string,bool,int,bool> transfer,Func<bool> access,Action closed)
-        {ReconcileLayout();grid.OpenStorage(label,capacity,contents,transfer,access,closed);}
+        public void OpenStorageView(string label,float capacity,Func<Dictionary<string,int>> contents,Func<string,bool,int,bool> transfer,Func<bool> access,Action closed,Func<string,bool,int> fitting=null)
+        {ReconcileLayout();grid.OpenStorage(label,capacity,contents,transfer,access,closed,fitting);}
         public void CloseStorageView(){if(grid.StorageOpen)grid.Close();}
     }
 }
