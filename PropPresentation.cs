@@ -6,11 +6,10 @@ using GTA.Native;
 
 namespace RPCore
 {
-    // Cosmetic only. Item consumption is committed by InventorySystem independently of model availability.
+    // Phone presentation. Consumables have a single presentation owner in InventorySystem.
     public class PropPresentation : ISystem
     {
         public string Name { get { return "visualprops"; } }
-        readonly InventorySystem inventory;
         Prop prop;
         Ped owner;
         Model model;
@@ -19,16 +18,9 @@ namespace RPCore
         bool waiting, phone, animationStarted;
         int deadline, end;
 
-        public PropPresentation(InventorySystem inventory) { this.inventory = inventory; inventory.Used += Used; }
-        void Used(ItemDef item)
-        {
-            PropBinding requested;
-            if (Visuals.Active && Visuals.UseProps && Visuals.Bindings.ItemProps != null && Visuals.Bindings.ItemProps.TryGetValue(item.Id, out requested))
-            {
-                try { Start(requested, false); }
-                catch (Exception ex) { Log.Error("cosmetic prop; item consumption preserved", ex); Stop(); }
-            }
-        }
+        // Consumables are presented exclusively by InventorySystem. Subscribing to Used
+        // here used to spawn a second prop and a competing animation for every consumption.
+        public PropPresentation(InventorySystem inventory) { }
         public void ShowPhone()
         {
             PropBinding phoneBinding;
@@ -77,6 +69,6 @@ namespace RPCore
         public void OnKey(KeyEventArgs e) { }
         public void Reload() { Stop(); }
         public void Save() { }
-        public void Dispose() { inventory.Used -= Used; Stop(); }
+        public void Dispose() { Stop(); }
     }
 }

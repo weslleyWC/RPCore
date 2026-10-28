@@ -1,0 +1,43 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Xunit;
+namespace RPCore.Tests
+{
+    public class ShopGridTests
+    {
+        static ItemDef Item(string id="water",int price=3,float weight=.5f)=>new ItemDef{Id=id,Name=id,Price=price,Weight=weight,Thirst=20};
+        [Fact]public void CatalogKeepsAllSellableDefinitionsAndCustomizedPrices(){var items=new[]{Item(),new ItemDef{Id="custom",Name="Custom",Category="Minha categoria",Price=27,Weight=1},new ItemDef{Id="not-sold",Price=0}};var groups=ShopCatalogRules.Build(items);Assert.Equal(2,groups.Count);Assert.Equal("Bebidas",groups[0].Name);Assert.Same(items[1],groups.Single(g=>g.Name=="Minha categoria").Items[0]);Assert.Equal(27,groups[1].Items[0].Price);Assert.Equal(2,groups.Sum(g=>g.Items.Count));}
+        [Theory][InlineData("psrp_orange","Frutas")][InlineData("pear","Frutas")][InlineData("psrp_snickers","Lanches")][InlineData("psrp_shaker","Suplementos")][InlineData("psrp_protienvanilla","Suplementos")][InlineData("psrp_proteinstrawberry","Suplementos")]
+        public void ReferenceCategoriesDoNotDependOnlyOnConsumptionValues(string id,string category)=>Assert.Equal(category,ShopCatalogRules.Category(Item(id)));
+        [Fact]public void ExplicitCategoriesTakePriorityOverAutomaticClassification(){var i=Item();i.Category="  Loja custom  ";Assert.Equal("Loja custom",ShopCatalogRules.Category(i));Assert.Equal("  Loja custom  ",i.Category);}
+        [Fact]public void MaterialAndMedicalDefinitionsKeepTheirOwnCategory(){Assert.Equal("Outros",ShopCatalogRules.Category(new ItemDef{Id="material",Price=1}));Assert.Equal("Saude",ShopCatalogRules.Category(new ItemDef{Id="bandage",Health=40}));Assert.Equal("Equipamentos",ShopCatalogRules.Category(new ItemDef{Id="phone",Action="phone"}));}
+        [Fact]public void CatalogSupportsMoreThanSevenCategoriesAndMoreThanNinetyItems(){var items=Enumerable.Range(0,150).Select(n=>new ItemDef{Id="item"+n,Name="Item"+n,Category="Category"+(n%11),Price=1,Weight=.1f});var groups=ShopCatalogRules.Build(items);Assert.Equal(11,groups.Count);Assert.Equal(150,groups.Sum(g=>g.Items.Count));Assert.Equal(150,groups.SelectMany(g=>g.Items).Select(i=>i.Id).Distinct().Count());}
+        [Fact]public void InvalidSaleDefinitionsAreNotOffered(){var items=new[]{null,Item("",1),Item("nan",1,float.NaN),Item("negative",1,-1),Item("infinite",1,float.PositiveInfinity),Item("free",0),Item("negative-price",-1)};Assert.Empty(ShopCatalogRules.Build(items));Assert.Empty(ShopCatalogRules.Build(null));}
+        [Fact]public void MaximumChecksMoneyWeightAndExistingQuantity(){Assert.Equal(3,ShopCatalogRules.Maximum(Item(),0,0,30,10));Assert.Equal(2,ShopCatalogRules.Maximum(Item(),0,29,30,100));Assert.Equal(1,ShopCatalogRules.Maximum(Item(),int.MaxValue-1,0,30,100));Assert.Equal(100,ShopCatalogRules.Maximum(Item(weight:0),0,0,30,int.MaxValue));}
+        [Fact]public void FullAndOverweightCannotBuyExtraMass(){Assert.Equal(0,ShopCatalogRules.Maximum(Item(),0,30,30,100));Assert.Equal(0,ShopCatalogRules.Maximum(Item(),0,31,30,100));Assert.Equal(0,ShopCatalogRules.Maximum(Item(weight:0),0,31,30,100));}
+        [Theory][InlineData(double.NaN,30)][InlineData(double.PositiveInfinity,30)][InlineData(-1,30)][InlineData(0,double.NaN)][InlineData(0,double.PositiveInfinity)][InlineData(0,-1)]
+        public void InvalidMassOrCapacityNeverProducesPurchaseQuantity(double weight,double capacity)=>Assert.Equal(0,ShopCatalogRules.Maximum(Item(),0,weight,capacity,100));
+        [Fact]public void QuoteAvoidsSignedIntegerOverflow(){var item=Item(price:int.MaxValue);Assert.Equal(1,ShopCatalogRules.Maximum(item,0,0,30,int.MaxValue));Assert.Equal(214748364700L,ShopCatalogRules.Total(item,100));Assert.Equal(0,ShopCatalogRules.Total(item,101));}
+        [Fact]public void MaximumQuoteCanBeBoughtWithExactlyThatCharge(){var item=Item();var d=new InvData{Items=new Dictionary<string,int>{{"water",2}},Extra=new Dictionary<string,JToken>{{"Future","keep"}}};int cash=14;int maximum=ShopCatalogRules.Maximum(item,2,1,2.5,cash);Assert.Equal(3,maximum);Assert.True(InventoryPurchases.Buy(ref d,item,maximum,2.5f,_=>.5f,()=>cash,n=>{cash-=n;return true;},n=>cash+=n,()=>{},n=>{}));Assert.Equal(5,cash);Assert.Equal(5,d.Items["water"]);Assert.Equal("keep",(string)d.Extra["Future"]);}
+        [Fact]public void OverRequestedPurchaseNeverPartiallyChargesOrAdds(){var item=Item();var d=new InvData();int cash=14;Assert.False(InventoryPurchases.Buy(ref d,item,5,30,_=>.5f,()=>cash,n=>throw new Exception("debit must not run"),n=>{},()=>{},n=>{}));Assert.Equal(14,cash);Assert.Empty(d.Items);}
+        [Fact]public void FailedBatchPurchaseReturnsCashAndPreservesGroundItems(){var item=Item();var d=new InvData{Items=new Dictionary<string,int>{{"water",2}}};Assert.True(InventoryGroundRules.Drop(ref d,"water",1,1,2,3,0,n=>{}));string before=JsonConvert.SerializeObject(d);int cash=30;Assert.Throws<IOException>(()=>InventoryPurchases.Buy(ref d,item,3,30,_=>.5f,()=>cash,n=>{cash-=n;return true;},n=>cash+=n,()=>{},n=>throw new IOException()));Assert.Equal(30,cash);Assert.Equal(before,JsonConvert.SerializeObject(d));}
+        [Fact]public void CategoriesWrapInBothDirectionsIncludingEmpty(){Assert.Equal(6,ShopCatalogRules.WrapCategory(0,-1,7));Assert.Equal(0,ShopCatalogRules.WrapCategory(6,1,7));Assert.Equal(0,ShopCatalogRules.WrapCategory(1,1,0));Assert.InRange(ShopCatalogRules.WrapCategory(int.MaxValue,int.MaxValue,7),0,6);}
+        [Theory][InlineData(1040,790,0)][InlineData(1099,839,0)][InlineData(1100,790,-1)][InlineData(1210,790,1)][InlineData(1280,790,2)][InlineData(1430,790,3)][InlineData(1820,790,-1)][InlineData(1500,840,-1)][InlineData(1500,789,-1)]
+        public void ClickGeometrySeparatesSelectionFromBuyButton(float x,float y,int action)=>Assert.Equal(action,ShopCatalogRules.ActionAt(x,y));
+        [Fact]public void CategoryHitTestingUsesTheVisiblePageWithoutPhantomTabs(){Assert.Equal(4,ShopCatalogRules.CategoryAt(1040,185,4,7));Assert.Equal(6,ShopCatalogRules.CategoryAt(1430,200,4,7));Assert.Equal(-1,ShopCatalogRules.CategoryAt(1700,200,4,7));Assert.Equal(-1,ShopCatalogRules.CategoryAt(1040,224,4,7));}
+        [Fact]public void LongCategoryNavigationScrollsRowsAndResetsOnCategoryChange(){var nav=new InventoryNavigation();nav.Select(145,150);Assert.Equal(21,nav.FirstRow);nav.Select(0,6);Assert.Equal(0,nav.FirstRow);Assert.Equal(0,nav.Selected);}
+    }
+    public class ConsumptionPresentationTests
+    {
+        [Fact]public void CustomBindingIsCopiedWithoutMutatingConfiguration(){var original=new PropBinding{Model="custom_drink",Fallback="prop_ecola_can",Drink=true,X=.03f,Y=.01f,Z=-.02f,RX=45,RY=0,RZ=90};var configured=new Dictionary<string,PropBinding>{{"water",original}};var p=ConsumptionPresentationRules.Resolve(new ItemDef{Id="water",Thirst=20},configured);Assert.NotSame(original,p.Binding);Assert.Equal(57005,p.Bone);Assert.True(p.Drink);Assert.Equal(.03f,p.Binding.X);Assert.Equal(new[]{"custom_drink","prop_ecola_can","ba_prop_club_water_bottle"},p.Models);p.Binding.X=1;Assert.Equal(.03f,original.X);}
+        [Theory][InlineData("psrp_coke","coke")][InlineData("psrp_mountaindew","mtdew")][InlineData("psrp_shakerstrawberry","shaker")][InlineData("psrp_sandwichblt","prop_sandwich_01")][InlineData("psrp_donut","prop_donut_02")][InlineData("psrp_bagel","p_ing_bagel_01")][InlineData("psrp_hershey","prop_choc_meto")][InlineData("psrp_lime","lime")]
+        public void MissingCustomBindingUsesReferencePresentation(string id,string model){var p=ConsumptionPresentationRules.Resolve(new ItemDef{Id=id,Thirst=20},null);Assert.Equal(model,p.Models[0]);Assert.Equal(60309,p.Bone);}
+        [Fact]public void NullBindingOrInvalidTransformFallsBackWithoutInvalidNativeArguments(){var bad=new PropBinding{Model="bad",X=float.NaN};var p=ConsumptionPresentationRules.Resolve(new ItemDef{Id="water",Thirst=20},new Dictionary<string,PropBinding>{{"water",bad}});Assert.Equal("ba_prop_club_water_bottle",p.Models[0]);Assert.False(float.IsNaN(p.Binding.X));Assert.True(float.IsNaN(bad.X));}
+        [Fact]public void MedicalItemsCannotUseDrinkAnimationEvenWhenBindingRequestsIt(){var p=ConsumptionPresentationRules.Resolve(new ItemDef{Id="bandage",Health=40},new Dictionary<string,PropBinding>{{"bandage",new PropBinding{Model="prop_ld_health_pack",Drink=true}}});Assert.False(p.Drink);}
+        [Fact]public void ModelFallbackChainDoesNotDuplicateOrIncludeBlankModels(){var p=ConsumptionPresentationRules.Resolve(new ItemDef{Id="water",Thirst=20},new Dictionary<string,PropBinding>{{"water",new PropBinding{Model="BA_PROP_CLUB_WATER_BOTTLE",Fallback="",Drink=true}}});Assert.Single(p.Models);}
+    }
+}

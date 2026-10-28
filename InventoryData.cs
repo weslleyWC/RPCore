@@ -16,6 +16,7 @@ namespace RPCore
         public string Icon;
         public float? Energy;
         public string ReturnItem,Action;
+        public string Category;
     }
 
     public class InvData : ExtensibleData

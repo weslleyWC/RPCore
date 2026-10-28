@@ -1,3 +1,9 @@
+## Atualização 0.96.0 — lojas por categorias e consumíveis sem apresentação duplicada
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.96.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.96.0.zip) · [Uso e testes GTA](docs/LOJAS-E-CONSUMIVEIS-0.96.0.md)
+
+Conveniências e pontos Grocery passam à grade6x4 da referência, com mochila à esquerda, categorias, mouse/teclado/controle, quantidade1–100, total e limite pelo dinheiro/peso. Tab alterna categoria, +/- ajusta, M calcula máximo e Enter confirma; clicar no produto apenas seleciona. Preços, dinheiro, arquivos e coordenadas anteriores preservados. Removido o apresentador duplicado de consumíveis; um único fluxo usa seus modelos/offsets configurados e limpeza identificada.3686 testes aprovados; build sem erros/avisos. Reinicie o GTA uma vez para o teste dos props antigos sem identificação; roteiro completo no guia.
+
 ## Atualização 0.95.0 — correções do inventário e itens no chão
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.95.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.95.0.zip) · [Uso e testes GTA](docs/CORRECOES-INVENTARIO-0.95.0.md)

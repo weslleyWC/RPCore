@@ -16,6 +16,9 @@ namespace RPCore
         public string Name { get { return "shop"; } }
 
         readonly ObjectPool pool;
+        readonly ShiftGate gate;
+        readonly ShopGridView grid;
+        public bool GridVisible=>grid.Visible;
         readonly Func<bool> suppressInteraction;readonly Func<IEnumerable<EditorPoint>> editorPoints;
         readonly InventorySystem inv;
         readonly AchievementSystem ach;
@@ -26,9 +29,10 @@ namespace RPCore
 
         static Vector3 Pos(ShopDef s) { return new Vector3(s.X, s.Y, s.Z); }
 
-        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null, Func<IEnumerable<EditorPoint>> editorPoints = null)
+        public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null, Func<IEnumerable<EditorPoint>> editorPoints = null, ShiftGate gate = null)
         {
-            this.pool = pool;
+            this.pool = pool;this.gate=gate;
+            grid=new ShopGridView(inv,Accessible,Buy);
             this.suppressInteraction = suppressInteraction;this.editorPoints=editorPoints;
             this.inv = inv;
             this.ach = ach;
@@ -42,12 +46,21 @@ namespace RPCore
             }
         }
 
+        bool Accessible()
+        {
+            var p=Game.Player.Character;
+            if(current==null || p==null || !p.Exists() || !p.IsHuman || p.IsDead || !p.IsOnFoot || p.IsInVehicle() || p.IsInCombat || p.IsRagdoll || p.IsFalling || p.IsClimbing || p.IsSwimming || Game.IsMissionActive || Game.IsPaused || !Game.Player.CanControlCharacter || GTA.Native.Function.Call<bool>(GTA.Native.Hash.IS_CUTSCENE_ACTIVE) || GTA.Native.Function.Call<bool>(GTA.Native.Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) || Profile.Detect()!=Profile.Id || p.Position.DistanceTo(Pos(current))>4 || suppressInteraction?.Invoke()==true || inv.UsingItem || gate!=null && gate.Owner!="shop")return false;
+            if(shops.Contains(current))return true;
+            return Game.Player.Wanted.WantedLevel==0 && p.Position.DistanceTo(Pos(current))<=1.8f && (editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(point=>point.Kind==EditorPointKind.Grocery && point.Name==current.Name && Math.Abs(point.Pose.X-current.X)<.01f && Math.Abs(point.Pose.Y-current.Y)<.01f && Math.Abs(point.Pose.Z-current.Z)<.01f);
+        }
         void Open(ShopDef s)
         {
-            current = s;
-            Rebuild();
-            menu.Visible = true;
+            if(gate!=null && !gate.Acquire("shop"))return;
+            current=s;
+            try{if(!Accessible()){Close();return;}if(InterfaceOptions.GridInventory)grid.Open(s.Name);else{Rebuild();menu.Visible=true;}}
+            catch{Close();throw;}
         }
+        void Close(){grid.Close();menu.Visible=false;current=null;gate?.Release("shop");}
 
         void Rebuild()
         {
@@ -61,33 +74,34 @@ namespace RPCore
                 ItemDef item = def;
                 var row = new NativeItem(item.Name, item.Desc) { AltTitle = "$" + item.Price };
                 Visuals.Badge(menu, row, item.Icon??item.Id);
-                row.Activated += (sender, e) => Buy(item);
+                row.Activated += (sender, e) => {if(!Buy(item,1))Notify.Show("Compra nao confirmada. Confira saldo, peso e RPCore.log.");};
                 menu.Add(row);
             }
             menu.SelectedIndex = Math.Max(0, Math.Min(idx, menu.Items.Count - 1));
         }
 
-        void Buy(ItemDef item)
+        bool Buy(ItemDef item,int quantity)
         {
-            if(current!=null && !shops.Contains(current)){
-                var actor=Game.Player.Character;bool here=(editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(p=>p.Kind==EditorPointKind.Grocery && p.Name==current.Name && Math.Abs(p.Pose.X-current.X)<.01f && Math.Abs(p.Pose.Y-current.Y)<.01f && Math.Abs(p.Pose.Z-current.Z)<.01f);
-                if(!here || actor.IsInVehicle() || actor.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || actor.Position.DistanceTo(Pos(current))>1.8f){menu.Visible=false;Notify.Show("Retorne a loja do mapa ativo, a pe e sem procurado.");return;}
-            }
-            var player=Game.Player.Character;
-            if(current==null || player.IsDead || player.IsInVehicle() || Game.IsMissionActive || Game.IsPaused || Profile.Detect()!=Profile.Id || player.Position.DistanceTo(Pos(current))>4){menu.Visible=false;return;}
-            if(!inv.BuySaved(item)){Notify.Show("Compra nao confirmada. Confira saldo, peso e RPCore.log.");return;}
-            try{Sfx.Play("buy");ach.Bump("items_bought");ach.Bump("cash_spent", item.Price);}catch(Exception ex){Log.Error("purchase presentation",ex);}
-            menu.Name = current.Name + "   $" + Wallet.Cash;
+            if(!Accessible()){Close();return false;}
+            if(!inv.Defs.TryGetValue(item.Id,out var actual) || !ReferenceEquals(item,actual) || quantity<1 || quantity>inv.PurchaseMaximum(item))return false;
+            if(!inv.BuySaved(item,quantity))return false;
+            try{Sfx.Play("buy");ach.Bump("items_bought",quantity);ach.Bump("cash_spent",(int)ShopCatalogRules.Total(item,quantity));}catch(Exception ex){Log.Error("purchase presentation",ex);}
+            menu.Name=current.Name+"   $"+Wallet.Cash;return true;
         }
 
         public void Tick()
         {
-            if (suppressInteraction?.Invoke() == true) { menu.Visible = false; return; }
+            if(current!=null)
+            {
+                if(!Accessible() || !grid.Visible && !menu.Visible){Close();return;}
+                if(grid.Visible){grid.Tick();if(!grid.Visible)Close();return;}
+                return;
+            }
+            if (suppressInteraction?.Invoke() == true || inv.UsingItem || gate?.Owner!=null) return;
             if (InterfaceOptions.ModalOpen) return;
             Ped p = Game.Player.Character;
             Vector3 pos = p.Position;
 
-            if (menu.Visible && current != null && pos.DistanceTo(Pos(current)) > 4f) menu.Visible = false;
             if (menu.Visible || pool.AreAnyVisible || p.IsInVehicle() || p.IsDead || Game.IsMissionActive) return;
 
             if (WorkContext.ShopDelivery.Contains(pos.X,pos.Y,pos.Z)) return;
@@ -109,12 +123,13 @@ namespace RPCore
             }
         }
 
-        public void OnKey(KeyEventArgs e) { }
-        public void Reload() { menu.Visible=false;current=null; }
+        public void OnKey(KeyEventArgs e) {if(grid.Visible){grid.OnKey(e);if(!grid.Visible)Close();}}
+        public void Reload() {Close();}
         public void Save() { }
 
         public void Dispose()
         {
+            Close();
             foreach (Blip b in blips) if (b != null && b.Exists()) b.Delete();
             blips.Clear();
         }

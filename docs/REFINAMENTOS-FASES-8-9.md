@@ -267,3 +267,8 @@ Antes da publicação0.94, usuário pediu peso funcional: sobrecarga automática
 ### Correção 0.95.0 após teste da 0.94.0
 
 Usuário confirmou mouse, sobrepeso, normalização e atualização por munição/exclusão. Relatou props presos após consumo e roda reativada; corrigidos os caminhos de limpeza confirmada/repetida e política de input independente da armaria. Delete agora larga itens recuperáveis no chão, persistidos com inventário, R/Shift+R recolhem perto da marca. Fonte PSRP revisada em NewInventorySystem/SettingsMenu; descarte recuperável é código próprio. Teste físico pendente conforme CORRECOES-INVENTARIO-0.95.0.md. Demais ferramentas/intoxicação e refinamento dos trabalhos continuam no escopo registrado.
+
+
+### Refinamento 0.96.0 — lojas e integração visual de consumo
+
+NewShopSystem/ItemDatabase revisados. Conveniências e Grocery do editor ganham catálogo por categorias/grade6x4, mochila somente para consulta, quantidades e compra explícita limitada por dinheiro/peso, input modal com gate e saída segura. Preços/forma de pagamento/configs/pontos anteriores preservados. Encontrada segunda criação de prop por PropPresentation.Used: removida assinatura interna duplicada e centralizados bindings/fallbacks na apresentação identificada do inventário. Celular conserva seu apresentador.3686 testes aprovados; GTA ainda precisa roteiro LOJAS-E-CONSUMIVEIS-0.96.0.md. Ferramentas, intoxicação, lojas especializadas e fase9 permanecem no escopo aberto.

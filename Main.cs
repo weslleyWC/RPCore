@@ -32,6 +32,7 @@ namespace RPCore
         readonly NeedsSystem survival;
         readonly PdmSurveillanceSystem surveillance;
         readonly InventorySystem inventory;
+        readonly ShopSystem shop;
         readonly MapEditorSystem editor;
 
         public Main()
@@ -50,7 +51,7 @@ namespace RPCore
             systems.Add(ach);
             systems.Add(needs);
             systems.Add(inv);
-            systems.Add(new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier" || editor?.Editing==true, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>()));
+            shop=new ShopSystem(pool, inv, ach, () => shifts.Owner == "gang_cashier" || editor?.Editing==true, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>(),shifts);systems.Add(shop);
             var pizza = new PizzaJob(pool, ach, shifts); systems.Add(pizza);
             var postOp = new PostOpJob(pool, ach, shifts); systems.Add(postOp);
             var uber = new UberJob(pool, ach, shifts); systems.Add(uber);
@@ -140,7 +141,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.95.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.96.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -176,7 +177,7 @@ namespace RPCore
 
             // World Context is polled by shops before the late radial/phone draw ticks.
             // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
-            InterfaceOptions.ModalOpen = inventory.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
+            InterfaceOptions.ModalOpen = inventory.GridVisible || shop.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             try { pool.Process(); }
             catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
@@ -213,6 +214,7 @@ namespace RPCore
             if(survival.Sleeping)return;
             if(editor.Manipulating){editor.OnKey(e);return;}
             if (surveillance.Viewing) { surveillance.OnKey(e); return; }
+            if(shop.GridVisible && !faulted.Contains(shop)){try{shop.OnKey(e);}catch(Exception ex){faulted.Add(shop);Log.Error("shop.grid.key",ex);shop.Dispose();}return;}
             if (inventory.GridVisible && !faulted.Contains(inventory))
             {
                 try { inventory.OnKey(e); }
