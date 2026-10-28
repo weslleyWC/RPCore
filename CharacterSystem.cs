@@ -139,6 +139,7 @@ namespace RPCore
         public void Save()=>SaveBody(false);
         void SaveBody(bool beforeSwap)
         {
+            if(!PersonalServiceRules.CanSnapshot(gate.Owner))return;
             if(current==null || !CharacterRules.CanCapture(current,Profile.Id,Game.Player.Character.Model.Hash,!Game.Player.Character.IsDead,!beforeSwap && operation!=null))return;
             var next=CharacterRules.Copy(current);var snapshot=CharacterBodyRuntime.Capture(Game.Player.Character);
             if(SnapshotFilter!=null)snapshot=SnapshotFilter(snapshot);

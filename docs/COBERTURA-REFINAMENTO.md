@@ -9,8 +9,8 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | Sistema | Arquivo | Estado do refinamento |
 |---|---|---|
 | AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | Pendente de revisão completa; preservar base existente |
-| BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | Pendente de revisão completa; preservar base existente |
-| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | Pendente de revisão completa; preservar base existente |
+| BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | 0.100: E local, despacho/retorno/seleção, contexto e cancelamento que conserva alterações externas; corte/olhos/taxa existentes mantidos. Câmera dedicada/validação GTA pendentes. |
+| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.100 impede snapshot de prévias; criação/carregamento/menus ainda pendentes de revisão completa. |
 | CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
@@ -26,10 +26,10 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | FuelSystem | [FuelSystem.cs](../FuelSystem.cs) | Pendente de revisão completa; preservar base existente |
 | GangSystem | [GangSystem.cs](../GangSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | GarageSystem | [GarageSystem.cs](../GarageSystem.cs) | Grupo0.99: acesso/registro atual/remocao/retirada/servicos revisados; aguarda teste GTA |
-| GroomingSystem | [GroomingSystem.cs](../GroomingSystem.cs) | Pendente de revisão completa; preservar base existente |
+| GroomingSystem | [GroomingSystem.cs](../GroomingSystem.cs) | 0.100: categorias de acabamento/face, resumo antes de confirmar, navegação/despacho, cancelamento seguro de pendência; aplicação retomável anterior mantida. Validação GTA pendente. |
 | HalloweenSystem | [HalloweenSystem.cs](../HalloweenSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | HomeStorageSystem | [HomeStorageSystem.cs](../HomeStorageSystem.cs) | Pendente de revisão completa; preservar base existente |
-| HousingSystem | [HousingSystem.cs](../HousingSystem.cs) | Pendente de revisão completa; preservar base existente |
+| HousingSystem | [HousingSystem.cs](../HousingSystem.cs) | 0.100: compra confirmada, menus com despacho/retorno/contexto, propriedade revalidada no streaming; saída e armazenamento preservados. IPL/piso/transição dependem de teste GTA. |
 | HuntingJob | [HuntingJob.cs](../HuntingJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | InventorySystem | [InventorySystem.cs](../InventorySystem.cs) | Grupo0.91–0.96 testado pelo usuário; ferramentas/intoxicação/integrações restantes continuam abertas |
 | MapEditorSystem | [MapEditorSystem.cs](../MapEditorSystem.cs) | Pendente de revisão completa; preservar base existente |
@@ -65,7 +65,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Grupo0.99: menus/acoes/radial revisados; aguarda teste GTA |
 | VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Pendente de revisão completa; preservar base existente |
 | VisualSystem | [VisualSystem.cs](../VisualSystem.cs) | Pendente de revisão completa; preservar base existente |
-| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | Pendente de revisão completa; preservar base existente |
+| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.100:14 lojas/ícones/GPS, biblioteca anterior e edição por variações nativas; confirmações/registro atual, cancelamento/preview/save guard. Câmera dedicada e validação GTA pendentes. |
 | WorldSystem | [WorldSystem.cs](../WorldSystem.cs) | Pendente de revisão completa; preservar base existente |
 
 Componentes fora do registro ISystem também estão no escopo: WorkshopSystem, WaypointTeleport, Visuals/menu skins, Wallet/persistência, páginas internas do celular/radial e grades de inventário/depósito/loja. Menus privados/submenus fazem parte da revisão do sistema correspondente.

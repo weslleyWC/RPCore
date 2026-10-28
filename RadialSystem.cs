@@ -54,7 +54,7 @@ namespace RPCore
             }
             if(page==RadialPage.Gps)
             {
-                var kinds=new[]{"Fuel","Grocery","Workshop","Garage","Barber","PDM"};var names=new[]{"Posto mais proximo","Conveniencia mais proxima","Oficina mais proxima","Garagem mais proxima","Barbearia mais proxima","PDM"};var images=new[]{"FuelIconRad","ShopIconRad","MechanicIconRad","ClothingItemRad","BarberIconRad","PDMrad"};
+                var kinds=new[]{"Fuel","Grocery","Workshop","Clothing","Barber","PDM"};var names=new[]{"Posto mais proximo","Conveniencia mais proxima","Oficina mais proxima","Loja de roupas mais proxima","Barbearia mais proxima","PDM"};var images=new[]{"FuelIconRad","ShopIconRad","MechanicIconRad","ClothingItemRad","BarberIconRad","PDMrad"};
                 for(int i=0;i<6;i++){string kind=kinds[i];Put(i,names[i],images[i],()=>{var p=Game.Player.Character.Position;var target=MapPinRules.Nearest(destinations(),kind,p.X,p.Y,p.Z);if(target==null){Notify.Show("Nenhum local disponivel nesta categoria.");return;}Function.Call(Hash.SET_NEW_WAYPOINT,target.X,target.Y);Notify.Show("GPS: "+target.Name);});}
                 Put(6,"Voltar","PreviousPageIconRad",()=>Build(RadialPage.Root));Put(7,"Todos os destinos","NextPageIconRad",()=>activate(4));return;
             }

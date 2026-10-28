@@ -18,20 +18,21 @@ namespace RPCore
         public Action OpenDetails;
         public bool CanUseService=>AtShop;
         readonly ObjectPool pool;readonly ShiftGate gate;readonly NativeMenu menu;readonly BarberOptions options;readonly List<Blip> blips=new List<Blip>();
-        Ped actor;BarberLook original,draft;string profile,receipt;Vector3 shop;float heading;
+        Ped actor;BarberLook original,draft;string profile,receipt;Vector3 shop;float heading,lastHeading;readonly PersonalServiceMenu ui;
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);
         static bool Freemode(int model)=>model==new Model("mp_m_freemode_01").Hash || model==new Model("mp_f_freemode_01").Hash;
-        bool Safe=>!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0;
+        bool Safe=>PersonalServiceMenu.SafeFoot;
         JobPoint Nearest=>options.Shops.OrderBy(p=>Game.Player.Character.Position.DistanceTo(Pos(p))).First();
         public BarberSystem(ObjectPool pool,ShiftGate gate)
         {
             this.pool=pool;this.gate=gate;var defaults=BarberDefaults.Load();options=Store.LoadDef("Jobs/Barber.json",()=>defaults);
             if(options==null || !options.Valid){Log.Write("Invalid Barber.json; embedded defaults used, original retained.");options=defaults;}
-            menu=new NativeMenu("Barbearias RPCore","CORTES / TEXTURAS / OLHOS");pool.Add(menu);Visuals.Register(menu,"core");
+            menu=new NativeMenu("Barbearias RPCore","CORTES / TEXTURAS / OLHOS");pool.Add(menu);Visuals.Register(menu,"core");ui=new PersonalServiceMenu(menu,ex=>{try{Cancel();}catch(Exception restore){Log.Error("barber restore",restore);}ui.Close();Log.Error("barber action",ex);Notify.Show("Atendimento nao confirmado. Confira o log.");});
             foreach(var p in options.Shops)blips.Add(MapBlips.Create(Pos(p),"RPCore: "+p.Name,BlipSprite.Barber,BlipColor.Blue,.7f));
         }
         void Add(string title,string description,Action action)
-        {var row=new NativeItem(title,description);row.Activated+=(s,e)=>{try{action();}catch(Exception ex){try{Cancel();}catch(Exception restore){Log.Error("barber restore",restore);}Log.Error("barber action",ex);Notify.Show("Atendimento nao confirmado. Confira o log.");}};menu.Add(row);}
+        {ui.Add(title,description,action);}
+
         static BarberLook Capture(Ped p)
         {
             var look=new BarberLook{Model=p.Model.Hash,Hair=Function.Call<int>(Hash.GET_PED_DRAWABLE_VARIATION,p,2),Texture=Function.Call<int>(Hash.GET_PED_TEXTURE_VARIATION,p,2),Palette=Function.Call<int>(Hash.GET_PED_PALETTE_VARIATION,p,2)};
@@ -61,26 +62,26 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            Cancel();pool.HideAll();menu.Clear();menu.Name="Barbearias / banco $"+Wallet.Bank;
+            Cancel();pool.HideAll();ui.Begin("root");menu.Name="Barbearias / banco $"+Wallet.Bank;
             if(!Wallet.Barber.Valid){Notify.Show("Dados de barbearia invalidos; original preservado.");return;}
             if(OpenDetails!=null)Add("Aparencia / rosto e acabamento","Selecao sem alterar personagem; aplicacao apenas apos confirmar. Servico separado.",OpenDetails);
             Add("Iniciar previa / confirmar por $"+options.Price,"Perto de uma barbearia, a pe e sem atividade. Cobranca unica pelo banco RPCore apenas ao confirmar mudancas.",Begin);
             if(Wallet.Barber.Looks.Any(l=>l.Model==Game.Player.Character.Model.Hash))Add("Reaplicar ultimo visual confirmado","Na barbearia, mesmo modelo. Sem nova cobranca nem aplicacao automatica no load.",RestoreSaved);
-            foreach(var p in options.Shops){var point=p;Add("GPS: "+point.Name,"Use o menu F10 da barbearia ao chegar. A tecla E nativa do GTA permanece disponivel.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,point.X,point.Y);menu.Visible=false;});}
+            foreach(var p in options.Shops){var point=p;Add("GPS: "+point.Name,"Use o menu F10 da barbearia ao chegar. No marcador RPCore, E abre este atendimento.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,point.X,point.Y);ui.Close();});}
             Add("Servicos "+Wallet.Barber.Services+" / pagos $"+Wallet.Barber.Spent,"Cortes/texturas; olhos nos freemode. Rosto, tintura, barba e pele no menu Aparencia.",()=>{});
-            Add("Fechar","Retornar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
+            Add("Fechar","Retornar ao jogo.",()=>ui.Close());menu.Visible=true;
         }
         bool AtShop=>Safe && Game.Player.Character.Position.DistanceTo(Pos(Nearest))<=2.5f && !InterfaceOptions.ModalOpen && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING);
         void Begin()
         {
             if(!AtShop || !Wallet.Barber.Valid){Notify.Show("Va a pe a barbearia, sem procurado/missao/outra camera.");return;}
             if(!gate.Acquire(Name)){Notify.Show("Encerre a atividade de "+gate.Owner+".");return;}
-            actor=Game.Player.Character;profile=Profile.Id;heading=actor.Heading;shop=Pos(Nearest);receipt=Guid.NewGuid().ToString("N");original=Capture(actor);draft=JsonConvert.DeserializeObject<BarberLook>(JsonConvert.SerializeObject(original));BuildEditor();
+            actor=Game.Player.Character;profile=Profile.Id;heading=lastHeading=actor.Heading;shop=Pos(Nearest);receipt=Guid.NewGuid().ToString("N");original=Capture(actor);draft=JsonConvert.DeserializeObject<BarberLook>(JsonConvert.SerializeObject(original));BuildEditor();
         }
         bool EditingAllowed=>original!=null && actor!=null && actor.Exists() && actor==Game.Player.Character && actor.Model.Hash==original.Model && profile==Profile.Id && AtShop && actor.Position.DistanceTo(shop)<=3;
         void BuildEditor()
         {
-            menu.Clear();menu.Name="Previa / corte "+draft.Hair+" / textura "+draft.Texture;
+            ui.Begin("preview",()=>{Cancel();OpenMenu();});menu.Name="Previa / corte "+draft.Hair+" / textura "+draft.Texture;
             Add("Corte anterior","Mantem as tintas atuais; muda apenas a variacao do cabelo.",()=>Change(false,-1));Add("Proximo corte","Variacoes disponiveis neste ped.",()=>Change(false,1));
             Add("Textura anterior","Texturas do corte selecionado.",()=>Change(true,-1));Add("Proxima textura","Texturas do corte selecionado.",()=>Change(true,1));
             if(original.HasEye){Add("Olhos: "+draft.Eye+" / anterior","Apenas freemode com leitura valida da cor atual.",()=>Eye(-1));Add("Proxima cor de olhos","Previa reversivel.",()=>Eye(1));}
@@ -91,6 +92,7 @@ namespace RPCore
         void Change(bool texture,int delta)
         {
             if(!EditingAllowed){Cancel();return;}
+            if(!Capture(actor).Same(draft)){Cancel();ui.Close();return;}
             var next=JsonConvert.DeserializeObject<BarberLook>(JsonConvert.SerializeObject(draft));int count=texture?Function.Call<int>(Hash.GET_NUMBER_OF_PED_TEXTURE_VARIATIONS,actor,2,next.Hair):Function.Call<int>(Hash.GET_NUMBER_OF_PED_DRAWABLE_VARIATIONS,actor,2);
             if(count<=0){Notify.Show("Sem variacoes disponiveis neste ped.");return;}
             if(texture)next.Texture=WardrobeRules.Cycle(next.Texture,delta,count,false);
@@ -98,8 +100,8 @@ namespace RPCore
             if(Apply(actor,next))draft=next;BuildEditor();
         }
         void Eye(int delta)
-        {if(!EditingAllowed || !original.HasEye){Cancel();return;}var next=JsonConvert.DeserializeObject<BarberLook>(JsonConvert.SerializeObject(draft));next.Eye=WardrobeRules.Cycle(next.Eye,delta,32,false);if(Apply(actor,next))draft=next;BuildEditor();}
-        void Turn(float delta){if(EditingAllowed)actor.Heading+=delta;else Cancel();}
+        {if(!EditingAllowed || !original.HasEye){Cancel();return;}if(!Capture(actor).Same(draft)){Cancel();ui.Close();return;}var next=JsonConvert.DeserializeObject<BarberLook>(JsonConvert.SerializeObject(draft));next.Eye=WardrobeRules.Cycle(next.Eye,delta,32,false);if(Apply(actor,next))draft=next;BuildEditor();}
+        void Turn(float delta){if(EditingAllowed){actor.Heading+=delta;lastHeading=actor.Heading;}else Cancel();}
         void Confirm()
         {
             if(!EditingAllowed){Cancel();return;}
@@ -116,23 +118,24 @@ namespace RPCore
             try{if(Apply(Game.Player.Character,look))Notify.Show("Visual confirmado reaplicado, sem nova cobranca.");}finally{gate.Release(Name);}
         }
         void Finish()
-        {try{if(actor!=null && actor.Exists() && actor==Game.Player.Character && original!=null && actor.Model.Hash==original.Model)actor.Heading=heading;}finally{original=null;draft=null;actor=null;profile=null;receipt=null;gate.Release(Name);}}
+        {try{if(actor!=null && actor.Exists() && actor==Game.Player.Character && original!=null && actor.Model.Hash==original.Model && profile==Profile.Id){if(Math.Abs(actor.Heading-lastHeading)<.1f)actor.Heading=heading;}}finally{original=null;draft=null;actor=null;profile=null;receipt=null;gate.Release(Name);}}
         void Cancel()
-        {try{if(original!=null && actor!=null && actor.Exists() && actor==Game.Player.Character && actor.Model.Hash==original.Model)Write(actor,original);}finally{Finish();}}
+        {try{if(original!=null && actor!=null && actor.Exists() && actor==Game.Player.Character && actor.Model.Hash==original.Model && profile==Profile.Id) {if(draft!=null && Capture(actor).Same(draft))Write(actor,original);else Notify.Show("Outro sistema alterou o visual; alteracao externa preservada.");}}finally{Finish();}}
         public void Tick()
         {
             try
             {
-                if(original!=null && (!EditingAllowed || !menu.Visible)){Cancel();menu.Visible=false;}
+                ui.Tick(Safe);
+                if(original!=null && (!EditingAllowed || !menu.Visible)){Cancel();ui.Close();}
                 if(!Safe || InterfaceOptions.ModalOpen || pool.AreAnyVisible)return;var p=Nearest;var pos=Pos(p);if(Game.Player.Character.Position.DistanceTo(pos)>15)return;
                 World.DrawMarker(MarkerType.Cylinder,pos-new Vector3(0,0,1),Vector3.Zero,Vector3.Zero,new Vector3(1,1,.2f),Color.FromArgb(110,100,180,220));
-                if(Game.Player.Character.Position.DistanceTo(pos)<=2.5f)GTA.UI.Screen.ShowHelpTextThisFrame("Barbearia RPCore: F10 > Barbearias / cortes e olhos");
+                if(Game.Player.Character.Position.DistanceTo(pos)<=2.5f){GTA.UI.Screen.ShowHelpTextThisFrame("Pressione ~INPUT_CONTEXT~ para abrir a barbearia RPCore");bool open=Game.IsControlJustPressed(GTA.Control.Context) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)GTA.Control.Context);Game.DisableControlThisFrame(GTA.Control.Context);if(open)OpenMenu();}
             }
-            catch(Exception ex){try{Cancel();}finally{menu.Visible=false;}Log.Error("barber tick",ex);}
+            catch(Exception ex){try{Cancel();}finally{ui.Close();}Log.Error("barber tick",ex);}
         }
         public void OnKey(KeyEventArgs e){}
         public void Save(){}
-        public void Reload(){try{Cancel();}finally{menu.Visible=false;}}
+        public void Reload(){try{Cancel();}finally{ui.Reset();}}
         public void Dispose(){try{Reload();}finally{foreach(var b in blips)if(b.Exists())b.Delete();blips.Clear();}}
     }
 }

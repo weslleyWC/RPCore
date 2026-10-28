@@ -12,20 +12,20 @@ namespace RPCore
     {
         public string Name=>"grooming";
         readonly ObjectPool pool;readonly ShiftGate gate;readonly Func<bool> access;readonly Action back;readonly NativeMenu menu;readonly GroomingOptions options;
-        int editingOverlay=-1;GroomingLook draft;Ped actor;string profile;bool lease;
+        readonly PersonalServiceMenu ui;int editingSection=-1;int editingOverlay=-1;GroomingLook draft;Ped actor;string profile;bool lease;
         static bool Freemode(int model)=>model==new Model("mp_m_freemode_01").Hash || model==new Model("mp_f_freemode_01").Hash;
         public GroomingSystem(ObjectPool pool,ShiftGate gate,Func<bool> access,Action back)
         {
             this.pool=pool;this.gate=gate;this.access=access;this.back=back;var defaults=GroomingDefaults.Load();options=Store.LoadDef("Jobs/Grooming.json",()=>defaults);
             if(options==null || !options.Valid){Log.Write("Invalid Grooming.json; embedded defaults used, original retained.");options=defaults;}
-            menu=new NativeMenu("Barbearia / acabamento","SELECAO SEM PREVIA NO PERSONAGEM");pool.Add(menu);Visuals.Register(menu,"core");
+            menu=new NativeMenu("Barbearia / acabamento","SELECAO SEM PREVIA NO PERSONAGEM");pool.Add(menu);Visuals.Register(menu,"core");ui=new PersonalServiceMenu(menu,ex=>{End();ui.Close();Log.Error("grooming action",ex);Notify.Show("Operacao nao concluida; retome o pedido pendente sem nova cobranca.");});
         }
         void Add(string title,string text,Action action)
-        {var row=new NativeItem(title,text);row.Activated+=(s,e)=>{try{if(!access() || !Wallet.Grooming.Valid){End();menu.Visible=false;Notify.Show("Use a barbearia com dados validos.");return;}action();}catch(Exception ex){End();Log.Error("grooming action",ex);Notify.Show("Operacao nao concluida; confira atendimento pendente. Retomar nao cobra outra vez.");OpenMenu();}};menu.Add(row);}
+        {ui.Add(title,text,()=>{if(!access() || !Wallet.Grooming.Valid){End();ui.Close();Notify.Show("Use a barbearia com dados validos.");return;}action();});}
         public void OpenMenu()
         {
             End();if(!access()){Notify.Show("Va a pe a uma barbearia para acessar o acabamento.");return;}if(!Wallet.Grooming.Valid){Notify.Show("Dados de acabamento invalidos; original preservado.");return;}
-            pool.HideAll();menu.Clear();menu.Name="Aparencia / rosto e acabamento";var p=Wallet.Grooming.Pending;
+            pool.HideAll();ui.Begin("root");menu.Name="Aparencia / rosto e acabamento";var p=Wallet.Grooming.Pending;
             if(p!=null)
             {
                 string id=p.Id;Add("Retomar atendimento pendente / sem cobrar","Mesmo modelo salvo, na barbearia. Reaplica apenas os grupos selecionados e conclui o registro.",()=>Resume(id));
@@ -59,36 +59,56 @@ namespace RPCore
             Build();
         }
         bool Selecting=>draft!=null && actor!=null && actor.Exists() && actor==Game.Player.Character && actor.Model.Hash==draft.Model && profile==Profile.Id && access();
-        void Select(Action change){if(!Selecting){End();menu.Visible=false;return;}change();Build();}
+        void Select(Action change){if(!Selecting){End();ui.Close();return;}change();Section(editingSection);}
         static int Cycle(int value,int delta,int count)=>WardrobeRules.Cycle(value,delta,count,false);
         int Colors=>Math.Min(64,Function.Call<int>(Hash.GET_NUM_PED_HAIR_TINTS));
         static int Style(int current,int delta,int overlay)
-        {int count=Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,overlay);return count<=0?255:(WardrobeRules.Cycle(current==255?-1:current,delta,count,true));}
+        {int count=Function.Call<int>(Hash.GET_PED_HEAD_OVERLAY_NUM,overlay);return PersonalServiceRules.OverlayStyle(current,delta,count);}
         void Build()
         {
-            editingOverlay=-1;int selected=menu.SelectedIndex;menu.Clear();menu.Name="Rascunho / sem mudar personagem";
-            Add("Alterar tintura: "+(draft.Hair?"SIM":"nao"),"Cabelo e mechas; valores NOVOS escolhidos, sem leitura das tintas atuais.",()=>Select(()=>draft.Hair=!draft.Hair));
-            if(draft.Hair)
-            {
-                Add("Cor cabelo: "+draft.HairColor+" / anterior","Indice de paleta; amostra de cor ao selecionar esta linha.",()=>Select(()=>draft.HairColor=Cycle(draft.HairColor,-1,Colors)));
-                Add("Proxima cor cabelo","Nao aplica antes de confirmar.",()=>Select(()=>draft.HairColor=Cycle(draft.HairColor,1,Colors)));
-                Add("Mechas: "+draft.Highlight+" / anterior","Substitui mechas somente ao confirmar tintura.",()=>Select(()=>draft.Highlight=Cycle(draft.Highlight,-1,Colors)));
-                Add("Proxima cor mechas","Nao aplica antes de confirmar.",()=>Select(()=>draft.Highlight=Cycle(draft.Highlight,1,Colors)));
-            }
-            Add("Alterar barba: "+(draft.Beard?"SIM":"nao"),"Ao ativar escolhe estilo, opacidade e cor da barba; outros grupos continuam intactos.",()=>Select(()=>draft.Beard=!draft.Beard));
-            if(draft.Beard)OverlayRows(false);
-            Add("Alterar sobrancelhas: "+(draft.Brows?"SIM":"nao"),"Ao ativar escolhe estilo, opacidade e cor; nao muda estrutura do rosto.",()=>Select(()=>draft.Brows=!draft.Brows));
-            if(draft.Brows)OverlayRows(true);
-            foreach(int id in CosmeticRules.Ids)
-            {
-                int group=id;bool chosen=draft.Overlays.Exists(o=>o.Id==group);
-                Add(CosmeticRules.Label(group)+": "+(chosen?"SIM / editar":"nao / configurar"),"Estilo, opacidade e cor quando disponivel. So altera o grupo marcado ao confirmar o atendimento.",()=>SelectOverlay(group));
-            }
-            Add("Heranca facial: "+(draft.Heritage==null?"nao":"SIM"),"Escolha explicita de duas origens de formato e duas de pele, com misturas independentes. Sem previa aplicada.",()=>HeritageMenu(false));
-            Add("Tracos faciais: "+draft.Morphs.Count+" / 20","Cada traco pode ser selecionado sozinho. Valores novos de -100 a +100, sem ler/zerar os outros tracos.",()=>MorphMenu(false));
+            if(!Selecting)return;editingSection=-1;editingOverlay=-1;ui.Begin("draft",OpenMenu);menu.Name="Acabamento / escolha os grupos";
+            Add("Cabelo / tintura e mechas"+(draft.Hair?" [selecionado]":""),"Defina somente os valores que deseja aplicar.",()=>Section(0));
+            Add("Barba"+(draft.Beard?" [selecionado]":""),"Estilo, cor e opacidade.",()=>Section(1));
+            Add("Sobrancelhas"+(draft.Brows?" [selecionado]":""),"Estilo, cor e opacidade.",()=>Section(2));
+            Add("Pele / maquiagem / acabamento ("+draft.Overlays.Count+")","Cada grupo pode ser selecionado separadamente.",()=>Section(3));
+            Add("Heranca facial"+(draft.Heritage==null?"":" [selecionada]"),"Origens e misturas novas; nenhuma mudanca antes de confirmar.",()=>HeritageMenu(false));
+            Add("Tracos faciais: "+draft.Morphs.Count+" / 20","Apenas os tracos selecionados serao alterados.",()=>MorphMenu(false));
             bool free=draft.Valid && GroomingTransactions.SameSelected(Wallet.Grooming.Looks.Find(l=>l.Model==draft.Model),draft);
-            Add(free?"Aplicar valores ja registrados / gratis":"Confirmar aplicacao / $"+options.Price,"Aplica APENAS grupos marcados SIM. Taxa unica pelo banco RPCore; antes deste botao, fechar/cancelar nao muda o visual.",Commit);
-            Add("Cancelar selecao","Descarta rascunho sem mudar personagem nem banco.",OpenMenu);menu.SelectedIndex=Math.Max(0,Math.Min(selected,menu.Items.Count-1));menu.Visible=true;
+            Add(free?"Aplicar valores registrados / gratis":"Revisar e confirmar / $"+options.Price,"Confira os grupos antes de pagar; fechar/cancelar nao muda o personagem.",ConfirmApplication);
+            Add("Cancelar selecao","Descarta o rascunho sem aplicar ou cobrar.",OpenMenu);menu.Visible=true;
+        }
+        void Section(int section)
+        {
+            if(!Selecting)return;
+            if(section<0 || section>3){Build();return;}
+            editingSection=section;editingOverlay=-1;ui.Begin("section:"+section,Build);
+            menu.Name=section==0?"Tintura / mechas":section==1?"Barba":section==2?"Sobrancelhas":"Pele / maquiagem / acabamento";
+            if(section==0){
+                Add("Aplicar tintura: "+(draft.Hair?"SIM":"nao"),"Seleciona este grupo para a confirmacao; nao altera o personagem agora.",()=>Select(()=>draft.Hair=!draft.Hair));
+                if(draft.Hair && Colors>0){
+                    Add("Cor cabelo: "+draft.HairColor+" / anterior","Amostra de paleta; cor nova.",()=>Select(()=>draft.HairColor=Cycle(draft.HairColor,-1,Colors)));
+                    Add("Proxima cor cabelo","Sem aplicar durante selecao.",()=>Select(()=>draft.HairColor=Cycle(draft.HairColor,1,Colors)));
+                    Add("Mechas: "+draft.Highlight+" / anterior","Cor nova de mechas.",()=>Select(()=>draft.Highlight=Cycle(draft.Highlight,-1,Colors)));
+                    Add("Proxima cor mechas","Sem aplicar durante selecao.",()=>Select(()=>draft.Highlight=Cycle(draft.Highlight,1,Colors)));
+                }
+            }else if(section==1 || section==2){
+                bool brows=section==2;
+                Add("Aplicar este grupo: "+((brows?draft.Brows:draft.Beard)?"SIM":"nao"),"Altera somente este grupo ao confirmar o atendimento.",()=>Select(()=>{if(brows)draft.Brows=!draft.Brows;else draft.Beard=!draft.Beard;}));
+                if(brows?draft.Brows:draft.Beard)OverlayRows(brows);
+            }else foreach(int id in CosmeticRules.Ids){
+                int group=id;bool chosen=draft.Overlays.Exists(o=>o.Id==group);
+                Add(CosmeticRules.Label(group)+(chosen?" [selecionado]":""),"Estilo, opacidade e cor quando disponivel.",()=>SelectOverlay(group));
+            }
+            Add("Voltar ao atendimento","Mantem escolhas no rascunho, sem cobrar.",Build);menu.Visible=true;
+        }
+        void ConfirmApplication()
+        {
+            if(!Selecting || !draft.Valid){Notify.Show("Selecione ao menos um grupo valido antes de confirmar.");return;}
+            bool free=GroomingTransactions.SameSelected(Wallet.Grooming.Looks.Find(l=>l.Model==draft.Model),draft);
+            ui.Begin("confirm",Build,false);menu.Name=free?"Reaplicar / gratis":"Confirmar atendimento / $"+options.Price;
+            Add("Voltar e revisar","Conserva o rascunho sem cobrar.",Build);
+            string groups=(draft.Hair?"Cabelo; ":"")+(draft.Beard?"Barba; ":"")+(draft.Brows?"Sobrancelhas; ":"")+(draft.Heritage!=null?"Heranca; ":"")+draft.Overlays.Count+" grupos de pele; "+draft.Morphs.Count+" tracos.";
+            Add(free?"Confirmar reaplicacao gratis":"Confirmar e pagar $"+options.Price,groups,Commit);menu.Visible=true;
         }
         void OverlayRows(bool brows)
         {
@@ -103,7 +123,7 @@ namespace RPCore
         void SelectOverlay(int id)
         {
             if(!Selecting)return;int selected=editingOverlay==id?menu.SelectedIndex:0;editingOverlay=id;var overlay=draft.Overlays.Find(o=>o.Id==id);
-            menu.Clear();menu.Name=CosmeticRules.Label(id)+" / sem previa";
+            ui.Begin("overlay:"+id,()=>Section(3));menu.Name=CosmeticRules.Label(id)+" / sem previa";
             Add("Alterar este grupo: "+(overlay!=null?"SIM":"nao"),"Desativar exclui apenas esta selecao do rascunho, sem remover o visual atual.",()=>{
                 if(!Selecting)return;
                 if(overlay!=null)draft.Overlays.Remove(overlay);
@@ -128,7 +148,7 @@ namespace RPCore
                     Add("Proxima cor","Paleta de maquiagem ou pelos conforme grupo.",()=>EditOverlay(id,()=>overlay.Color=Cycle(overlay.Color,1,OverlayColors(id))));
                 }
             }
-            Add("Voltar ao atendimento","Mantem selecao no rascunho. Confirmacao e cancelamento no menu anterior.",()=>{if(Selecting){menu.SelectedIndex=0;Build();}});
+            Add("Voltar a pele / maquiagem","Mantem selecao no rascunho. Confirmacao no atendimento.",()=>{if(Selecting)Section(3);});
             menu.SelectedIndex=Math.Max(0,Math.Min(selected,menu.Items.Count-1));menu.Visible=true;
         }
         void EditOverlay(int id,Action change){if(!Selecting)return;change();SelectOverlay(id);}
@@ -170,15 +190,16 @@ namespace RPCore
         void Reapply(int model)
         {var look=Wallet.Grooming.Looks.Find(l=>l.Model==model);if(look==null || !Compatible(look)){Notify.Show("Visual incompativel com ped/recursos atuais.");return;}if(Acquire())Execute(look,null);}
         void ConfirmAbandon(string id)
-        {menu.Clear();menu.Name="Encerrar sem estorno?";Add("Sim, encerrar pendencia paga","Nao restaura o visual anterior e nao devolve taxa; use retomar para concluir sem pagar de novo.",()=>{if(!Wallet.GroomingAbandon(id,out _))Notify.Show("Estado do pedido mudou; confira pendencia.");OpenMenu();});Add("Voltar","Manter pedido para retomar.",OpenMenu);menu.Visible=true;}
-        void End(){application=null;editingOverlay=-1;draft=null;actor=null;profile=null;if(lease)gate.Release(Name);lease=false;}
+        {ui.Begin("abandon",OpenMenu,false);menu.Name="Encerrar sem estorno?";Add("Cancelar","Manter pedido para retomar.",OpenMenu);Add("Sim, encerrar pendencia paga","Nao restaura o visual anterior e nao devolve taxa; use retomar para concluir sem pagar de novo.",()=>{if(!Wallet.GroomingAbandon(id,out _))Notify.Show("Estado do pedido mudou; confira pendencia.");OpenMenu();});menu.Visible=true;}
+        void End(){application=null;editingSection=-1;editingOverlay=-1;draft=null;actor=null;profile=null;if(lease)gate.Release(Name);lease=false;}
         Color Palette(int index,bool makeup=false)
         {using(var r=new OutputArgument())using(var g=new OutputArgument())using(var b=new OutputArgument()){Function.Call(makeup?Hash.GET_PED_MAKEUP_TINT_COLOR:Hash.GET_PED_HAIR_TINT_COLOR,index,r,g,b);return Color.FromArgb(255,Math.Max(0,Math.Min(255,r.GetResult<int>())),Math.Max(0,Math.Min(255,g.GetResult<int>())),Math.Max(0,Math.Min(255,b.GetResult<int>())));}}
         public void Tick()
         {
+            ui.Tick(access());
             if(application!=null){TickApplication();return;}
             if(draft==null)return;
-            if(!Selecting || !menu.Visible){End();menu.Visible=false;return;}
+            if(!Selecting || !menu.Visible){End();ui.Close();return;}
             try{string title=menu.SelectedItem?.Title??"";int index=(title.StartsWith("Cor cabelo:") || title=="Proxima cor cabelo")?draft.HairColor:(title.StartsWith("Mechas:") || title=="Proxima cor mechas")?draft.Highlight:(title.StartsWith("Barba cor ") || title=="Proxima cor / Barba")?draft.BeardColor:(title.StartsWith("Sobrancelhas cor ") || title=="Proxima cor / Sobrancelhas")?draft.BrowsColor:-1;
                 bool makeup=false;
                 if(editingOverlay>=0 && (title.StartsWith("Cor ") || title=="Proxima cor")){
@@ -189,7 +210,7 @@ namespace RPCore
         }
         public void Save(){}
         public void OnKey(KeyEventArgs e){}
-        public void Reload(){End();menu.Visible=false;}
+        public void Reload(){End();ui.Reset();}
         public void Dispose(){Reload();}
     }
 }

@@ -15,33 +15,40 @@ namespace RPCore
         public bool CanUseInterior => Inside && SafeFoot && transit == null && Wallet.Housing.Valid && Wallet.Housing.Owns(options.Id);
         public bool CanUseWardrobe => CanUseInterior;
         readonly ObjectPool pool; readonly ShiftGate gate; readonly NativeMenu menu; readonly HousingOptions options; readonly Blip blip;
-        HousingTransit transit; Ped owner; Vector3 origin; bool exiting; string profile; int nextProbe;
+        readonly PersonalServiceMenu ui;HousingTransit transit; Ped owner; Vector3 origin; bool exiting; string profile; int nextProbe;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
         bool Inside => Game.Player.Character.Position.DistanceTo(Pos(options.Interior)) < 45 && Math.Abs(Game.Player.Character.Position.Z - options.Interior.Z) < 12;
-        bool SafeFoot => !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel == 0;
-        bool ExitFoot => !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling;
+        bool SafeFoot => PersonalServiceMenu.SafeFoot;
+        bool ExitFoot => !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !InterfaceOptions.ModalOpen && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling;
         public HousingSystem(ObjectPool pool, ShiftGate gate)
         {
             this.pool = pool; this.gate = gate; var defaults = HousingDefaults.Load(); options = Store.LoadDef("Jobs/Housing.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid Housing.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("Moradia", options.Name); pool.Add(menu); Visuals.Register(menu, "core");
+            menu = new NativeMenu("Moradia", options.Name); pool.Add(menu); Visuals.Register(menu, "core");ui=new PersonalServiceMenu(menu,ex=>{Release();ui.Close();Log.Error("housing action",ex);Notify.Show("Acao de moradia nao confirmada; dados preservados.");});
             blip = MapBlips.Create(Pos(options.Entrance), "RPCore: " + options.Name, BlipSprite.Safehouse, BlipColor.Orange, .8f); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
-        { var row = new NativeItem(title, description); row.Activated += (s, e) => { try { action(); } catch (Exception ex) { Release(); Log.Error("housing action", ex); Notify.Show("Acao de moradia nao confirmada; dados preservados."); } }; menu.Add(row); }
+        {ui.Add(title,description,action);}
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!Wallet.Housing.Valid) { Notify.Show("Dados de moradia invalidos; original preservado."); return; }
-            Add("GPS: " + options.Name, "Entrada publica do predio. Compra e entrada apenas a pe junto ao local.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, options.Entrance.X, options.Entrance.Y); menu.Visible = false; });
-            if (!Wallet.Housing.Owns(options.Id)) Add("Comprar apartamento: $" + options.Price, "Compra unica pelo banco RPCore, sem aluguel recorrente. Nao compra veiculo, garagem ou mobiliario.", Buy);
+            pool.HideAll(); ui.Begin("root"); if (!Wallet.Housing.Valid) { Notify.Show("Dados de moradia invalidos; original preservado."); return; }
+            Add("GPS: " + options.Name, "Entrada publica do predio. Compra e entrada apenas a pe junto ao local.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, options.Entrance.X, options.Entrance.Y); ui.Close(); });
+            if (!Wallet.Housing.Owns(options.Id)) Add("Comprar apartamento: $" + options.Price, "Compra unica pelo banco RPCore, sem aluguel recorrente. Nao compra veiculo, garagem ou mobiliario.", ConfirmBuy);
             else { var home = Wallet.Housing.Properties.Find(p => p.Id == options.Id); Add("Apartamento adquirido / $" + home.Paid, "Propriedade do perfil ativo. Sem nova cobranca para entrar ou sair.", () => { }); Add("Entrar no apartamento", "Requer interior e piso carregados. Se indisponiveis, conserva posicao e propriedade.", () => Begin(false)); }
             if (OpenStorage != null && Wallet.Housing.Owns(options.Id)) Add("Armazenamento do apartamento", "Guardar e retirar itens do inventario, apenas dentro do seu apartamento.", OpenStorage);
             if (OpenWardrobe != null && Wallet.Housing.Owns(options.Id)) Add("Guardarroupa / roupas salvas", "Entre no apartamento e aproxime-se do guardarroupa no andar superior.", OpenWardrobe);
             if (Inside) Add("Sair para a entrada publica", "Saida disponivel mesmo se o perfil atual nao for proprietario.", () => Begin(true));
             if (transit != null) Add("Cancelar carregamento", "Nao muda dinheiro nem propriedade e conserva sua posicao.", Release);
-            Add("Fechar", "Retornar ao jogo.", () => menu.Visible = false); menu.Visible = true;
+            Add("Fechar", "Retornar ao jogo.", () => ui.Close()); menu.Visible = true;
         }
         bool AtEntrance => Game.Player.Character.Position.DistanceTo(Pos(options.Entrance)) <= 3;
+        void ConfirmBuy()
+        {
+            if(!SafeFoot || !AtEntrance || transit!=null || gate.Owner!=null){Notify.Show("Va a pe a entrada, sem atividade.");return;}
+            ui.Begin("purchase",OpenMenu,false);menu.Name="Comprar "+options.Name+" / $"+options.Price;
+            Add("Cancelar","Manter saldo e propriedade atuais.",OpenMenu);
+            Add("Confirmar compra: $"+options.Price,"Pagamento unico pelo banco RPCore; nao inclui garagem ou veiculo.",Buy);menu.Visible=true;
+        }
         void Buy()
         {
             if (!SafeFoot || !AtEntrance || transit != null || gate.Owner != null) { Notify.Show("Va a pe a entrada, sem procurado/missao/atividade em andamento."); return; }
@@ -54,7 +61,7 @@ namespace RPCore
             if (!(exit ? ExitFoot : SafeFoot) || (exit ? !Inside : !AtEntrance || !Wallet.Housing.Valid || !Wallet.Housing.Owns(options.Id))) { Notify.Show("Use a entrada/saida correta a pe, sem procurado/missao/combate."); return; }
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
             owner = Game.Player.Character; origin = owner.Position; profile = Profile.Id; exiting = exit; transit = new HousingTransit(Game.GameTime, options.LoadSeconds); nextProbe = Game.GameTime;
-            menu.Visible = false; if (!exit) Function.Call(Hash.REQUEST_IPL, options.Ipl); Notify.Show("Carregando destino. Aguarde parado; End cancela. Sem nova cobranca.");
+            ui.Close(); if (!exit) Function.Call(Hash.REQUEST_IPL, options.Ipl); Notify.Show("Carregando destino. Aguarde parado; End cancela. Sem nova cobranca.");
         }
         bool Ready(JobPoint destination, out Vector3 safe)
         {
@@ -73,7 +80,7 @@ namespace RPCore
         }
         void TransitTick()
         {
-            bool eligible = owner != null && owner.Exists() && owner == Game.Player.Character && profile == Profile.Id && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && (exiting ? ExitFoot : SafeFoot) && owner.Position.DistanceTo(origin) < 3;
+            bool eligible = owner != null && owner.Exists() && owner == Game.Player.Character && profile == Profile.Id && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && (exiting ? ExitFoot : SafeFoot && Wallet.Housing.Valid && Wallet.Housing.Owns(options.Id)) && owner.Position.DistanceTo(origin) < 3;
             if (Game.IsKeyPressed(Keys.End)) eligible = false;
             if (!eligible) { Release(); Notify.Show("Acesso cancelado; posicao e propriedade preservadas."); return; }
             if (unchecked(Game.GameTime-nextProbe) < 0) return; nextProbe = Game.GameTime + 150;
@@ -88,6 +95,7 @@ namespace RPCore
         {
             try
             {
+                ui.Tick(Inside?ExitFoot:SafeFoot);
                 if (transit != null) { TransitTick(); return; }
                 if (!(Inside ? ExitFoot : SafeFoot) || InterfaceOptions.ModalOpen || pool.AreAnyVisible) return;
                 var point = Inside ? Pos(options.Interior) : Pos(options.Entrance);
@@ -100,7 +108,7 @@ namespace RPCore
         }
         public void OnKey(KeyEventArgs e) { }
         public void Save() { }
-        public void Reload() { Release(); profile = Profile.Id; menu.Visible = false; }
-        public void Dispose() { Release(); menu.Visible = false; if (blip != null && blip.Exists()) blip.Delete(); }
+        public void Reload() { Release(); profile = Profile.Id; ui.Reset(); }
+        public void Dispose() { Release(); ui.Reset(); if (blip != null && blip.Exists()) blip.Delete(); }
     }
 }

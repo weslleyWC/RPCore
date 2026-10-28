@@ -127,6 +127,7 @@ namespace RPCore
                 .Concat(fuel!=null && Cfg.EnableFuel && !faulted.Contains(fuel)?fuel.GpsPoints:Enumerable.Empty<GpsDestination>())
                 .Concat(garages!=null && Cfg.EnableGarages && !faulted.Contains(garages)?garages.GpsPoints:Enumerable.Empty<GpsDestination>())
                 .Concat(!faulted.Contains(barber)?barber.GpsPoints:Enumerable.Empty<GpsDestination>())
+                .Concat(!faulted.Contains(wardrobe)?wardrobe.GpsPoints:Enumerable.Empty<GpsDestination>())
                 .Concat(editor.ServicePoints.Where(p=>p.Kind==EditorPointKind.Grocery || p.Kind==EditorPointKind.Fuel && Cfg.EnableFuel || p.Kind==EditorPointKind.Workshop && Cfg.EnableGarages).Select(p=>new GpsDestination{Name=p.Name,Kind=p.Kind==EditorPointKind.Grocery?"Grocery":p.Kind==EditorPointKind.Fuel?"Fuel":"Workshop",X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z}))
                 .Concat(!faulted.Contains(pdm)?new[]{new GpsDestination{Name="PDM / empresa",Kind="PDM",X=pdm.StartPosition.X,Y=pdm.StartPosition.Y,Z=pdm.StartPosition.Z}}:Enumerable.Empty<GpsDestination>());
             settings.ConfigureNavigation(navPoints,shifts);
@@ -161,7 +162,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.99.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.100.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

@@ -24,7 +24,7 @@ namespace RPCore
         void BackToDraft(){if(Selecting){menu.SelectedIndex=0;Build();}}
         void HeritageMenu(bool retain)
         {
-            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;menu.Clear();menu.Name="Heranca / novos valores sem previa";
+            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;ui.Begin("heritage",BackToDraft);menu.Name="Heranca / novos valores sem previa";
             Add("Alterar heranca: "+(draft.Heritage!=null?"SIM":"nao"),"Ativar substitui origens e misturas de formato/pele ao confirmar. Desativar conserva a heranca atual.",()=>{
                 if(!Selecting)return;
                 if(draft.Heritage!=null)draft.Heritage=null;
@@ -63,7 +63,7 @@ namespace RPCore
         void ChangeMix(Func<int> read,Action<int> write,int delta){if(!Selecting)return;write(FaceRules.Step(read(),delta,true));HeritageMenu(true);}
         void MorphMenu(bool retain)
         {
-            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;menu.Clear();menu.Name="Tracos / "+draft.Morphs.Count+" selecionados";
+            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;ui.Begin("morphs",BackToDraft);menu.Name="Tracos / "+draft.Morphs.Count+" selecionados";
             for(int i=0;i<20;i++){
                 int index=i;var morph=draft.Morphs.Find(m=>m.Index==index);
                 Add(FaceRules.Label(index)+": "+(morph==null?"nao":morph.Value.ToString()),"Abra para selecionar este traco e definir novo valor. Outros tracos nao sao zerados.",()=>MorphEditor(index,false));
@@ -72,7 +72,7 @@ namespace RPCore
         }
         void MorphEditor(int index,bool retain)
         {
-            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;menu.Clear();menu.Name=FaceRules.Label(index)+" / sem previa";var morph=draft.Morphs.Find(m=>m.Index==index);
+            if(!Selecting)return;int selected=retain?menu.SelectedIndex:0;editingOverlay=-1;ui.Begin("morph:"+index,()=>MorphMenu(false));menu.Name=FaceRules.Label(index)+" / sem previa";var morph=draft.Morphs.Find(m=>m.Index==index);
             Add("Alterar este traco: "+(morph==null?"nao":"SIM"),"Ativar substitui somente este indice. Desativar descarta a selecao sem alterar o rosto atual.",()=>{
                 if(!Selecting)return;
                 if(morph!=null)draft.Morphs.Remove(morph);
@@ -96,8 +96,8 @@ namespace RPCore
             application=new FaceApplication{Actor=Game.Player.Character,Profile=Profile.Id,Order=order,Look=JsonConvert.DeserializeObject<GroomingLook>(JsonConvert.SerializeObject(look)),Started=Game.GameTime};
             draft=null;editingOverlay=-1;
             Function.Call(Hash.SET_PED_HEAD_BLEND_DATA,application.Actor,h.ShapeFirst,h.ShapeSecond,0,h.SkinFirst,h.SkinSecond,0,h.ShapeMix/100f,h.SkinMix/100f,0f,false);
-            menu.Clear();menu.Name="Aplicando heranca / aguarde ate 10s";
-            Add("Fechar atendimento","A heranca pode ja ter mudado. Pedido pago permanece retomavel sem nova cobranca; nao desfaz o rosto anterior.",()=>{End();menu.Visible=false;});
+            ui.Begin("applying");menu.Name="Aplicando heranca / aguarde ate 10s";
+            Add("Fechar atendimento","A heranca pode ja ter mudado. Pedido pago permanece retomavel sem nova cobranca; nao desfaz o rosto anterior.",()=>{End();ui.Close();});
             menu.SelectedIndex=0;menu.Visible=true;
         }
         void FinishApplication(string order)
@@ -114,10 +114,10 @@ namespace RPCore
                 bool ready=allowed && Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,pending.Actor);
                 var state=FaceRules.Wait(same,allowed,menu.Visible,ready,unchecked((uint)(Game.GameTime-pending.Started)));
                 if(state==FaceWait.Waiting)return;
-                if(state==FaceWait.Interrupted){bool paid=pending.Order!=null;End();menu.Visible=false;Notify.Show(paid?"Atendimento interrompido. Retome na barbearia sem cobrar de novo.":"Reaplicacao interrompida; reaplique o registro quando estiver pronto.");return;}
+                if(state==FaceWait.Interrupted){bool paid=pending.Order!=null;End();ui.Close();Notify.Show(paid?"Atendimento interrompido. Retome na barbearia sem cobrar de novo.":"Reaplicacao interrompida; reaplique o registro quando estiver pronto.");return;}
                 ApplySurface(pending.Look);FinishApplication(pending.Order);
             }
-            catch(Exception ex){End();menu.Visible=false;Log.Error("appearance head blend",ex);Notify.Show("Aplicacao nao concluida. Confira pendencia e retome na barbearia sem pagar outra vez.");}
+            catch(Exception ex){End();ui.Close();Log.Error("appearance head blend",ex);Notify.Show("Aplicacao nao concluida. Confira pendencia e retome na barbearia sem pagar outra vez.");}
         }
     }
 }

@@ -37,7 +37,7 @@ namespace RPCore
         void BuildNearbyGps()
         {
             gpsNearest.Clear();var entries=(destinations?.Invoke()??Enumerable.Empty<GpsDestination>()).Where(p=>p?.Valid==true).ToList();
-            var kinds=new[]{"Fuel","Grocery","Workshop","Garage","Barber","PDM"};var names=new[]{"Posto","Conveniencia","Oficina","Garagem","Barbearia","PDM"};
+            var kinds=new[]{"Fuel","Grocery","Workshop","Garage","Clothing","Barber","PDM"};var names=new[]{"Posto","Conveniencia","Oficina","Garagem","Loja de roupas","Barbearia","PDM"};
             var position=Game.Player.Character.Position;
             for(int i=0;i<kinds.Length;i++)
             {

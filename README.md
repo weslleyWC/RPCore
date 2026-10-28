@@ -1,3 +1,9 @@
+## Atualização0.100.0 — roupas, barbearia, acabamento e moradia
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.100.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.100.0.zip) · [Uso e testes GTA](docs/SERVICOS-PESSOAIS-0.100.0.md)
+
+14 lojas de roupas da referência com E/ícones/GPS e a mesma biblioteca do apartamento. Menus de serviços pessoais com ações após LemonUI, navegação, seleção e proteção contra confirmação repetida; confirmação de substituir/excluir roupas e comprar moradia. Acabamento em categorias com revisão antes de pagar. Cancelamento preserva mudanças externas e autosave de personagens não captura prévias não confirmadas.3845 testes aprovados; build sem erros/avisos. Preserve saves/configs e teste os fluxos nativos conforme o guia.
+
 ## Atualização0.99.0 — veículos, garagens e oficina
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.99.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.99.0.zip) · [Uso e testes GTA](docs/VEICULOS-GARAGENS-OFICINA-0.99.0.md)
