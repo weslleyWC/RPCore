@@ -277,3 +277,8 @@ NewShopSystem/ItemDatabase revisados. Conveniências e Grocery do editor ganham 
 ### Confirmação do escopo integral e refinamento0.97
 
 Usuário confirmou teste da0.96 funcionando e reforçou que todo sistema implementado, todos os menus e detalhes devem ser refinados. COBERTURA-REFINAMENTO.md registra os58 sistemas ISystem e os componentes auxiliares; base funcional não equivale a revisão completa.0.97 revisa SettingsMenu/RadialMenu da PSRP: checkboxes/listas e preferências gravadas antes de aplicar, escrita temporária+backup, páginas de uso de inventário no radial, mouse/voltar/input seguro, GPS de serviços reais, marcadores com renomear/confirmação/gravação candidata e gestos curtos de mãos para cima. Teleporte/F2/J/F11 preservados.3725 testes; GTA0.97 pendente. Outras páginas, menus e fase9 continuam explicitamente abertos.
+
+
+### Refinamento0.98 — celular F2 e F10
+
+CustomPhone/MoneyTerminal/SettingsMenu consultados: listas/detalhes/leitura individual, notas, cronometro/temporizador, banco com valor escolhido. Celular ganha mouse/rolagem, historico64 acessivel com leitura individual, notas transacionais/detalhes/exclusao confirmada, temporizador e pausa/continuidade do cronometro sem credito offline. Servicos diretos corrigem conflito GarageKey/F11. F10 conserva4grupos e organiza importacoes/perfis com confirmacao, banco custom/max/100 via BankTransfer existente, erro isolado e refresh dos submenus. Phone prop recebe decor/propriedade/remoção repetida, sem repetir criacao de consumiveis.3772 testes; GTA0.98 pendente. Nao declara voz/SMS externos, todos os apps PSRP, emprestimos bancarios ou fase8 inteira concluidos.

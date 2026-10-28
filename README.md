@@ -1,3 +1,9 @@
+## Atualização0.98.0 — celular F2, banco e F10
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.98.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.98.0.zip) · [Uso e testes GTA](docs/CELULAR-BANCO-F10-0.98.0.md)
+
+Celular com mouse/rolagem, histórico completo e leitura individual, notas com visualização/edição/exclusão confirmada e gravação candidata, cronômetro pausável e temporizador. Serviços diretos corrigem Garagens abrir F11 por conflito de teclas; telefone ganha remoção identificada/repetida do prop. F10 mantém4grupos, banco por valor escolhido/máximo/$100, saldos atuais e confirmação de importações/perfis legados.3772 testes aprovados; compilação sem erros/avisos. Saves/configurações preservados; testes GTA do grupo0.98 ainda necessários.
+
 ## Atualização0.97.0 — F11, radial e GPS refinados
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.97.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.97.0.zip) · [Uso e testes GTA](docs/MENUS-RADIAL-GPS-0.97.0.md) · [Cobertura de todo o refinamento](docs/COBERTURA-REFINAMENTO.md)

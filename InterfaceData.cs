@@ -58,7 +58,7 @@ namespace RPCore
             string item = slots[a]; slots[a] = slots[b]; slots[b] = item; return true;
         }
     }
-    public class PhoneEntry : ExtensibleData { public string Title, Body; public bool Read; }
+    public class PhoneEntry : ExtensibleData { public string Title, Body, Kind; public bool Read; }
     public class PhoneData : ExtensibleData
     {
         public List<string> Notes = new List<string>();

@@ -129,6 +129,13 @@ namespace RPCore
                 .Concat(editor.ServicePoints.Where(p=>p.Kind==EditorPointKind.Grocery || p.Kind==EditorPointKind.Fuel && Cfg.EnableFuel || p.Kind==EditorPointKind.Workshop && Cfg.EnableGarages).Select(p=>new GpsDestination{Name=p.Name,Kind=p.Kind==EditorPointKind.Grocery?"Grocery":p.Kind==EditorPointKind.Fuel?"Fuel":"Workshop",X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z}))
                 .Concat(!faulted.Contains(pdm)?new[]{new GpsDestination{Name="PDM / empresa",Kind="PDM",X=pdm.StartPosition.X,Y=pdm.StartPosition.Y,Z=pdm.StartPosition.Z}}:Enumerable.Empty<GpsDestination>());
             settings.ConfigureNavigation(navPoints,shifts);
+            phone.ConfigureServices(new Dictionary<int,Action>{
+                {0,()=>OpenPhoneService(core,core.OpenBank)},{1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
+                {2,()=>OpenPhoneSystem(garages,Cfg.GarageKey)},
+                {3,()=>OpenPhoneSystem(systems.OfType<StockMarketSystem>().FirstOrDefault(),Cfg.StocksKey)},
+                {4,()=>OpenPhoneSystem(systems.OfType<RadioSystem>().FirstOrDefault(),Cfg.RadioKey)},
+                {5,()=>OpenPhoneSystem(gangs,Cfg.GangsKey)},
+                {6,()=>OpenPhoneSystem(pizza,Cfg.JobKey)},{7,()=>OpenPhoneSystem(settings,InterfaceOptions.SettingsKey)},{8,()=>OpenPhoneService(jobs,jobs.Open)}});
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -150,8 +157,11 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.97.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.98.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
+
+        void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
+        void OpenPhoneSystem(ISystem system,Keys key)=>OpenPhoneService(system,()=>system.OnKey(new KeyEventArgs(key)));
 
         void AddOptional(Func<ISystem> create)
         {

@@ -11,7 +11,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | Pendente de revisão completa; preservar base existente |
 | BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | Pendente de revisão completa; preservar base existente |
 | CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | Pendente de revisão completa; preservar base existente |
-| CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Pendente de revisão completa; preservar base existente |
+| CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | DealerJob | [DealerJob.cs](../DealerJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
@@ -47,10 +47,10 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | PdmShowroomSystem | [PdmShowroomSystem.cs](../PdmShowroomSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmStaffSystem | [PdmStaffSystem.cs](../PdmStaffSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmSurveillanceSystem | [PdmSurveillanceSystem.cs](../PdmSurveillanceSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | Pendente de revisão completa; preservar base existente |
+| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
 | PilotJob | [PilotJob.cs](../PilotJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PrisonTransportJob | [PrisonTransportJob.cs](../PrisonTransportJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PropPresentation | [PropPresentation.cs](../PropPresentation.cs) | Duplicação de consumíveis corrigida/testada0.96; telefone será revisado com F2 |
+| PropPresentation | [PropPresentation.cs](../PropPresentation.cs) | Duplicação de consumíveis corrigida/testada0.96; telefone recebe propriedade/limpeza identificada0.98, aguarda GTA |
 | RadialSystem | [RadialSystem.cs](../RadialSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
 | RadioSystem | [RadioSystem.cs](../RadioSystem.cs) | Pendente de revisão completa; preservar base existente |
 | RoleplayBootstrap | [RoleplayBootstrap.cs](../RoleplayBootstrap.cs) | Pendente de revisão completa; preservar base existente |

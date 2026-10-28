@@ -20,6 +20,7 @@ namespace RPCore
         bool resting;
         public float Hunger { get { return d.Hunger; } }
         public float Thirst { get { return d.Thirst; } }
+        public float Stamina=>d.Stamina;
         public float Sleep { get { return d.Sleep; } }
 
         public NeedsSystem(ShiftGate gate=null,Func<bool> menusOpen=null) { this.gate=gate;this.menusOpen=menusOpen;Reload(); }
