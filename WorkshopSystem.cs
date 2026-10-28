@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Windows.Forms;
 using GTA;
 using GTA.Native;
 using LemonUI;
@@ -17,9 +18,12 @@ namespace RPCore
         Ped actor;
         string profile;
         Func<bool> location;
+        bool dispatching,closing,actionLatched;Action pendingPage,parentPage;string page;int desiredIndex;
         public WorkshopSystem(ObjectPool pool, ShiftGate gate)
-        { this.pool=pool;this.gate=gate;pool.Add(menu);Visuals.Register(menu,"garage"); }
-        bool Access => Cfg.EnableGarages && profile==Profile.Id && actor==Game.Player.Character && actor!=null && actor.Exists() && actor.IsAlive && car!=null && car.Exists() && !car.IsDead && actor.CurrentVehicle==car && car.Driver==actor && car.Speed<.5f && car.PassengerCount==0 && !Function.Call<bool>(Hash.IS_ENTITY_ATTACHED,car) && !JobVehicles.Contains(car) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0 && (car.Model.IsCar || car.Model.IsBike && !car.Model.IsBicycle) && (gate==null || gate.Owner=="workshop") && location!=null && location();
+        { this.pool=pool;this.gate=gate;pool.Add(menu);Visuals.Register(menu,"garage");menu.Width=420;
+            menu.Closing+=(s,e)=>{if(!closing && parentPage!=null && Access && (Game.IsControlJustPressed(GTA.Control.FrontendCancel) || Game.IsControlJustReleased(GTA.Control.FrontendCancel) || Game.IsKeyPressed(Keys.Back) || Game.IsKeyPressed(Keys.Escape))){e.Cancel=true;pendingPage=parentPage;}};
+        }
+        bool Access => Cfg.EnableGarages && !Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && profile==Profile.Id && actor==Game.Player.Character && actor!=null && actor.Exists() && actor.IsAlive && car!=null && car.Exists() && !car.IsDead && actor.CurrentVehicle==car && car.Driver==actor && car.Speed<.5f && car.PassengerCount==0 && !Function.Call<bool>(Hash.IS_ENTITY_ATTACHED,car) && !JobVehicles.Contains(car) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0 && (car.Model.IsCar || car.Model.IsBike && !car.Model.IsBicycle) && (gate==null || gate.Owner=="workshop") && location!=null && location();
         public void Open(Func<bool> nearby)
         {
             if(gate!=null && !gate.Acquire("workshop")){Notify.Show("Encerre a atividade atual antes da oficina.");return;}
@@ -27,8 +31,10 @@ namespace RPCore
             if(!Access){Close();Notify.Show("Pare como motorista, sem passageiros, procurado ou missao.");return;}
             Function.Call(Hash.SET_VEHICLE_MOD_KIT,car,0);pool.HideAll();Root();menu.Visible=true;
         }
-        void Row(string title, Action action) {var row=new NativeItem(title,"Enter confirma a compra pelo banco. Sem alteracao ao apenas selecionar.");row.Activated+=(s,e)=>{if(!Access){Close();return;}try{action();}catch(Exception ex){Log.Error("workshop purchase",ex);Notify.Show("Compra nao concluida; confira o log.");}};menu.Add(row);}
-        void Back(Action action) => Row("Voltar",action);
+        void Row(string title, Action action) {var row=new NativeItem(title,"Enter confirma a compra pelo banco. Sem alteracao ao apenas selecionar.");row.Activated+=(s,e)=>{if(actionLatched)return;actionLatched=true;if(!Access){Close();return;}try{dispatching=true;action();}catch(Exception ex){Log.Error("workshop purchase",ex);Notify.Show("Compra nao concluida; confira o log.");}finally{dispatching=false;}};menu.Add(row);menu.SelectedIndex=Math.Max(0,Math.Min(desiredIndex,menu.Items.Count-1));}
+        void Back(Action action){parentPage=action;Row("Voltar",action);}
+        bool Defer(Action action){if(!dispatching)return false;pendingPage=action;return true;}
+        void BeginPage(string key){desiredIndex=page==key?menu.SelectedIndex:0;page=key;parentPage=null;menu.Clear();}
         int Get(Hash hash, params InputArgument[] args) => Function.Call<int>(hash,args);
         void IntOption(string name,int cost,Func<int> get,Action<int> set,int value,Action refresh)
         {Row(name+(get()==value?" [instalado]":" / $"+cost),()=>{int old=get();Purchase(cost,()=>get()==value,()=>set(value),()=>get()==value,()=>set(old));refresh();});}
@@ -47,14 +53,9 @@ namespace RPCore
         }
         void Root()
         {
-            menu.Clear();menu.Name="Oficina / banco $"+Wallet.Bank;
-            for(int i=0;i<50;i++)
-            {
-                int slot=i;int count=Get(Hash.GET_NUM_VEHICLE_MODS,car,slot);
-                if(!WorkshopRules.Mod(slot,-1,count))continue;
-                string label=Function.Call<string>(Hash.GET_MOD_SLOT_NAME,car,slot);
-                Row(Label(label,"Pecas / slot "+slot)+" ("+count+")",()=>Mods(slot));
-            }
+            if(Defer(Root))return;BeginPage("root");menu.Name="Oficina / banco $"+Wallet.Bank;
+            Row("Desempenho / motor / freios / suspensao",()=>Parts(true));
+            Row("Carroceria / acessorios / pecas",()=>Parts(false));
             foreach(int i in new[]{18,20,22}){int slot=i;string name=slot==18?"Turbo":slot==20?"Fumaca dos pneus":"Xenon";
                 Row(name+" / $"+(slot==18?500:200),()=>{bool old=Function.Call<bool>(Hash.IS_TOGGLE_MOD_ON,car,slot);Purchase(slot==18?500:200,()=>false,()=>Function.Call(Hash.TOGGLE_VEHICLE_MOD,car,slot,!old),()=>Function.Call<bool>(Hash.IS_TOGGLE_MOD_ON,car,slot)==!old,()=>Function.Call(Hash.TOGGLE_VEHICLE_MOD,car,slot,old));Root();});}
             Row("Pintura / interior / perolado",Paint);
@@ -65,38 +66,45 @@ namespace RPCore
             Row("Pneus: protecao / $200",()=>{bool old=Function.Call<bool>(Hash.GET_VEHICLE_TYRES_CAN_BURST,car);Purchase(200,()=>false,()=>Function.Call(Hash.SET_VEHICLE_TYRES_CAN_BURST,car,!old),()=>Function.Call<bool>(Hash.GET_VEHICLE_TYRES_CAN_BURST,car)==!old,()=>Function.Call(Hash.SET_VEHICLE_TYRES_CAN_BURST,car,old));Root();});
             Row("Fechar",Close);
         }
+        void Parts(bool performance)
+        {
+            if(Defer(()=>Parts(performance)))return;BeginPage(performance?"performance":"body");
+            for(int i=0;i<50;i++){int slot=i,count=Get(Hash.GET_NUM_VEHICLE_MODS,car,slot);if(VehicleUiRules.Performance(slot)!=performance || !WorkshopRules.Mod(slot,-1,count) || slot==23 || slot==24)continue;string key=Function.Call<string>(Hash.GET_MOD_SLOT_NAME,car,slot);Row(Label(key,"Pecas / slot "+slot)+" ("+count+")",()=>Mods(slot));}
+            Back(Root);
+        }
         static string Label(string key,string fallback)
         {if(string.IsNullOrWhiteSpace(key))return fallback;string text=Function.Call<string>(Hash.GET_FILENAME_FOR_AUDIO_CONVERSATION,key);return string.IsNullOrWhiteSpace(text)||text=="NULL"?fallback:text;}
         void Mods(int slot)
         {
-            menu.Clear();int count=Get(Hash.GET_NUM_VEHICLE_MODS,car,slot);
+            if(Defer(()=>Mods(slot)))return;BeginPage("mods:"+slot);int count=Get(Hash.GET_NUM_VEHICLE_MODS,car,slot);
             for(int i=-1;i<count && i<2048;i++){int value=i;
                 var text=i<0?"Original":Label(Function.Call<string>(Hash.GET_MOD_TEXT_LABEL,car,slot,i),"Opcao "+(i+1));
                 bool variation=Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION,car,slot);
                 IntOption(text,WorkshopRules.Price(slot),()=>Get(Hash.GET_VEHICLE_MOD,car,slot),n=>Function.Call(Hash.SET_VEHICLE_MOD,car,slot,n,variation),value,()=>Mods(slot));}
-            Back(Root);
+            Back(()=>{if(slot==23 || slot==24)Wheels();else Parts(VehicleUiRules.Performance(slot));});
         }
         void Wheels()
         {
-            menu.Clear();foreach(int i in Enumerable.Range(0,13)){int type=i;
-                Row("Categoria "+type+(Get(Hash.GET_VEHICLE_WHEEL_TYPE,car)==type?" [atual]":" / $700"),()=>{
+            if(Defer(Wheels))return;BeginPage("wheels");Row("Modelo das rodas dianteiras",()=>Mods(23));if(car.Model.IsBike)Row("Modelo das rodas traseiras",()=>Mods(24));foreach(int i in Enumerable.Range(0,13)){int type=i;
+                Row((Enum.GetName(typeof(VehicleWheelType),type)??("Categoria "+type))+(Get(Hash.GET_VEHICLE_WHEEL_TYPE,car)==type?" [atual]":" / $700"),()=>{
                     int old=Get(Hash.GET_VEHICLE_WHEEL_TYPE,car),front=Get(Hash.GET_VEHICLE_MOD,car,23),rear=Get(Hash.GET_VEHICLE_MOD,car,24);
                     bool fv=Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION,car,23),rv=Function.Call<bool>(Hash.GET_VEHICLE_MOD_VARIATION,car,24);
-                    Purchase(700,()=>old==type,()=>Function.Call(Hash.SET_VEHICLE_WHEEL_TYPE,car,type),()=>Get(Hash.GET_VEHICLE_WHEEL_TYPE,car)==type,()=>{Function.Call(Hash.SET_VEHICLE_WHEEL_TYPE,car,old);Function.Call(Hash.SET_VEHICLE_MOD,car,23,front,fv);Function.Call(Hash.SET_VEHICLE_MOD,car,24,rear,rv);});Wheels();});}Back(Root);
+                    Purchase(700,()=>old==type,()=>Function.Call(Hash.SET_VEHICLE_WHEEL_TYPE,car,type),()=>Get(Hash.GET_VEHICLE_WHEEL_TYPE,car)==type && (Get(Hash.GET_NUM_VEHICLE_MODS,car,23)>0 || car.Model.IsBike && Get(Hash.GET_NUM_VEHICLE_MODS,car,24)>0),()=>{Function.Call(Hash.SET_VEHICLE_WHEEL_TYPE,car,old);Function.Call(Hash.SET_VEHICLE_MOD,car,23,front,fv);Function.Call(Hash.SET_VEHICLE_MOD,car,24,rear,rv);});Wheels();});}Back(Root);
         }
         void Palette(string title,Func<int> get,Action<int> set,Action back)
-        {menu.Clear();for(int i=0;i<=160;i++){int color=i;IntOption(title+" "+color,300,get,set,color,()=>Palette(title,get,set,back));}Back(back);}
+        {if(Defer(()=>Palette(title,get,set,back)))return;BeginPage("palette:"+title);for(int i=0;i<=160;i++){int color=i;IntOption(((VehicleColor)color).ToString()+" / "+color,300,get,set,color,()=>Palette(title,get,set,back));}Back(back);}
         int[] Pair(Hash hash){var a=new OutputArgument();var b=new OutputArgument();Function.Call(hash,car,a,b);return new[]{a.GetResult<int>(),b.GetResult<int>()};}
         void Paint()
         {
-            menu.Clear();
+            if(Defer(Paint))return;BeginPage("paint");
+            Row("Primaria RGB personalizada / $300",()=>CustomPaint(false));Row("Secundaria RGB personalizada / $300",()=>CustomPaint(true));
             foreach(bool secondary in new[]{false,true}){bool sec=secondary;Row(sec?"Secundaria":"Primaria",()=>Colors(sec));}
             foreach(bool wheel in new[]{false,true}){bool wh=wheel;Row(wh?"Cor das rodas":"Perolado",()=>Palette("Cor",()=>Pair(Hash.GET_VEHICLE_EXTRA_COLOURS)[wh?1:0],n=>{var p=Pair(Hash.GET_VEHICLE_EXTRA_COLOURS);Function.Call(Hash.SET_VEHICLE_EXTRA_COLOURS,car,wh?p[0]:n,wh?n:p[1]);},Paint));}
             foreach(bool dash in new[]{false,true}){bool d=dash;Row(d?"Painel":"Interior",()=>Palette("Cor",()=>{var o=new OutputArgument();Function.Call(d?Hash.GET_VEHICLE_EXTRA_COLOUR_5:Hash.GET_VEHICLE_EXTRA_COLOUR_6,car,o);return o.GetResult<int>();},n=>Function.Call(d?Hash.SET_VEHICLE_EXTRA_COLOUR_5:Hash.SET_VEHICLE_EXTRA_COLOUR_6,car,n),Paint));}Back(Root);
         }
         void Colors(bool secondary)
         {
-            menu.Clear();for(int i=0;i<=160;i++){int value=i;Row("Cor "+i+" / $300",()=>{
+            if(Defer(()=>Colors(secondary)))return;BeginPage("colors:"+secondary);for(int i=0;i<=160;i++){int value=i;Row(((VehicleColor)i).ToString()+" / $300",()=>{
                 var old=VehicleSnapshot.Capture(car);int index=secondary?1:0;
                 Action restore=()=>{Function.Call(Hash.SET_VEHICLE_COLOURS,car,old.PrimaryColor,old.SecondaryColor);RestoreCustom(old);};
                 Purchase(300,()=>Pair(Hash.GET_VEHICLE_COLOURS)[index]==value && !Function.Call<bool>(secondary?Hash.GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM:Hash.GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM,car),()=>{
@@ -108,26 +116,49 @@ namespace RPCore
         {Function.Call(Hash.CLEAR_VEHICLE_CUSTOM_PRIMARY_COLOUR,car);Function.Call(Hash.CLEAR_VEHICLE_CUSTOM_SECONDARY_COLOUR,car);if(s.CustomPrimary!=null)Function.Call(Hash.SET_VEHICLE_CUSTOM_PRIMARY_COLOUR,car,s.CustomPrimary[0],s.CustomPrimary[1],s.CustomPrimary[2]);if(s.CustomSecondary!=null)Function.Call(Hash.SET_VEHICLE_CUSTOM_SECONDARY_COLOUR,car,s.CustomSecondary[0],s.CustomSecondary[1],s.CustomSecondary[2]);}
         void Details()
         {
-            menu.Clear();for(int i=0;i<=6;i++){int n=i;IntOption("Vidros "+i,310,()=>Get(Hash.GET_VEHICLE_WINDOW_TINT,car),v=>Function.Call(Hash.SET_VEHICLE_WINDOW_TINT,car,v),n,Details);}
-            for(int i=0;i<=5;i++){int n=i;IntOption("Estilo de placa "+i,200,()=>Get(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT_INDEX,car),v=>Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX,car,v),n,Details);}
+            if(Defer(Details))return;BeginPage("details");for(int i=0;i<=6;i++){int n=i;IntOption(((VehicleWindowTint)i).ToString(),310,()=>Get(Hash.GET_VEHICLE_WINDOW_TINT,car),v=>Function.Call(Hash.SET_VEHICLE_WINDOW_TINT,car,v),n,Details);}
+            for(int i=0;i<=5;i++){int n=i;IntOption(((LicensePlateStyle)i).ToString(),200,()=>Get(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT_INDEX,car),v=>Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX,car,v),n,Details);}
             int count=Get(Hash.GET_VEHICLE_LIVERY_COUNT,car);for(int i=0;i<count && i<2048;i++){int n=i;IntOption("Livery "+i,1000,()=>Get(Hash.GET_VEHICLE_LIVERY,car),v=>Function.Call(Hash.SET_VEHICLE_LIVERY,car,v),n,Details);}Back(Root);
         }
         void Lights()
         {
-            menu.Clear();for(int i=0;i<4;i++){int side=i;Row("Neon lado "+i+" / $200",()=>{bool old=Function.Call<bool>(Hash.GET_VEHICLE_NEON_ENABLED,car,side);Purchase(200,()=>false,()=>Function.Call(Hash.SET_VEHICLE_NEON_ENABLED,car,side,!old),()=>Function.Call<bool>(Hash.GET_VEHICLE_NEON_ENABLED,car,side)==!old,()=>Function.Call(Hash.SET_VEHICLE_NEON_ENABLED,car,side,old));Lights();});}
+            if(Defer(Lights))return;BeginPage("lights");for(int i=0;i<4;i++){int side=i;Row("Neon "+new[]{"esquerdo","direito","dianteiro","traseiro"}[i]+" / $200",()=>{bool old=Function.Call<bool>(Hash.GET_VEHICLE_NEON_ENABLED,car,side);Purchase(200,()=>false,()=>Function.Call(Hash.SET_VEHICLE_NEON_ENABLED,car,side,!old),()=>Function.Call<bool>(Hash.GET_VEHICLE_NEON_ENABLED,car,side)==!old,()=>Function.Call(Hash.SET_VEHICLE_NEON_ENABLED,car,side,old));Lights();});}
             foreach(bool smoke in new[]{false,true}){bool s=smoke;Row(s?"Cor da fumaca":"Cor do neon",()=>Rgb(s));}Back(Root);
         }
         void Rgb(bool smoke)
         {
-            menu.Clear();foreach(var rgb in new[]{new[]{255,255,255},new[]{255,0,0},new[]{0,255,0},new[]{0,0,255},new[]{255,255,0},new[]{255,0,255},new[]{0,255,255},new[]{255,128,0}}){var value=rgb;
+            if(Defer(()=>Rgb(smoke)))return;BeginPage("rgb:"+smoke);Row("RGB personalizado / $200",()=>CustomAccessoryRgb(smoke));foreach(var rgb in new[]{new[]{255,255,255},new[]{255,0,0},new[]{0,255,0},new[]{0,0,255},new[]{255,255,0},new[]{255,0,255},new[]{0,255,255},new[]{255,128,0}}){var value=rgb;
                 Row(string.Join(",",value)+" / $200",()=>{var old=VehicleSnapshot.Capture(car);var before=smoke?old.SmokeColor:old.NeonColor;Hash set=smoke?Hash.SET_VEHICLE_TYRE_SMOKE_COLOR:Hash.SET_VEHICLE_NEON_COLOUR;
                     Purchase(200,()=>before.SequenceEqual(value),()=>Function.Call(set,car,value[0],value[1],value[2]),()=>{var now=VehicleSnapshot.Capture(car);return (smoke?now.SmokeColor:now.NeonColor).SequenceEqual(value);},()=>Function.Call(set,car,before[0],before[1],before[2]));Rgb(smoke);});}Back(Lights);
         }
         void Extras()
         {
-            menu.Clear();for(int i=0;i<=14;i++){int extra=i;if(!Function.Call<bool>(Hash.DOES_EXTRA_EXIST,car,extra))continue;Row("Extra "+i+" / $150",()=>{bool old=Function.Call<bool>(Hash.IS_VEHICLE_EXTRA_TURNED_ON,car,extra);Purchase(150,()=>false,()=>Function.Call(Hash.SET_VEHICLE_EXTRA,car,extra,old),()=>Function.Call<bool>(Hash.IS_VEHICLE_EXTRA_TURNED_ON,car,extra)==!old,()=>Function.Call(Hash.SET_VEHICLE_EXTRA,car,extra,!old));Extras();});}Back(Root);
+            if(Defer(Extras))return;BeginPage("extras");for(int i=0;i<=14;i++){int extra=i;if(!Function.Call<bool>(Hash.DOES_EXTRA_EXIST,car,extra))continue;Row("Extra "+i+" / $150",()=>{bool old=Function.Call<bool>(Hash.IS_VEHICLE_EXTRA_TURNED_ON,car,extra);Purchase(150,()=>false,()=>Function.Call(Hash.SET_VEHICLE_EXTRA,car,extra,old),()=>Function.Call<bool>(Hash.IS_VEHICLE_EXTRA_TURNED_ON,car,extra)==!old,()=>Function.Call(Hash.SET_VEHICLE_EXTRA,car,extra,!old));Extras();});}Back(Root);
         }
-        public void Tick(){if(car!=null && (!menu.Visible || !Access))Close();}
-        public void Close(){menu.Visible=false;car=null;actor=null;location=null;gate?.Release("workshop");}
+        int[] InputRgb()
+        {
+            int handle=car.Handle;string owner=profile;string input=Game.GetUserInput(WindowTitle.EnterMessage60,"255,128,0",11);
+            if(!Access || handle!=car.Handle || profile!=owner || string.IsNullOrWhiteSpace(input))return null;
+            if(VehicleUiRules.Rgb(input,out var value))return value;Notify.Show("Use tres inteiros de0 a255:255,128,0.");return null;
+        }
+        void CustomPaint(bool secondary)
+        {
+            var value=InputRgb();if(value==null)return;var old=VehicleSnapshot.Capture(car);var before=secondary?old.CustomSecondary:old.CustomPrimary;
+            Hash set=secondary?Hash.SET_VEHICLE_CUSTOM_SECONDARY_COLOUR:Hash.SET_VEHICLE_CUSTOM_PRIMARY_COLOUR;
+            Purchase(300,()=>before!=null && before.SequenceEqual(value),()=>Function.Call(set,car,value[0],value[1],value[2]),()=>{var now=VehicleSnapshot.Capture(car);return value.SequenceEqual(secondary?now.CustomSecondary??Array.Empty<int>():now.CustomPrimary??Array.Empty<int>());},()=>{Function.Call(Hash.SET_VEHICLE_COLOURS,car,old.PrimaryColor,old.SecondaryColor);RestoreCustom(old);});Paint();
+        }
+        void CustomAccessoryRgb(bool smoke)
+        {
+            var value=InputRgb();if(value==null)return;var old=VehicleSnapshot.Capture(car);var before=smoke?old.SmokeColor:old.NeonColor;var set=smoke?Hash.SET_VEHICLE_TYRE_SMOKE_COLOR:Hash.SET_VEHICLE_NEON_COLOUR;
+            Purchase(200,()=>before.SequenceEqual(value),()=>Function.Call(set,car,value[0],value[1],value[2]),()=>{var now=VehicleSnapshot.Capture(car);return value.SequenceEqual(smoke?now.SmokeColor:now.NeonColor);},()=>Function.Call(set,car,before[0],before[1],before[2]));Rgb(smoke);
+        }
+        public void Tick()
+        {
+            if(!Game.IsKeyPressed(Keys.Enter) && !Game.IsKeyPressed(Keys.LButton) && !Game.IsControlPressed(GTA.Control.FrontendAccept) && !Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendAccept))actionLatched=false;
+            if(car!=null && (!menu.Visible || !Access)){Close();return;}
+            if(car!=null && Access)menu.Name="Oficina / banco $"+Wallet.Bank;
+            if(pendingPage!=null && car!=null){var action=pendingPage;pendingPage=null;action();}
+        }
+        public void Close(){closing=true;try{menu.Visible=false;}finally{closing=false;car=null;actor=null;location=null;actionLatched=false;pendingPage=parentPage=null;page=null;gate?.Release("workshop");}}
     }
 }

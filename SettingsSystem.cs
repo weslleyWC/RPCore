@@ -15,6 +15,7 @@ namespace RPCore
     public sealed partial class SettingsSystem : ISystem
     {
         public string Name { get { return "settings"; } }
+        public Action GarageRequested,DealerRequested,VehicleRequested;
         readonly ObjectPool pool;
         readonly Action<Keys> dispatch;
         readonly NeedsSystem needs;
@@ -49,11 +50,11 @@ namespace RPCore
             var row = parent.AddSubMenu(child, ">>>");
             row.Title = child.Name == "UI SETTINGS" ? "UI Settings" : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(child.Name.ToLowerInvariant());
         }
-        void Shortcut(NativeMenu menu, string label, Func<Keys> key, Func<bool> enabled = null)
+        void Shortcut(NativeMenu menu, string label, Func<Keys> key, Func<bool> enabled = null,Func<Action> direct = null)
         {
             Add(menu, label, "Abre o sistema RPCore existente.", () => {
                 if (enabled != null && !enabled()) { Notify.Show("Sistema desativado na configuracao."); return; }
-                pool.HideAll(); dispatch(key());
+                pool.HideAll();var action=direct?.Invoke();if(action!=null)action();else dispatch(key());
             });
         }
         void Toggle(NativeMenu menu, string title, Func<bool> get, Action<bool> set)
@@ -96,9 +97,9 @@ namespace RPCore
             Add(survival, "Descansar / parar descanso", "A pe, parado e fora de combate. Recupera sono gradualmente sem adiantar o relogio.", () => { pool.HideAll(); needs.ToggleRest(); });
             var vehicle = Menu("Vehicle Settings"); Link(root, vehicle);
             Toggle(vehicle,"Velocimetro em km/h",()=>InterfaceOptions.MetricSpeed,v=> { InterfaceOptions.Set("Interface.ini","VehicleHud","Metric",v); InterfaceOptions.MetricSpeed=v; });
-            Shortcut(vehicle, "Controles do veiculo", () => Cfg.VehicleMenuKey, () => Cfg.EnableVehicleControls);
-            Shortcut(vehicle, "Garagens", () => Cfg.GarageKey, () => Cfg.EnableGarages);
-            Shortcut(vehicle, "Concessionaria", () => Cfg.DealerKey, () => Cfg.EnableGarages);
+            Shortcut(vehicle, "Controles do veiculo", () => Cfg.VehicleMenuKey, () => Cfg.EnableVehicleControls,()=>VehicleRequested);
+            Shortcut(vehicle, "Garagens", () => Cfg.GarageKey, () => Cfg.EnableGarages,()=>GarageRequested);
+            Shortcut(vehicle, "Concessionaria", () => Cfg.DealerKey, () => Cfg.EnableGarages,()=>DealerRequested);
             Rate(technical, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); Cfg.FuelPer100Km=v; }, 4);
             var ui = Menu("UI Settings"); Link(root, ui);
             Link(ui,technical);

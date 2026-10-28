@@ -22,12 +22,14 @@ namespace RPCore
         readonly Slot[] slots=new Slot[8];
         InventorySystem inventory;Action clothing;Func<IEnumerable<GpsDestination>> destinations;
         RadialPage page;int itemPage;List<string> itemIds=new List<string>();
+        Action<VehicleAction> vehicleAction;Action seatbelt;Func<bool> vehicleAvailable;int vehiclePageHandle,pendingVehicle;
         Action pending;int pendingActor,pendingTime;string pendingProfile;
         bool mouseReady,mouseHeld,controllerReady;PointF mousePoint;int pressedSlot=-1;
         int selected;
         public bool Visible { get; private set; }
         public RadialSystem(ObjectPool pool, Action<int> activate) { this.pool = pool; this.activate = activate; }
         public void Configure(InventorySystem inventory,Action clothing,Func<IEnumerable<GpsDestination>> destinations){this.inventory=inventory;this.clothing=clothing;this.destinations=destinations;}
+        public void ConfigureVehicle(Func<bool> available,Action<VehicleAction> action,Action seatbelt){vehicleAvailable=available;vehicleAction=action;this.seatbelt=seatbelt;}
         void Close(bool cancel=true){Visible=false;mouseReady=false;controllerReady=false;pressedSlot=-1;if(cancel)pending=null;}
         void Put(int index,string label,string icon,Action action,Func<string> detail=null)=>slots[index]=new Slot{Label=label,Icon=icon,Action=action,Detail=detail};
         void Build(RadialPage next)
@@ -38,6 +40,7 @@ namespace RPCore
                 for(int i=0;i<8;i++){int action=i;Put(i,labels[i],icons[i],()=>activate(action));}
                 if(inventory!=null)slots[1].Action=()=>Build(RadialPage.Inventory);
                 if(destinations!=null)slots[4].Action=()=>Build(RadialPage.Gps);
+                if(vehicleAvailable!=null)slots[3].Action=()=>{if(vehicleAvailable()){vehiclePageHandle=Game.Player.Character.CurrentVehicle.Handle;Build(RadialPage.Vehicle);}else Notify.Show("Entre em um veiculo para abrir os controles.");};
                 return;
             }
             if(page==RadialPage.Inventory)
@@ -55,18 +58,48 @@ namespace RPCore
                 for(int i=0;i<6;i++){string kind=kinds[i];Put(i,names[i],images[i],()=>{var p=Game.Player.Character.Position;var target=MapPinRules.Nearest(destinations(),kind,p.X,p.Y,p.Z);if(target==null){Notify.Show("Nenhum local disponivel nesta categoria.");return;}Function.Call(Hash.SET_NEW_WAYPOINT,target.X,target.Y);Notify.Show("GPS: "+target.Name);});}
                 Put(6,"Voltar","PreviousPageIconRad",()=>Build(RadialPage.Root));Put(7,"Todos os destinos","NextPageIconRad",()=>activate(4));return;
             }
+            if(page>=RadialPage.Vehicle){BuildVehicle();return;}
             itemPage=Math.Max(0,Math.Min(itemPage,RadialMenuRules.Pages(itemIds.Count)-1));
             for(int i=0;i<6;i++){int index=itemPage*6+i;if(index>=itemIds.Count)break;string id=itemIds[index];var def=inventory.Defs[id];Put(i,def.Name,def.Icon??id,()=>inventory.UseSelected(id),()=>"x"+inventory.Count(id));}
             Put(6,itemPage==0?"Voltar":"Pagina anterior","PreviousPageIconRad",()=>{if(itemPage==0)Build(RadialPage.Inventory);else{itemPage--;Build(page);}});
             if(itemPage+1<RadialMenuRules.Pages(itemIds.Count))Put(7,"Proxima pagina","NextPageIconRad",()=>{itemPage++;Build(page);});
         }
-        bool NavigationSlot(int i)=>page==RadialPage.Root && inventory!=null && i==1 || page==RadialPage.Root && destinations!=null && i==4 || page==RadialPage.Inventory && i>=1 && i<=5 || page!=RadialPage.Root && page!=RadialPage.Inventory && page!=RadialPage.Gps && i>=6 || page==RadialPage.Inventory && i==7 || page==RadialPage.Gps && i==6;
-        void Back(){if(page==RadialPage.Root)Close();else Build(page==RadialPage.Inventory || page==RadialPage.Gps?RadialPage.Root:RadialPage.Inventory);}
+        void VehicleSlot(int slot,string name,string icon,VehicleAction action)=>Put(slot,name,icon,()=>vehicleAction(action));
+        void BuildVehicle()
+        {
+            if(page==RadialPage.Vehicle)
+            {
+                Put(0,"Motor e conducao","CarSettingRad",()=>Build(RadialPage.VehicleCore));Put(1,"Luzes","HeadlightIconRad",()=>Build(RadialPage.VehicleLights));
+                if(Game.Player.Character.CurrentVehicle.Model.IsCar){Put(2,"Portas","DoorIconRightRad",()=>Build(RadialPage.VehicleDoors));Put(3,"Vidros","WindowRightRad",()=>Build(RadialPage.VehicleWindows));}
+                Put(6,"Inicio","HomeIconRad",()=>Build(RadialPage.Root));VehicleSlot(7,"Menu completo","SettingsIconRad",VehicleAction.OpenMenu);return;
+            }
+            if(page==RadialPage.VehicleCore)
+            {VehicleSlot(0,"Motor","EngineRad",VehicleAction.Engine);Put(1,"Cinto","SeatbeltIconRad",seatbelt);VehicleSlot(2,"Piloto automatico","CruiseIconRad",VehicleAction.Cruise);}
+            else if(page==RadialPage.VehicleLights)
+            {
+                var actions=new[]{VehicleAction.ExteriorLights,VehicleAction.InteriorLights,VehicleAction.LeftSignal,VehicleAction.RightSignal,VehicleAction.Hazards,VehicleAction.Neons};
+                var names=new[]{"Farois","Luz interna","Seta esquerda","Seta direita","Pisca-alerta","Neon instalado"};var icons=new[]{"HeadlightIconRad","InteriorLightIconRad","BlinkerLeftRad","BlinkerRightRad","HazardRad","UnderglowRad"};
+                for(int i=0;i<6;i++)VehicleSlot(i,names[i],icons[i],actions[i]);VehicleSlot(6,"Menu completo","SettingsIconRad",VehicleAction.OpenMenu);Put(7,"Veiculo","CarIconRad",()=>Build(RadialPage.Vehicle));return;
+            }
+            else if(page==RadialPage.VehicleDoors)
+            {
+                var actions=new[]{VehicleAction.Hood,VehicleAction.Trunk,VehicleAction.DoorFrontLeft,VehicleAction.DoorFrontRight,VehicleAction.DoorRearLeft,VehicleAction.DoorRearRight};
+                var names=new[]{"Capo","Porta-malas","Dianteira esquerda","Dianteira direita","Traseira esquerda","Traseira direita"};for(int i=0;i<6;i++)VehicleSlot(i,names[i],i<2?"HoodRad":i%2==0?"DoorIconLeftRad":"DoorIconRightRad",actions[i]);
+            }
+            else
+            {
+                var names=new[]{"Dianteiro esquerdo","Dianteiro direito","Traseiro esquerdo","Traseiro direito"};for(int i=0;i<4;i++)VehicleSlot(i,names[i],i%2==0?"WindowLeftRad":"WindowRightRad",(VehicleAction)((int)VehicleAction.WindowFrontLeft+i));
+                VehicleSlot(4,"Subir todos","WindowLeftRad",VehicleAction.WindowsUp);VehicleSlot(5,"Baixar todos","WindowRightRad",VehicleAction.WindowsDown);
+            }
+            Put(6,"Veiculo","CarIconRad",()=>Build(RadialPage.Vehicle));
+        }
+        bool NavigationSlot(int i)=>page>=RadialPage.Vehicle?(page==RadialPage.Vehicle?(i<4 || i==6):page==RadialPage.VehicleLights?i==7:i==6):page==RadialPage.Root && vehicleAvailable!=null && i==3 || page==RadialPage.Root && inventory!=null && i==1 || page==RadialPage.Root && destinations!=null && i==4 || page==RadialPage.Inventory && i>=1 && i<=5 || page!=RadialPage.Root && page!=RadialPage.Inventory && page!=RadialPage.Gps && i>=6 || page==RadialPage.Inventory && i==7 || page==RadialPage.Gps && i==6;
+        void Back(){if(page==RadialPage.Root)Close();else Build(page>=RadialPage.Vehicle?(page==RadialPage.Vehicle?RadialPage.Root:RadialPage.Vehicle):page==RadialPage.Inventory || page==RadialPage.Gps?RadialPage.Root:RadialPage.Inventory);}
         void Select()
         {
             var slot=slots[selected];if(slot==null)return;
             if(NavigationSlot(selected)){slot.Action();return;}
-            var action=slot.Action;Close(false);pending=action;pendingActor=Game.Player.Character.Handle;pendingProfile=Profile.Id;pendingTime=Game.GameTime;
+            var action=slot.Action;pendingVehicle=page>=RadialPage.Vehicle?vehiclePageHandle:0;Close(false);pending=action;pendingActor=Game.Player.Character.Handle;pendingProfile=Profile.Id;pendingTime=Game.GameTime;
         }
         public void OnKey(KeyEventArgs e)
         {
@@ -87,9 +120,10 @@ namespace RPCore
             if(pending!=null)
             {
                 var action=pending;pending=null;
-                if(p!=null && p.Exists() && !p.IsDead && p.Handle==pendingActor && Profile.Id==pendingProfile && Profile.Detect()==Profile.Id && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && Game.Player.CanControlCharacter && unchecked(Game.GameTime-pendingTime)>=0 && unchecked(Game.GameTime-pendingTime)<1000)action();
+                if(p!=null && p.Exists() && !p.IsDead && p.Handle==pendingActor && (pendingVehicle==0 || p.IsInVehicle() && p.CurrentVehicle.Handle==pendingVehicle) && Profile.Id==pendingProfile && Profile.Detect()==Profile.Id && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && Game.Player.CanControlCharacter && unchecked(Game.GameTime-pendingTime)>=0 && unchecked(Game.GameTime-pendingTime)<1000)try{action();}catch(Exception ex){Log.Error("radial action",ex);Notify.Show("Acao nao concluida. Confira RPCore.log.");}
             }
             if(!Visible)return;
+            if(page>=RadialPage.Vehicle && (!p.IsInVehicle() || p.CurrentVehicle.Handle!=vehiclePageHandle)){Build(RadialPage.Root);return;}
             if (!InterfaceOptions.RadialEnabled || Game.IsPaused || p.IsDead || !Game.Player.CanControlCharacter || Profile.Detect()!=Profile.Id || Game.IsMissionActive || pool.AreAnyVisible || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) { Close(); return; }
             foreach (var control in new[] { GTA.Control.Attack, GTA.Control.Attack2, GTA.Control.Aim, GTA.Control.VehicleAttack, GTA.Control.VehicleAttack2, GTA.Control.VehicleAim, GTA.Control.SelectWeapon, GTA.Control.SelectWeaponUnarmed, GTA.Control.SelectWeaponMelee, GTA.Control.SelectWeaponHandgun, GTA.Control.SelectWeaponShotgun, GTA.Control.SelectWeaponSmg, GTA.Control.SelectWeaponAutoRifle, GTA.Control.SelectWeaponSniper, GTA.Control.SelectWeaponHeavy, GTA.Control.NextWeapon, GTA.Control.PrevWeapon, GTA.Control.Cover, GTA.Control.Context, GTA.Control.Phone, GTA.Control.FrontendPause, GTA.Control.FrontendPauseAlternate }) Game.DisableControlThisFrame(control);
             bool keyboard=Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0);

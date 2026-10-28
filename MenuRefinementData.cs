@@ -38,7 +38,7 @@ namespace RPCore
         }
         public static double Distance(GpsDestination p,float x,float y,float z){double dx=(double)p.X-x,dy=(double)p.Y-y,dz=(double)p.Z-z;return Math.Sqrt(dx*dx+dy*dy+dz*dz);}
     }
-    public enum RadialPage { Root,Inventory,Drinks,Food,Health,Weapons,Tools,Gps }
+    public enum RadialPage { Root,Inventory,Drinks,Food,Health,Weapons,Tools,Gps,Vehicle,VehicleCore,VehicleLights,VehicleDoors,VehicleWindows }
     public static class RadialMenuRules
     {
         public static readonly PointF[] Centers={new PointF(966,360),new PointF(1090,420),new PointF(1136,545),new PointF(1086,675),new PointF(952,720),new PointF(825,665),new PointF(780,525),new PointF(836,410)};

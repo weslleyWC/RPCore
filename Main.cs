@@ -99,9 +99,10 @@ namespace RPCore
             if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach, shifts); return gangs; });
             gangs?.ConfigureDealer(dealer);
             if (Cfg.EnableRadio) AddOptional(() => new RadioSystem(pool, ach));
+            controls?.ConfigureSeatbelt(()=>belt.OnKey(new KeyEventArgs(Cfg.SeatbeltKey)),()=>belt.IsBelted);
             var visual = new VisualSystem(belt, () => controls != null && !faulted.Contains(controls) && controls.IsCruising, v => fuel == null || faulted.Contains(fuel) ? null : fuel.ViewTank(v));
             var props = new PropPresentation(inv); systems.Add(props);
-            editor = new MapEditorSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity, point => {if(garages!=null)garages.OpenCustomWorkshop(point);else Notify.Show("Ative Garages em Settings.ini para reparo/lavagem.");});systems.Add(editor);
+            editor = new MapEditorSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity, point => {if(garages!=null)garages.OpenCustomWorkshop(point,()=>editor.ServicePoints.Any(p=>p.Kind==EditorPointKind.Workshop && p.Name==point.Name && Math.Abs(p.Pose.X-point.X)<.01f && Math.Abs(p.Pose.Y-point.Y)<.01f && Math.Abs(p.Pose.Z-point.Z)<.01f));else Notify.Show("Ative Garages em Settings.ini para reparo/lavagem.");});systems.Add(editor);
             var studio = new StudioHeistSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(studio);
             var halloween = new HalloweenSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(halloween);
             var passenger = new PassengerSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity);systems.Add(passenger);
@@ -129,6 +130,9 @@ namespace RPCore
                 .Concat(editor.ServicePoints.Where(p=>p.Kind==EditorPointKind.Grocery || p.Kind==EditorPointKind.Fuel && Cfg.EnableFuel || p.Kind==EditorPointKind.Workshop && Cfg.EnableGarages).Select(p=>new GpsDestination{Name=p.Name,Kind=p.Kind==EditorPointKind.Grocery?"Grocery":p.Kind==EditorPointKind.Fuel?"Fuel":"Workshop",X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z}))
                 .Concat(!faulted.Contains(pdm)?new[]{new GpsDestination{Name="PDM / empresa",Kind="PDM",X=pdm.StartPosition.X,Y=pdm.StartPosition.Y,Z=pdm.StartPosition.Z}}:Enumerable.Empty<GpsDestination>());
             settings.ConfigureNavigation(navPoints,shifts);
+            settings.GarageRequested=()=>OpenPhoneSystem(garages,Cfg.GarageKey);
+            settings.DealerRequested=()=>OpenPhoneSystem(systems.OfType<DealershipSystem>().FirstOrDefault(),Cfg.DealerKey);
+            settings.VehicleRequested=()=>OpenPhoneService(controls,()=>controls.OpenMenu());
             phone.ConfigureServices(new Dictionary<int,Action>{
                 {0,()=>OpenPhoneService(core,core.OpenBank)},{1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
                 {2,()=>OpenPhoneSystem(garages,Cfg.GarageKey)},
@@ -148,7 +152,7 @@ namespace RPCore
                     case 6: settings.OpenInteractions(); break;
                     case 7: DispatchSystemKey(InterfaceOptions.SettingsKey); break;
                 }
-            });radial.Configure(inv,wardrobe.OpenMenu,navPoints); systems.Add(radial);
+            });radial.Configure(inv,wardrobe.OpenMenu,navPoints);radial.ConfigureVehicle(()=>Game.Player.Character.IsInVehicle(),action=>OpenPhoneService(controls,()=>controls.Execute(action)),()=>belt.OnKey(new KeyEventArgs(Cfg.SeatbeltKey))); systems.Add(radial);
             systems.Add(visual);
             ach.Bump("started");
 
@@ -157,7 +161,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.98.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.99.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

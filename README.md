@@ -1,3 +1,9 @@
+## Atualização0.99.0 — veículos, garagens e oficina
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.99.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.99.0.zip) · [Uso e testes GTA](docs/VEICULOS-GARAGENS-OFICINA-0.99.0.md)
+
+Radial veicular por páginas e menu K compartilham motor/cinto/piloto/luzes/portas/vidros com contexto do mesmo carro; F11/GPS acessam sistemas diretamente. Oficina agrupada, retorno/seleção/refresh seguro e RGB digitado por compra existente. Neon observado pode ser religado após reload sem instalar lados novos. Garagem verifica remoção pela identidade original, usa snapshot atual e revalida saída após streaming; reparo/lavagem salvam imediatamente.3811 testes aprovados; compilação sem erros/avisos. Teste GTA ainda necessário; preços/chaves/carros/saves/configs preservados.
+
 ## Atualização0.98.0 — celular F2, banco e F10
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.98.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.98.0.zip) · [Uso e testes GTA](docs/CELULAR-BANCO-F10-0.98.0.md)

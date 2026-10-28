@@ -25,7 +25,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | FuelDeliveryJob | [FuelDeliveryJob.cs](../FuelDeliveryJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | FuelSystem | [FuelSystem.cs](../FuelSystem.cs) | Pendente de revisão completa; preservar base existente |
 | GangSystem | [GangSystem.cs](../GangSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| GarageSystem | [GarageSystem.cs](../GarageSystem.cs) | Pendente de revisão completa; preservar base existente |
+| GarageSystem | [GarageSystem.cs](../GarageSystem.cs) | Grupo0.99: acesso/registro atual/remocao/retirada/servicos revisados; aguarda teste GTA |
 | GroomingSystem | [GroomingSystem.cs](../GroomingSystem.cs) | Pendente de revisão completa; preservar base existente |
 | HalloweenSystem | [HalloweenSystem.cs](../HalloweenSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | HomeStorageSystem | [HomeStorageSystem.cs](../HomeStorageSystem.cs) | Pendente de revisão completa; preservar base existente |
@@ -62,7 +62,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | StreamerJob | [StreamerJob.cs](../StreamerJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | StudioHeistSystem | [StudioHeistSystem.cs](../StudioHeistSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | TrafficSystem | [TrafficSystem.cs](../TrafficSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Pendente de revisão completa; preservar base existente |
+| VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Grupo0.99: menus/acoes/radial revisados; aguarda teste GTA |
 | VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Pendente de revisão completa; preservar base existente |
 | VisualSystem | [VisualSystem.cs](../VisualSystem.cs) | Pendente de revisão completa; preservar base existente |
 | WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | Pendente de revisão completa; preservar base existente |
@@ -71,3 +71,5 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 Componentes fora do registro ISystem também estão no escopo: WorkshopSystem, WaypointTeleport, Visuals/menu skins, Wallet/persistência, páginas internas do celular/radial e grades de inventário/depósito/loja. Menus privados/submenus fazem parte da revisão do sistema correspondente.
 
 A sequência continuará por grupos completos: celular/F10 e serviços pessoais; veículos/garagens/oficina; finanças/rádio/conquistas; interfaces de gangues/polícia/atividades/editor/mundo e o restante de inventário/necessidades. Quando a fase8 estiver coberta, revisar os ciclos da9; esta lista não declara todas essas frentes prontas.
+
+Grupo0.99 inclui WorkshopSystem: categorias, navegacao, RGB personalizado e persistencia/rollback existentes; teste nativo GTA pendente. SeatbeltSystem mantem a mecanica atual e recebe acesso direto por radial/menu, sem afirmar revisao fisica integral de cinto/ejeção.

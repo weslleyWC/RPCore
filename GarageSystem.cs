@@ -35,7 +35,7 @@ namespace RPCore
         readonly Dictionary<string, Vehicle> created = new Dictionary<string, Vehicle>();
         TransportData data;
         GarageDefinition current, pendingGarage;Vector3? customPoint;Vehicle customCar;Ped customActor;string customProfile;
-        Vehicle pending;
+        Vehicle pending;Ped pendingActor;string pendingProfile;Func<bool> customAvailable;
         int timeout;
         bool dirty;
 
@@ -65,53 +65,53 @@ namespace RPCore
         void Add(string title, string desc, Action action)
         {
             var row = new NativeItem(title, desc);
-            row.Activated += (s, e) => { action(); dirty = true; }; menu.Add(row);
+            row.Activated += (s, e) => {try{action();}catch(Exception ex){Log.Error("garage action",ex);Notify.Show("Operacao nao concluida. Confira RPCore.log.");}finally{dirty=true;}}; menu.Add(row);
         }
         void Rebuild()
         {
-            customPoint=null;customCar=null;customActor=null;menu.Clear(); var p = Game.Player.Character;
+            int selectedIndex=menu.SelectedIndex;customPoint=null;customCar=null;customActor=null;customAvailable=null;menu.Clear(); var p = Game.Player.Character;
             current = garages.OrderBy(g => p.Position.DistanceTo(g.Position)).FirstOrDefault(g => p.Position.DistanceTo(g.Position) < 15);
             if (current == null)
             {
-                menu.Name = "Visit a garage";
+                menu.Name = "Visite uma garagem";
                 foreach (var entry in garages)
                 {
                     var g = entry;
-                    Add("GPS: " + g.Name, (data.Garages.Contains(g.Id) ? "Owned" : "$" + g.Price) + " / " + g.Capacity + " vehicles", () => { Function.Call(Hash.SET_NEW_WAYPOINT, g.X, g.Y); menu.Visible = false; });
+                    Add("GPS: " + g.Name, (data.Garages.Contains(g.Id) ? "Comprada" : "$" + g.Price) + " / " + g.Capacity + " veiculos", () => { Function.Call(Hash.SET_NEW_WAYPOINT, g.X, g.Y); menu.Visible = false; });
                 }
                 dirty = false; return;
             }
             var selected = current;
-            menu.Name = current.Name + " / cash $" + Wallet.Cash;
-            if (!data.Garages.Contains(current.Id)) Add("Buy garage: $" + current.Price, current.Capacity + " vehicle slots. Purchase requires being nearby.", () => Buy(selected));
+            menu.Name = current.Name + " / dinheiro $" + Wallet.Cash;
+            if (!data.Garages.Contains(current.Id)) Add("Comprar garagem: $" + current.Price, current.Capacity + " vagas. Compra exige estar proximo.", () => Buy(selected));
             else
             {
                 Add("Personalizar veiculo", "Pecas, desempenho, rodas, cores e equipamentos; pagamento pelo banco.", () => workshop.Open(() => Nearby(selected) && data.Garages.Contains(selected.Id)));
-                Add("Store current vehicle", "Stop in the garage area as driver. RPCore asks you to exit before storing. Mission vehicles are protected by default.", () => BeginStore(selected));
-                Add("Repair current vehicle: $500", "At this garage, stopped in the driver seat. Fuel is preserved.", () => Service(false));
-                Add("Wash current vehicle: $25", "At this garage, stopped in the driver seat.", () => Service(true));
+                Add("Guardar veiculo atual", "Stop in the garage area as driver. RPCore asks you to exit before storing. Mission veiculos are protected by default.", () => BeginStore(selected));
+                Add("Reparar veiculo: $500", "Pare como motorista nesta garagem. Combustivel preservado.", () => Service(false));
+                Add("Lavar veiculo: $25", "Pare como motorista nesta garagem.", () => Service(true));
                 foreach (var record in data.Vehicles.Where(v => v.GarageId == current.Id).ToList())
                 {
                     var car = record;
-                    Add((car.Stored ? "Retrieve: " : "Locate / recover: ") + (car.Name ?? car.Model.ToString()) + " [" + car.Plate + "]", "Restores saved equipment, paint, fuel and damage. The exit must be clear.", () => Retrieve(selected, car));
+                    Add((car.Stored ? "Retirar: " : "Localizar / recuperar: ") + (car.Name ?? car.Model.ToString()) + " [" + car.Plate + "]", "Restaura equipamento, pintura, combustivel e danos salvos. Saida livre obrigatoria.", () => Retrieve(selected, car));
                 }
                 menu.Name += " / " + data.Vehicles.Count(v => v.GarageId == current.Id) + "/" + current.Capacity;
             }
-            dirty = false;
+            menu.SelectedIndex=Math.Max(0,Math.Min(selectedIndex,menu.Items.Count-1));dirty = false;
         }
         bool Nearby(GarageDefinition garage)
         {
             var p = Game.Player.Character;
-            return Cfg.EnableGarages && !Game.IsMissionActive && !p.IsDead && p.Position.DistanceTo(garage.Position) < 15;
+            return Cfg.EnableGarages && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !p.IsDead && p.Position.DistanceTo(garage.Position) < 15;
         }
         void Buy(GarageDefinition garage)
         {
             if (!Nearby(garage) || data.Garages.Contains(garage.Id)) return;
-            if (!Wallet.Debit(garage.Price)) { Notify.Show("Not enough cash."); return; }
+            if (garage.Price>0 && !Wallet.Debit(garage.Price)) { Notify.Show("Dinheiro insuficiente."); return; }
             data.Garages.Add(garage.Id);
             try { Wallet.Save(); }
-            catch { data.Garages.Remove(garage.Id); Wallet.Credit(garage.Price); throw; }
-            ach.Bump("garages_bought"); ach.Save(); Notify.Show("Garage purchased: " + garage.Name);
+            catch { data.Garages.Remove(garage.Id); if(garage.Price>0)Wallet.Credit(garage.Price); throw; }
+            ach.Bump("garages_bought"); ach.Save(); Notify.Show("Garagem comprada: " + garage.Name);
         }
 
         bool MayStore(Vehicle v, GarageDefinition garage, bool driverRequired)
@@ -130,20 +130,20 @@ namespace RPCore
         void BeginStore(GarageDefinition garage)
         {
             var p = Game.Player.Character; var v = p.IsInVehicle() ? p.CurrentVehicle : null;
-            if (!MayStore(v, garage, true)) { Notify.Show("Use a stopped road vehicle as driver, without passengers or attachments. Mission vehicles are protected."); return; }
+            if (!MayStore(v, garage, true)) { Notify.Show("Use a stopped road vehicle as driver, without passengers or attachments. Mission veiculos are protected."); return; }
             var existing = data.FindIdentity(v.Model.Hash, Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v));
             var preview = new SavedVehicle { Model = v.Model.Hash, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v), Id = existing?.Id ?? Guid.NewGuid().ToString("N") };
             if (!data.CanStore(garage.Id, garage.Capacity, preview) || (existing != null && existing.Stored && !existing.PendingRemoval)) { Notify.Show("Garage full, vehicle has no plate, or this identity is already stored."); return; }
-            pending = v; pendingGarage = garage; timeout = Game.GameTime + 15000; menu.Visible = false;
+            pending = v;pendingActor=p;pendingProfile=Profile.Id; pendingGarage = garage; timeout = Game.GameTime + 15000; menu.Visible = false;
             // Native leave task lets the player exit deliberately even if the belt was previously engaged.
             Function.Call(Hash.TASK_LEAVE_VEHICLE, p, v, 0);
-            Notify.Show("Exit the vehicle and stay near the garage to store it.");
+            Notify.Show("Saia do veiculo e fique proximo para guardar.");
         }
         void FinishStore()
         {
             var p = Game.Player.Character;
             if (pending == null || !pending.Exists()) { pending = null; return; }
-            if (unchecked(Game.GameTime - timeout) >= 0 || !MayStore(pending, pendingGarage, false) || p.Position.DistanceTo(pending.Position) > 12)
+            if (pendingActor==null || p.Handle!=pendingActor.Handle || pendingProfile!=Profile.Id || unchecked(Game.GameTime - timeout) >= 0 || !MayStore(pending, pendingGarage, false) || p.Position.DistanceTo(pending.Position) > 12)
             { pending = null; Notify.Show("Storage cancelled. Vehicle remains in the world."); return; }
             if (p.IsInVehicle() || pending.Occupants.Length > 0) return;
             var snapshot = VehicleSnapshot.Capture(pending);
@@ -156,13 +156,11 @@ namespace RPCore
             catch { if (index < 0) data.Vehicles.Remove(snapshot); else data.Vehicles[index] = old; pending = null; throw; }
             // A durable snapshot exists before taking/removing the world entity.
             Function.Call(Hash.SET_ENTITY_AS_MISSION_ENTITY, pending, true, true);
-            pending.Delete();
-            if (pending.Exists())
-            {
-                snapshot.Stored = false; snapshot.PendingRemoval = false; live[snapshot.Id] = pending;
-                Notify.Show("Vehicle could not be removed. It remains outside; use Locate.");
-            }
-            else { snapshot.PendingRemoval = false; live.Remove(snapshot.Id); Notify.Show("Vehicle stored."); }
+            int handle=pending.Handle;string identity=VehicleIdentity.Key(snapshot.Model,snapshot.Plate);pending.Delete();
+            var remaining=Entity.FromHandle(handle) as Vehicle;
+            bool removed=VehicleUiRules.Removed(remaining!=null && remaining.Exists(),snapshot.Model,identity,remaining?.Model.Hash??0,remaining!=null && remaining.Exists()?VehicleIdentity.Key(remaining.Model.Hash,Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT,remaining)):null);
+            if(!removed){snapshot.Stored=false;snapshot.PendingRemoval=false;live[snapshot.Id]=remaining;Notify.Show("Veiculo permanece no mundo. Use Localizar.");}
+            else{snapshot.PendingRemoval=false;live.Remove(snapshot.Id);Notify.Show("Veiculo guardado.");}
             pending = null; Wallet.Save();
         }
 
@@ -177,6 +175,8 @@ namespace RPCore
         }
         void Retrieve(GarageDefinition garage, SavedVehicle record)
         {
+            int resolved=VehicleUiRules.Resolve(data,record?.Id,garage.Id);if(resolved<0){Notify.Show("Registro atualizado/indisponivel; reabra a garagem.");return;}record=data.Vehicles[resolved];
+            int actor=Game.Player.Character.Handle;string profile=Profile.Id;
             if(Wallet.VehicleInsurance.Pending?.VehicleId==record.Id){Notify.Show("Conclua ou encerre o pedido de seguro antes de retirar este veiculo.");return;}
             if (!Nearby(garage) || !data.Garages.Contains(garage.Id) || pending != null) return;
             var existing = FindLive(record);
@@ -189,11 +189,12 @@ namespace RPCore
             if (World.GetNearbyVehicles(garage.Spawn, 5).Length > 0 || World.GetNearbyPeds(garage.Spawn, 2).Length > 0)
             { Notify.Show("Garage exit blocked. Clear the spawn area first."); return; }
             Model model = new Model(record.Model);
-            if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !model.Request(3000)) { Notify.Show("Saved vehicle model unavailable. Restore the required vehicle mod first."); return; }
+            if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !model.Request(3000)) { if(model.IsValid)model.MarkAsNoLongerNeeded();Notify.Show("Modelo salvo indisponivel. Restaure o mod do veiculo.");return; }
             Vehicle spawned = null;
             bool wasStored = record.Stored, wasPending = record.PendingRemoval;
             try
             {
+                if(!Nearby(garage) || Game.Player.Character.Handle!=actor || Profile.Id!=profile || !data.Garages.Contains(garage.Id) || World.GetNearbyVehicles(garage.Spawn,5).Length>0 || World.GetNearbyPeds(garage.Spawn,2).Length>0){Notify.Show("Retirada cancelada: contexto mudou ou saida ocupada.");return;}
                 spawned = World.CreateVehicle(model, garage.Spawn, garage.Heading);
                 if (spawned == null || !spawned.Exists()) { Notify.Show("Vehicle creation failed; garage record preserved."); return; }
                 VehicleSnapshot.Apply(spawned, record); spawned.IsPersistent = true;
@@ -210,34 +211,39 @@ namespace RPCore
             }
             finally { model.MarkAsNoLongerNeeded(); }
         }
-        bool CustomAccess=>Cfg.EnableGarages && customPoint.HasValue && customProfile==Profile.Id && customActor==Game.Player.Character && customActor!=null && customActor.Exists() && customActor.IsAlive && customCar!=null && customCar.Exists() && customCar.Driver==customActor && customActor.CurrentVehicle==customCar && (customCar.Model.IsCar || customCar.Model.IsBike && !customCar.Model.IsBicycle) && customCar.Speed<.5f && customCar.Position.DistanceTo(customPoint.Value)<=4.5f && !JobVehicles.Contains(customCar) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0;
-        public void OpenCustomWorkshop(JobPoint point)
+        bool CustomAccess=>Cfg.EnableGarages && !Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && (customAvailable==null || customAvailable()) && customPoint.HasValue && customProfile==Profile.Id && customActor==Game.Player.Character && customActor!=null && customActor.Exists() && customActor.IsAlive && customCar!=null && customCar.Exists() && customCar.Driver==customActor && customActor.CurrentVehicle==customCar && (customCar.Model.IsCar || customCar.Model.IsBike && !customCar.Model.IsBicycle) && customCar.Speed<.5f && customCar.Position.DistanceTo(customPoint.Value)<=4.5f && !JobVehicles.Contains(customCar) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0;
+        public void OpenCustomWorkshop(JobPoint point,Func<bool> available=null)
         {
-            customPoint=new Vector3(point.X,point.Y,point.Z);customProfile=Profile.Id;customActor=Game.Player.Character;customCar=customActor.CurrentVehicle;current=null;dirty=false;
+            customAvailable=available;customPoint=new Vector3(point.X,point.Y,point.Z);customProfile=Profile.Id;customActor=Game.Player.Character;customCar=customActor.CurrentVehicle;current=null;dirty=false;
             if(!CustomAccess){menu.Visible=false;Notify.Show("Pare como motorista de carro pessoal, sem procurado/missao.");return;}pool.HideAll();menu.Clear();menu.Name=point.Name;
-            Add("Personalizar veiculo","Pecas, pintura e equipamentos; banco.",()=>{var point=customPoint.Value;workshop.Open(()=>Game.Player.Character.Position.DistanceTo(point)<=4.5f);});
+            Add("Personalizar veiculo","Pecas, pintura e equipamentos; banco.",()=>{var point=customPoint.Value;workshop.Open(()=>Game.Player.Character.Position.DistanceTo(point)<=4.5f && (customAvailable==null || customAvailable()));});
             Add("Reparar: $500","Servico existente; preserva combustivel.",()=>Service(false));Add("Lavar: $25","Servico existente de lavagem.",()=>Service(true));Add("Fechar","Voltar ao jogo.",()=>menu.Visible=false);menu.Visible=true;
         }
         void Service(bool wash)
         {
             var p = Game.Player.Character; var v = p.IsInVehicle() ? p.CurrentVehicle : null;
-            if (customPoint.HasValue ? !CustomAccess : current == null || !MayStore(v, current, true)) { Notify.Show("Stop in your garage as driver. Mission vehicles are protected."); return; }
-            int cost = wash ? 25 : 500;
-            if (!Wallet.Debit(cost)) { Notify.Show("Not enough cash."); return; }
+            if (customPoint.HasValue ? !CustomAccess : current == null || !MayStore(v, current, true)) { Notify.Show("Stop in your garage as driver. Mission veiculos are protected."); return; }
+            var before=VehicleSnapshot.Capture(v);var old=data.FindIdentity(before.Model,before.Plate);int index=old==null?-1:data.Vehicles.IndexOf(old);
+            if(old!=null && (old.Stored || old.PendingRemoval || Wallet.VehicleInsurance.Pending?.VehicleId==old.Id)){Notify.Show("Conclua a operacao pendente de garagem/seguro.");return;}
+            int cost=wash?25:500;if(!Wallet.Debit(cost)){Notify.Show("Dinheiro insuficiente.");return;}
             try
             {
-                if (wash) v.DirtLevel = 0;
-                else { float fuel = v.FuelLevel; v.Repair(); v.FuelLevel = fuel; }
-                Wallet.Save(); Notify.Show(wash ? "Vehicle washed." : "Vehicle repaired.");
+                if(wash)v.DirtLevel=0;else{float fuel=v.FuelLevel;v.Repair();v.FuelLevel=fuel;}
+                if(index>=0){var saved=VehicleSnapshot.Capture(v);saved.Id=old.Id;saved.GarageId=old.GarageId;saved.Extra=old.Extra;data.Vehicles[index]=saved;}
+                Wallet.Save();Notify.Show(wash?"Veiculo lavado.":"Veiculo reparado.");
             }
-            catch { Wallet.Credit(cost); throw; }
+            catch
+            {
+                if(index>=0)data.Vehicles[index]=old;Wallet.Credit(cost);
+                if(v!=null && v.Exists() && v.Model.Hash==before.Model)VehicleSnapshot.Apply(v,before);throw;
+            }
         }
 
         public void Tick()
         {
             workshop.Tick();
             if (!Cfg.EnableGarages || Game.IsMissionActive) { pending = null; menu.Visible = false; return; }
-            if (Game.IsPaused) return;
+            if (Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id){pending=null;menu.Visible=false;return;}
             if(customPoint.HasValue && menu.Visible && !CustomAccess)menu.Visible=false;
             if (pending != null) FinishStore();
             if (menu.Visible && current != null && !Nearby(current)) menu.Visible = false;
@@ -246,12 +252,12 @@ namespace RPCore
             foreach (var g in garages.Where(g => p.Position.DistanceTo(g.Position) < 35))
             {
                 World.DrawMarker(MarkerType.Cylinder, g.Position - new Vector3(0, 0, 1), Vector3.Zero, Vector3.Zero, new Vector3(3, 3, 1), Color.FromArgb(90, 60, 140, 220));
-                if (!pool.AreAnyVisible && p.Position.DistanceTo(g.Position) < 15) Prompt.Help(Cfg.GarageKey + ": " + g.Name + (data.Garages.Contains(g.Id) ? " (owned)" : " $" + g.Price));
+                if (!pool.AreAnyVisible && p.Position.DistanceTo(g.Position) < 15) Prompt.Help(Cfg.GarageKey + ": " + g.Name + (data.Garages.Contains(g.Id) ? " (comprada)" : " $" + g.Price));
             }
         }
         public void OnKey(KeyEventArgs e)
         {
-            if (e.KeyCode != Cfg.GarageKey || !Cfg.EnableGarages || Game.IsMissionActive) return;
+            if (e.KeyCode != Cfg.GarageKey || !Cfg.EnableGarages || Game.IsMissionActive || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id) return;
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible && pending == null) { Rebuild(); menu.Visible = true; }
         }
@@ -271,7 +277,7 @@ namespace RPCore
         {
             workshop.Close();
             menu.Visible = false; pending = null;
-            // Leave occupied vehicles and other mods' entities in place during a script reload.
+            // Leave occupied veiculos and other mods' entities in place during a script reload.
             ReleaseCreated();
             live.Clear(); foreach (var b in blips) if (b.Exists()) b.Delete();
         }

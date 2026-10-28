@@ -46,8 +46,8 @@ namespace RPCore
                     if(!CanOpenActions())return;var p=Game.Player.Character.Position;var actual=MapPinRules.Nearest(destinations?.Invoke(),kind,p.X,p.Y,p.Z);if(actual==null){Notify.Show("Destino indisponivel.");return;}Function.Call(Hash.SET_NEW_WAYPOINT,actual.X,actual.Y);pool.HideAll();Notify.Show("GPS: "+actual.Name);
                 });
             }
-            Shortcut(gpsNearest,"Garagens / gerenciar",()=>Cfg.GarageKey,()=>Cfg.EnableGarages);
-            Shortcut(gpsNearest,"Concessionaria / GPS",()=>Cfg.DealerKey,()=>Cfg.EnableGarages);
+            Shortcut(gpsNearest,"Garagens / gerenciar",()=>Cfg.GarageKey,()=>Cfg.EnableGarages,()=>GarageRequested);
+            Shortcut(gpsNearest,"Concessionaria / GPS",()=>Cfg.DealerKey,()=>Cfg.EnableGarages,()=>DealerRequested);
             Shortcut(gpsNearest,"Gangues / GPS",()=>Cfg.GangsKey,()=>Cfg.EnableGangs);
         }
         void BuildPersonalGps()

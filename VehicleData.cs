@@ -64,6 +64,7 @@ namespace RPCore
 
     public class TransportData : ExtensibleData
     {
+        public Dictionary<string,int> NeonEquipment;
         public Dictionary<string, FuelTank> Tanks = new Dictionary<string, FuelTank>();
         public HashSet<string> Garages = new HashSet<string>();
         public List<SavedVehicle> Vehicles = new List<SavedVehicle>();

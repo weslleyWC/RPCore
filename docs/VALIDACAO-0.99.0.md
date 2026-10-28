@@ -1,0 +1,11 @@
+# Validação0.99.0 — veículos/garagens/oficina
+
+3811 testes aprovados (3772 anteriores +39), Release net48 sem erros/avisos. DataTests-0.99.0.trx. Sem execução GTA.
+
+Testes novos: mapeamento6portas/4vidros sem confundir ações em lote, corpo parado/car/valores finitos, prova de ator/perfil/veículo/motorista, RGB válido/inválido, remoção pelo handle/identidade original, resolução de snapshot atualizado após autosave, neon observado/comprovado e gravação antes de apagar com rollback/metadados, classificação desempenho e compra RGB usando verificação/rollback anterior. Testes anteriores de garagem/snapshot/combustível/oficina/banco/seguro e inventário seguem aprovados.
+
+Integração compilada/revisada: radial e menu compartilham VehicleAction, com prova do carro também na ação adiada; F11/GPS acessam os sistemas diretamente. Portas suportadas/paradas, vidros por comandos sem IsIntact como posição, luzes/setas/alerta, motor/fuel/belt/cruise existentes e overrides liberados. NeonEquipment opcional no Transport mantém prova de lados sem inventar instalação. Oficina agrupa slots, renderiza depois do evento, preserva seleção, oferece RGB via compra existente e fecha/libera gate em contexto inválido. Garagem confere entidade pelo handle antes de Delete, usa registro atual, revalida saída/ator após streaming e salva serviço imediatamente com restauração comum em falha.
+
+Não há ClearArea/RemoveAll/velocidade forçada/handling global, desbloqueio de equipamentos ou criação de saldo. Configs de preços/locais/capacidades/chaves e arquivos RPF/OIV/áudio não são alterados. Limites nativos/física, posição real de vidros e deformação completa não são provados por testes de dados; não há garantia de crash-atomicidade entre entidade e arquivo. Guia VEICULOS-GARAGENS-OFICINA-0.99.0.md contém roteiro e diferenças; demais sistemas e toda fase9 permanecem abertos na cobertura.
+
+Instalador PowerShell7/Linux: duas atualizações simuladas sobre0.98.0 preservaram203 arquivos byte a byte, incluindo Wallet.Transport com neon/RGB/pecas/combustivel/campos extras, Phone, MapPins, inventario e dados legados. DLL nova corresponde ao build, anterior em backup, RPF externo intocado. Relatorio installer-validation-0.99.0.json.
