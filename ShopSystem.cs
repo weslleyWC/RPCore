@@ -27,6 +27,8 @@ namespace RPCore
         readonly List<Blip> blips = new List<Blip>();
         ShopDef current;
 
+        public IEnumerable<GpsDestination> GpsPoints=>shops.Select(p=>new GpsDestination{Name=p.Name,Kind="Grocery",X=p.X,Y=p.Y,Z=p.Z});
+
         static Vector3 Pos(ShopDef s) { return new Vector3(s.X, s.Y, s.Z); }
 
         public ShopSystem(ObjectPool pool, InventorySystem inv, AchievementSystem ach, Func<bool> suppressInteraction = null, Func<IEnumerable<EditorPoint>> editorPoints = null, ShiftGate gate = null)

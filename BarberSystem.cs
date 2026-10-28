@@ -14,6 +14,7 @@ namespace RPCore
     public sealed class BarberSystem : ISystem
     {
         public string Name=>"barber";
+        public System.Collections.Generic.IEnumerable<GpsDestination> GpsPoints=>options.Shops.Select(p=>new GpsDestination{Name=p.Name,Kind="Barber",X=p.X,Y=p.Y,Z=p.Z});
         public Action OpenDetails;
         public bool CanUseService=>AtShop;
         readonly ObjectPool pool;readonly ShiftGate gate;readonly NativeMenu menu;readonly BarberOptions options;readonly List<Blip> blips=new List<Blip>();

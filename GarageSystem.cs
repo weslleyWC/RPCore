@@ -24,6 +24,7 @@ namespace RPCore
     public class GarageSystem : ISystem
     {
         public string Name { get { return "garages"; } }
+        public IEnumerable<GpsDestination> GpsPoints=>garages.Select(p=>new GpsDestination{Name=p.Name,Kind="Garage",X=p.X,Y=p.Y,Z=p.Z}).Concat(garages.Where(p=>data.Garages.Contains(p.Id)).Select(p=>new GpsDestination{Name="Oficina / "+p.Name,Kind="Workshop",X=p.X,Y=p.Y,Z=p.Z}));
         readonly ObjectPool pool;
         readonly WorkshopSystem workshop;
         readonly NativeMenu menu = new NativeMenu("Garages", "");

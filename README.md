@@ -1,3 +1,9 @@
+## Atualização0.97.0 — F11, radial e GPS refinados
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.97.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.97.0.zip) · [Uso e testes GTA](docs/MENUS-RADIAL-GPS-0.97.0.md) · [Cobertura de todo o refinamento](docs/COBERTURA-REFINAMENTO.md)
+
+F11 com checkboxes/listas e preferências gravadas antes de aplicar, staging e backup. Radial J com páginas de itens possuídos, paginação6+2, mouse/voltar e uso pelo inventário existente; GPS de serviços reais/ativos, grupos de trabalhos e marcadores pessoais com renomear/confirmar exclusão. Gestos curtos de mãos para cima, sem limpar tarefas globais. F2/teleporte/saves/configs preservados.3725 testes aprovados; GTA0.97 pendente. Usuário confirmou0.96 funcionando e a revisão integral de todos os sistemas/menus continua no escopo.
+
 ## Atualização 0.96.0 — lojas por categorias e consumíveis sem apresentação duplicada
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.96.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.96.0.zip) · [Uso e testes GTA](docs/LOJAS-E-CONSUMIVEIS-0.96.0.md)

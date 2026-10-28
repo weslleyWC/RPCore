@@ -65,6 +65,8 @@ namespace RPCore
             return points.Select((p, i) => new FuelStation { Name = "RPCore Fuel " + (i + 1), X = p[0], Y = p[1], Z = p[2] }).ToList();
         }
 
+        public IEnumerable<GpsDestination> GpsPoints=>stations.Select(p=>new GpsDestination{Name=p.Name,Kind="Fuel",X=p.X,Y=p.Y,Z=p.Z});
+
         bool Supported(Vehicle v)
         {
             return v != null && v.Exists() && !v.IsDead && (v.Model.IsCar || v.Model.IsBike || v.Model.IsQuadBike) && !v.Model.IsBicycle && !v.Model.IsElectricVehicle && !exclusions.Contains(v.Model.Hash);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using GTA;
 using GTA.UI;
@@ -120,6 +121,14 @@ namespace RPCore
             systems.Add(new RoleplayBootstrap(shifts));
             core = new CoreMenu(pool, ach, SaveAll, visual.Diagnose, jobs.Open, housing.OpenMenu, barber.OpenMenu, characters.OpenMenu, insurance.OpenMenu, dmv.OpenMenu, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(core);
             settings = new SettingsSystem(pool, DispatchSystemKey, needs, gangs, jobs.Open, postOp.StartPosition, valet.StartPosition, supply.StartPosition, tanker.StartPosition, prison.StartPosition, pilot.StartPosition, hunting.StartPosition, hunting.ForestPosition, fishing.StartPosition, crafting.StartPosition, dealer.StartPosition, drag.StartPosition, pdm.StartPosition, traffic.OpenMenu, studio.OpenMenu, halloween.OpenMenu, editor.OpenMenu, passenger.OpenMenu, world.OpenMenu); systems.Add(settings);
+            Func<IEnumerable<GpsDestination>> navPoints=()=>
+                (!faulted.Contains(shop)?shop.GpsPoints:Enumerable.Empty<GpsDestination>())
+                .Concat(fuel!=null && Cfg.EnableFuel && !faulted.Contains(fuel)?fuel.GpsPoints:Enumerable.Empty<GpsDestination>())
+                .Concat(garages!=null && Cfg.EnableGarages && !faulted.Contains(garages)?garages.GpsPoints:Enumerable.Empty<GpsDestination>())
+                .Concat(!faulted.Contains(barber)?barber.GpsPoints:Enumerable.Empty<GpsDestination>())
+                .Concat(editor.ServicePoints.Where(p=>p.Kind==EditorPointKind.Grocery || p.Kind==EditorPointKind.Fuel && Cfg.EnableFuel || p.Kind==EditorPointKind.Workshop && Cfg.EnableGarages).Select(p=>new GpsDestination{Name=p.Name,Kind=p.Kind==EditorPointKind.Grocery?"Grocery":p.Kind==EditorPointKind.Fuel?"Fuel":"Workshop",X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z}))
+                .Concat(!faulted.Contains(pdm)?new[]{new GpsDestination{Name="PDM / empresa",Kind="PDM",X=pdm.StartPosition.X,Y=pdm.StartPosition.Y,Z=pdm.StartPosition.Z}}:Enumerable.Empty<GpsDestination>());
+            settings.ConfigureNavigation(navPoints,shifts);
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -132,7 +141,7 @@ namespace RPCore
                     case 6: settings.OpenInteractions(); break;
                     case 7: DispatchSystemKey(InterfaceOptions.SettingsKey); break;
                 }
-            }); systems.Add(radial);
+            });radial.Configure(inv,wardrobe.OpenMenu,navPoints); systems.Add(radial);
             systems.Add(visual);
             ach.Bump("started");
 
@@ -141,7 +150,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.96.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.97.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)

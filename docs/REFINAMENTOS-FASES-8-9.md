@@ -272,3 +272,8 @@ Usuário confirmou mouse, sobrepeso, normalização e atualização por muniçã
 ### Refinamento 0.96.0 — lojas e integração visual de consumo
 
 NewShopSystem/ItemDatabase revisados. Conveniências e Grocery do editor ganham catálogo por categorias/grade6x4, mochila somente para consulta, quantidades e compra explícita limitada por dinheiro/peso, input modal com gate e saída segura. Preços/forma de pagamento/configs/pontos anteriores preservados. Encontrada segunda criação de prop por PropPresentation.Used: removida assinatura interna duplicada e centralizados bindings/fallbacks na apresentação identificada do inventário. Celular conserva seu apresentador.3686 testes aprovados; GTA ainda precisa roteiro LOJAS-E-CONSUMIVEIS-0.96.0.md. Ferramentas, intoxicação, lojas especializadas e fase9 permanecem no escopo aberto.
+
+
+### Confirmação do escopo integral e refinamento0.97
+
+Usuário confirmou teste da0.96 funcionando e reforçou que todo sistema implementado, todos os menus e detalhes devem ser refinados. COBERTURA-REFINAMENTO.md registra os58 sistemas ISystem e os componentes auxiliares; base funcional não equivale a revisão completa.0.97 revisa SettingsMenu/RadialMenu da PSRP: checkboxes/listas e preferências gravadas antes de aplicar, escrita temporária+backup, páginas de uso de inventário no radial, mouse/voltar/input seguro, GPS de serviços reais, marcadores com renomear/confirmação/gravação candidata e gestos curtos de mãos para cima. Teleporte/F2/J/F11 preservados.3725 testes; GTA0.97 pendente. Outras páginas, menus e fase9 continuam explicitamente abertos.

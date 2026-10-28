@@ -29,7 +29,7 @@ namespace RPCore
         }
         public static void Set<T>(string file, string section, string key, T value)
         {
-            var s = ScriptSettings.Load(Path.Combine(Cfg.Dir, file)); s.SetValue(section, key, value); s.Save();
+            MenuFileRules.Write(Path.Combine(Cfg.Dir,file),temp=>{var s=ScriptSettings.Load(temp);s.SetValue(section,key,value);return s.Save();});
         }
     }
 }

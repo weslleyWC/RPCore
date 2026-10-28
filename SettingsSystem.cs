@@ -12,8 +12,7 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public class MapPin : ExtensibleData { public string Name; public float X, Y, Z; }
-    public sealed class SettingsSystem : ISystem
+    public sealed partial class SettingsSystem : ISystem
     {
         public string Name { get { return "settings"; } }
         readonly ObjectPool pool;
@@ -24,7 +23,8 @@ namespace RPCore
         readonly Vector3 postOp, valet, supply, tanker, prison, pilot, hunting, huntingForest, fishing, crafting, dealer, drag, pdm;
         readonly WaypointTeleport teleport = new WaypointTeleport();
         readonly List<NativeMenu> menus = new List<NativeMenu>();
-        readonly NativeMenu root, gps, emotes, interactions;
+        readonly NativeMenu root, gps, emotes, interactions,gpsNearest,gpsJobs,gpsPersonal,pinDetails,pinConfirm;
+        readonly List<Action> refreshOptions=new List<Action>();
         readonly List<Blip> pins = new List<Blip>();
         List<MapPin> map;
         string animDict, animName;
@@ -58,13 +58,17 @@ namespace RPCore
         }
         void Toggle(NativeMenu menu, string title, Func<bool> get, Action<bool> set)
         {
-            var row = new NativeItem(title) { AltTitle = get() ? "ON" : "OFF" };
-            row.Activated += (s, e) => { set(!get()); row.AltTitle = get() ? "ON" : "OFF"; }; menu.Add(row);
+            var row=new NativeCheckboxItem(title,get());bool updating=false;
+            Action refresh=()=>{updating=true;try{row.Checked=get();}finally{updating=false;}};
+            row.CheckboxChanged+=(s,e)=>{if(updating)return;try{set(row.Checked);}catch(Exception ex){Log.Error("setting: "+title,ex);Notify.Show("Preferencia nao gravada; valor anterior conservado.");}finally{refresh();}};
+            refreshOptions.Add(refresh);menu.Add(row);
         }
-        void Rate(NativeMenu menu, string title, Func<float> get, Action<float> set, float step)
+        void Rate(NativeMenu menu,string title,Func<float> get,Action<float> set,float step)
         {
-            var row = new NativeItem(title, "Ajuste tecnico. Em necessidades, zero usa o padrao de roleplay.") { AltTitle = get().ToString("0.##") };
-            row.Activated += (s, e) => { set(get() >= step * 5 ? 0 : get() + step); row.AltTitle = get().ToString("0.##"); }; menu.Add(row);
+            var values=MenuFileRules.Choices(get(),step);
+            var row=new NativeListItem<float>(title,"Esquerda/direita ajustam; valores personalizados existentes sao preservados.",values);if(values.Contains(get()))row.SelectedItem=get();bool updating=false;
+            Action refresh=()=>{updating=true;try{float current=get();if(!float.IsNaN(current) && !float.IsInfinity(current) && current>=0){if(!row.Items.Contains(current))row.Add(current);row.SelectedItem=current;}}finally{updating=false;}};
+            row.ItemChanged+=(s,e)=>{if(updating)return;try{set(row.SelectedItem);}catch(Exception ex){Log.Error("setting rate: "+title,ex);Notify.Show("Ajuste nao gravado; valor anterior conservado.");}finally{refresh();}};refreshOptions.Add(refresh);menu.Add(row);
         }
         void VisualToggle(NativeMenu menu, string title, string key, Func<bool> get, Action<bool> set)
         { Toggle(menu, title, get, v => { InterfaceOptions.Set("Visuals.ini", "Visuals", key, v); set(v); }); }
@@ -87,25 +91,25 @@ namespace RPCore
             var survival = Menu("Survival Settings"); Link(root, survival);
             var technical=Menu("Advanced Settings");
             Add(survival,"Estado das necessidades","Os mesmos valores do HUD e do inventario.",()=>Notify.Show("Fome "+needs.Hunger.ToString("0")+" / sede "+needs.Thirst.ToString("0")+" / energia "+needs.Sleep.ToString("0")));
-            Rate(technical, "Fome por minuto (passo 0.5)", () => Cfg.HungerPerMin, v => { Cfg.HungerPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "HungerPerMin", v); }, .5f);
-            Rate(technical, "Sede por minuto (passo 0.5)", () => Cfg.ThirstPerMin, v => { Cfg.ThirstPerMin = v; InterfaceOptions.Set("Settings.ini", "Needs", "ThirstPerMin", v); }, .5f);
+            Rate(technical, "Fome por minuto (passo 0.5)", () => Cfg.HungerPerMin, v => { InterfaceOptions.Set("Settings.ini", "Needs", "HungerPerMin", v); Cfg.HungerPerMin=v; }, .5f);
+            Rate(technical, "Sede por minuto (passo 0.5)", () => Cfg.ThirstPerMin, v => { InterfaceOptions.Set("Settings.ini", "Needs", "ThirstPerMin", v); Cfg.ThirstPerMin=v; }, .5f);
             Add(survival, "Descansar / parar descanso", "A pe, parado e fora de combate. Recupera sono gradualmente sem adiantar o relogio.", () => { pool.HideAll(); needs.ToggleRest(); });
             var vehicle = Menu("Vehicle Settings"); Link(root, vehicle);
-            Toggle(vehicle,"Velocimetro em km/h",()=>InterfaceOptions.MetricSpeed,v=> { InterfaceOptions.MetricSpeed=v; InterfaceOptions.Set("Interface.ini","VehicleHud","Metric",v); });
+            Toggle(vehicle,"Velocimetro em km/h",()=>InterfaceOptions.MetricSpeed,v=> { InterfaceOptions.Set("Interface.ini","VehicleHud","Metric",v); InterfaceOptions.MetricSpeed=v; });
             Shortcut(vehicle, "Controles do veiculo", () => Cfg.VehicleMenuKey, () => Cfg.EnableVehicleControls);
             Shortcut(vehicle, "Garagens", () => Cfg.GarageKey, () => Cfg.EnableGarages);
             Shortcut(vehicle, "Concessionaria", () => Cfg.DealerKey, () => Cfg.EnableGarages);
-            Rate(technical, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { Cfg.FuelPer100Km = v; InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); }, 4);
+            Rate(technical, "Combustivel L/100km (passo 4)", () => Cfg.FuelPer100Km, v => { InterfaceOptions.Set("Vehicles.ini", "Fuel", "LitersPer100Km", v); Cfg.FuelPer100Km=v; }, 4);
             var ui = Menu("UI Settings"); Link(root, ui);
             Link(ui,technical);
-            Toggle(technical,"Mostrar opcoes tecnicas nos sistemas",()=>InterfaceOptions.AdvancedMenus,v=>{InterfaceOptions.AdvancedMenus=v;InterfaceOptions.Set("Interface.ini","Interface","AdvancedMenus",v);});
-            Toggle(ui,"Inventario em grade",()=>InterfaceOptions.GridInventory,v=> { InterfaceOptions.GridInventory=v; InterfaceOptions.Set("Interface.ini","Interface","GridInventory",v); });
-            Toggle(ui,"Zona segura de tela",()=>InterfaceOptions.RespectSafeZone,v=> { InterfaceOptions.RespectSafeZone=v; InterfaceOptions.Set("Interface.ini","Layout","RespectSafeZone",v); foreach(var menu in menus) menu.SafeZoneAware=v; });
+            Toggle(technical,"Mostrar opcoes tecnicas nos sistemas",()=>InterfaceOptions.AdvancedMenus,v=>{InterfaceOptions.Set("Interface.ini","Interface","AdvancedMenus",v); InterfaceOptions.AdvancedMenus=v;});
+            Toggle(ui,"Inventario em grade",()=>InterfaceOptions.GridInventory,v=> { InterfaceOptions.Set("Interface.ini","Interface","GridInventory",v); InterfaceOptions.GridInventory=v; });
+            Toggle(ui,"Zona segura de tela",()=>InterfaceOptions.RespectSafeZone,v=> { InterfaceOptions.Set("Interface.ini","Layout","RespectSafeZone",v); InterfaceOptions.RespectSafeZone=v; foreach(var menu in menus) menu.SafeZoneAware=v; });
             VisualToggle(ui, "HUD de necessidades", "NeedsHud", () => Visuals.NeedsHud, v => Visuals.NeedsHud = v);
             VisualToggle(ui, "HUD do veiculo", "VehicleHud", () => Visuals.VehicleHud, v => Visuals.VehicleHud = v);
             VisualToggle(ui, "Dinheiro / banco", "WalletHud", () => Visuals.WalletHud, v => Visuals.WalletHud = v);
-            Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.HideRadarOnFoot = v; InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); });
-            Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { Visuals.Scale = Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale", Visuals.Scale); Notify.Show("Escala: " + Visuals.Scale); });
+            Toggle(ui, "Ocultar minimapa a pe", () => InterfaceOptions.HideRadarOnFoot, v => { InterfaceOptions.Set("Interface.ini", "Interface", "HideRadarOnFoot", v); InterfaceOptions.HideRadarOnFoot=v; });
+            Add(ui, "Escala do HUD", "Alterna 0.8 / 1.0 / 1.2.", () => { float scale=Visuals.Scale < .9f ? 1 : Visuals.Scale < 1.1f ? 1.2f : .8f; InterfaceOptions.Set("Visuals.ini", "Layout", "Scale",scale);Visuals.Scale=scale; Notify.Show("Escala: " + Visuals.Scale); });
             var game = Menu("Game Settings"); Link(root, game);
             Toggle(game,"Ocultar roda de armas do GTA",()=>InterfaceOptions.HideWeaponWheel,v=>{InterfaceOptions.Set("Interface.ini","Interface","HideWeaponWheel",v);InterfaceOptions.HideWeaponWheel=v;});
             if(studio!=null) Add(game,"Contratos / assalto ao estudio","The Hollywood Act: cinco preparacoes, final e pagamento persistente.",()=>{pool.HideAll();studio();});
@@ -125,11 +129,11 @@ namespace RPCore
             var builder = Menu("Map Builder"); Link(root, builder);
             if(editor!=null) Add(builder,"Map Builder / objetos e locais","Criar/editar/salvar/carregar/importar/exportar mapas por perfil.",()=>{pool.HideAll();editor();});
             Add(builder, "Salvar marcador aqui", "Marcador pessoal simples. Objetos e locais estao no editor acima.", SavePin);
-            gps = Menu("Fast GPS");
+            gps = Menu("Fast GPS");gpsNearest=Menu("Nearby Services");gpsJobs=Menu("Jobs GPS");gpsPersonal=Menu("My Places");pinDetails=Menu("Saved Place");pinConfirm=Menu("Confirm Delete");
+            Link(gps,gpsNearest);Link(gps,gpsJobs);Link(gps,gpsPersonal);
             Add(builder, "Meus pontos / GPS / excluir", "Somente pontos criados pelo RPCore.", () => { builder.Visible = false; OpenGps(); });
             emotes = Menu("Emotes");
-            Add(emotes, "Acenar", "Gesto curto com a parte superior do corpo.", () => Play("gestures@m@standing@casual", "gesture_hello"));
-            Add(emotes, "Aplaudir", "Animacao curta; nao interrompe tarefas de outros mods ao fechar.", () => Play("anim@mp_player_intcelebrationmale@slow_clap", "slow_clap"));
+            foreach(var gesture in ReferenceEmotes.All){var emote=gesture;Add(emotes,emote.Name,"Gesto curto de4s; encerra ao andar, combater ou entrar em veiculo. Pode parar pelo menu.",()=>Play(emote.Dictionary,emote.Clip));}
             Add(emotes, "Parar gesto RPCore", "Para apenas a animacao iniciada por este menu.", StopAnimation);
             interactions = Menu("Interactions");
             Shortcut(interactions, "Armazenamento / porta-malas", () => Cfg.StorageKey);
@@ -139,77 +143,61 @@ namespace RPCore
             Reload();
         }
         void Cheat(Action action) { if (Game.IsMissionActive) Notify.Show("Indisponivel durante missao."); else action(); }
-        void SavePin()
-        {
-            if (map.Count >= 100) { Notify.Show("Limite de 100 pontos por perfil."); return; }
-            string name = Game.GetUserInput(WindowTitle.EnterCustomTeamName, "Ponto " + (map.Count + 1), 32);
-            if (string.IsNullOrWhiteSpace(name)) return;
-            var p = Game.Player.Character.Position; map.Add(new MapPin { Name = name.Trim(), X = p.X, Y = p.Y, Z = p.Z }); Save(); RefreshPins(); Notify.Show("Ponto salvo.");
-        }
-        void RefreshPins()
-        {
-            foreach (var b in pins) if (b.Exists()) b.Delete(); pins.Clear();
-            foreach (var point in map) { var b = World.CreateBlip(new Vector3(point.X, point.Y, point.Z)); b.Name = point.Name; b.IsShortRange = true; b.Color = BlipColor.Blue; pins.Add(b); }
-        }
         public void OpenGps()
         {
-            gps.Clear();
-            Shortcut(gps, "Garagens / GPS", () => Cfg.GarageKey, () => Cfg.EnableGarages);
-            Shortcut(gps, "Concessionaria / GPS", () => Cfg.DealerKey, () => Cfg.EnableGarages);
-            Shortcut(gps, "Gangues / GPS", () => Cfg.GangsKey, () => Cfg.EnableGangs);
-            Add(gps, "GPS: trabalho de pizza", "Pizzaria. Inicie/encerre o turno com " + Cfg.JobKey + ".", () => { Function.Call(Hash.SET_NEW_WAYPOINT, PizzaJob.StartLocation.X, PizzaJob.StartLocation.Y); gps.Visible = false; });
+            BuildNearbyGps();BuildPersonalGps();gpsJobs.Clear();
+            Add(gpsJobs, "GPS: trabalho de pizza", "Pizzaria. Inicie/encerre o turno com " + Cfg.JobKey + ".", () => { Function.Call(Hash.SET_NEW_WAYPOINT, PizzaJob.StartLocation.X, PizzaJob.StartLocation.Y); pool.HideAll(); });
             if (jobs != null)
             {
-                Add(gps, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { gps.Visible = false; jobs(); });
-                Add(gps, "GPS: PDM / empresa", "Escritorio externo: caixa, estoque e entregas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pdm.X, pdm.Y); gps.Visible = false; });
-                Add(gps, "GPS: arrancada / Sandy Shores", "Encontro e inscricao com carro proprio.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, drag.X, drag.Y); gps.Visible = false; });
-                Add(gps, "GPS: contato / trafico", "Contato externo para comprar estoque da atividade.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, dealer.X, dealer.Y); gps.Visible = false; });
-                Add(gps, "GPS: bancada / crafting / feira", "Receitas e venda de produtos das bolsas de caca/pesca.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, crafting.X, crafting.Y); gps.Visible = false; });
-                Add(gps, "GPS: pesca / equipamento", "Banca de pesca: vara, iscas e venda.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, fishing.X, fishing.Y); gps.Visible = false; });
-                Add(gps, "GPS: caca / acougue", "Licenca, equipamento e venda de materiais.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, hunting.X, hunting.Y); gps.Visible = false; });
-                Add(gps, "GPS: floresta de caca", "Area de isca e rastreamento em Paleto Forest.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, huntingForest.X, huntingForest.Y); gps.Visible = false; });
-                Add(gps, "GPS: piloto / base de aviacao", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); gps.Visible = false; });
-                Add(gps, "GPS: transporte prisional", "Mission Row: retire o onibus e leve detentos a Bolingbroke.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, prison.X, prison.Y); gps.Visible = false; });
-                Add(gps, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); gps.Visible = false; });
-                Add(gps, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); gps.Visible = false; });
-                Add(gps, "GPS: trabalho Valet", "Contrate no hotel e cuide dos carros dos clientes.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, valet.X, valet.Y); gps.Visible = false; });
-                Add(gps, "GPS: trabalho Post OP", "Contrate a pe, retire a van e entregue as caixas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, postOp.X, postOp.Y); gps.Visible = false; });
+                Add(gpsJobs, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { pool.HideAll(); jobs(); });
+                Add(gpsJobs, "GPS: PDM / empresa", "Escritorio externo: caixa, estoque e entregas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pdm.X, pdm.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: arrancada / Sandy Shores", "Encontro e inscricao com carro proprio.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, drag.X, drag.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: contato / trafico", "Contato externo para comprar estoque da atividade.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, dealer.X, dealer.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: bancada / crafting / feira", "Receitas e venda de produtos das bolsas de caca/pesca.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, crafting.X, crafting.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: pesca / equipamento", "Banca de pesca: vara, iscas e venda.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, fishing.X, fishing.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: caca / acougue", "Licenca, equipamento e venda de materiais.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, hunting.X, hunting.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: floresta de caca", "Area de isca e rastreamento em Paleto Forest.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, huntingForest.X, huntingForest.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: piloto / base de aviacao", "Qualificacao e voos de aviao/helicoptero.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pilot.X, pilot.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: transporte prisional", "Mission Row: retire o onibus e leve detentos a Bolingbroke.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, prison.X, prison.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: transporte de combustivel", "LS GAS: cavalo mecanico, tanque e posto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, tanker.X, tanker.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: reposicao de lojas", "Caminhao, carga, lojas e retorno a base.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, supply.X, supply.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: trabalho Valet", "Contrate no hotel e cuide dos carros dos clientes.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, valet.X, valet.Y); pool.HideAll(); });
+                Add(gpsJobs, "GPS: trabalho Post OP", "Contrate a pe, retire a van e entregue as caixas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, postOp.X, postOp.Y); pool.HideAll(); });
             }
-            foreach (var pin in map.ToList())
-            {
-                var point = pin;
-                Add(gps, "GPS: " + point.Name, "Marca a rota ate este ponto.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, point.X, point.Y); gps.Visible = false; });
-                Add(gps, "Excluir: " + point.Name, "Remove somente este ponto RPCore.", () => { map.Remove(point); Save(); RefreshPins(); gps.Visible = false; });
-            }
-            gps.Visible = true;
+            gps.Visible=true;
         }
-        public void OpenEmotes() { emotes.Visible = true; }
-        public void OpenInteractions() { interactions.Visible = true; }
+        public void OpenEmotes() {if(CanOpenActions())emotes.Visible=true;}
+        public void OpenInteractions() {if(CanOpenActions())interactions.Visible=true;}
         void Play(string dict, string name)
         {
             var p = Game.Player.Character;
-            if (p.IsInVehicle() || p.IsInCombat || p.IsDead || Game.IsMissionActive) return;
-            StopAnimation(); animated = p; animDict = dict; animName = name; animDeadline = Game.GameTime + 2500;
+            if(!CanOpenActions() || p.IsInVehicle() || p.IsInCombat || p.IsRagdoll || p.IsFalling || p.IsSwimming || p.IsClimbing){Notify.Show("Use gestos a pe e em local seguro.");return;}
+            if(actionGate?.Owner!=null && actionGate.Owner!="emote"){Notify.Show("Encerre a atividade antes de usar gestos.");return;}
+            StopAnimation();if(actionGate!=null && !actionGate.Acquire("emote"))return; animated = p; animDict = dict; animName = name; animDeadline = Game.GameTime + 2500;
             Function.Call(Hash.REQUEST_ANIM_DICT, dict); pool.HideAll();
         }
         void StopAnimation()
         {
-            if (animStarted && animated != null && animated.Exists()) Function.Call(Hash.STOP_ANIM_TASK, animated, animDict, animName, 2f);
-            if (animDict != null) Function.Call(Hash.REMOVE_ANIM_DICT, animDict);
-            animated = null; animDict = animName = null; animStarted = false;
+            try{if(animStarted && animated!=null && animated.Exists())Function.Call(Hash.STOP_ANIM_TASK,animated,animDict,animName,2f);}
+            finally
+            {
+                try{if(animDict!=null)Function.Call(Hash.REMOVE_ANIM_DICT,animDict);}
+                finally{animated=null;animDict=animName=null;animStarted=false;actionGate?.Release("emote");}
+            }
         }
         public void Tick()
         {
             teleport.Tick();
+            if(menus.Any(m=>m.Visible)){if(!CanOpenActions()){foreach(var m in menus)m.Visible=false;}else foreach(var refresh in refreshOptions)refresh();}
             var p = Game.Player.Character;
-            bool hideRadar = InterfaceOptions.HideRadarOnFoot && !p.IsInVehicle() && !Game.IsMissionActive && !Game.IsPaused;
+            bool hideRadar = InterfaceOptions.HideRadarOnFoot && !p.IsInVehicle() && !p.IsDead && !Game.IsMissionActive && !Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
             if (hideRadar && !Function.Call<bool>(Hash.IS_RADAR_HIDDEN)) { Function.Call(Hash.DISPLAY_RADAR, false); radarHiddenByUs = true; }
             else if (!hideRadar && radarHiddenByUs) { Function.Call(Hash.DISPLAY_RADAR, true); radarHiddenByUs = false; }
             if (animDict == null) return;
-            if (p.IsDead || p.IsInVehicle() || p.IsInCombat || Game.IsMissionActive || animated.Handle != p.Handle) { StopAnimation(); return; }
+            if (!CanOpenActions() || p.IsInVehicle() || p.IsInCombat || p.IsRagdoll || p.IsFalling || p.IsSwimming || p.IsClimbing || p.IsShooting || p.Speed>.6f || animated.Handle != p.Handle) { StopAnimation(); return; }
             if (!animStarted)
             {
-                if (Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, animDict)) { Function.Call(Hash.TASK_PLAY_ANIM, p, animDict, animName, 4f, -4f, 4000, 48, 0f, false, false, false); animStarted = true; animDeadline = Game.GameTime + 4500; }
+                if (Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, animDict)) { Function.Call(Hash.TASK_PLAY_ANIM, p, animDict, animName, 4f, -4f, 4000, animDict=="random@arrests"?1:49, 0f, false, false, false); animStarted = true; animDeadline = Game.GameTime + 4500; }
                 else if (unchecked(Game.GameTime - animDeadline) >= 0) StopAnimation();
             }
             else if (unchecked(Game.GameTime - animDeadline) >= 0) StopAnimation();
@@ -218,10 +206,10 @@ namespace RPCore
         {
             if (e.KeyCode != InterfaceOptions.SettingsKey) return;
             if (menus.Any(m => m.Visible)) { foreach (var m in menus) m.Visible = false; }
-            else if (!pool.AreAnyVisible) root.Visible = true;
+            else if (!pool.AreAnyVisible && CanOpenActions()) root.Visible = true;
         }
-        public void Reload() { teleport.Cancel(false); foreach (var m in menus) m.Visible = false; StopAnimation(); map = Store.Load("MapPins.json", () => new List<MapPin>()).Where(p => p != null && !string.IsNullOrWhiteSpace(p.Name) && !float.IsNaN(p.X) && !float.IsNaN(p.Y) && !float.IsNaN(p.Z) && !float.IsInfinity(p.X) && !float.IsInfinity(p.Y) && !float.IsInfinity(p.Z)).Take(100).ToList(); RefreshPins(); }
-        public void Save() { Store.Write("MapPins.json", map); }
+        public void Reload() { teleport.Cancel(false); foreach (var m in menus) m.Visible = false; StopAnimation(); map = Store.Load("MapPins.json", () => new List<MapPin>());if(!MapPinRules.Valid(map))Log.Write("Invalid MapPins data retained; marker edits blocked."); RefreshPins(); }
+        public void Save() {if(!MapPinRules.Valid(map))throw new InvalidOperationException("Invalid MapPins retained.");Store.Write("MapPins.json",map);}
         public void Dispose() { teleport.Cancel(false); StopAnimation(); if (radarHiddenByUs) Function.Call(Hash.DISPLAY_RADAR, true); radarHiddenByUs = false; foreach (var m in menus) m.Visible = false; foreach (var b in pins) if (b.Exists()) b.Delete(); pins.Clear(); }
     }
 }
