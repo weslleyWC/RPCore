@@ -262,3 +262,8 @@ Diretriz permanente confirmada pelo usuario: todo refinamento deve partir da lei
 0.94: mouse na grade pessoal solicitado após aceite do inventário0.93. Extensão própria sobre a geometria PSRP: selecionar/arrastar/trocar posições, roda, cancelamento, mesmo salvamento existente. Sem mudar quantidades, configurações ou fluxo de transferência/receitas.3602 testes de dados aprovados; cursor e gestos GTA pendentes. As demais diferenças da revisão0.93 continuam listadas no guia, sem abrir nova revisão de atividades.
 
 Antes da publicação0.94, usuário pediu peso funcional: sobrecarga automática com redução progressiva de movimento, sprint/salto bloqueados a pé, exclusões de veículo/missão/controle/água/ar e efeito por frame sem multiplicadores globais. Quantidade/pesos/limites existentes conservados. Ctrl+Enter no depósito transfere o que couber para facilitar aliviar estoques legados. Incluído no mesmo pacote de mouse; teste físico GTA pendente.
+
+
+### Correção 0.95.0 após teste da 0.94.0
+
+Usuário confirmou mouse, sobrepeso, normalização e atualização por munição/exclusão. Relatou props presos após consumo e roda reativada; corrigidos os caminhos de limpeza confirmada/repetida e política de input independente da armaria. Delete agora larga itens recuperáveis no chão, persistidos com inventário, R/Shift+R recolhem perto da marca. Fonte PSRP revisada em NewInventorySystem/SettingsMenu; descarte recuperável é código próprio. Teste físico pendente conforme CORRECOES-INVENTARIO-0.95.0.md. Demais ferramentas/intoxicação e refinamento dos trabalhos continuam no escopo registrado.

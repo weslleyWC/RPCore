@@ -67,6 +67,7 @@ namespace RPCore
 
         public void Reload()
         {
+            CleanupUseProps();
             StopUsing();
             weightWarned=false;
             d = Store.Load("Inventory.json", () => new InvData());
@@ -177,6 +178,7 @@ namespace RPCore
 
         public void Tick()
         {
+            CleanupUseProps();
             try{UsingTick();}catch(Exception ex){Log.Error("item presentation tick",ex);StopUsing();}BlockNumberControls();
             ArmoryTick();
             BurdenTick();
@@ -185,6 +187,7 @@ namespace RPCore
             if (dirty && menu.Visible) Rebuild();
             if (dirty) ReconcileLayout();
             grid.Tick();
+            GroundTick();
             dirty = false;
         }
 

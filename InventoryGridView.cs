@@ -52,12 +52,13 @@ namespace RPCore
             }
             if(moving>=0){Relocate();return;}if(Selected!=null)inventory.UseSelected(Selected);
         }
-        void Discard(bool stack){string id=dropping;dropping=null;if(id!=null && inventory.DropSaved(id,stack?inventory.Count(id):1))Notify.Show("Descartado: "+id);}
+        void Discard(bool stack){string id=dropping;dropping=null;if(id!=null && inventory.DropOnGround(id,stack?inventory.Count(id):1))Notify.Show("Deixado no chao: "+id);}
         public void OnKey(KeyEventArgs e)
         {
             if(e.KeyCode==Cfg.InventoryKey || e.KeyCode==Keys.Back || e.KeyCode==Keys.Escape || StorageOpen && e.KeyCode==Cfg.StorageKey){Close();return;}
             if(mouse.Active && e.KeyCode!=Keys.PageUp && e.KeyCode!=Keys.PageDown){mouse.Cancel();return;}
             if(dropping!=null)return;
+            if(e.KeyCode==Keys.R && (e.Modifiers & ~Keys.Shift)==Keys.None && !Editing){inventory.PickupGround(e.Shift);return;}
             if(!Editing && inventory.TryQuickUse(e))return;
             if(e.KeyCode==Keys.Tab){if(StorageOpen)storageSide=!storageSide;else{craftFocus=!craftFocus;moving=-1;}return;}
             if(e.KeyCode==Keys.Left)Move(-1,0);else if(e.KeyCode==Keys.Right)Move(1,0);else if(e.KeyCode==Keys.Up)Move(0,-1);else if(e.KeyCode==Keys.Down)Move(0,1);
@@ -161,7 +162,7 @@ namespace RPCore
             if(inventory.Overweight)text("Sobrepeso: movimento lento / sem sprint e salto",1000,715,.25f,Color.OrangeRed,GTA.UI.Alignment.Left,270);
             bool keyboard=Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0);
             text(keyboard?"1-6: primeira linha   ENTER: usar   C: mover   T: ingrediente   TAB: receitas":"A: usar   X: mover   Y: ingrediente   RB: receitas   B: fechar",140,920,.25f,Color.White,GTA.UI.Alignment.Left,1150);
-            text(keyboard?"Mouse: arrastar / roda: rolar   DELETE: descartar   BACKSPACE: fechar":"LB: descartar 1 / segure: pilha   Direcional: navegar / quantidade",140,953,.25f,Color.White,GTA.UI.Alignment.Left,1150);
+            text(keyboard?"Mouse: arrastar / roda: rolar   DELETE: largar / segure: pilha   R: recolher   BACKSPACE: fechar":"LB: largar 1 / segure: pilha   Direcional: navegar / quantidade",140,953,.25f,Color.White,GTA.UI.Alignment.Left,1150);
             if(inventory.UsingItem)text("Usando item...",1000,720,.3f,Color.Yellow,GTA.UI.Alignment.Left,270);
         }
         void DrawGrid(bool container,float start,InventoryNavigation nav,List<string> slots,float s,float ox,float oy,Action<string,float,float,float,Color,GTA.UI.Alignment,float> text)

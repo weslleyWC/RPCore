@@ -1,3 +1,9 @@
+## Atualização 0.95.0 — correções do inventário e itens no chão
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.95.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.95.0.zip) · [Uso e testes GTA](docs/CORRECOES-INVENTARIO-0.95.0.md)
+
+Limpeza de consumíveis com desanexação, confirmação e nova tentativa; recuperação de sobras próprias após reload. Bloqueio da roda separado da sincronização de armas e aplicado por frame mesmo em atividades a pé. Delete/LB agora largam unidade/pilha com posição e quantidade salvas; perto da marca azul, abra o inventário e use R/Shift+R para recolher unidade/o que couber. Preserva armas, munição, metadados, saves e arquivos instalados. Mouse e sobrepeso mantidos. Veja o guia para os limites e a validação no jogo.
+
 ## Atualização0.94.0 — mouse e peso funcional
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.94.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.94.0.zip) · [Uso e teste](docs/INVENTARIO-MOUSE-0.94.0.md)

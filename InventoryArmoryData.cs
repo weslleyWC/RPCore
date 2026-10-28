@@ -30,7 +30,7 @@ namespace RPCore
         {
             if(data?.Items==null || data.Containers==null || data.Armory?.Valid!=true || id==null || !data.Armory.Weapons.ContainsKey(id))return false;
             if(data.Items.TryGetValue(id,out int count) && count!=0)return false;
-            return !data.Containers.Values.Any(box=>box!=null && box.TryGetValue(id,out int n) && n!=0);
+            return !(data.GroundItems?.Any(item=>item!=null && item.Item==id && item.Quantity>0)??false) && !data.Containers.Values.Any(box=>box!=null && box.TryGetValue(id,out int n) && n!=0);
         }
         public static bool Import(ref InvData data,IEnumerable<ArmoryObservation> observations,Action<InvData> save)
         {

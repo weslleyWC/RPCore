@@ -140,7 +140,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.94.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.95.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void AddOptional(Func<ISystem> create)
@@ -193,6 +193,9 @@ namespace RPCore
                     Notify.Show("~r~" + s.Name + " crashed, see scripts\\RPCore\\RPCore.log");
                 }
             }
+
+            // Input policy is independent of armory IO, activity gates and inventory faults.
+            try { inventory.EnforceWeaponControls(); } catch (Exception ex) { Log.Error("inventory input policy", ex); }
 
             if (unchecked(Game.GameTime - nextSave) >= 0)
             {

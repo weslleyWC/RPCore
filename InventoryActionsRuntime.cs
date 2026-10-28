@@ -24,7 +24,7 @@ namespace RPCore
         bool CanUseItem()
         {
             var p=Game.Player.Character;
-            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsRagdoll && !p.IsFalling && !p.IsClimbing && !p.IsSwimming && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && (!pool.AreAnyVisible || menu.Visible) && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen;
+            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsRagdoll && !p.IsFalling && !p.IsClimbing && !p.IsSwimming && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && (!pool.AreAnyVisible || menu.Visible) && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen && retiredUseProps.Count<16;
         }
         public bool TryQuickUse(KeyEventArgs e)
         {
@@ -52,7 +52,7 @@ namespace RPCore
             useModel=new Model(drink?"ba_prop_club_water_bottle":item.Health>0?"prop_ld_health_pack":"prop_cs_burger_01");
             if(useModel.IsInCdImage && useModel.IsValid)useModel.Request();
         }
-        bool OwnUseProp()=>useProp!=null && useProp.Exists() && Function.Call<bool>(Hash.DECOR_EXIST_ON,useProp,UseDecor) && Function.Call<int>(Hash.DECOR_GET_INT,useProp,UseDecor)==useToken;
+
         void UsingTick()
         {
             if(!UsingItem)return;var p=Game.Player.Character;int now=Game.GameTime,delta=NeedsRules.Delta(now,useLast,!Game.IsPaused);useLast=now;
@@ -63,14 +63,13 @@ namespace RPCore
             if(unchecked(now-useDeadline)<0)
             {
                 if(!useAnimation && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED,useDict)){p.Task.PlayAnimation(useDict,useClip,4,-4,useRemaining,(AnimationFlags)49,0);useAnimation=true;}
-                if(!usePropTried && useModel.IsLoaded)
+                if(!usePropTried && useModel.IsLoaded && PrepareUseDecor())
                 {
                     usePropTried=true;
                     var prop=World.CreateProp(useModel,p.Position,false,false);
                     if(prop!=null && prop.Exists())
                     {
-                        if(!Function.Call<bool>(Hash.DECOR_IS_REGISTERED_AS_TYPE,UseDecor,3))Function.Call(Hash.DECOR_REGISTER,UseDecor,3);
-                        if(Function.Call<bool>(Hash.DECOR_SET_INT,prop,UseDecor,useToken)){useProp=prop;prop.IsPersistent=true;prop.AttachTo(p.Bones[Bone.PHLeftHand],new Vector3(0,0,-.04f),Vector3.Zero);}else prop.MarkAsNoLongerNeeded();
+                        if(Function.Call<bool>(Hash.DECOR_SET_INT,prop,UseDecor,useToken)){useProp=prop;activeUseProp=new UsePropLease{Handle=prop.Handle,Token=useToken,Model=useModel.Hash};prop.IsPersistent=true;prop.AttachTo(p.Bones[Bone.PHLeftHand],new Vector3(0,0,-.04f),Vector3.Zero);}else { prop.Delete(); Log.Write("item prop ownership registration rejected"); }
                     }
                 }
             }
@@ -79,7 +78,7 @@ namespace RPCore
         {
             bool reopen=completed && useReopen && useProfile==Profile.Id && useActor!=null && useActor.Exists() && Game.Player.Character?.Handle==useActor.Handle;
             try{if(useActor!=null && useActor.Exists() && useAnimation && Game.Player.Character?.Handle==useActor.Handle && useProfile==Profile.Id)Function.Call(Hash.STOP_ANIM_TASK,useActor,useDict,useClip,-4f);}catch(Exception ex){Log.Error("item animation cleanup",ex);}
-            try{if(OwnUseProp())useProp.Delete();}catch(Exception ex){Log.Error("item prop cleanup",ex);}useProp=null;
+            try{RetireUseProp();}catch(Exception ex){Log.Error("item prop cleanup",ex);}
             try{if(useModel.Hash!=0)useModel.MarkAsNoLongerNeeded();if(useDict!=null)Function.Call(Hash.REMOVE_ANIM_DICT,useDict);}catch(Exception ex){Log.Error("item model cleanup",ex);}
             useActor=null;useProfile=null;useDict=null;useClip=null;useAnimation=false;useRemaining=0;useModel=default(Model);
             armoryGate?.Release("inventory_use");

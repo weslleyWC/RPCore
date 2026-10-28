@@ -94,8 +94,7 @@ namespace RPCore
                     armoryTracking=true;
                     RememberNative(p);
                 }
-                if(InterfaceOptions.HideWeaponWheel && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p))
-                    foreach(var c in new[]{GTA.Control.SelectWeapon,GTA.Control.SelectPrevWeapon,GTA.Control.SelectNextWeapon,GTA.Control.SelectWeaponUnarmed,GTA.Control.SelectWeaponMelee,GTA.Control.SelectWeaponAutoRifle,GTA.Control.SelectWeaponHandgun,GTA.Control.SelectWeaponHeavy,GTA.Control.SelectWeaponShotgun,GTA.Control.SelectWeaponSmg,GTA.Control.SelectWeaponSniper,GTA.Control.NextWeapon,GTA.Control.PrevWeapon})Game.DisableControlThisFrame(c);
+
             }
             catch(Exception ex){Game.DisableControlThisFrame(GTA.Control.Attack);Game.DisableControlThisFrame(GTA.Control.Attack2);ReportArmory(ex);}
         }

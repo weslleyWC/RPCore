@@ -21,6 +21,7 @@ namespace RPCore
     public class InvData : ExtensibleData
     {
         public NeedsConsumption Consumption;
+        public List<InventoryGroundItem> GroundItems;
         public InventoryArmory Armory;
         public Dictionary<string, int> Items = new Dictionary<string, int>();
         public Dictionary<string, Dictionary<string, int>> Containers = new Dictionary<string, Dictionary<string, int>>();
