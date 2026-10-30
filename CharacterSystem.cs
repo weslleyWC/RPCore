@@ -14,6 +14,9 @@ namespace RPCore
         public string Name=>"characters";
         readonly ObjectPool pool;readonly ShiftGate gate;readonly Action<string,int> transition;readonly CharacterFiles files;readonly JsonFiles json=new JsonFiles();readonly NativeMenu menu;
         public Func<CharacterBody,CharacterBody> SnapshotFilter;
+        public Action<int> DiagnosticStage;
+        readonly CharacterStartupStability startup=new CharacterStartupStability();
+        void Phase(int stage,string name){DiagnosticStage?.Invoke(stage);Log.Write("character phase: "+name);}
         CharacterCard current;Operation operation;bool switching,lease;
         readonly PersonalServiceMenu ui;readonly CharacterEntryGate entry=new CharacterEntryGate();int entryClock;
         CharacterCatalogue Catalogue()=>CharacterCatalogue.Read(Cfg.SaveDir,id=>files.Read(id),(id,ex)=>Log.Error("character catalogue "+id,ex));
@@ -21,12 +24,16 @@ namespace RPCore
         sealed class Operation
         {
             public string Profile,OriginProfile;public Ped Origin,Actor;public Model Model;public Vector3 Position;public float Heading;public int Started;
-            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;
+            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;public int OriginModel;public bool AppearanceStarted;
         }
         string ReturnPath=>Path.Combine(Cfg.Dir,"CharacterReturn.json");
-        bool Safe=>Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && GTA.UI.Screen.IsFadedIn && !Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING) && Game.Player.Wanted.WantedLevel==0 && Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && Game.Player.Character.Speed<.5f;
+        public static bool EngineReady
+        {
+            get{var p=Game.Player.Character;return p!=null && p.Exists() && p.IsAlive && Game.Player.CanControlCharacter && GTA.UI.Screen.IsFadedIn && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) && !Function.Call<bool>(Hash.IS_PLAYER_SWITCH_IN_PROGRESS) && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING) && Function.Call<bool>(Hash.HAS_COLLISION_LOADED_AROUND_ENTITY,p) && !Function.Call<bool>(Hash.IS_ENTITY_WAITING_FOR_WORLD_COLLISION,p);}
+        }
+        bool Safe=>EngineReady && Profile.Detect()==Profile.Id && !InterfaceOptions.ModalOpen && Game.Player.Wanted.WantedLevel==0 && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && Game.Player.Character.Speed<.5f;
         public CharacterSystem(ObjectPool pool,ShiftGate gate,Action<string,int> transition)
-        {this.pool=pool;this.gate=gate;this.transition=transition;files=new CharacterFiles(Cfg.SaveDir);menu=new NativeMenu("Personagens RPCore","CRIAR / CARREGAR / VOLTAR");pool.Add(menu);Visuals.Register(menu,"core");ui=new PersonalServiceMenu(menu,ex=>{End();ui.Close();Log.Error("character action",ex);Notify.Show("Operacao nao concluida. Seus personagens foram preservados; confira o log.");});entryClock=Game.GameTime;Reload();}
+        {this.pool=pool;this.gate=gate;this.transition=transition;files=new CharacterFiles(Cfg.SaveDir);menu=new NativeMenu("Personagens RPCore","CRIAR / CARREGAR / VOLTAR");pool.Add(menu);Visuals.Register(menu,"core");ui=new PersonalServiceMenu(menu,ex=>{End();ui.Close();Log.Error("character action",ex);Notify.Show("Operacao nao concluida. Seus personagens foram preservados; confira o log.");});entryClock=Game.GameTime;engineProbe=entryClock;Reload();}
         void Add(string title,string description,Action action)
         {ui.Add(title,description,action);}
         public void OpenMenu(){entry.Consume();ShowList(Catalogue());}
@@ -45,13 +52,19 @@ namespace RPCore
             if(current!=null && CharacterRules.SameBodyOwner(current,Profile.Id,Game.Player.Character.Model.Hash) && !current.ApplyPending)Add("Salvar roupas / equipamento atuais","Registra o personagem atual sem copiar dados de outro perfil.",()=>{Save();Notify.Show("Personagem salvo.");});
             Add("Continuar com personagem atual","Fecha a selecao e continua jogando. F10 permite reabrir depois.",()=>ui.Close());menu.Visible=true;
         }
+        int frameElapsed,engineProbe;bool startupEngine;
+        void ObserveStartup()
+        {
+            int now=Game.GameTime;frameElapsed=unchecked(now-entryClock);entryClock=now;var p=Game.Player.Character;var pos=p.Position;
+            if(unchecked(now-engineProbe)>=0 || operation!=null || menu.Visible){startupEngine=EngineReady;engineProbe=unchecked(now+250);}
+            startup.Observe(frameElapsed,startupEngine,p.Handle,p.Model.Hash,Profile.Id,pos.X,pos.Y,pos.Z);
+        }
         void PollEntry()
         {
             if(entry.Consumed)return;
             if(!InterfaceOptions.CharacterSelectionOnStart){entry.Consume();return;}
-            int now=Game.GameTime,elapsed=unchecked(now-entryClock);entryClock=now;
-            bool ready=operation==null && !menu.Visible && !pool.AreAnyVisible && gate.Owner==null && Safe;
-            if(!entry.Advance(elapsed,ready))return;
+            bool ready=startup.Ready && operation==null && !menu.Visible && !pool.AreAnyVisible && gate.Owner==null && Safe;
+            if(!entry.Advance(frameElapsed,ready))return;
             var catalogue=Catalogue();
             if(catalogue.OpenCreation){End();pool.HideAll();CreateMenu();}
             else ShowList(catalogue);
@@ -93,7 +106,9 @@ namespace RPCore
         }
         void Begin(CharacterCard supplied,CharacterReturn original)
         {
+            if(!startup.Ready){Notify.Show("Aguarde o GTA estabilizar apos entrar ou trocar de personagem. Tente novamente em alguns segundos.");return;}
             if(!Safe || operation!=null){Notify.Show("Pare a pe, sem missao/procurado/combate/outra interface.");return;}
+            Phase(6001,"begin / "+Profile.Id+" -> "+(supplied?.Id??original?.Profile));
             int origin=Game.Player.Character.Model.Hash;
             if(CharacterRules.ProtagonistHash(Profile.Id)!=origin && CharacterRules.ModelHash("mp_m_freemode_01")!=origin && CharacterRules.ModelHash("mp_f_freemode_01")!=origin){Notify.Show("Use um protagonista ou freemode compativel antes da troca.");return;}
             if(!gate.Acquire(Name)){Notify.Show("Encerre a atividade de "+gate.Owner+".");return;}lease=true;
@@ -110,30 +125,41 @@ namespace RPCore
             if(original!=null && !original.Valid)throw new InvalidDataException("Invalid protagonist snapshot.");
             int hash=card==null?original.Body.Model:CharacterRules.ModelHash(card.Model);var model=new Model(hash);
             if(!model.IsInCdImage || !model.IsPed)throw new InvalidOperationException("Character model unavailable.");
-            operation=new Operation{Profile=card?.Id??original.Profile,Card=card,Return=original,Body=card?.Body??original?.Body,Look=look,Heritage=heritage,Origin=Game.Player.Character,OriginProfile=Profile.Id,Model=model,Position=Game.Player.Character.Position,Heading=Game.Player.Character.Heading,Started=Game.GameTime};
-            Function.Call(Hash.REQUEST_MODEL,hash);LoadingMenu("Carregando personagem / ate 10s");
+            operation=new Operation{Profile=card?.Id??original.Profile,Card=card,Return=original,Body=card?.Body??original?.Body,Look=look,Heritage=heritage,Origin=Game.Player.Character,OriginModel=origin,OriginProfile=Profile.Id,Model=model,Position=Game.Player.Character.Position,Heading=Game.Player.Character.Heading,Started=Game.GameTime};
+            Phase(6002,"request model "+hash);Function.Call(Hash.REQUEST_MODEL,hash);LoadingMenu("Carregando personagem / ate 10s");
         }
         void Swap(Operation op)
         {
-            SaveBody(true);
+            if(!startup.Ready || !Safe || op.Origin!=Game.Player.Character || op.Origin.Model.Hash!=op.OriginModel || Profile.Id!=op.OriginProfile)throw new InvalidOperationException("Origin changed before model replacement.");
+            Phase(6003,"save origin body");SaveBody(true);
             if(op.Card!=null && CharacterRules.ProtagonistHash(Profile.Id)!=0){
                 if(File.Exists(ReturnPath) && ReadReturn().ApplyPending)throw new InvalidOperationException("Finish pending protagonist return first.");
                 var backup=new CharacterReturn{Profile=Profile.Id,Body=CharacterBodyRuntime.Capture(Game.Player.Character)};
                 json.Write(ReturnPath,backup);
             }
+            Phase(6004,"mark appearance pending");
             if(op.Card!=null){var next=CharacterRules.Copy(op.Card);next.ApplyPending=true;files.Write(next);op.Card=next;}
             if(op.Return!=null){var backup=CharacterRules.Copy(op.Return);backup.ApplyPending=true;json.Write(ReturnPath,backup);op.Return=backup;}
             switching=true;try{transition(op.Profile,op.Model.Hash);}finally{switching=false;}
-            op.Swapped=true;op.Actor=Game.Player.Character;op.Actor.Position=op.Position;op.Actor.Heading=op.Heading;current=op.Card;
+            op.Swapped=true;op.Actor=Game.Player.Character;current=op.Card;op.Started=Game.GameTime;
+            // Let the new ped exist across frames before native appearance/equipment queries.
+            Phase(6005,"wait new actor");LoadingMenu("Aguardando personagem / ate 10s");
+        }
+        void StartAppearance(Operation op)
+        {
+            Phase(6006,"apply body");
+            op.Actor.Position=op.Position;op.Actor.Heading=op.Heading;
             Function.Call(Hash.SET_PED_DEFAULT_COMPONENT_VARIATION,op.Actor);
             if(op.Body!=null)CharacterBodyRuntime.Apply(op.Actor,op.Body);
             else{Function.Call(Hash.REMOVE_ALL_PED_WEAPONS,op.Actor,true);op.Actor.MaxHealth=200;op.Actor.Health=200;op.Actor.Armor=0;}
             if(op.Card==null){Complete(op);return;}
-            var h=op.Heritage;Function.Call(Hash.SET_PED_HEAD_BLEND_DATA,op.Actor,h.ShapeFirst,h.ShapeSecond,0,h.SkinFirst,h.SkinSecond,0,h.ShapeMix/100f,h.SkinMix/100f,0f,false);
-            op.Started=Game.GameTime;LoadingMenu("Preparando rosto / ate 10s");
+            Phase(6007,"head blend");var h=op.Heritage;
+            Function.Call(Hash.SET_PED_HEAD_BLEND_DATA,op.Actor,h.ShapeFirst,h.ShapeSecond,0,h.SkinFirst,h.SkinSecond,0,h.ShapeMix/100f,h.SkinMix/100f,0f,false);
+            op.AppearanceStarted=true;op.Started=Game.GameTime;LoadingMenu("Preparando rosto / ate 10s");
         }
         void Complete(Operation op)
         {
+            Phase(6008,"surface / complete");
             if(op.Card!=null){
                 for(int i=0;i<20;i++)Function.Call(Hash.SET_PED_MICRO_MORPH,op.Actor,i,0f);
                 for(int i=0;i<=12;i++)Function.Call(Hash.SET_PED_HEAD_OVERLAY,op.Actor,i,255,0f);
@@ -141,20 +167,24 @@ namespace RPCore
                 if(op.Look!=null)GroomingSystem.ApplySurface(op.Look);
                 var wallet=json.Read<WalletData>(Path.Combine(Cfg.SaveDir,op.Card.Id,"Wallet.json"),()=>new WalletData());var barber=wallet.Barber?.Looks.Find(l=>l.Model==op.Model.Hash);
                 if(barber!=null && barber.HasEye)Function.Call(Hash.SET_HEAD_BLEND_EYE_COLOR,op.Actor,barber.Eye);
-                var next=CharacterRules.Copy(op.Card);next.Body=CharacterRules.MergeBody(next.Body,CharacterBodyRuntime.Capture(op.Actor));next.ApplyPending=false;files.Write(next);current=next;
+                Phase(6009,"capture and commit appearance");var next=CharacterRules.Copy(op.Card);next.Body=CharacterRules.MergeBody(next.Body,CharacterBodyRuntime.Capture(op.Actor));next.ApplyPending=false;files.Write(next);current=next;
             }
             if(op.Return!=null){var backup=CharacterRules.Copy(op.Return);backup.ApplyPending=false;json.Write(ReturnPath,backup);}
             End();ui.Close();Notify.Show("Personagem carregado / perfil "+Profile.Id+". F10: roupas, moradia e barbearias.");
         }
         public void Tick()
         {
-            ui.Tick(menu.Visible && Safe);
+            ObserveStartup();
+            var waiting=operation!=null && operation.Swapped && !operation.AppearanceStarted;
+            // A brief control/collision delay after SET_PLAYER_MODEL is expected; queue cannot dispatch meanwhile.
+            if(!waiting || Safe)ui.Tick(menu.Visible && Safe);
             try{PollEntry();}catch(Exception ex){entry.Consume();ui.Close();Log.Error("character entry",ex);}
             var op=operation;if(op==null)return;
             try{
-                bool same=op.Swapped?op.Actor!=null && op.Actor.Exists() && op.Actor==Game.Player.Character && op.Actor.Model.Hash==op.Model.Hash && Profile.Id==op.Profile:op.Origin!=null && op.Origin.Exists() && op.Origin==Game.Player.Character && Profile.Id==op.OriginProfile;
-                if(!same || !Safe || !menu.Visible || unchecked((uint)(Game.GameTime-op.Started))>=10000 || !op.Swapped && op.Origin.Position.DistanceTo(op.Position)>2){End();ui.Close();Notify.Show("Carregamento interrompido. Perfil preservado; confira a lista de personagens para retomar.");return;}
-                if(!op.Swapped){if(op.Model.IsLoaded)Swap(op);return;}
+                bool same=op.Swapped?op.Actor!=null && op.Actor.Exists() && op.Actor==Game.Player.Character && op.Actor.Model.Hash==op.Model.Hash && Profile.Id==op.Profile:op.Origin!=null && op.Origin.Exists() && op.Origin==Game.Player.Character && op.Origin.Model.Hash==op.OriginModel && Profile.Id==op.OriginProfile;
+                if(!same || (!waiting && !Safe) || !menu.Visible || unchecked((uint)(Game.GameTime-op.Started))>=10000 || !op.Swapped && op.Origin.Position.DistanceTo(op.Position)>2){End();ui.Close();Notify.Show("Carregamento interrompido. Perfil preservado; confira a lista de personagens para retomar.");return;}
+                if(!op.Swapped){if(op.Model.IsLoaded && startup.Ready)Swap(op);return;}
+                if(waiting){if(Safe && unchecked((uint)(Game.GameTime-op.Started))>=500)StartAppearance(op);return;}
                 if(Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,op.Actor) && unchecked((uint)(Game.GameTime-op.Started))>0)Complete(op);
             }
             catch(Exception ex){End();ui.Close();Log.Error("character load",ex);Notify.Show("Carregamento incompleto. Snapshot preservado; retome pela lista de personagens.");}

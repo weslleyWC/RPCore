@@ -1,3 +1,9 @@
+## Hotfix0.104.1 — entrada e troca de personagem
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.1.zip) · [Teste e coleta GTA](docs/PERSONAGEM-ESTABILIDADE-0.104.1.md)
+
+Após relato de crash na0.103, logs confirmam retorno ao perfil Franklin dois segundos depois de iniciar. Entrada/manual passam a aguardar30s iniciais e10s estáveis, checar troca de protagonista/colisão e revalidar a origem após salvar. Aplicação no novo ped é diferida e as fases ganham diagnóstico.4011 testes aprovados, build sem erros/avisos. Causa fatal não aparece nos logs: precisa de teste GTA, sem afirmar todos os crashes resolvidos. Inclui armazenamento0.104 e preserva a opção F11.
+
 ## Atualização0.104.0 — grupo armazenamento
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.0.zip) · [Acessos e roteiro GTA](docs/ARMAZENAMENTO-0.104.0.md)

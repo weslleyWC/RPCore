@@ -38,3 +38,23 @@ namespace RPCore
         }
     }
 }
+
+namespace RPCore
+{
+    // A loaded/faded-in frame is not proof that story scripts finished restoring their actor/location.
+    public sealed class CharacterStartupStability
+    {
+        int age,stable,actor,model;string profile;float x,y,z;
+        public bool Ready=>age>=30000 && stable>=10000;
+        public void Observe(int elapsed,bool ready,int ped,int pedModel,string owner,float px,float py,float pz)
+        {
+            if(elapsed<0 || elapsed>1000){stable=0;return;}
+            age=System.Math.Min(30000,age+elapsed);
+            bool finite=!float.IsNaN(px) && !float.IsInfinity(px) && !float.IsNaN(py) && !float.IsInfinity(py) && !float.IsNaN(pz) && !float.IsInfinity(pz);
+            double dx=(double)px-x,dy=(double)py-y,dz=(double)pz-z;
+            bool same=ped!=0 && pedModel!=0 && !string.IsNullOrEmpty(owner) && actor==ped && model==pedModel && profile==owner && dx*dx+dy*dy+dz*dz<=625;
+            actor=ped;model=pedModel;profile=owner;x=px;y=py;z=pz;
+            stable=ready && finite && same?System.Math.Min(10000,stable+elapsed):0;
+        }
+    }
+}

@@ -327,3 +327,8 @@ Usuário confirmou estabilidade inicial/portas/F10 e pediu lista ao entrar, cria
 ###0.104.0 — grupo completo de armazenamento existente
 
 Retomada autorizada pelo usuário. Referência NewStorageSystem/NewInventorySystem/Vehicle_Insurance conferida. Porta-malas, depósitos e apartamento revisados juntos nas apresentações grade/lista, quantidades e gesto entre painéis, contexto, armaria e checkpoint conservador.3988 testes; roteiro ARMAZENAMENTO-0.104.0.md. Animação automática da tampa não portada. Não declara fim da fase8 nem realismo de trabalhos da9.
+
+
+###0.104.1 — correção prioritária da entrada/troca
+
+Relato de crash na0.103 interrompe avanço normal. Logs confirmam retorno ao perfil Franklin logo após entrada; causa fatal não consta e RuntimeLastSession é da0.102.2 anterior. Proteções da entrada/manual, espera no novo ped e diagnóstico por fase implementados.4011 testes; aguarda teste GTA conforme PERSONAGEM-ESTABILIDADE-0.104.1.md. Não conclui causalidade nativa nem altera o escopo da fase9.

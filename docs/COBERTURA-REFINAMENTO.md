@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: após estabilidade inicial confirmada na0.102.2 e a entrega da seleção opcional0.103, o usuário autorizou retomar o refinamento por grupos.0.104 revisa armazenamento público/porta-malas/apartamento e as duas apresentações, com gesto entre painéis e contexto vinculado. Validação nativa continua necessária. A fase8 permanece aberta e a fase9 dos trabalhos segue reservada.
+Estado atual: usuário relatou crash na troca de personagem da0.103; logs confirmam mudança a Franklin na entrada, sem stacktrace fatal.0.104.1 acrescenta estabilidade da entrada/manual, aplicação diferida e diagnóstico por fase. Inclui o grupo armazenamento0.104, ainda sem teste GTA confirmado. Refinamento normal pausado para testar este caso. Fases8/9 continuam abertas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 

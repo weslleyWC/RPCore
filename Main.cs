@@ -115,7 +115,7 @@ namespace RPCore
             var homeStorage = new HomeStorageSystem(pool, shifts, storage, () => housing.CanUseInterior); systems.Add(homeStorage); housing.OpenStorage = homeStorage.OpenMenu;
             var barber = new BarberSystem(pool, shifts); systems.Add(barber);
             var grooming = new GroomingSystem(pool, shifts, () => barber.CanUseService, barber.OpenMenu); systems.Add(grooming); barber.OpenDetails = grooming.OpenMenu;
-            var characters = new CharacterSystem(pool, shifts, SwitchCharacter); systems.Add(characters);
+            var characters = new CharacterSystem(pool, shifts, SwitchCharacter); systems.Add(characters);characters.DiagnosticStage=Stage;
             var insurance = new VehicleInsuranceSystem(pool, shifts); systems.Add(insurance);
             var dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
             var custody = new CustodySystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(custody);
@@ -168,7 +168,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.104.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.104.1 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -314,15 +314,21 @@ namespace RPCore
         void SwitchCharacter(string target,int model)
         {
             if(!CharacterRules.CanTransition(target,model))throw new InvalidOperationException("Invalid character model/profile transition.");
+            if(!CharacterSystem.EngineReady || !new Model(model).IsLoaded)throw new InvalidOperationException("GTA/model is not ready for character transition.");
+            var source=Game.Player.Character;int sourceModel=source.Model.Hash;string sourceProfile=Profile.Id;var sourcePosition=source.Position;
+            Log.Write("character transition: flush origin");
             // Unlike routine autosave, a failed flush aborts an explicit model/profile transition.
-            foreach(var system in systems)if(!faulted.Contains(system))system.Save();
-            Wallet.Save();
+            foreach(var system in systems)if(!faulted.Contains(system)){Stage(system,2);system.Save();}
+            Stage(6010);Wallet.Save();
             bool custom=CharacterRules.ProtagonistHash(target)==0;
             string previous=Cfg.CustomProfile,activePath=System.IO.Path.Combine(Cfg.Dir,"ActiveProfile.json");
             // Prove the selected profile can be persisted before replacing the player ped.
             if(custom)new JsonFiles().Write(activePath,target);
             try{
-                GTA.Native.Function.Call(GTA.Native.Hash.SET_PLAYER_MODEL,Game.Player,model);
+                if(!CharacterSystem.EngineReady || source!=Game.Player.Character || !source.Exists() || source.Model.Hash!=sourceModel || Profile.Id!=sourceProfile || Profile.Detect()!=sourceProfile || source.Position.DistanceTo(sourcePosition)>2 || !new Model(model).IsLoaded)throw new InvalidOperationException("GTA actor changed during origin flush; model replacement cancelled.");
+                Stage(6020);Log.Write("character transition: SET_PLAYER_MODEL "+model);
+                GTA.Native.Function.Call(GTA.Native.Hash.SET_PLAYER_MODEL,Game.Player.Handle,model);
+                Stage(6021);Log.Write("character transition: model returned");
                 if(Game.Player.Character.Model.Hash!=model)throw new InvalidOperationException("Player model did not change.");
             }
             catch{
@@ -330,8 +336,8 @@ namespace RPCore
                 throw;
             }
             if(custom)Cfg.CustomProfile=target;
-            Profile.Id=target;Wallet.Reload();
-            foreach(var system in systems){try{system.Reload();}catch(Exception ex){faulted.Add(system);Log.Error(system.Name+".character.reload",ex);}}
+            Stage(6022);Profile.Id=target;Wallet.Reload();
+            foreach(var system in systems){try{Stage(system,4);system.Reload();}catch(Exception ex){faulted.Add(system);Log.Error(system.Name+".character.reload",ex);}}
             Log.Write("character model/profile -> "+target);
         }
 

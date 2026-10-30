@@ -1,0 +1,26 @@
+{
+  "hashes": {
+    "ScriptHookV.log": "30f5f91833c809fb4937dc889e0f4fb264e0f67c65b177237aa600887b6792bb",
+    "ScriptHookVDotNet.log": "753d9842d0ce67029c362a44ed2f7bfce4b1a940b5df48430e3d14e6645f7b37",
+    "RuntimeLastSession.json": "f761faa31659fd21d7c7fc6c871c1b5080c964238afc89b9d8eae9d9bae9b2b8",
+    "RPCore.log": "d1773cedc2d0c31ad0d89f3370d9b05607a27337ca941ee0772c4e6223836ba2"
+  },
+  "confirmed": [
+    "0.103 starts at13:37:44 with an RPCore profile; profile changes to Franklin at13:37:46.",
+    "No new managed error/model transition completion after that point.",
+    "RuntimeLastSession supplied belongs to0.102.2 idle, not this0.103 crash.",
+    "ScriptHookV and Enhanced initialize normally; no fatal native stacktrace in these files."
+  ],
+  "not_proven": [
+    "Which script initiated the startup profile/model/location sequence.",
+    "The exact native/module that crashed.",
+    "That idle from the previous session identifies this crash."
+  ],
+  "code_findings": [
+    "One-second entry gate without protagonist-switch/world-collision checks.",
+    "Manual load bypassed a startup stability window.",
+    "Immediate body/appearance application after SET_PLAYER_MODEL and system reload in same tick."
+  ],
+  "response": "Guard startup/manual load, revalidate after save, wait new actor before appearance and add granular stage diagnostics. Preserve user data and installed scripts. Native retest required.",
+  "privacy": "Original uploaded logs and personal paths are not published."
+}

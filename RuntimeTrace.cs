@@ -46,6 +46,8 @@ namespace RPCore
         static string Resolve(int stage,string[] systems)
         {
             if(stage==0)return "initializing";if(stage==1)return "frame";if(stage==2)return "wallet-sync";if(stage==3)return "menus";if(stage==4)return "idle";if(stage==5)return "key-dispatch";if(stage==6)return "wallet-save";if(stage==7)return "wallet-load";if(stage==8)return "inventory-input";if(stage==9000)return "OnAborted";
+            if(stage>=6001 && stage<=6009)return "character:"+new[]{"begin","request-model","origin-body","pending-checkpoint","wait-actor","apply-body","head-blend","surface","capture-commit"}[stage-6001];
+            if(stage==6010)return "character:wallet-save";if(stage==6020)return "character:set-player-model";if(stage==6021)return "character:model-returned";if(stage==6022)return "character:wallet-reload";
             int group=stage/1000,index=stage%1000;
             if(group>=1 && group<=5 && index<systems.Length)return new[]{"","tick:","save:","key:","reload:","dispose:"}[group]+systems[index];
             return "stage:"+stage;
