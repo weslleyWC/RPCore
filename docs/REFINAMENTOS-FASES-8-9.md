@@ -297,3 +297,8 @@ Comparados os fluxos de roupa/barbearia de MultiplayerCharacter, páginas de rou
 ###0.100.1 — portas de roupas
 
 Correção do bloqueio físico relatado pelo usuário na0.100.0. Comparados ShopsDoorsLocation/UnlockDoors/Update:14 entradas externas e quatro modelos de porta de roupas, com consulta nativa de trava/ângulo, proximidade/altura/contexto e associação às lojas configuradas. Não copia o desbloqueio mais amplo de Ammu-Nation, garagens, barbearias ou concessionária.3855 testes aprovados; roteiro GTA em PORTAS-ROUPAS-0.100.1.md. Não marca nova frente de refinamento como concluída.
+
+
+###0.101.0 — RPCore Bank solicitado pelo usuário
+
+Entrega adicional ao roteiro: app bancário no próprio celular com tema roxo, depósito/saque digitados e todo o disponível, conferência e comprovante. Conta compartilhada com o F10 pelo Wallet/BankTransfer existente; sem taxas/cap diário/valores fixos, mantendo o limite numérico anterior para compatibilidade. Cotação vinculada ao perfil/ator/modelo/saldos e consumida uma só vez; rollback comum e input com liberação.3889 testes aprovados; build sem erros/avisos. Guia RPCORE-BANK-0.101.0.md. Não encerra outras frentes da fase8 ou os ciclos da9.

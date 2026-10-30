@@ -13,7 +13,7 @@ namespace RPCore
         public string Name=>"phone";
         readonly ObjectPool pool;readonly Action<Keys> dispatch;readonly PropPresentation props;readonly InventorySystem inventory;readonly NeedsSystem needs;
         readonly Action jobs,studio,passenger;readonly UberJob uber;readonly StreamerJob streamer;
-        readonly string[] shortcuts={"Banco / carteira","Inventario","Garagens","Bolsa de valores","Radio","Gangues","Turno de pizza","Configuracoes F11","Trabalhos / contratos"};
+        readonly string[] shortcuts={"RPCore Bank","Inventario","Garagens","Bolsa de valores","Radio","Gangues","Turno de pizza","Configuracoes F11","Trabalhos / contratos"};
         Dictionary<int,Action> services=new Dictionary<int,Action>();
         PhoneData data;bool readOnly;
         readonly PhoneClockState clock=new PhoneClockState();
@@ -33,12 +33,13 @@ namespace RPCore
         {
             var p=Game.Player.Character;return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsRagdoll && !p.IsFalling && !p.IsSwimming && !p.IsClimbing && !p.IsInCombat && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !inventory.UsingItem && (!p.IsInVehicle() || p.CurrentVehicle.Driver==p && p.CurrentVehicle.Speed<=.5f);
         }
-        void Close(bool cancel=true){Visible=false;props?.ClosePhone();page="Home";mouseReady=false;controllerReady=false;pressed=-1;if(cancel)pending=null;}
+        void Close(bool cancel=true){bankOperation=null;bankReceipt=null;Visible=false;props?.ClosePhone();page="Home";mouseReady=false;controllerReady=false;pressed=-1;if(cancel)pending=null;}
         void OpenPage(string name){page=name;row=0;detailPage=0;pressed=-1;}
         int[] Matches()=>Enumerable.Range(0,shortcuts.Length).Where(i=>shortcuts[i].IndexOf(query??"",StringComparison.OrdinalIgnoreCase)>=0).ToArray();
         void Queue(Action action){Close(false);pending=action;pendingActor=Game.Player.Character.Handle;pendingProfile=Profile.Id;pendingAt=Game.GameTime;}
         void Shortcut(int index)
         {
+            if(index==0){OpenBank();return;}
             if((index==2 && !Cfg.EnableGarages) || (index==4 && !Cfg.EnableRadio) || (index==5 && !Cfg.EnableGangs)){Notify.Show("Servico desativado na configuracao.");return;}
             if(services.TryGetValue(index,out var action)){Queue(action);return;}
             if(index==8){Queue(jobs);return;}
@@ -56,12 +57,14 @@ namespace RPCore
         }
         void Activate()
         {
+            if(PhoneBankRules.IsPage(page) || page=="Home" && selection==PhoneBankRules.App){if(bankHeld)return;bankHeld=true;}
             try{ActivateCore();}catch(Exception ex){Log.Error("phone action",ex);Notify.Show("Acao nao concluida. Confira RPCore.log.");}
         }
         void ActivateCore()
         {
             if(!Visible || !Safe())return;
-            if(page=="Home"){OpenPage(ReferenceLayout.PhoneLabels[selection]);if(page=="Radio")Shortcut(4);return;}
+            if(page=="Home"){if(selection==PhoneBankRules.App){OpenBank();return;}OpenPage(ReferenceLayout.PhoneLabels[selection]);if(page=="Radio")Shortcut(4);return;}
+            if(PhoneBankRules.IsPage(page)){BankAction();return;}
             if(page=="Twitch"){int i=row;Queue(()=>streamer?.PhoneAction(i));return;}
             if(page=="Uber"){int i=row;Queue(()=>uber?.PhoneAction(i));return;}
             if(page=="Settings"){if(row==0)Edit(()=>PhoneEdits.Change(ref data,n=>{n.Wallpaper=n.Wallpaper%10+1;return true;},n=>Store.Write("Phone.json",n)));else Shortcut(row-1);return;}
@@ -103,12 +106,15 @@ namespace RPCore
         {
             switch(page)
             {
+                case "Bank":return new[]{"Depositar","Sacar","Depositar tudo","Sacar tudo"};
+                case "BankConfirm":return new[]{"Cancelar / voltar","Confirmar "+(bankOperation?.Deposit==true?"deposito":"saque")};
+                case "BankReceipt":return new[]{"Voltar a conta"};
                 case "Notes":return new[]{"+ Nova nota"}.Concat(data.Notes).ToArray();
                 case "NoteView":return new[]{"Editar","Excluir...","Voltar"};
                 case "DeleteNote":return new[]{"Cancelar / manter nota","Confirmar exclusao"};
                 case "Settings":return new[]{"Papel de parede: "+data.Wallpaper}.Concat(shortcuts).ToArray();
                 case "Search":return new[]{"Buscar: "+query}.Concat(Matches().Select(i=>shortcuts[i])).ToArray();
-                case "Contacts":return new[]{"Fleeca / banco","Mecanico / garagens","Pizza This / trabalho","Gangue","Trabalhos / contratos"}.Concat(studio==null?Array.Empty<string>():new[]{"Lester / Hollywood Act"}).Concat(passenger==null?Array.Empty<string>():new[]{"Taxi / limousine"}).ToArray();
+                case "Contacts":return new[]{"RPCore Bank","Mecanico / garagens","Pizza This / trabalho","Gangue","Trabalhos / contratos"}.Concat(studio==null?Array.Empty<string>():new[]{"Lester / Hollywood Act"}).Concat(passenger==null?Array.Empty<string>():new[]{"Taxi / limousine"}).ToArray();
                 case "Messages":case "Notifications":return PhoneEdits.History(data,page=="Messages").Select(i=>(data.History[i].Read?"":"* ")+(data.History[i].Title??"RPCore")+": "+(data.History[i].Body??"")).ToArray();
                 case "Clock":return new[]{"Cronometro","Temporizador"};
                 case "Stopwatch":return new[]{clock.StopwatchRunning?"Pausar":"Iniciar / continuar","Zerar","Voltar"};
@@ -118,15 +124,15 @@ namespace RPCore
                 default:return Array.Empty<string>();
             }
         }
-        float RowTop=>page=="NoteView"?275:page=="Stopwatch" || page=="Timer"?220:78;
+        float RowTop=>page=="Bank"?220:page=="BankConfirm" || page=="BankReceipt"?303:page=="NoteView"?275:page=="Stopwatch" || page=="Timer"?220:78;
         void Navigate(int dx,int dy)
         {
-            pressed=-1;if(page=="Home")selection=HudMath.MoveGrid(selection,dx,dy,3,ReferenceLayout.PhoneIcons.Length);
+            pressed=-1;if(page=="Home")selection=PhoneBankRules.MoveHome(selection,dx,dy);
             else if(page=="HistoryView")detailPage=Math.Max(0,Math.Min(detail.Count-1,detailPage+dy+dx));
             else if(page=="NoteView" && dx!=0)detailPage=Math.Max(0,Math.Min(detail.Count-1,detailPage+dx));
             else row=Math.Max(0,Math.Min(Math.Max(0,Rows().Length-1),row+dy));
         }
-        void Back(){if(page=="Home")Close();else if(page=="NoteView" || page=="DeleteNote")OpenPage("Notes");else if(page=="HistoryView")OpenPage(detailReturn??"Notifications");else if(page=="Timer" || page=="Stopwatch")OpenPage("Clock");else OpenPage("Home");}
+        void Back(){if(page=="BankConfirm" || page=="BankReceipt"){OpenBank();return;}if(page=="Bank"){bankOperation=null;bankReceipt=null;OpenPage("Home");return;}if(page=="Home")Close();else if(page=="NoteView" || page=="DeleteNote")OpenPage("Notes");else if(page=="HistoryView")OpenPage(detailReturn??"Notifications");else if(page=="Timer" || page=="Stopwatch")OpenPage("Clock");else OpenPage("Home");}
         public void OnKey(KeyEventArgs e)
         {
             if(e.KeyCode==Visuals.PhoneKey){if(Visible)Close();else if(Visuals.Enabled && Visuals.PhoneEnabled && !pool.AreAnyVisible && !InterfaceOptions.ModalOpen && Safe()){Visible=true;OpenPage("Home");props?.ShowPhone();mouseReady=false;controllerReady=false;}return;}
@@ -140,6 +146,7 @@ namespace RPCore
             if(clock.Advance(delta)){Notify.Show("Temporizador RPCore concluido.");JobActivity("Relogio","Temporizador concluido.");}
             if(pending!=null){var action=pending;pending=null;if(Safe() && pendingActor==Game.Player.Character.Handle && pendingProfile==Profile.Id && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible && unchecked(now-pendingAt)>=0 && unchecked(now-pendingAt)<1000)try{action();}catch(Exception ex){Log.Error("phone service",ex);Notify.Show("Servico nao aberto. Confira RPCore.log.");}}
             if(!Visible)return;
+            if(!Game.IsKeyPressed(Keys.Enter) && !Game.IsKeyPressed(Keys.LButton) && !Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.CursorAccept) && !Game.IsControlPressed(GTA.Control.FrontendAccept) && !Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendAccept))bankHeld=false;
             if(!Visuals.Enabled || !Visuals.PhoneEnabled || !Safe() || pool.AreAnyVisible || inventory.GridVisible){Close();return;}
             foreach(var c in new[]{GTA.Control.Attack,GTA.Control.Attack2,GTA.Control.Aim,GTA.Control.Phone,GTA.Control.SelectWeapon,GTA.Control.SelectWeaponUnarmed,GTA.Control.SelectWeaponMelee,GTA.Control.SelectWeaponHandgun,GTA.Control.SelectWeaponShotgun,GTA.Control.SelectWeaponSmg,GTA.Control.SelectWeaponAutoRifle,GTA.Control.SelectWeaponSniper,GTA.Control.SelectWeaponHeavy,GTA.Control.NextWeapon,GTA.Control.PrevWeapon,GTA.Control.FrontendPause,GTA.Control.FrontendPauseAlternate})Game.DisableControlThisFrame(c);
             if(Function.Call<bool>(Hash.IS_USING_KEYBOARD_AND_MOUSE,0)){controllerReady=false;MouseTick();}
@@ -154,7 +161,7 @@ namespace RPCore
         public void Reload()
         {
             Close();data=Store.Load("Phone.json",()=>new PhoneData());readOnly=!PhoneEdits.Valid(data);if(readOnly){Log.Write("Invalid Phone data retained; editing blocked.");data=new PhoneData();}
-            selection=row=detailPage=0;query="";result="0";clock.ResetStopwatch();clock.ResetTimer();lastClock=Game.GameTime;
+            selection=PhoneBankRules.App;row=detailPage=0;query="";result="0";clock.ResetStopwatch();clock.ResetTimer();lastClock=Game.GameTime;
         }
         public void Save(){if(readOnly)throw new InvalidOperationException("Original Phone data retained.");Store.Write("Phone.json",data);}
         public void Dispose(){if(uber!=null)uber.Activity-=JobActivity;if(streamer!=null)streamer.Activity-=JobActivity;inventory.Used-=ItemUsed;needs.Alert-=JobActivity;Close();}

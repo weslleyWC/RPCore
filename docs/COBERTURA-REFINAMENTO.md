@@ -47,7 +47,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | PdmShowroomSystem | [PdmShowroomSystem.cs](../PdmShowroomSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmStaffSystem | [PdmStaffSystem.cs](../PdmStaffSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmSurveillanceSystem | [PdmSurveillanceSystem.cs](../PdmSurveillanceSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
+| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | 0.101 acrescenta RPCore Bank nativo no celular, com quatro operações, cotação de uso único e mesmo Wallet; teste GTA pendente. Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
 | PilotJob | [PilotJob.cs](../PilotJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PrisonTransportJob | [PrisonTransportJob.cs](../PrisonTransportJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PropPresentation | [PropPresentation.cs](../PropPresentation.cs) | Duplicação de consumíveis corrigida/testada0.96; telefone recebe propriedade/limpeza identificada0.98, aguarda GTA |

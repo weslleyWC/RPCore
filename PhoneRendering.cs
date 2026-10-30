@@ -17,7 +17,7 @@ namespace RPCore
             if(!mouseReady){mouseReady=true;mouseHeld=held;pressed=-1;return;}
             bool down=held && !mouseHeld,up=!held && mouseHeld;mouseHeld=held;
             if(Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)GTA.Control.CursorCancel)){pressed=-1;Back();return;}
-            int hit=page=="Home"?PhoneViewRules.HomeHit(point):PhoneViewRules.RowHit(point,PhoneViewRules.First(row),Rows().Length,RowTop);
+            int hit=page=="Home"?PhoneBankRules.HomeHit(point):PhoneViewRules.RowHit(point,PhoneViewRules.First(row),Rows().Length,RowTop);
             if(down){pressed=hit;if(hit>=0){if(page=="Home")selection=hit;else row=hit;}}
             if(up && pressed>=0){int start=pressed;pressed=-1;if(start==hit)Activate();}
             if(new RectangleF(11,9,220,424).Contains(point))
@@ -35,8 +35,13 @@ namespace RPCore
             Visuals.Sprite("PSRP_PHONE","PhoneWallpaper"+data.Wallpaper,fullX,fullY,1920*s,1080*s,Color.White);
             if(page=="Home")
             {
-                text(Time(),123,54,.65f,Color.White,GTA.UI.Alignment.Center,0);
-                text(GTA.Chrono.GameClock.DayOfWeek.ToString().ToUpperInvariant(),123,99,.35f,Color.White,GTA.UI.Alignment.Center,0);
+                text(Time(),123,23,.47f,Color.White,GTA.UI.Alignment.Center,0);
+                text(GTA.Chrono.GameClock.DayOfWeek.ToString().ToUpperInvariant(),123,54,.25f,Color.White,GTA.UI.Alignment.Center,0);
+                Visuals.Rect(x+23*s,y+85*s,196*s,49*s,selection==PhoneBankRules.App?Color.FromArgb(157,43,230):Color.FromArgb(130,10,209));
+                Visuals.Rect(x+29*s,y+91*s,37*s,37*s,Color.FromArgb(167,80,229));
+                text("rp",47,94,.38f,Color.White,GTA.UI.Alignment.Center,0);
+                text("RPCore Bank",75,91,.28f,Color.White,GTA.UI.Alignment.Left,140);
+                text("Sua conta no celular",75,113,.17f,Color.White,GTA.UI.Alignment.Left,140);
                 for(int i=0;i<ReferenceLayout.PhoneIcons.Length;i++)
                 {
                     float ix=30.5f+i%3*65,iy=154+i/3*65;
@@ -47,6 +52,7 @@ namespace RPCore
                 }
                 return;
             }
+            if(PhoneBankRules.IsPage(page)){DrawBank(x,y,s,text);return;}
             string art=page=="NoteView"?"NotesOverlay":page=="Fitness"?"FitnessOverlay":page=="Twitch"?"TwitchOverlay":"PhoneOptionsBG";
             if(!Visuals.Sprite("PSRP_PHONE",art,fullX,fullY,1920*s,1080*s,Color.White))Visuals.Rect(x+11*s,y+9*s,220*s,424*s,Color.FromArgb(245,18,21,25));
             string title=page=="HistoryView"?detailReturn:page;

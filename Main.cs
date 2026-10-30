@@ -107,7 +107,7 @@ namespace RPCore
             var halloween = new HalloweenSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(halloween);
             var passenger = new PassengerSystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity);systems.Add(passenger);
             var world = new WorldSystem(pool, shifts);world.ClockChanged+=needs.IgnoreNativeBedClock;systems.Add(world);
-            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu, passenger.OpenMenu); systems.Add(phone);
+            phone = new PhoneSystem(pool, DispatchSystemKey, props, inv, needs, jobs.Open, uber, streamer, studio.OpenMenu, passenger.OpenMenu); systems.Add(phone);phone.BankTransferred=()=>{ach.Bump("bank_used");if(Wallet.Bank>=1000000)ach.Bump("bank_million");ach.Save();};
             inv.PhoneRequested=()=>phone.OnKey(new KeyEventArgs(Visuals.PhoneKey));
             var housing = new HousingSystem(pool, shifts); systems.Add(housing);
             var wardrobe = new WardrobeSystem(pool, shifts, () => housing.CanUseWardrobe, housing.OpenMenu); systems.Add(wardrobe); housing.OpenWardrobe = wardrobe.OpenMenu;
@@ -135,7 +135,7 @@ namespace RPCore
             settings.DealerRequested=()=>OpenPhoneSystem(systems.OfType<DealershipSystem>().FirstOrDefault(),Cfg.DealerKey);
             settings.VehicleRequested=()=>OpenPhoneService(controls,()=>controls.OpenMenu());
             phone.ConfigureServices(new Dictionary<int,Action>{
-                {0,()=>OpenPhoneService(core,core.OpenBank)},{1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
+                {1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
                 {2,()=>OpenPhoneSystem(garages,Cfg.GarageKey)},
                 {3,()=>OpenPhoneSystem(systems.OfType<StockMarketSystem>().FirstOrDefault(),Cfg.StocksKey)},
                 {4,()=>OpenPhoneSystem(systems.OfType<RadioSystem>().FirstOrDefault(),Cfg.RadioKey)},
@@ -162,7 +162,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.100.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.101.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

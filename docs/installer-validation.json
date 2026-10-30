@@ -1,6 +1,6 @@
 {
-  "version": "0.100.1",
-  "upgrade_baseline": "0.100.0",
+  "version": "0.101.0",
+  "upgrade_baseline": "0.100.1",
   "platform": "PowerShell7/Linux simulated GTA; no gameplay",
   "runs": 2,
   "custom_reference_items_recipes_interface_preferences_preserved": true,

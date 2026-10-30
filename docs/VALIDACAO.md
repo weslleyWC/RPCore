@@ -1,9 +1,11 @@
-# Validação0.100.1 — acesso físico às lojas de roupas
+# Validação0.101.0 — app RPCore Bank
 
-3855 testes aprovados (3845 anteriores +10), Release net48 sem erros/avisos. DataTests-0.100.1.trx. Sem execução GTA.
+3889 testes aprovados (3855 anteriores +34). Release net48 sem erros/avisos. DataTests-0.101.0.trx. Sem execução GTA.
 
-Casos novos:14 entradas externas distintas dos marcadores internos e próximas das respectivas lojas, whitelist dos quatro modelos de roupas excluindo Ammu-Nation/barbearia/concessionária/garagens, alcance horizontal/altura/NaN, configuração removida ou loja em outro andar, coordenadas inválidas. Runtime compilado com GET_STATE_OF_CLOSEST_DOOR_OF_TYPE e SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, conserva ângulo e só destrava estados consultados como travados; contexto seguro e falha isolada. Não muda saves ou configurações.
+Os34 casos novos incluem valores digitados simples/com milhares, quantias até o máximo numérico, rejeição de sinais/decimais/milhares malformados/overflow, depósitos e saques de1,5bilhão conservando o total e metadados, confirmação de uso único, troca de perfil/ator/modelo/saldos, falha de gravação com rollback dos dois saldos e sem replay, transferência recusada, capacidade máxima, origem inválida/sem saldo, hit area do novo app sem mover os12 anteriores, navegação do banco para a grade, botões/rodapé e exibição do valor completo.
 
-Referência estática: MultiplayerCharacter.ShopsDoorsLocation/UnlockDoors/Update da PSRP.dll; nomes de modelos conferidos no ObjectList.ini público do gta-v-data-dumps. Nenhuma DLL executada dentro do GTA. Guia PORTAS-ROUPAS-0.100.1.md descreve restrições e roteiro nativo.
+Integração compilada: app renderizado dentro do PhoneSystem, tema roxo/branco próprio, quatro operações e conferência com cancelar selecionado, comprovante após gravação, rotas bancárias de contatos/busca/settings sem abrir F10, guardas de botão mantido/fechamento/perfil/contexto. Usa os métodos Wallet/BankTransfer anteriores; nenhuma migração de saldo ou novo arquivo monetário. Conquistas atualizadas após commit, com falha isolada.
 
-Instalador simulado duas vezes sobre0.100.0:208 arquivos existentes byte a byte preservados, DLL nova correspondente ao build, anterior em backup e RPF externo intocado. Relatório installer-validation-0.100.1.json. Configs JSON/INI e áudio anteriores comparados aos arquivos do pacote. Portas físicas, streaming, colisão e interferência de outros scripts ainda exigem teste GTA.
+Sem cap diário ou valor fixo; mantido o limite numérico anterior int.MaxValue por saldo. Isso foi documentado em RPCORE-BANK-0.101.0.md. Testes nativos de renderização/input/teclado de valor/celular e confirmação de saldos dentro do GTA permanecem pendentes.
+
+Instalador: duas atualizações simuladas sobre0.100.1 preservam208 arquivos existentes byte a byte, incluindo Wallet/Phone e todos os fixtures anteriores. DLL nova corresponde ao build, anterior em backup e RPF externo intocado; relatório installer-validation-0.101.0.json. JSON/INI e áudio anteriores comparados aos arquivos do pacote.

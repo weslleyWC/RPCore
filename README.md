@@ -1,3 +1,9 @@
+## Atualização0.101.0 — RPCore Bank no celular
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.101.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.101.0.zip) · [Como usar e testar](docs/RPCORE-BANK-0.101.0.md)
+
+F2 > RPCore Bank: app próprio roxo/branco, saldo em conta/carteira, depósito e saque digitados ou todo o disponível, conferência e comprovante. Mesma conta do F10, sem taxas/limite diário/valores fixos; preserva o limite numérico GTA e os saves. Proteções de contexto/saldo/uso único e gravação pelo pipeline anterior.3889 testes aprovados; build sem erros/avisos. A correção de portas0.100.1 permanece incluída; teste nativo do app ainda necessário.
+
 ## Correção0.100.1 — portas das lojas de roupas
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.100.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.100.1.zip) · [Instalação e testes GTA](docs/PORTAS-ROUPAS-0.100.1.md)

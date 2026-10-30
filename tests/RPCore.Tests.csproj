@@ -19,6 +19,7 @@
     <Compile Include="../ClothingDoorData.cs" Link="ClothingDoorData.cs" />
     <Compile Include="../VehicleRefinementData.cs" Link="VehicleRefinementData.cs" />
     <Compile Include="../PhoneRefinementData.cs" Link="PhoneRefinementData.cs" />
+    <Compile Include="../PhoneBankData.cs" Link="PhoneBankData.cs" />
     <Compile Include="../MenuRefinementData.cs" Link="MenuRefinementData.cs" />
     <Compile Include="../ShopGridData.cs" Link="ShopGridData.cs" />
     <Compile Include="../InventoryGroundData.cs" Link="InventoryGroundData.cs" />
