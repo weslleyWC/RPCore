@@ -1,0 +1,9 @@
+# Validação0.104.0 — grupo de armazenamento
+
+3988 testes aprovados (3954 anteriores +34), nenhum falhou/ignorado. Release net48 sem erros/avisos. Relatório DataTests-0.104.0.trx. API Enhanced real continua coberta nos testes gerenciados de buffers, sem executar natives GTA.
+
+Casos novos: chaves de porta-malas legadas/placa/case, identidades de ator/modelo/perfil/veículo, coordenadas não finitas e capacidade personalizada, opções distintas/limite, gesto nos dois sentidos com unidade/pilha/fit, clique sem arraste, origem/quantidade alteradas, fora do alvo/mesmo lado/cancelado, falha/IO sem repetição nem mutação, round-trip/reload nos três tipos conservando outros containers e campos desconhecidos, política de armaria storage/homestorage sem liberar trabalhos. Integração compilada/revisada: filas LemonUI, seleção inicial sem ler menu vazio, modificadores durante gesto, contexto/acesso revalidado na gravação, liberação da reserva ao fechar.
+
+Instalador executado duas vezes sobre0.103.0; relatório installer-validation-0.104.0.json documenta preservação byte a byte de 240 arquivos existentes, incluindo locais/capacidade personalizados, inventários mistos/placa com case/itens desconhecidos/backups e preferências de personagens. DLL anterior em backup e nova confere. RPF externo de teste intocado. Comparação dos111 payloads JSON/INI e áudio anteriores, CRC/manifestos/fonte/DLL/audit/TRX feita na verificação final.
+
+Não há GTA executado no ambiente cloud: coordenadas/bone boot de carros modificados, mouse/controlador e atualização nativa das armas ainda exigem teste dentro do jogo. Não se declara animação/tampa automática portada ou paridade completa de armazenamento PSRP. Roteiro ARMAZENAMENTO-0.104.0.md. As correções anteriores e a seleção opcional0.103 permanecem incluídas. Fase8 continua e fase9 dos ciclos de trabalho não foi iniciada nesta entrega.

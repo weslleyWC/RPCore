@@ -56,6 +56,7 @@
     <Compile Include="../FaceData.cs" Link="FaceData.cs" />
     <Compile Include="../GroomingData.cs" Link="GroomingData.cs" />
     <Compile Include="../BarberData.cs" Link="BarberData.cs" />
+    <Compile Include="../StorageRefinementData.cs" Link="StorageRefinementData.cs" />
     <Compile Include="../HomeStorageData.cs" Link="HomeStorageData.cs" />
     <Compile Include="../WardrobeData.cs" Link="WardrobeData.cs" />
     <Compile Include="../HousingData.cs" Link="HousingData.cs" />

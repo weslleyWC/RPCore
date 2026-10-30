@@ -322,3 +322,8 @@ Usuário enviou logs que confirmam Bool boxed no OutputArgument das portas e men
 ###0.103.0 — entrada com personagens
 
 Usuário confirmou estabilidade inicial/portas/F10 e pediu lista ao entrar, criação se vazio e opção para desativar. Implementados no grupo de menus de personagens com ações diferidas e confirmação, conservando troca e saves existentes. Consulte PERSONAGENS-INICIO-0.103.0.md. Não conclui editor completo nem fase9.
+
+
+###0.104.0 — grupo completo de armazenamento existente
+
+Retomada autorizada pelo usuário. Referência NewStorageSystem/NewInventorySystem/Vehicle_Insurance conferida. Porta-malas, depósitos e apartamento revisados juntos nas apresentações grade/lista, quantidades e gesto entre painéis, contexto, armaria e checkpoint conservador.3988 testes; roteiro ARMAZENAMENTO-0.104.0.md. Animação automática da tampa não portada. Não declara fim da fase8 nem realismo de trabalhos da9.

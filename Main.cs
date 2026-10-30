@@ -87,7 +87,7 @@ namespace RPCore
             var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
-            var storage = new StorageSystem(pool, inv, ach); systems.Add(storage);
+            var storage = new StorageSystem(pool, inv, ach, shifts); systems.Add(storage);
             AddOptional(() => new StockMarketSystem(pool));
             FuelSystem fuel = null;
             if (Cfg.EnableFuel) AddOptional(() => { fuel = new FuelSystem(pool, ach, () => editor?.ServicePoints??System.Linq.Enumerable.Empty<EditorPoint>()); return fuel; });
@@ -168,7 +168,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.103.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.104.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário confirmou portas, F10 e estabilidade inicial após0.102.2. A pedido,0.103.0 acrescenta entrada com seleção/criação de personagens e opção F11, preservando o fluxo de carregamento. Testes nativos de troca/persistência permanecem necessários; isso não conclui todo o refinamento da criação/câmera nem a fase8. Fase9 dos trabalhos segue reservada.
+Estado atual: após estabilidade inicial confirmada na0.102.2 e a entrega da seleção opcional0.103, o usuário autorizou retomar o refinamento por grupos.0.104 revisa armazenamento público/porta-malas/apartamento e as duas apresentações, com gesto entre painéis e contexto vinculado. Validação nativa continua necessária. A fase8 permanece aberta e a fase9 dos trabalhos segue reservada.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -28,7 +28,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | GarageSystem | [GarageSystem.cs](../GarageSystem.cs) | Grupo0.99: acesso/registro atual/remocao/retirada/servicos revisados; aguarda teste GTA |
 | GroomingSystem | [GroomingSystem.cs](../GroomingSystem.cs) | 0.100: categorias de acabamento/face, resumo antes de confirmar, navegação/despacho, cancelamento seguro de pendência; aplicação retomável anterior mantida. Validação GTA pendente. |
 | HalloweenSystem | [HalloweenSystem.cs](../HalloweenSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| HomeStorageSystem | [HomeStorageSystem.cs](../HomeStorageSystem.cs) | Pendente de revisão completa; preservar base existente |
+| HomeStorageSystem | [HomeStorageSystem.cs](../HomeStorageSystem.cs) | Grupo0.104: armazenamento privado usa ambas as apresentações revisadas, propriedade/contexto/gate e saída conservados; marcador não compete com atividade. Teste GTA pendente. |
 | HousingSystem | [HousingSystem.cs](../HousingSystem.cs) | 0.100: compra confirmada, menus com despacho/retorno/contexto, propriedade revalidada no streaming; saída e armazenamento preservados. IPL/piso/transição dependem de teste GTA. |
 | HuntingJob | [HuntingJob.cs](../HuntingJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | InventorySystem | [InventorySystem.cs](../InventorySystem.cs) | Grupo0.91–0.96 testado pelo usuário; ferramentas/intoxicação/integrações restantes continuam abertas |
@@ -58,7 +58,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | SettingsSystem | [SettingsSystem.cs](../SettingsSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
 | ShopSystem | [ShopSystem.cs](../ShopSystem.cs) | Conveniências/Grocery0.96 testados pelo usuário; lojas especializadas/venda permanecem abertas |
 | StockMarketSystem | [StockMarketSystem.cs](../StockMarketSystem.cs) | 0.102 revisa grupo completo: resumo/listas/busca/ordenação/custo/resultado, ordens/funding confirmados com rollback e checkpoint Wallet, legado/unknowns e relógio de mercado. Teste GTA pendente; mantém simulação local. |
-| StorageSystem | [StorageSystem.cs](../StorageSystem.cs) | Pendente de revisão completa; preservar base existente |
+| StorageSystem | [StorageSystem.cs](../StorageSystem.cs) | Grupo0.104: depósitos/porta-malas/apartamento, menus completos/diferidos, quantidade/fit, mouse entre painéis, identidade ator/perfil/carro/placa, armaria e saves. Teste GTA pendente; tampa/animação automática não portada. |
 | StreamerJob | [StreamerJob.cs](../StreamerJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | StudioHeistSystem | [StudioHeistSystem.cs](../StudioHeistSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | TrafficSystem | [TrafficSystem.cs](../TrafficSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |

@@ -1,3 +1,9 @@
+## Atualização0.104.0 — grupo armazenamento
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.0.zip) · [Acessos e roteiro GTA](docs/ARMAZENAMENTO-0.104.0.md)
+
+Refina porta-malas, depósitos e armazenamento do apartamento juntos: grade com transferência por mouse nos dois sentidos, peso/capacidade dos dois lados, quantidade digitada e máxima; menu em lista completo com resumo/categorias/retorno; sessão ligada ao ator/perfil/veículo e atividade, sincronização de armas e saves conservados.3988 testes aprovados; build sem erros/avisos. A apresentação/input real e os natives precisam do teste GTA. Grupo0.103 e correções anteriores incluídos.
+
 ## Atualização0.103.0 — seleção de personagens na entrada
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.103.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.103.0.zip) · [Opção e testes GTA](docs/PERSONAGENS-INICIO-0.103.0.md)

@@ -28,7 +28,7 @@ namespace RPCore
         }
         public void Tick()
         {
-            if(!Access || InterfaceOptions.ModalOpen || pool.AreAnyVisible)return;
+            if(!Access || InterfaceOptions.ModalOpen || pool.AreAnyVisible || gate.Owner!=null)return;
             var point=new Vector3(options.Point.X,options.Point.Y,options.Point.Z);
             if(Game.Player.Character.Position.DistanceTo(point)>2)return;
             World.DrawMarker(MarkerType.Cylinder,point-new Vector3(0,0,1),Vector3.Zero,Vector3.Zero,new Vector3(1,1,.2f),Color.FromArgb(130,80,170,220));

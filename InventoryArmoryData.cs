@@ -23,7 +23,7 @@ namespace RPCore
         public const int MaxAmmo=1000000;
         public static string WeaponId(int hash)=>"weapon_"+unchecked((uint)hash).ToString("x8");
         public static string AmmoId(int hash)=>"ammo_"+unchecked((uint)hash).ToString("x8");
-        public static bool ActivityAllows(string owner)=>owner==null || owner=="homestorage" || owner=="inventory_use";
+        public static bool ActivityAllows(string owner)=>owner==null || owner=="homestorage" || owner=="storage" || owner=="inventory_use";
         public static string PoolItem(InventoryArmory data,int type)=>data.Stacked.FirstOrDefault(id=>data.Weapons[id].AmmoType==type)??AmmoId(type);
         static InvData Copy(InvData data)=>JsonConvert.DeserializeObject<InvData>(JsonConvert.SerializeObject(data));
         public static bool CanReacquire(InvData data,string id)
