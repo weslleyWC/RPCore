@@ -1,3 +1,9 @@
+## Atualização0.104.4 — personagens como na0.102.2, restante atual
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.4.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.4.zip) · [Instalação e testes](docs/PERSONAGENS-RESTAURADOS-0.104.4.md)
+
+Por pedido do usuário após duplicações, CharacterSystem e a rotina de troca voltam exatamente à0.102.2. Retira seleção inicial/espera/ped candidato/handoff e a opção F11 correspondente; mantém armazenamento0.104 e todas as demais alterações atuais. Fechar completamente o GTA antes de instalar.3974 testes ativos aprovados, build sem erros/avisos; saves preservados e validação GTA necessária.
+
 ## Hotfix0.104.3 — identificação do ped sem decor
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.3.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.3.zip) · [Correção e teste GTA](docs/PERSONAGEM-REGISTRO-0.104.3.md)

@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: log0.104.2 confirmou falha Candidate ownership tag unavailable antes de criar o ped.0.104.3 remove a dependência de decor e usa registro de sessão/lease/handle/modelo/endereço, com exclusão do jogador na limpeza. Transferência nativa ainda não testada com sucesso; não declarar crash anterior curado. Refinamento normal segue pausado. Fases8/9 abertas.
+Estado atual: usuário relatou duplicações e pediu restaurar só personagens para0.102.2.0.104.4 repõe exatamente CharacterSystem e a função de troca daquela base, retirando entrada automática/handoff/helpers, mantendo armazenamento0.104 e todo o restante atual. Rollback e limites registrados; aguarda teste GTA. Fases8/9 continuam abertas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -10,7 +10,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 |---|---|---|
 | AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | 0.102 revisa grupo completo: resumo/filtros/detalhes/legados/extras, persistência antes de anúncio, overflow/IO/listeners e proteção de dados inválidos. Teste GTA pendente. |
 | BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | 0.100: E local, despacho/retorno/seleção, contexto e cancelamento que conserva alterações externas; corte/olhos/taxa existentes mantidos. Câmera dedicada/validação GTA pendentes. |
-| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.103: seleção/criação automática opcional, lista protegida, confirmações e ações diferidas/rebind após troca.0.100 protege snapshot de prévias. Editor completo/câmera e validação GTA ainda pendentes. |
+| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.104.4 restaura implementação manual0.102.2 por pedido do usuário; seleção inicial e handoff retirados. Editor completo/câmera e validação GTA pendentes. |
 | CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |

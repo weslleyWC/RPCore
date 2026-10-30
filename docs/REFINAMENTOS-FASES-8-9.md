@@ -342,3 +342,8 @@ Após novo crash, RuntimeState0.104.1/6020 e log sem retorno do SET_PLAYER_MODEL
 ###0.104.3 — bloqueio de decor confirmado
 
 Log0.104.2 identifica falha ao exigir decor antes do CREATE_PED. Caminho substitui a exigência por registro de propriedade da sessão e endereço do ped; conserva limpeza restrita, saves e ausência do SET_PLAYER_MODEL.4047 testes. PERSONAGEM-REGISTRO-0.104.3.md orienta validação GTA. Transferência/crash anterior ainda precisam de confirmação; avanço de refinamento normal permanece pausado.
+
+
+###0.104.4 — restauração limitada aos personagens
+
+Usuário pediu voltar só personagens à0.102.2 por duplicação de peds, mantendo o restante. CharacterSystem e Main.SwitchCharacter exatamente restaurados; entrada automática/espera/handoff/helpers/testes exclusivos removidos. Armazenamento0.104 e demais sistemas atuais preservados.3974 testes ativos. PERSONAGENS-RESTAURADOS-0.104.4.md orienta fechar totalmente GTA para descarregar duplicatas da sessão e testar manual F10.
