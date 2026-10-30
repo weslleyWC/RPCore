@@ -1,3 +1,9 @@
+## Atualização0.103.0 — seleção de personagens na entrada
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.103.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.103.0.zip) · [Opção e testes GTA](docs/PERSONAGENS-INICIO-0.103.0.md)
+
+Ao entrar, abre a lista dos personagens salvos quando o GTA estiver seguro; sem personagens, abre criação. Seleção manual, confirmações, perfis separados e registros protegidos. Ativado por padrão, desativável no F11 → Game Settings; acesso manual pelo F10 permanece.3954 testes aprovados; build sem erros/avisos. Carregamento real de ped/interface ainda requer teste GTA.
+
 ## Correção0.102.2 — portas/F10 e estabilidade investigada por logs
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.2.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.2.zip) · [Teste e coleta de diagnóstico](docs/STABILIDADE-0.102.2.md)

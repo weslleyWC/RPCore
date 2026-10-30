@@ -317,3 +317,8 @@ Grupo0.102 aceito pelo usuário; identificado bug de depósito seguido de cartei
 ###0.102.2 — estabilização antes de retomar refinamento
 
 Usuário enviou logs que confirmam Bool boxed no OutputArgument das portas e menu vazio no F10; causa do fechamento nativo durante jogo/perseguição não aparece. Corrige essas falhas, handles boxed de cleanup, polling/bind veicular desnecessário e input de menu oculto. Adiciona diagnóstico mapeado de8KB com resumo na sessão seguinte, sem concluir culpado por contexto.3940 testes aprovados, build sem erros/avisos. STABILIDADE-0.102.2.md orienta teste de portas/F10/direção/banco e coleta se cair. Hotfix inclui0.102.1, ainda não testada pelo usuário. Avanço de refinamento pausado para validação de estabilidade.
+
+
+###0.103.0 — entrada com personagens
+
+Usuário confirmou estabilidade inicial/portas/F10 e pediu lista ao entrar, criação se vazio e opção para desativar. Implementados no grupo de menus de personagens com ações diferidas e confirmação, conservando troca e saves existentes. Consulte PERSONAGENS-INICIO-0.103.0.md. Não conclui editor completo nem fase9.

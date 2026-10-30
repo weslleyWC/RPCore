@@ -14,10 +14,12 @@ namespace RPCore
         public static bool AdvancedMenus;
         public static bool HideWeaponWheel = true;
         public static bool AnimateSettingsBanner = true;
+        public static bool CharacterSelectionOnStart = true;
         static string PathName { get { return Path.Combine(Cfg.Dir, "Interface.ini"); } }
         public static void Load()
         {
             var s = ScriptSettings.Load(PathName);
+            CharacterSelectionOnStart=s.GetValue("Interface","CharacterSelectionOnStart",true);
             AdvancedMenus=s.GetValue("Interface","AdvancedMenus",false);
             HideWeaponWheel=s.GetValue("Interface","HideWeaponWheel",true);
             RadialKey = s.GetValue("Keys", "Radial", Keys.J); SettingsKey = s.GetValue("Keys", "Settings", Keys.F11);

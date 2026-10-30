@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário aprovou o grupo0.102, relatou banco com duplicação/perda e, antes de testar0.102.1, enviou logs de portas fechadas/F10 e crashes sem causa fatal registrada.0.102.2 corrige falhas confirmadas e registra contexto; validação GTA de banco/portas/estabilidade continua pendente. Refinamento normal permanece pausado até estabilizar. Fase8 e os ciclos da9 seguem no roteiro.
+Estado atual: usuário confirmou portas, F10 e estabilidade inicial após0.102.2. A pedido,0.103.0 acrescenta entrada com seleção/criação de personagens e opção F11, preservando o fluxo de carregamento. Testes nativos de troca/persistência permanecem necessários; isso não conclui todo o refinamento da criação/câmera nem a fase8. Fase9 dos trabalhos segue reservada.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -10,7 +10,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 |---|---|---|
 | AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | 0.102 revisa grupo completo: resumo/filtros/detalhes/legados/extras, persistência antes de anúncio, overflow/IO/listeners e proteção de dados inválidos. Teste GTA pendente. |
 | BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | 0.100: E local, despacho/retorno/seleção, contexto e cancelamento que conserva alterações externas; corte/olhos/taxa existentes mantidos. Câmera dedicada/validação GTA pendentes. |
-| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.100 impede snapshot de prévias; criação/carregamento/menus ainda pendentes de revisão completa. |
+| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.103: seleção/criação automática opcional, lista protegida, confirmações e ações diferidas/rebind após troca.0.100 protege snapshot de prévias. Editor completo/câmera e validação GTA ainda pendentes. |
 | CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
