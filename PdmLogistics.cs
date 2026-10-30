@@ -14,6 +14,7 @@ namespace RPCore
     // Physical assets are temporary representations of paid company stock, never personal cars.
     public sealed class PdmLogistics : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmhaul";
         public string Label => "PDM / coleta no porto";
         public bool Active => run != null;
@@ -36,15 +37,15 @@ namespace RPCore
             this.pool = pool; this.gate = gate; StartPosition = office;
             var defaults = PdmLogisticsDefaults.Load(); options = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmLogistics.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
-            var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm logistics action", ex); Notify.Show("Operacao pendente; dados preservados. Veja RPCore.log."); } }; menu.Add(item);
+            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm logistics action", ex); Notify.Show("Operacao pendente; dados preservados. Veja RPCore.log."); } });
         }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear();
+            pool.HideAll(); ui.Begin("pdm",null,false);
             Add("GPS: escritorio PDM", "Inicie a pe no escritorio externo da empresa.", () => Waypoint(StartPosition));
             Add("GPS: porto / coleta", "Pedidos pagos ficam disponiveis durante o contrato.", () => Waypoint(Pos(options.Dock)));
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos, arquivo preservado."); return; }
@@ -146,6 +147,7 @@ namespace RPCore
         bool UnloadReady => InputAllowed && Coupled && !Foreign && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(trailer.Position) < 30 && loaded.Count == run.Total && cargo.Values.All(v => Exists(v) && v.Occupants.Length == 0 && v.IsAttachedTo(trailer));
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) return;
             try
             {
@@ -243,7 +245,7 @@ namespace RPCore
             if (safe) DeleteCargo();
             EndSession(safe); if (!ClearDisplay() && Exists(display)) { display.IsPositionFrozen = false; JobVehicles.Retire(display); display = null; }
         }
-        public void Reload() { ReleaseSession(); Recover(); }
-        public void Dispose() { try { Save(); } catch (Exception ex) { Log.Error("pdm logistics dispose", ex); } finally { ReleaseSession(); } }
+        public void Reload() { ui.Reset(); ReleaseSession(); Recover(); }
+        public void Dispose() { ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm logistics dispose", ex); } finally { ReleaseSession(); } }
     }
 }

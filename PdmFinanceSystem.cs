@@ -8,6 +8,7 @@ namespace RPCore
 {
     public sealed class PdmFinanceSystem : ISystem
     {
+        readonly PersonalServiceMenu ui;
         public Action<string> OpenRepo;
         public int NewDefaultPercent;
         public string Name => "pdmfinance";
@@ -16,7 +17,7 @@ namespace RPCore
         public PdmFinanceSystem(ObjectPool pool, PdmFinanceOptions options, AchievementSystem achievements, Action back)
         {
             this.pool = pool; this.options = options; this.achievements = achievements; this.back = back;
-            menu = new NativeMenu("PDM / financiamentos", "ENTRADAS / PARCELAS / CONTRATOS"); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / financiamentos", "ENTRADAS / PARCELAS / CONTRATOS"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -44,10 +45,10 @@ namespace RPCore
             }
         }
         void Add(string title, string text, Action action)
-        { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm finance menu", ex); Notify.Show("Consulta de financiamentos pendente; dados preservados."); } }; menu.Add(item); }
+        { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm finance menu", ex); Notify.Show("Consulta de financiamentos pendente; dados preservados."); } }); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
+            Flush(); pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
             var d = Wallet.Pdm; long owed = d.Loans.Sum(l => (long)l.Receivable);
             menu.Name = "Financiamentos / a receber $" + owed;
             Add("Novos contratos: " + options.DownPercent + "% entrada / " + options.Installments + " parcelas", "Acrescimo contratual " + options.InterestPercent + "% sobre cotacao com danos/divulgacao. Parcelas a cada " + options.PeriodSeconds + "s ativos; ate " + options.MaxActive + " contratos simultaneos. Risco por parcela: " + NewDefaultPercent + "%. Abra Estoque e escolha Entregar financiado.", back);
@@ -63,10 +64,11 @@ namespace RPCore
             Add("Voltar", "Empresa PDM / estoque.", back); menu.Visible = true;
         }
         public void Tick()
-        { Sample(); if (pending < 5000 || unchecked(Game.GameTime - retryAt) < 0) return; try { Flush(); } catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm finance checkpoint pending", ex); } }
+        {
+            ui.Tick(PdmMenuRuntime.Allowed); Sample(); if (pending < 5000 || unchecked(Game.GameTime - retryAt) < 0) return; try { Flush(); } catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm finance checkpoint pending", ex); } }
         public void Save() { if (profile == Profile.Id) Flush(); }
-        public void Reload() { profile = Profile.Id; last = Game.GameTime; retryAt = last; pending = 0; stepId = null; menu.Visible = false; }
+        public void Reload() { ui.Reset(); profile = Profile.Id; last = Game.GameTime; retryAt = last; pending = 0; stepId = null; menu.Visible = false; }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); } finally { menu.Visible = false; } }
+        public void Dispose() { ui.Reset(); try { Save(); } finally { menu.Visible = false; } }
     }
 }

@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmSurveillanceSystem : ISystem
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmsurveillance";
         public bool Viewing => session != null;
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Vector3 office; readonly Func<bool> officeAction; readonly Action back;
@@ -23,13 +24,13 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmSurveillanceDefaults.Load(); options = Store.LoadDef("Jobs/PdmSurveillance.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSurveillance.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
-        { var item = new NativeItem(title, description); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Close(); Log.Error("pdm surveillance action", ex); Notify.Show("Monitoramento indisponivel; compra/saves preservados."); } }; menu.Add(item); }
+        { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Close(); Log.Error("pdm surveillance action", ex); Notify.Show("Monitoramento indisponivel; compra/saves preservados."); } }); }
         public void OpenMenu()
         {
-            Close(); pool.HideAll(); menu.Clear();
+            Close(); pool.HideAll(); ui.Begin("pdm",null,false);
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             if (!Wallet.Pdm.Surveillance.Purchased)
                 Add("Instalar cameras: $" + options.Price, "Compra unica pelo caixa empresarial, sem mensalidade. Nao inclui seguro/indenizacao.", () => { if (!officeAction()) return; if (!Wallet.PdmSurveillancePurchase(options, Guid.NewGuid().ToString("N"), out _)) Notify.Show("Confira caixa/empresa/operacao pendente. Nada confirmado."); OpenMenu(); });
@@ -95,6 +96,7 @@ namespace RPCore
         void ClearProps() { foreach (var p in props.Values) if (p != null && p.Exists()) p.Delete(); props.Clear(); }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             try
             {
                 bool installed = profile == Profile.Id && Wallet.Pdm.Valid && Wallet.Pdm.Owned && Wallet.Pdm.Surveillance.Purchased;
@@ -126,7 +128,7 @@ namespace RPCore
             catch (Exception ex) { Close(); Log.Error("pdm surveillance key", ex); }
         }
         public void Save() { }
-        public void Reload() { Close(); ClearProps(); profile = Profile.Id; nextProps = Game.GameTime; menu.Visible = false; }
-        public void Dispose() { try { Close(); } finally { ClearProps(); menu.Visible = false; } }
+        public void Reload() { ui.Reset(); Close(); ClearProps(); profile = Profile.Id; nextProps = Game.GameTime; menu.Visible = false; }
+        public void Dispose() { ui.Reset(); try { Close(); } finally { ClearProps(); menu.Visible = false; } }
     }
 }

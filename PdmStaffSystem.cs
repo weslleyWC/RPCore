@@ -9,6 +9,7 @@ namespace RPCore
 {
     public sealed class PdmStaffSystem : ISystem
     {
+        readonly PersonalServiceMenu ui;
         public PdmPremisesOptions Premises { get; }
         public PdmSecurityOptions Security { get; }
         public Action OpenServices, OpenSecurity;
@@ -27,7 +28,7 @@ namespace RPCore
             var securityDefaults = PdmSecurityDefaults.Load(); Security = Store.LoadDef("Jobs/PdmSecurity.json", () => securityDefaults);
             if (Security == null || !Security.Valid) { Log.Write("Invalid PdmSecurity.json; embedded defaults used, original retained."); Security = securityDefaults; }
             options = PdmSecurityDefaults.Merge(options, Security);
-            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -50,7 +51,7 @@ namespace RPCore
         }
         void Add(string title, string text, Action action)
         {
-            var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm staff action", ex); Notify.Show("Operacao de equipe nao confirmada. Dados preservados."); } }; menu.Add(item);
+            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm staff action", ex); Notify.Show("Operacao de equipe nao confirmada. Dados preservados."); } });
         }
         void Change(Func<bool> mutation)
         {
@@ -66,7 +67,7 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); menu.Clear();
+            Flush(); pool.HideAll(); ui.Begin("pdm",null,false);
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
             var d = Wallet.Pdm; var s = d.Staff;
             menu.Name = "Equipe / caixa $" + d.Cash + " / divida $" + ((long)s.FormerDebt + s.Employees.Sum(e => (long)e.Owed));
@@ -93,12 +94,13 @@ namespace RPCore
         }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             Sample(); if (pending < 5000 || unchecked(Game.GameTime - retryAt) < 0) return;
             try { Flush(); } catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm payroll pending", ex); }
         }
         public void Save() { if (profile == Profile.Id) Flush(); }
-        public void Reload() { menu.Visible = false; profile = Profile.Id; last = Game.GameTime; retryAt = last; pending = 0; stepId = null; }
+        public void Reload() { ui.Reset(); menu.Visible = false; profile = Profile.Id; last = Game.GameTime; retryAt = last; pending = 0; stepId = null; }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); } finally { menu.Visible = false; } }
+        public void Dispose() { ui.Reset(); try { Save(); } finally { menu.Visible = false; } }
     }
 }

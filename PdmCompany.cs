@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmCompany : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises, OpenSecurity, OpenSurveillance, OpenRisk, SyncRisk;
         public Func<string,bool> PrepareStock;
         internal PdmOptions CompanyOptions => options;
@@ -43,10 +44,10 @@ namespace RPCore
             if (Financing == null || !Financing.Valid) { Log.Write("Invalid PdmFinance.json; embedded defaults used, original retained."); Financing = financeDefaults; }
             var repoDefaults = PdmRepoDefaults.Load(); Repossession = Store.LoadDef("Jobs/PdmRepo.json", () => repoDefaults);
             if (Repossession == null || !Repossession.Valid) { Log.Write("Invalid PdmRepo.json; embedded defaults used, original retained."); Repossession = repoDefaults; }
-            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); pool.Add(menu); Visuals.Register(menu, Name);
+            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, Name);
             officeBlip = MapBlips.Create(StartPosition, "RPCore: PDM / empresa", BlipSprite.PersonalVehicleCar, BlipColor.Orange, .8f); Recover();
         }
-        void Add(string title, string text, Action action) { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm action", ex); Notify.Show("Acao PDM nao confirmada. Veja RPCore.log."); } }; menu.Add(item); }
+        void Add(string title, string text, Action action) { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm action", ex); Notify.Show("Acao PDM nao confirmada. Veja RPCore.log."); } }); }
         internal bool OfficeAction()
         {
             SyncStaff?.Invoke(); SyncFinance?.Invoke(); SyncPremises?.Invoke(); SyncRisk?.Invoke();
@@ -56,7 +57,7 @@ namespace RPCore
         bool DataValid() { if (Wallet.Pdm.Valid) return true; Log.Write("Invalid Wallet.json/Pdm; original retained."); Notify.Show("Dados da empresa invalidos. Arquivo preservado."); return false; }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!DataValid()) return; var d = Wallet.Pdm;
+            pool.HideAll(); ui.Begin("pdm",null,false); if (!DataValid()) return; var d = Wallet.Pdm;
             menu.Name = "PDM / caixa $" + d.Cash + " / " + d.Stock.Count + " carros";
             Add("GPS: escritorio externo PDM", "Empresa separada da compra de carro pessoal/garagem. Nao precisa entrar em interior.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             if (!d.Owned) Add("Adquirir empresa: $" + options.PurchasePrice, "Debita o banco pessoal; nao inclui capital nem estoque. Valor proprio do RPCore.", () => { if (OfficeAction()) { if (!Wallet.PdmPurchase(options, Guid.NewGuid().ToString("N"), out bool changed)) Notify.Show("Saldo bancario insuficiente ou empresa ja adquirida."); else if (changed) Bump("pdm_owned"); OpenMenu(); } });
@@ -82,10 +83,11 @@ namespace RPCore
             if (Active) Add("Encerrar entrega", "Pare e saia do carro da empresa. Pedido retorna ao estoque com os danos, sem venda ou pagamento.", () => RequestCancel("Entrega cancelada"));
             if (d.Active != null && !Active) Add("Recuperar entrega interrompida", "Se o carro anterior ainda existir, saia dele e deixe-o parado antes de devolver o pedido ao estoque.", () => { Recover(); OpenMenu(); });
             menu.Visible = true;
+            Log.Write("PDM menu shown: "+menu.Items.Count+" rows, profile "+Profile.Id);
         }
         void OpenFinance()
         {
-            pool.HideAll(); menu.Clear(); var d = Wallet.Pdm; menu.Name = "Caixa $" + d.Cash + " / banco $" + Wallet.Bank;
+            pool.HideAll(); ui.Begin("pdm",null,false); var d = Wallet.Pdm; menu.Name = "Caixa $" + d.Cash + " / banco $" + Wallet.Bank;
             foreach (int amount in new[] { 1000, 10000, 50000 }) { int value = amount; Add("Aportar $" + value, "Transfere do banco pessoal para o caixa.", () => Transfer(value, true)); }
             foreach (int amount in new[] { 1000, 10000 }) { int value = amount; Add("Sacar $" + value, "Transfere do caixa para seu banco.", () => Transfer(value, false)); }
             Add("Sacar saldo (ate $1000000)", "Nao duplica nem paga receita novamente; apenas transfere o saldo ja existente.", () => Transfer(Math.Min(1000000, Wallet.Pdm.Cash), false)); Add("Voltar", "Empresa.", OpenMenu); menu.Visible = true;
@@ -100,7 +102,7 @@ namespace RPCore
         void Transfer(int amount, bool deposit) { if (!( !deposit && Wallet.Pdm.Rental?.Delivered == true ? RentalWithdrawalAction() : OfficeAction())) return; if (!Wallet.PdmTransfer(amount, deposit, Guid.NewGuid().ToString("N"), out _)) Notify.Show("Saldo, valor ou limite de caixa/banco insuficiente."); OpenFinance(); }
         void OpenCatalog()
         {
-            pool.HideAll(); menu.Clear(); menu.Name = "Fornecedor / " + Wallet.Pdm.Stock.Count + "/" + options.Capacity;
+            pool.HideAll(); ui.Begin("pdm",null,false); menu.Name = "Fornecedor / " + Wallet.Pdm.Stock.Count + "/" + options.Capacity;
             foreach (var p in options.Catalog) { var offer = p; Add(p.Name + " / custo $" + p.Cost, "Preco de venda sem danos: $" + p.Price + ". Compra com caixa empresarial; pedido aguardara coleta no porto.", () => {
                 if (!OfficeAction()) return; var model = new Model(offer.Model); if (!model.IsValid || !model.IsInCdImage || !model.IsCar) { Notify.Show("Modelo indisponivel. Nenhuma compra confirmada."); return; }
                 if (!Wallet.PdmOrder(options, offer.Id, Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"), out _)) Notify.Show("Caixa/capacidade insuficiente ou entrega pendente."); OpenCatalog();
@@ -108,9 +110,9 @@ namespace RPCore
         }
         void OpenStock()
         {
-            pool.HideAll(); menu.Clear(); menu.Name = "Estoque / " + Wallet.Pdm.Stock.Count + " carros";
+            pool.HideAll(); ui.Begin("pdm",null,false); menu.Name = "Estoque / " + Wallet.Pdm.Stock.Count + " carros";
             foreach (var s in Wallet.Pdm.Stock) { var stock = s; Add((Wallet.Pdm.Showroom.Any(e => e.StockId == s.Id) ? "[EXPOSTO] " : Wallet.Pdm.Rental?.Cars.Any(c => c.StockId == s.Id) == true ? "[LOCADORA] " : s.AwaitingCollection ? "[PORTO] " : "[PRONTO] ") + s.Name + " [" + s.Plate + "]", "Motor " + s.Engine + "/1000 / carroceria " + s.Body + "/1000 / venda estimada $" + PdmStaffTransactions.Quote(Wallet.Pdm, s, s.Engine, s.Body), () => {
-                pool.HideAll(); menu.Clear(); menu.Name = stock.Name;
+                pool.HideAll(); ui.Begin("pdm",null,false); menu.Name = stock.Name;
                 if (stock.AwaitingCollection) { if (OpenCollection != null) Add("Coletar pedido no porto", "Este carro ja esta pago. Conclua a coleta antes da venda.", OpenCollection); }
                 else {
                 if (DisplayStock != null) Add("Expor em vaga externa", "Exibe um carro pronto, sem vende-lo ou transforma-lo em carro pessoal.", () => { if (OfficeAction()) DisplayStock(stock.Id); });
@@ -123,7 +125,7 @@ namespace RPCore
                 Add("Voltar", "Estoque.", OpenStock); menu.Visible = true;
             }); } Add("Voltar", "Empresa.", OpenMenu); menu.Visible = true;
         }
-        void OpenLedger() { pool.HideAll(); menu.Clear(); menu.Name = "Movimentacoes da empresa"; foreach (var e in Wallet.Pdm.Ledger.Where(e => e != null).Reverse()) Add(e.Description + " / " + e.Amount, "Caixa apos operacao: $" + e.Balance, () => { }); Add("Voltar", "Empresa.", OpenMenu); menu.Visible = true; }
+        void OpenLedger() { pool.HideAll(); ui.Begin("pdm",null,false); menu.Name = "Movimentacoes da empresa"; foreach (var e in Wallet.Pdm.Ledger.Where(e => e != null).Reverse()) Add(e.Description + " / " + e.Amount, "Caixa apos operacao: $" + e.Balance, () => { }); Add("Voltar", "Empresa.", OpenMenu); menu.Visible = true; }
         void Begin(string stockId, bool financed = false)
         {
             if (!OfficeAction() || (PrepareStock != null ? !PrepareStock(stockId) : ClearDisplay?.Invoke() == false)) return; var stock = Wallet.Pdm.Stock.Find(s => s.Id == stockId); if (stock == null || stock.AwaitingCollection || stock.Engine < 300 || stock.Body < 300) { Notify.Show("Repare o carro no estoque antes da entrega."); return; }
@@ -155,6 +157,7 @@ namespace RPCore
         bool HandoverEligible => InputAllowed && SafeFoot && Game.Player.Character.Weapons.Current.Hash == WeaponHash.Unarmed && car != null && car.Exists() && car.Occupants.Length == 0 && car.Speed < .5f && buyer != null && buyer.Exists() && !buyer.IsDead && car.Position.DistanceTo(buyer.Position) < 10 && Game.Player.Character.Position.DistanceTo(buyer.Position) < 3;
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) { if (InputAllowed && SafeFoot && Game.Player.Character.Position.DistanceTo(StartPosition) < 3) { Prompt.Help("~INPUT_CONTEXT~: PDM / empresa / caixa / estoque"); if (Game.IsControlJustPressed(GTA.Control.Context)) OpenMenu(); } return; }
             if (run.Stage == PdmStage.Complete) { Depart(); return; }
             if (cancelReason != null) { if (unchecked(Game.GameTime - nextSave) >= 0) CompleteCancel(); return; }
@@ -236,7 +239,7 @@ namespace RPCore
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) RequestCancel("Cancelada pelo jogador"); }
         public void OnKey(KeyEventArgs e) { }
         public void Save() { if (Active && run.Stage != PdmStage.Complete && ownerProfile == Profile.Id && car != null && car.Exists()) Wallet.PdmRemember(run.Id, Health(car.EngineHealth), Health(car.BodyHealth), Guid.NewGuid().ToString("N"), out _); }
-        public void Reload() { try { CleanupWorld(); } finally { ClearSession(); } Recover(); }
-        public void Dispose() { try { Save(); CleanupWorld(); } catch (Exception ex) { Log.Error("pdm dispose", ex); } finally { ClearSession(); if (officeBlip != null && officeBlip.Exists()) officeBlip.Delete(); } }
+        public void Reload() { ui.Reset(); try { CleanupWorld(); } finally { ClearSession(); } Recover(); }
+        public void Dispose() { ui.Reset(); try { Save(); CleanupWorld(); } catch (Exception ex) { Log.Error("pdm dispose", ex); } finally { ClearSession(); if (officeBlip != null && officeBlip.Exists()) officeBlip.Delete(); } }
     }
 }

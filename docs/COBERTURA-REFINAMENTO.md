@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual:0.106 revisa concessionária/seguro como grupo. Compra e seguros requerem validação nativa do usuário; não se infere teste detalhado de0.105 por pedir avançar. Personagens/roupas e trabalhos preservados. Fase8 aberta; realismo dos ciclos de trabalhos permanece na9.
+Estado atual:0.106.1 corrige acesso físico à Motors e riscos de despacho/reentrada nos12menus PDM após relato de HUD/menus pararem. Causa do incidente ainda não reproduzida no cloud; validação GTA/log necessária. Saves e ciclos empresariais preservados; fase9 não iniciada.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 

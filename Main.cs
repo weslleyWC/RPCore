@@ -168,7 +168,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.106.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.106.1 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -218,7 +218,10 @@ namespace RPCore
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             Stage(3);
             try { pool.Process(); }
-            catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
+            catch (Exception ex) {
+                Log.Error("menu dispatch", ex);
+                foreach(var item in pool){try{item.Visible=false;}catch(Exception cleanup){Log.Error("menu dispatch close: "+item.GetType().Name,cleanup);}}
+            }
             finally{Stage(4);}
 
             foreach (ISystem s in systems)

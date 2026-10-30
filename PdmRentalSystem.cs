@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmRentalSystem : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmrental";
         public string Label => "PDM / pedidos da locadora";
         public bool Active => run != null;
@@ -35,13 +36,13 @@ namespace RPCore
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRental.json; embedded defaults used, original retained."); options = defaults; }
             var rigDefaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => rigDefaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for rental order; embedded defaults used, original retained."); rig = rigDefaults; }
-            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
-        { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm rental action", ex); Notify.Show("Pedido da locadora pendente; dados preservados."); } }; menu.Add(item); }
+        { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm rental action", ex); Notify.Show("Pedido da locadora pendente; dados preservados."); } }); }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
+            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
             Add("GPS: escritorio PDM", "Inicie a pe com dois carros prontos do mesmo modelo no estoque.", () => Waypoint(StartPosition));
             Add("GPS: locadora / patio externo", "Destino da referencia fora das pistas do aeroporto. Nao entre em area restrita.", () => Waypoint(Pos(options.Delivery)));
             if (Wallet.Pdm.Rental == null && !Active)
@@ -160,6 +161,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) return;
             try
             {
@@ -281,8 +283,8 @@ namespace RPCore
         void Status(string text) { if (!Visuals.TryJobHeader("pdm", "PDM / locadora", Color.White)) Visuals.Text("PDM / locadora", Visuals.Width / 2 - 200, 24, .34f, Color.White); float x = Visuals.Width / 2 - 390; Visuals.Rect(x, 900, 780, 80, Color.FromArgb(210, 8, 12, 18)); Visuals.Text(text, x + 12, 910, .29f, Color.White); Visuals.Text("End: encerrar antes da entrega / depois: suspender retorno sem reabrir estoque", x + 12, 945, .23f, Color.White); }
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) cancelReason = "Solicitada pelo jogador"; }
         public void Save() { if (Active && profile == Profile.Id && Wallet.Pdm.Rental != null && !Wallet.Pdm.Rental.Delivered) Remember(); }
-        public void Reload() { ReleaseSession(); Recover(); }
+        public void Reload() { ui.Reset(); ReleaseSession(); Recover(); }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); } catch (Exception ex) { Log.Error("pdm rental dispose", ex); } finally { ReleaseSession(); } }
+        public void Dispose() { ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm rental dispose", ex); } finally { ReleaseSession(); } }
     }
 }

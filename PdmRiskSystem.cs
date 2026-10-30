@@ -10,6 +10,7 @@ namespace RPCore
 {
     public sealed class PdmRiskSystem : ISystem
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmrisk";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly Vector3 office; readonly Func<bool> officeAction; readonly Action back;
         readonly PdmRiskOptions options;
@@ -20,7 +21,7 @@ namespace RPCore
             this.pool = pool; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmRiskDefaults.Load(); options = Store.LoadDef("Jobs/PdmRisk.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRisk.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -52,12 +53,12 @@ namespace RPCore
         }
         public void Flush() { if (profile != Profile.Id) return; Sample(); Drain(); }
         void Add(string title, string description, Action action)
-        { var row = new NativeItem(title, description); row.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm risk action", ex); Notify.Show("Acao nao confirmada; dados preservados."); } }; menu.Add(row); }
+        { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm risk action", ex); Notify.Show("Acao nao confirmada; dados preservados."); } }); }
         void Change(Func<bool> action)
         { Flush(); if (!officeAction()) return; if (!action()) Notify.Show("Confira caixa, apolice, dados atualizados ou operacao pendente."); OpenMenu(); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Flush(); pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             var d = Wallet.Pdm; var r = d.Risk; var policy = r.Policy;
             Add(r.SafeOpen ? "Fechar cofre / interromper risco" : "Abrir cofre / habilitar risco ao se afastar", "Abertura VOLUNTARIA: ao ficar a 150m por " + options.ExposureSeconds + "s ativos, com caixa acima de $" + options.MinimumCash + ", pode perder " + options.LossPercent + "%. Usa o caixa existente, sem criar saldo de cofre separado.", () => Change(() => Wallet.PdmSetSafe(!r.SafeOpen, Guid.NewGuid().ToString("N"), out _)));
             Add("Protecao " + PdmRiskTransactions.Security(d) + "/100 / chance " + PdmRiskTransactions.Chance(d, options) + "%", "Cameras: 30; cada seguranca contratado e sem atraso: 35. A chance vale por periodo de exposicao, somente com cofre aberto. Fechado: sem este risco.", () => { });
@@ -77,10 +78,11 @@ namespace RPCore
             Add("Voltar", "Empresa PDM.", back); menu.Visible = true;
         }
         public void Tick()
-        { if (unchecked(Game.GameTime - retryAt) < 0) return; try { Sample(); if (pending >= 5000) Drain(); } catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm risk checkpoint", ex); } }
+        {
+            ui.Tick(PdmMenuRuntime.Allowed); if (unchecked(Game.GameTime - retryAt) < 0) return; try { Sample(); if (pending >= 5000) Drain(); } catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm risk checkpoint", ex); } }
         public void Save() { if (profile == Profile.Id) Flush(); }
-        public void Reload() { profile = Profile.Id; pending = 0; stepId = null; last = retryAt = Game.GameTime; away = Game.Player.Character.Position.DistanceTo(office) >= 150; menu.Visible = false; }
+        public void Reload() { ui.Reset(); profile = Profile.Id; pending = 0; stepId = null; last = retryAt = Game.GameTime; away = Game.Player.Character.Position.DistanceTo(office) >= 150; menu.Visible = false; }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); } finally { menu.Visible = false; } }
+        public void Dispose() { ui.Reset(); try { Save(); } finally { menu.Visible = false; } }
     }
 }

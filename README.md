@@ -1,3 +1,9 @@
+## Atualização0.106.1 — acesso RPCore Motors e menus PDM
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.106.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.106.1.zip) · [Detalhes e teste GTA](docs/PORTAS-PDM-MENUS-0.106.1.md)
+
+Portas de pedestres/showroom da concessionária e aviso F12/carros pessoais versus E/empresa. Os12menus PDM passam a ações adiadas e proteções contra seleção em outra página; falha de banner fica isolada do HUD.4105 testes, build limpo; travamento relatado exige confirmação no GTA e log caso persista. Saves/regras empresariais/compra/seguro/personagens preservados.
+
 ## Atualização0.106.0 — concessionária e seguro veicular
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.106.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.106.0.zip) · [Acessos e testes GTA](docs/CONCESSIONARIA-SEGURO-0.106.0.md)

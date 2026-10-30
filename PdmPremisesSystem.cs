@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmPremisesSystem : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         sealed class Employee { public string Id; public Ped Ped; public Blip Blip; }
         public string Name => "pdmpremises";
         public string Label => "PDM / equipe presencial e servicos";
@@ -30,7 +31,7 @@ namespace RPCore
         public PdmPremisesSystem(ObjectPool pool, ShiftGate gate, PdmOptions company, PdmPremisesOptions options, Func<bool> office, Func<string, Vehicle> display, Action back)
         {
             this.pool = pool; this.gate = gate; this.company = company; this.options = options; this.office = office; this.display = display; this.back = back; StartPosition = Pos(company.Office);
-            menu = new NativeMenu("PDM / servicos", "MECANICO / ZELADORIA / VITRINE"); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; last = Game.GameTime; Recover();
+            menu = new NativeMenu("PDM / servicos", "MECANICO / ZELADORIA / VITRINE"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; last = Game.GameTime; Recover();
         }
         void Sample()
         {
@@ -49,10 +50,10 @@ namespace RPCore
             }
         }
         void Add(string title, string text, Action action)
-        { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm premises action", ex); Notify.Show("Servico nao confirmado; dados preservados."); } }; menu.Add(item); }
+        { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm premises action", ex); Notify.Show("Servico nao confirmado; dados preservados."); } }); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Flush(); pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             Add("GPS: equipe PDM", "Contrate/pague em Equipe / salarios. Servicos presenciais atendem apenas os carros expostos da empresa.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             foreach (var e in Wallet.Pdm.Showroom)
             {
@@ -65,7 +66,7 @@ namespace RPCore
         }
         void OpenStock(string id)
         {
-            pool.HideAll(); menu.Clear(); var stock = Wallet.Pdm.Stock.Find(s => s.Id == id); if (stock == null) return;
+            pool.HideAll(); ui.Begin("pdm",null,false); var stock = Wallet.Pdm.Stock.Find(s => s.Id == id); if (stock == null) return;
             menu.Name = stock.Name + " / servicos";
             Add("Solicitar mecanico: $" + PdmStaffTransactions.RepairPrice(Wallet.Pdm, company.RepairPrice), "Mecanico contratado/sem atraso vai ao carro e repara. Oficina adquirida mantem desconto. Paga so ao concluir, sem recolher a vaga.", () => Begin(id, "repair"));
             Add("Solicitar zeladoria: sem taxa por servico", "Zeladoria contratada/sem atraso limpa sujeira e recupera cotacao. Salario continua devido pelo tempo trabalhado.", () => Begin(id, "clean"));
@@ -190,6 +191,7 @@ namespace RPCore
         { var a = Wallet.Pdm.PremisesService; if (a == null || !Wallet.Pdm.Valid || Active) return; try { if (Wallet.PdmServiceCancel(a.Id, out _)) Notify.Show("Servico interrompido recuperado sem cobranca; estoque/vaga mantidos."); } catch (Exception ex) { Log.Error("pdm service recovery", ex); } }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             try
             {
                 Sample(); if (pending >= 5000 && unchecked(Game.GameTime - retryAt) >= 0) Flush();
@@ -203,8 +205,8 @@ namespace RPCore
         void Status(string text) { if (!Visuals.TryJobHeader("pdm", "PDM / manutencao", Color.White)) Visuals.Text("PDM / manutencao", Visuals.Width / 2 - 200, 24, .34f, Color.White); float x = Visuals.Width / 2 - 390; Visuals.Rect(x, 900, 780, 80, Color.FromArgb(210, 8, 12, 18)); Visuals.Text(text, x + 12, 910, .29f, Color.White); Visuals.Text("End: cancelar antes da confirmacao / pague salarios para manter atendimento", x + 12, 945, .23f, Color.White); }
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) cancelReason = "Cancelado pelo jogador"; }
         public void Save() { if (profile == Profile.Id) Flush(); }
-        public void Reload() { ReleaseWorld(); profile = Profile.Id; pending = 0; stepId = null; last = nextActors = Game.GameTime; Recover(); }
+        public void Reload() { ui.Reset(); ReleaseWorld(); profile = Profile.Id; pending = 0; stepId = null; last = nextActors = Game.GameTime; Recover(); }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); if (Active && profile == Profile.Id && run.Stage != PdmServiceStage.Complete) Wallet.PdmServiceCancel(run.Id, out _); } finally { ReleaseWorld(); } }
+        public void Dispose() { ui.Reset(); try { Save(); if (Active && profile == Profile.Id && run.Stage != PdmServiceStage.Complete) Wallet.PdmServiceCancel(run.Id, out _); } finally { ReleaseWorld(); } }
     }
 }

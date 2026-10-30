@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmSafeSystem : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmsafe";
         public string Label => "PDM / coleta de valores";
         public bool Active => run != null || settled;
@@ -32,15 +33,15 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.back = back;
             var defaults = PdmSafeDefaults.Load(); options = Store.LoadDef("Jobs/PdmSafe.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSafe.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
-            var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm safe action", ex); Notify.Show("Coleta pendente; dados preservados. Veja RPCore.log."); } }; menu.Add(item);
+            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm safe action", ex); Notify.Show("Coleta pendente; dados preservados. Veja RPCore.log."); } });
         }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
             menu.Name = "Caixa $" + Wallet.Pdm.Cash + " / em coleta $" + (Wallet.Pdm.SafeTransfer?.Amount ?? 0);
             Add("GPS: entrega de valores PDM", "Inicie a pe no escritorio externo da empresa.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             if (Wallet.Pdm.SafeTransfer == null && !Active)
@@ -111,6 +112,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) return;
             try
             {
@@ -231,7 +233,7 @@ namespace RPCore
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End) || Wallet.Pdm.SafeTransfer?.Handed == true) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) cancelReason = "Cancelada pelo jogador"; }
         public void OnKey(KeyEventArgs e) { }
         public void Save() { }
-        public void Reload() { Cleanup(); EndSession(); Recover(); }
-        public void Dispose() { Cleanup(); EndSession(); }
+        public void Reload() { ui.Reset(); Cleanup(); EndSession(); Recover(); }
+        public void Dispose() { ui.Reset(); Cleanup(); EndSession(); }
     }
 }

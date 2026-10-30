@@ -17,7 +17,7 @@ namespace RPCore
             public string Key, Text;
             public string AppliedTexture;
             public I2Dimensional Original;
-            public bool Applied;
+            public bool Applied, Failed;
             public readonly Dictionary<NativeItem, string> Items = new Dictionary<NativeItem, string>();
         }
         static readonly List<MenuSkin> menus = new List<MenuSkin>();
@@ -130,6 +130,8 @@ namespace RPCore
             else if (bannerStarted<0) bannerStarted=Game.GameTime;
             foreach (var skin in menus)
             {
+                if(skin.Failed)continue;
+                try{
                 if (!skin.Menu.Visible && !skin.Applied) continue;
                 // The screenshot's personal inventory uses a blue handwritten header,
                 // whereas ShopBanner is specifically the shop inventory artwork.
@@ -154,6 +156,11 @@ namespace RPCore
                 }
                 else if (!use && skin.Applied) { skin.Menu.Banner = skin.Original; skin.Menu.BannerText.Text = skin.Text; skin.Applied = false; }
                 ApplyBadges(skin);
+                }catch(Exception ex){
+                    skin.Failed=true;Log.Error("menu skin: "+skin.Key,ex);
+                    // Leave this menu usable with its normal banner; never disable all HUD rendering.
+                    try{skin.Menu.Banner=skin.Original;skin.Menu.BannerText.Text=skin.Text;skin.Applied=false;}catch(Exception cleanup){Log.Error("menu skin restore: "+skin.Key,cleanup);}
+                }
             }
         }
         static void ApplyBadges(MenuSkin skin)

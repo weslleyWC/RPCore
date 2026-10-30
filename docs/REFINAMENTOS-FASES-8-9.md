@@ -362,3 +362,8 @@ Próximo grupo autorizado: revisão conjunta do menu/pedido/persistência/contex
 ###0.106.0 — concessionária e seguro
 
 Revisão conjunta de catálogo, seleção de garagem, confirmação, criação/compra/rollback, navegação/apólices/franquia/retomada/estorno. Referência estática Dealerships e Vehicle_Insurance PSRP; não implementa previews/test-drive/catálogo amplo/entrega da seguradora.4079 testes e build net48 limpo. Guia CONCESSIONARIA-SEGURO-0.106.0.md. Personagens/roupas, combustível/cinto e ciclos dos trabalhos preservados; fase9 não iniciada.
+
+
+###0.106.1 — correção relatada: portas e menus PDM
+
+Portas/showroom, aviso de acesso e fila dos12menus PDM, com isolamento de falhas de banner/fechamento. Não muda ciclos de trabalhos nem as transações/saves da0.106.0.4105 testes e build limpo; falha de HUD relatada não reproduzida no cloud, teste GTA conforme PORTAS-PDM-MENUS-0.106.1.md e logs se persistir.

@@ -18,6 +18,7 @@ namespace RPCore
         readonly PersonalServiceMenu ui;
         readonly AchievementSystem ach;
         readonly ShiftGate gate;
+        readonly DealershipDoorRuntime doors=new DealershipDoorRuntime();
         readonly List<VehicleOffer> offers;
         readonly List<GarageDefinition> garages;
         readonly List<Delivered> created=new List<Delivered>();
@@ -143,6 +144,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            doors.Tick();
             ui.Tick(Safe);
             try{
                 var p=pending;
@@ -151,6 +153,7 @@ namespace RPCore
                     else if(p.Model.IsLoaded)Finish(p);
                 }
             }catch(Exception ex){CancelPurchase();ui.Close();Log.Error("dealership delivery",ex);Notify.Show("Entrega interrompida. Confira carteira e garagem; detalhes no RPCore.log.");}
+            if(Nearby && !pool.AreAnyVisible && gate.Owner==null)Prompt.Help("RPCore Motors: "+Cfg.DealerKey+" carros pessoais. Empresa PDM: ~INPUT_CONTEXT~ no marcador externo.");
             if(Cfg.EnableGarages && !Game.IsMissionActive && Game.Player.Character.Position.DistanceTo(entrance)<35)World.DrawMarker(MarkerType.Cylinder,entrance-new Vector3(0,0,1),Vector3.Zero,Vector3.Zero,new Vector3(2,2,1),Color.FromArgb(90,80,200,100));
         }
         public void OnKey(KeyEventArgs e)
@@ -163,7 +166,7 @@ namespace RPCore
             foreach(var item in created){var car=item.Car;if(car!=null && car.Exists() && car.MemoryAddress.ToInt64()==item.Address && car.Model.Hash==item.Model && Key(car)==item.Key && car.Occupants.Length==0 && !Function.Call<bool>(Hash.IS_ENTITY_ATTACHED,car))car.MarkAsNoLongerNeeded();}created.Clear();
         }
         static string Key(Vehicle v)=>VehicleIdentity.Key(v.Model.Hash,Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT,v));
-        public void Reload(){CancelPurchase();ui.Reset();ReleaseCreated();search="";}
+        public void Reload(){CancelPurchase();ui.Reset();ReleaseCreated();doors.Release();search="";}
         public void Save(){}
         public void Dispose(){Reload();if(blip!=null && blip.Exists())blip.Delete();}
     }

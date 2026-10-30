@@ -11,6 +11,7 @@ namespace RPCore
 {
     public sealed class PdmRepoSystem : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         public string Name => "pdmrepo";
         public string Label => "PDM / retomada";
         public bool Active => run != null;
@@ -33,14 +34,14 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.company = company; this.options = options; this.achievements = achievements; StartPosition = Pos(company.Office);
             var defaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for repossession; embedded defaults used, original retained."); rig = defaults; }
-            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
-        { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm repossession action", ex); Notify.Show("Retomada pendente; dados preservados."); } }; menu.Add(item); }
+        { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm repossession action", ex); Notify.Show("Retomada pendente; dados preservados."); } }); }
         public void OpenForLoan(string id) { focusedLoan = id; OpenMenu(); }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
             Add("GPS: escritorio PDM", "Comece a pe no escritorio externo. Precisa de uma vaga livre no estoque.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             foreach (var l in Wallet.Pdm.Loans.Where(l => l.Defaulted && !l.Settled).OrderBy(l => l.Id == focusedLoan ? 0 : 1))
             { var loan = l; Add("Retomar " + loan.Asset.Name + " / " + loan.Asset.Plate, "Recebido $" + loan.Paid + " / saldo em atraso $" + loan.Receivable + ". Packer/TRFlat: busque o proprio carro, carregue com E, volte e descarregue. Sem bonus por recuperar patrimonio proprio.", () => Begin(loan.Id)); }
@@ -113,6 +114,7 @@ namespace RPCore
         bool UnloadReady => InputAllowed && Coupled && !Foreign && Exists(car) && car.Occupants.Length == 0 && car.IsAttachedTo(trailer) && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(trailer.Position) < 30;
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) return;
             try
             {
@@ -200,8 +202,8 @@ namespace RPCore
         void Status(string text) { if (!Visuals.TryJobHeader("pdm", "PDM / retomada", Color.White)) Visuals.Text("PDM / retomada", Visuals.Width / 2 - 200, 24, .34f, Color.White); float x = Visuals.Width / 2 - 390; Visuals.Rect(x, 900, 780, 80, Color.FromArgb(210, 8, 12, 18)); Visuals.Text(text, x + 12, 910, .29f, Color.White); Visuals.Text("End (segurar): encerrar / contrato permanece em atraso ate retomar", x + 12, 945, .23f, Color.White); }
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) cancelReason = "Cancelada pelo jogador"; }
         public void Save() { if (Active && profile == Profile.Id && Wallet.Pdm.Repo != null) Remember(); }
-        public void Reload() { ReleaseSession(); Recover(); }
+        public void Reload() { ui.Reset(); ReleaseSession(); Recover(); }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { Save(); } catch (Exception ex) { Log.Error("pdm repossession dispose", ex); } finally { ReleaseSession(); } }
+        public void Dispose() { ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm repossession dispose", ex); } finally { ReleaseSession(); } }
     }
 }

@@ -12,6 +12,7 @@ namespace RPCore
 {
     public sealed class PdmShowroomSystem : ISystem, IWorkContract
     {
+        readonly PersonalServiceMenu ui;
         sealed class Display { public string StockId, Model, Plate; public Vehicle Car; }
         public string Name => "pdmshowroom";
         public string Label => "PDM / showroom e atendimento";
@@ -32,13 +33,13 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.clearLegacy = clearLegacy; this.achievements = achievements; this.back = back; StartPosition = Pos(point);
             var defaults = PdmShowroomDefaults.Load(); options = Store.LoadDef("Jobs/PdmShowroom.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmShowroom.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / showroom", "VAGAS / ESTOQUE EXPOSTO / ATENDIMENTO"); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; RecoverIntent();
+            menu = new NativeMenu("PDM / showroom", "VAGAS / ESTOQUE EXPOSTO / ATENDIMENTO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; RecoverIntent();
         }
         void Add(string title, string text, Action action)
-        { var item = new NativeItem(title, text); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm showroom action", ex); Notify.Show("Showroom: operacao nao confirmada. Dados preservados."); } }; menu.Add(item); }
+        { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm showroom action", ex); Notify.Show("Showroom: operacao nao confirmada. Dados preservados."); } }); }
         public void OpenMenu()
         {
-            pool.HideAll(); menu.Clear(); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             Add("GPS: escritorio / showroom PDM", "Gerencie vagas a pe no escritorio externo. Vagas internas precisam de interior/chao carregados na sua instalacao.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             foreach (var s in options.Slots)
             {
@@ -52,7 +53,7 @@ namespace RPCore
         }
         void OpenSlot(string slotId)
         {
-            pool.HideAll(); menu.Clear(); var slot = options.Slots.Find(s => s.Id == slotId); var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slotId); menu.Name = slot.Name;
+            pool.HideAll(); ui.Begin("pdm",null,false); var slot = options.Slots.Find(s => s.Id == slotId); var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slotId); menu.Name = slot.Name;
             if (entry != null)
             {
                 var id = entry.StockId; var stock = Wallet.Pdm.Stock.Find(s => s.Id == id);
@@ -230,6 +231,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             try
             {
                 if (Active) SaleTick();
@@ -248,8 +250,8 @@ namespace RPCore
         void Status(string text) { if (!Visuals.TryJobHeader("pdm", "PDM / comprador", Color.White)) Visuals.Text("PDM / comprador", Visuals.Width / 2 - 200, 24, .34f, Color.White); float x = Visuals.Width / 2 - 390; Visuals.Rect(x, 900, 780, 80, Color.FromArgb(210, 8, 12, 18)); Visuals.Text(text, x + 12, 910, .29f, Color.White); Visuals.Text("End: cancelar antes da venda / estoque e vaga preservados", x + 12, 945, .23f, Color.White); }
         public void PollCancel() { if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelSince = -1; return; } if (cancelSince < 0) cancelSince = Game.GameTime; if (unchecked(Game.GameTime - cancelSince) >= 1000) cancelReason = "Cancelado pelo jogador"; }
         public void Save() { }
-        public void Reload() { ReleaseWorld(); profile = Profile.Id; RecoverIntent(); nextWorld = Game.GameTime; }
+        public void Reload() { ui.Reset(); ReleaseWorld(); profile = Profile.Id; RecoverIntent(); nextWorld = Game.GameTime; }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { try { if (Active && profile == Profile.Id && run.Stage != PdmShowroomStage.Complete) Wallet.PdmShowroomCancel(run.Id, out _); } finally { ReleaseWorld(); } }
+        public void Dispose() { ui.Reset(); try { if (Active && profile == Profile.Id && run.Stage != PdmShowroomStage.Complete) Wallet.PdmShowroomCancel(run.Id, out _); } finally { ReleaseWorld(); } }
     }
 }

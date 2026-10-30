@@ -11,6 +11,7 @@ namespace RPCore
 {
     public sealed class PdmSecuritySystem : ISystem
     {
+        readonly PersonalServiceMenu ui;
         sealed class Guard
         {
             public string EmployeeId; public Ped Ped, Target; public Blip Blip; public Vector3 Post;
@@ -28,13 +29,13 @@ namespace RPCore
         public PdmSecuritySystem(ObjectPool pool, PdmSecurityOptions options, Vector3 office, Func<IEnumerable<Ped>> crew, Action syncPayroll, Action staffMenu, Action back)
         {
             this.pool = pool; this.options = options; this.office = office; this.crew = crew; this.syncPayroll = syncPayroll; this.staffMenu = staffMenu; this.back = back;
-            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
-        { var item = new NativeItem(title, description); item.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error("pdm security menu", ex); Notify.Show("Seguranca indisponivel; contratacoes e salarios preservados."); } }; menu.Add(item); }
+        { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm security menu", ex); Notify.Show("Seguranca indisponivel; contratacoes e salarios preservados."); } }); }
         public void OpenMenu()
         {
-            syncPayroll(); pool.HideAll(); menu.Clear();
+            syncPayroll(); pool.HideAll(); ui.Begin("pdm",null,false);
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             foreach (var post in options.Posts)
             {
@@ -110,6 +111,7 @@ namespace RPCore
         void Clear() { foreach (var g in guards.Values) Delete(g); guards.Clear(); }
         public void Tick()
         {
+            ui.Tick(PdmMenuRuntime.Allowed);
             if (Game.IsPaused) return;
             if (profile != Profile.Id || !WorldAllowed || !Wallet.Pdm.Staff.Employees.Any(e => PdmSecurityPolicy.IsGuard(e.Role))) { Clear(); return; }
             int now = Game.GameTime; if (unchecked(now - nextScan) < 0) return; nextScan = now + 500;
@@ -135,8 +137,8 @@ namespace RPCore
             catch (Exception ex) { Clear(); nextSpawn = Game.GameTime + 5000; Log.Error("pdm security duty", ex); }
         }
         public void Save() { }
-        public void Reload() { Clear(); respawn.Clear(); profile = Profile.Id; nextScan = nextSpawn = Game.GameTime; menu.Visible = false; }
+        public void Reload() { ui.Reset(); Clear(); respawn.Clear(); profile = Profile.Id; nextScan = nextSpawn = Game.GameTime; menu.Visible = false; }
         public void OnKey(KeyEventArgs e) { }
-        public void Dispose() { Clear(); menu.Visible = false; }
+        public void Dispose() { ui.Reset(); Clear(); menu.Visible = false; }
     }
 }
