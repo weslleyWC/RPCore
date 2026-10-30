@@ -1,3 +1,9 @@
+## Atualização0.105.0 — grupo abastecimento e cinto
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.105.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.105.0.zip) · [Acessos e testes GTA](docs/ABASTECIMENTO-CINTO-0.105.0.md)
+
+Abastecimento peloG com resumo, litros/orçamento/completar, confirmação, progresso, interrupção e cobrança acumulada sem arredondamento por pulso. Cinto com contexto/identidade/restauração verificados e ajuda para sair. Preserva tanques/postos, contratos, personagens e roupas atuais.4038 testes, build sem erros/avisos; áudio/controle/física precisam de teste GTA. Fase9 dos trabalhos segue reservada.
+
 ## Atualização0.104.5 — roupas do personagem e conjuntos
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.5.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.5.zip) · [Correção e testes GTA](docs/ROUPAS-0.104.5.md)

@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário confirmou troca0.104.4 e relatou roupa/conjuntos sem persistência. Arquivos mostram Body:null/ApplyPending:true e kit de índices zero.0.104.5 trata conclusão da aparência e checkpoint da roupa; a função de troca permanece0.102.2. Preserva armazenamento e demais sistemas atuais. Validação GTA da roupa pendente; fases8/9 abertas.
+Estado atual: usuário pediu o próximo grupo após entrega0.104.5; não confirmou em detalhe a roupa ainda.0.105 refina abastecimento/cinto, preservando personagens/roupas/inventário/trabalhos. Testes nativos pendentes conforme guia. Fase8 segue aberta; realismo dos ciclos de trabalhos permanece na9.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -23,7 +23,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | DrivingJobSystem | [DrivingJobSystem.cs](../DrivingJobSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | FishingJob | [FishingJob.cs](../FishingJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | FuelDeliveryJob | [FuelDeliveryJob.cs](../FuelDeliveryJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| FuelSystem | [FuelSystem.cs](../FuelSystem.cs) | Pendente de revisão completa; preservar base existente |
+| FuelSystem | [FuelSystem.cs](../FuelSystem.cs) | Grupo0.105: menu litros/orçamento/completar, confirmação/contexto/rounding cumulativo/save/rollback, progressos e interrupção; postos/tanques/consumo preservados. GTA pendente. |
 | GangSystem | [GangSystem.cs](../GangSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | GarageSystem | [GarageSystem.cs](../GarageSystem.cs) | Grupo0.99: acesso/registro atual/remocao/retirada/servicos revisados; aguarda teste GTA |
 | GroomingSystem | [GroomingSystem.cs](../GroomingSystem.cs) | 0.100: categorias de acabamento/face, resumo antes de confirmar, navegação/despacho, cancelamento seguro de pendência; aplicação retomável anterior mantida. Validação GTA pendente. |
@@ -54,7 +54,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | RadialSystem | [RadialSystem.cs](../RadialSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
 | RadioSystem | [RadioSystem.cs](../RadioSystem.cs) | 0.102 revisa grupo completo: estações/volume/pausa/prev-next/stop/reload XML, contexto/COM próprio e estados/falhas/prefs. Fake player validado; áudio real/GTA pendente. |
 | RoleplayBootstrap | [RoleplayBootstrap.cs](../RoleplayBootstrap.cs) | Pendente de revisão completa; preservar base existente |
-| SeatbeltSystem | [SeatbeltSystem.cs](../SeatbeltSystem.cs) | Pendente de revisão completa; preservar base existente |
+| SeatbeltSystem | [SeatbeltSystem.cs](../SeatbeltSystem.cs) | Grupo0.105: identidade/sessão/flag original/saída/contexto/avisos revistos, radial/HUD/sons mantidos. Física nativa; teste GTA pendente. |
 | SettingsSystem | [SettingsSystem.cs](../SettingsSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
 | ShopSystem | [ShopSystem.cs](../ShopSystem.cs) | Conveniências/Grocery0.96 testados pelo usuário; lojas especializadas/venda permanecem abertas |
 | StockMarketSystem | [StockMarketSystem.cs](../StockMarketSystem.cs) | 0.102 revisa grupo completo: resumo/listas/busca/ordenação/custo/resultado, ordens/funding confirmados com rollback e checkpoint Wallet, legado/unknowns e relógio de mercado. Teste GTA pendente; mantém simulação local. |

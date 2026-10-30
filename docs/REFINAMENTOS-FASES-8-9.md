@@ -352,3 +352,8 @@ Usuário pediu voltar só personagens à0.102.2 por duplicação de peds, manten
 ###0.104.5 — persistência de roupas, mantendo troca confirmada
 
 Troca0.104.4 aprovada; arquivos revelam aparência pendente sem Body e biblioteca com peças zeradas. Ajusta conclusão/ordem da aparência e confirmação durável/revisões da roupa; Main.SwitchCharacter continua0.102.2, sem menu inicial/handoff.3996 testes. ROUPAS-0.104.5.md explica limites do kit recebido e roteiro GTA. Não avança realismo de trabalhos.
+
+
+###0.105.0 — abastecimento e cinto
+
+Próximo grupo autorizado: revisão conjunta do menu/pedido/persistência/contexto de combustível e estado/saída/restauração do cinto, baseada em Vehicle_Insurance/DrivingFeatures/UiSystem PSRP.4038 testes, build sem erros/avisos. Personagens/roupas0.104.5 e contratos mantidos; fase9 não iniciada. ABASTECIMENTO-CINTO-0.105.0.md contém roteiro nativo.

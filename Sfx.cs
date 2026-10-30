@@ -30,6 +30,8 @@ namespace RPCore
             }
             catch (System.Exception ex) { Log.Error("sfx " + name, ex); }
         }
+        public static void Loop(string name)
+        {Play(name);try{if(Cache.TryGetValue(name,out var sound) && sound!=null)sound.PlayLooping();}catch(System.Exception ex){Log.Error("sfx loop "+name,ex);}}
         public static void Dispose() { foreach (var sp in Cache.Values) if (sp != null) { sp.Stop(); sp.Dispose(); } Cache.Clear(); }
         public static void Stop(string name) { SoundPlayer sp; if (Cache.TryGetValue(name, out sp) && sp != null) sp.Stop(); }
     }
