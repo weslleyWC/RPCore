@@ -292,3 +292,8 @@ DrivingFeatures/RadialMenu e controles/pecas da referencia SettingsMenu consulta
 ###0.100.0 — serviços pessoais
 
 Comparados os fluxos de roupa/barbearia de MultiplayerCharacter, páginas de roupas/GPS do radial e acesso do Eclipse em Apartments.14 lojas com E/ícones/GPS e biblioteca anterior; menus dos quatro serviços com despacho após LemonUI, provas de contexto/página, seleção, retorno e confirmação sem repetição. Acabamento dividido em categorias com resumo de aplicação; confirmações para substituir/excluir roupa e comprar moradia. Cancelamento conserva alterações externas, e snapshots de personagens não capturam prévias durante o lease. Preços/dados existentes e inventário privado do apartamento preservados.3845 testes aprovados, Release sem erros/avisos. Guia SERVICOS-PESSOAIS-0.100.0.md. Câmera dedicada e validação GTA não declaradas prontas; criação/carregamento completo de personagens, DMV/seguro, demais grupos da fase8 e todos os ciclos da9 seguem na cobertura.
+
+
+###0.100.1 — portas de roupas
+
+Correção do bloqueio físico relatado pelo usuário na0.100.0. Comparados ShopsDoorsLocation/UnlockDoors/Update:14 entradas externas e quatro modelos de porta de roupas, com consulta nativa de trava/ângulo, proximidade/altura/contexto e associação às lojas configuradas. Não copia o desbloqueio mais amplo de Ammu-Nation, garagens, barbearias ou concessionária.3855 testes aprovados; roteiro GTA em PORTAS-ROUPAS-0.100.1.md. Não marca nova frente de refinamento como concluída.

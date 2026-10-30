@@ -1,3 +1,9 @@
+## Correção0.100.1 — portas das lojas de roupas
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.100.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.100.1.zip) · [Instalação e testes GTA](docs/PORTAS-ROUPAS-0.100.1.md)
+
+Corrige o acesso físico omitido na0.100.0: destrava portas de roupas ao chegar perto das14 entradas da referência, conservando ângulo. Somente quatro modelos de roupas, com alcance/contexto limitados e vínculo às lojas configuradas; sem desbloqueio global ou alteração de saves/RPF.3855 testes aprovados; build sem erros/avisos. É necessário testar entrada/saída e streaming no GTA.
+
 ## Atualização0.100.0 — roupas, barbearia, acabamento e moradia
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.100.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.100.0.zip) · [Uso e testes GTA](docs/SERVICOS-PESSOAIS-0.100.0.md)

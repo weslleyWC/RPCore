@@ -65,7 +65,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Grupo0.99: menus/acoes/radial revisados; aguarda teste GTA |
 | VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Pendente de revisão completa; preservar base existente |
 | VisualSystem | [VisualSystem.cs](../VisualSystem.cs) | Pendente de revisão completa; preservar base existente |
-| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.100:14 lojas/ícones/GPS, biblioteca anterior e edição por variações nativas; confirmações/registro atual, cancelamento/preview/save guard. Câmera dedicada e validação GTA pendentes. |
+| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.100.1 acrescenta portas nas14 entradas, com modelos/alcance/contexto limitados; validação GTA pendente.0.100:14 lojas/ícones/GPS, biblioteca anterior e edição por variações nativas; confirmações/registro atual, cancelamento/preview/save guard. Câmera dedicada e validação GTA pendentes. |
 | WorldSystem | [WorldSystem.cs](../WorldSystem.cs) | Pendente de revisão completa; preservar base existente |
 
 Componentes fora do registro ISystem também estão no escopo: WorkshopSystem, WaypointTeleport, Visuals/menu skins, Wallet/persistência, páginas internas do celular/radial e grades de inventário/depósito/loja. Menus privados/submenus fazem parte da revisão do sistema correspondente.

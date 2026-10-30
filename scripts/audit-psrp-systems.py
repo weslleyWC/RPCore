@@ -1670,5 +1670,10 @@ report['personal_services_0100']={
  'grooming_housing':'Appearance groups split into categories with summary confirmation; existing durable pending application/reapply/refund semantics and prices retained. Housing cancel-first purchase confirmation and ownership revalidation during entry streaming; public exit preserved.',
  'limits':'Gameplay not executed. Existing camera/banners used; no dedicated source clothing camera, tattoo menu, priced clothing catalogue, complete CharacterSystem/DMV/insurance rewrite or all-native parity claim. Phase8 and all phase9 remain open.',
  'validation':'3845 data tests,34 new; Release net48 compiled with no errors/warnings. Upgrade installer simulated twice over0.99.0; detailed report shipped. See SERVICOS-PESSOAIS-0.100.0.md for native tests.'}
+report['clothing_doors_01001']={
+ 'reference':'PSRP MultiplayerCharacter ShopsDoorsLocation, UnlockDoors and Update; physical entrances were missing from0.100.0.',
+ 'implementation':'Fourteen reference clothing entrances, four clothing-door model hashes only. Per-frame nearby query of native locked/angle state, unlock preserving angle; no force-open, deletion or new door registration. Six-metre3D range with3m vertical bound and an active configured store within25m horizontally/3m vertically. SafeFoot gate stops intervention in missions/cutscenes/unsafe contexts; native error isolated from wardrobe menu.',
+ 'excluded':'Ammu-Nation, barber, dealership and garage model hashes from the wider reference unlock list are excluded. Custom stores outside known entrances are not inferred. No new keys/settings/save fields or RPF changes.',
+ 'validation':'3855 tests,10 new; Release net48 compiled without errors/warnings; installer simulated twice over0.100.0. Physical door traversal, streaming, relocking and script interference still require GTA testing; see PORTAS-ROUPAS-0.100.1.md.'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

@@ -16,6 +16,7 @@
     <EmbeddedResource Include="../config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
     <Compile Include="../ConsumptionPresentationData.cs" Link="ConsumptionPresentationData.cs" />
     <Compile Include="../PersonalServiceData.cs" Link="PersonalServiceData.cs" />
+    <Compile Include="../ClothingDoorData.cs" Link="ClothingDoorData.cs" />
     <Compile Include="../VehicleRefinementData.cs" Link="VehicleRefinementData.cs" />
     <Compile Include="../PhoneRefinementData.cs" Link="PhoneRefinementData.cs" />
     <Compile Include="../MenuRefinementData.cs" Link="MenuRefinementData.cs" />

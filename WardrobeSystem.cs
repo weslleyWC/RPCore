@@ -15,6 +15,7 @@ namespace RPCore
         public string Name => "wardrobe";
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Func<bool> houseAccess; readonly Action back; readonly NativeMenu menu; readonly WardrobeOptions options;
         WardrobeOutfit preview,lastPreview; Ped actor; string previewProfile;readonly PersonalServiceMenu ui;readonly ClothingOptions clothing;readonly System.Collections.Generic.List<Blip> blips=new System.Collections.Generic.List<Blip>();Vector3? sessionPoint;
+        readonly ClothingDoorRuntime doors=new ClothingDoorRuntime();
         Vector3 Point => new Vector3(options.Point.X,options.Point.Y,options.Point.Z);
         bool Access => !InterfaceOptions.ModalOpen && PersonalServiceMenu.SafeFoot && (houseAccess() && Game.Player.Character.Position.DistanceTo(Point)<=2.5f || clothing.Shops.Any(p=>Game.Player.Character.Position.DistanceTo(Pos(p))<=2.5f)) && (!sessionPoint.HasValue || Game.Player.Character.Position.DistanceTo(sessionPoint.Value)<=3);
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);
@@ -162,6 +163,7 @@ namespace RPCore
         {
             try
             {
+                doors.Tick(clothing.Shops);
                 ui.Tick(Access);
                 if(preview!=null && (!Access || previewProfile!=Profile.Id || actor!=Game.Player.Character || actor.Model.Hash!=preview.Model || InterfaceOptions.ModalOpen || !menu.Visible)){CancelPreview();ui.Close();}
                 if(menu.Visible && !Access)ui.Close();

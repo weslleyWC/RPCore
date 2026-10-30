@@ -162,7 +162,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.100.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.100.1 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
