@@ -8,6 +8,7 @@ namespace RPCore
         public int RoleplayVersion;
         public int Cash;
         public int Bank;
+        public NativeCashCheckpoint NativeCash;
         public Portfolio Exchange;
         public PassengerData Passenger;
         public HalloweenData Halloween;

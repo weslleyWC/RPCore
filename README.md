@@ -1,3 +1,9 @@
+## Correção0.102.1 — carteira duplicada ou perdida ao reabrir o GTA
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.1.zip) · [Teste de fechamento completo do GTA](docs/BANCO-PERSISTENCIA-0.102.1.md)
+
+Carteira nativa do protagonista passa a ter checkpoint com proprietário no mesmo Wallet do banco, restaurado uma vez após carregar. Corrige depósito400mil seguido de carteira duplicada e saque1,8milhão seguido de GTA voltando aos400mil antigos. Saves antigos sem marcador adotam a carteira atual, sem zerar valor legítimo; não há desconto retroativo de dinheiro já duplicado.3933 testes aprovados; build sem erros/avisos. Grupo0.102 permanece incluído; resta validar fechamento/abertura real no GTA.
+
 ## Atualização0.102.0 — grupo bolsa, rádio e conquistas
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.0.zip) · [Guia do grupo e testes GTA](docs/BOLSA-RADIO-CONQUISTAS-0.102.0.md)

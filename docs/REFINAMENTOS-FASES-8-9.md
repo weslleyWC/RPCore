@@ -307,3 +307,8 @@ Entrega adicional ao roteiro: app bancário no próprio celular com tema roxo, d
 ###0.102.0 — entrega agrupada: bolsa, rádio e conquistas
 
 Usuário aprovou RPCore Bank0.101 e reforçou não publicar refinamentos isolados. Foram revisadas juntas todas as telas/ações de StockMarketSystem, RadioSystem e AchievementSystem, comparando o módulo StockMarketMod e os fluxos RadioPlayerIRL/AchievementManager. Bolsa inclui busca/ordenação/posições/favoritos/funding/ordens, validação/rollback/legado; rádio inclui controles/lista/XML/lifecycle/estado/prefs; conquistas incluem filtros/detalhes/progresso/persistência/eventos/unknowns.3915 testes aprovados, build sem erros/avisos. Guia BOLSA-RADIO-CONQUISTAS-0.102.0.md. Grupo de código revisado; validação nativa pendente. Mercado local/COM anterior preservados; não declara fase8 inteira encerrada nem altera ciclos da9.
+
+
+###0.102.1 — hotfix de duplicação relatada no banco
+
+Grupo0.102 aceito pelo usuário; identificado bug de depósito seguido de carteira antiga restaurada pelo save do GTA. Carteira nativa passa a checkpoint Owner/Amount/Version no mesmo Wallet do banco, com sincronização única antes das ações após loading e stats específicos por protagonista, em vez de escolher pelo ator atual. Saves sem marcador preservam carteira atual; MP permanece no Wallet, sem confisco retroativo de valores já duplicados.3933 testes, incluindo18 regressões. Guia BANCO-PERSISTENCIA-0.102.1.md exige fechamento completo do GTA. É correção pontual de bug relatado, não novo passo fragmentado de refinamento.

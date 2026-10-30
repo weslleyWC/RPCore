@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Aceite mais recente: usuário confirmou o RPCore Bank0.101 funcionando. Reforçou entrega por grupos completos, sem versões para ajustes isolados.0.96 também foi aprovada anteriormente; não se presume aceite nativo de outros grupos. Fase8 continua; fase9 cobre trabalhos/missões/gangues e ciclos físicos/recompensas.
+Aceite mais recente: usuário confirmou o grupo0.102 funcionando e relatou duplicação de carteira/banco ao fechar/reabrir o GTA.0.102.1 corrige checkpoint nativo e aguarda teste específico de fechamento completo. Entregas normais continuam agrupadas; hotfix de bug relatado é separado. Fase8 e os ciclos da9 continuam no roteiro.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -47,7 +47,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | PdmShowroomSystem | [PdmShowroomSystem.cs](../PdmShowroomSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmStaffSystem | [PdmStaffSystem.cs](../PdmStaffSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PdmSurveillanceSystem | [PdmSurveillanceSystem.cs](../PdmSurveillanceSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | 0.101 acrescenta RPCore Bank nativo no celular, com quatro operações, cotação de uso único e mesmo Wallet; teste GTA pendente. Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
+| PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | 0.102.1 corrige persistência nativa compartilhada da carteira/banco; teste GTA de fechamento pendente.0.101 acrescenta RPCore Bank nativo no celular, com quatro operações, cotação de uso único e mesmo Wallet; teste GTA pendente. Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
 | PilotJob | [PilotJob.cs](../PilotJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PrisonTransportJob | [PrisonTransportJob.cs](../PrisonTransportJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PropPresentation | [PropPresentation.cs](../PropPresentation.cs) | Duplicação de consumíveis corrigida/testada0.96; telefone recebe propriedade/limpeza identificada0.98, aguarda GTA |

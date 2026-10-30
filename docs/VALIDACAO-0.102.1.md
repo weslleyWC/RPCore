@@ -1,0 +1,11 @@
+# Validação0.102.1 — carteira nativa e banco após reabrir o jogo
+
+3933 testes aprovados (3915 anteriores +18). Release net48 sem erros/avisos. DataTests-0.102.1.trx. Sem execução GTA.
+
+Reprodução principal para Michael/Franklin/Trevor: carteira nativa400000, depósito completo, serializar Wallet com checkpoint, simular GTA antigo restaurando400000, desserializar e restaurar checkpoint. Resultado banco400000/carteira0 e novo depósito recusado. Saque parcial e cinco recargas preservam total400000. O caso exato de sacar1,8milhão, banco0 e GTA voltando a400mil restaura1,8milhão após reload. Captura em quit/loading conserva checkpoint; escrita explícita verificada ainda é capturada sem usar valor resetado. Casos adicionais: Cash legado0 não é prova para zerar protagonista, perfil correto/estatística específica, operação antes do restore pendente, falha de gravação devolve banco/carteira/referência original, ganhos nativos posteriores não são revertidos a cada frame, mapeamento de stats, checkpoint inválido/cross-profile protegido e MP sem mudança de carteira.
+
+Integração: Wallet salva Cash/NativeCash/banco no mesmo arquivo, lê/escreve stats por proprietário e verifica resultado; Main sincroniza o checkpoint pronto antes dos menus/sistemas. API STAT_GET_INT/STAT_SET_INT e hashes de SP0/1/2_TOTAL_CASH conferidos na implementação Player.Money da dependência SHVDN instalada. A tela de carregamento usa o native GET_IS_LOADING_SCREEN_ACTIVE; sem API obsoleta no build.
+
+Guia BANCO-PERSISTENCIA-0.102.1.md explica adoção segura de saves sem marcador, ausência de confisco retroativo e teste de fechar completamente o GTA. Checkpoint é restaurado uma vez; não há dinheiro infinito novo, taxa, conta paralela ou loop impondo saldo após sincronizar. Testes simulados não provam ordenação de todos os scripts/estatísticas durante loading real, por isso o relato exige confirmação GTA completa, além de plugin reload.
+
+Instalador PowerShell7/Linux duas vezes sobre0.102.0:226 arquivos existentes preservados byte a byte, incluindo checkpoints nativos dos3protagonistas, legado sem marcador, dados inválidos/cross-profile e backups, mais todo o conjunto anterior. DLL nova corresponde ao build, anterior em backup, RPF externo intocado. Relatório installer-validation-0.102.1.json. Payloads JSON/INI e áudio anteriores comparados por hash.

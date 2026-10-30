@@ -7,17 +7,48 @@ namespace RPCore
     public static class Wallet
     {
         static WalletData data = new WalletData();
+        static NativeCashSession nativeCash;
+        static int nextCashSync;
         public static int Cash
         {
-            get { return Profile.IsProtagonist(Profile.Id) ? Game.Player.Money : data.Cash; }
-            private set { if (Profile.IsProtagonist(Profile.Id)) Game.Player.Money = value; else data.Cash = value; }
+            get { return Profile.IsProtagonist(Profile.Id) ? nativeCash.Cash : data.Cash; }
+            private set { if (Profile.IsProtagonist(Profile.Id)) nativeCash.Cash = value; else data.Cash = value; }
         }
         public static int Bank { get { return data.Bank; } }
         public static Portfolio Exchange { get { return data.Exchange; } set { data.Exchange = value; } }
         public static TransportData Transport { get { if (data.Transport == null) data.Transport = new TransportData(); data.Transport.Validate(); return data.Transport; } }
-        public static void Reload() { data = Store.Load("Wallet.json", () => new WalletData()); data.Cash = Math.Max(0, data.Cash); data.Bank = Math.Max(0, data.Bank); }
+        public static void Reload() { data = Store.Load("Wallet.json", () => new WalletData()); data.Cash = Math.Max(0, data.Cash); data.Bank = Math.Max(0, data.Bank);nativeCash=Profile.IsProtagonist(Profile.Id)?new NativeCashSession(data,Profile.Id,ReadNativeCash,WriteNativeCash):null;nextCashSync=Game.GameTime; }
         public static bool RoleplayDefaults()=>RPCore.RoleplayDefaults.Wallet(data,Save);
-        public static void Save() { Store.Write("Wallet.json", data); }
+        static bool NativeCashReady=>!Game.IsPaused && Game.Player.Character!=null && Game.Player.Character.Exists() && Game.Player.Character.IsAlive && Game.Player.CanControlCharacter && GTA.UI.Screen.IsFadedIn && !GTA.Native.Function.Call<bool>(GTA.Native.Hash.GET_IS_LOADING_SCREEN_ACTIVE) && Profile.Detect()==Profile.Id;
+        static int ReadNativeCash(string owner)
+        {
+            string name=CashPersistenceRules.Stat(owner);if(name==null)throw new InvalidOperationException("Unknown native cash owner.");
+            using(var amount=new GTA.Native.OutputArgument()){
+                if(!GTA.Native.Function.Call<bool>(GTA.Native.Hash.STAT_GET_INT,GTA.StringHash.AtStringHash(name),amount,-1))throw new InvalidOperationException("Native cash statistic unavailable.");
+                return amount.GetResult<int>();
+            }
+        }
+        static void WriteNativeCash(string owner,int amount)
+        {
+            string name=CashPersistenceRules.Stat(owner);if(name==null || amount<0)throw new InvalidOperationException("Invalid native cash write.");
+            if(!GTA.Native.Function.Call<bool>(GTA.Native.Hash.STAT_SET_INT,GTA.StringHash.AtStringHash(name),amount,true))throw new InvalidOperationException("Native cash statistic refused.");
+        }
+        public static void SynchronizeCash()
+        {
+            if(nativeCash==null || !NativeCashReady || unchecked(Game.GameTime-nextCashSync)<0)return;
+            nextCashSync=Game.GameTime+500;
+            try{nativeCash.Restore(true,Profile.Detect());if(data.NativeCash==null)Save();}
+            catch(Exception ex){Log.Error("native cash checkpoint sync",ex);}
+        }
+        public static void Save()
+        {
+            // Do not replace a committed withdrawal with a stale/reset native value during quit/loading.
+            // A profile handover still reads the old protagonist's explicit stat, never the new actor's.
+            bool ready=nativeCash!=null && (NativeCashReady || Profile.Detect()!=Profile.Id && !GTA.Native.Function.Call<bool>(GTA.Native.Hash.GET_IS_LOADING_SCREEN_ACTIVE));
+            int? amount=nativeCash?.Capture(ready);
+            if(amount.HasValue){CashPersistenceRules.Save(data,Profile.Id,amount.Value,()=>Store.Write("Wallet.json",data));nativeCash.Saved();}
+            else Store.Write("Wallet.json",data);
+        }
         public static bool WorkshopBuy(int cost, Func<bool> access, Func<bool> already, Action apply, Func<bool> verified, Action rollback) => WorkshopRules.Buy(data, cost, access, already, apply, verified, rollback, Save);
         public static bool Debit(int amount) { if (amount < 0 || Cash < amount) return false; Cash -= amount; return true; }
         public static void Credit(int amount) { if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount)); Cash = checked(Cash + amount); }

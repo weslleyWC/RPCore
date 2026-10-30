@@ -162,7 +162,7 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.102.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.102.1 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -199,6 +199,7 @@ namespace RPCore
                 Log.Write("profile -> " + pid);
             }
 
+            Wallet.SynchronizeCash();
             // World Context is polled by shops before the late radial/phone draw ticks.
             // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
             InterfaceOptions.ModalOpen = inventory.GridVisible || shop.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;

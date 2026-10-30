@@ -33,6 +33,7 @@
     <Compile Include="../ExchangeData.cs" Link="ExchangeData.cs" />
     <Compile Include="../RadioData.cs" Link="RadioData.cs" />
     <Compile Include="../BankTransfer.cs" Link="BankTransfer.cs" />
+    <Compile Include="../CashPersistenceData.cs" Link="CashPersistenceData.cs" />
     <Compile Include="../RoleplayDefaults.cs" Link="RoleplayDefaults.cs" />
     <Compile Include="../PoliceResolutionData.cs" Link="PoliceResolutionData.cs" />
     <Compile Include="../PassengerData.cs" Link="PassengerData.cs" />
