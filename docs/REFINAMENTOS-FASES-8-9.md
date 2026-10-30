@@ -302,3 +302,8 @@ Correção do bloqueio físico relatado pelo usuário na0.100.0. Comparados Shop
 ###0.101.0 — RPCore Bank solicitado pelo usuário
 
 Entrega adicional ao roteiro: app bancário no próprio celular com tema roxo, depósito/saque digitados e todo o disponível, conferência e comprovante. Conta compartilhada com o F10 pelo Wallet/BankTransfer existente; sem taxas/cap diário/valores fixos, mantendo o limite numérico anterior para compatibilidade. Cotação vinculada ao perfil/ator/modelo/saldos e consumida uma só vez; rollback comum e input com liberação.3889 testes aprovados; build sem erros/avisos. Guia RPCORE-BANK-0.101.0.md. Não encerra outras frentes da fase8 ou os ciclos da9.
+
+
+###0.102.0 — entrega agrupada: bolsa, rádio e conquistas
+
+Usuário aprovou RPCore Bank0.101 e reforçou não publicar refinamentos isolados. Foram revisadas juntas todas as telas/ações de StockMarketSystem, RadioSystem e AchievementSystem, comparando o módulo StockMarketMod e os fluxos RadioPlayerIRL/AchievementManager. Bolsa inclui busca/ordenação/posições/favoritos/funding/ordens, validação/rollback/legado; rádio inclui controles/lista/XML/lifecycle/estado/prefs; conquistas incluem filtros/detalhes/progresso/persistência/eventos/unknowns.3915 testes aprovados, build sem erros/avisos. Guia BOLSA-RADIO-CONQUISTAS-0.102.0.md. Grupo de código revisado; validação nativa pendente. Mercado local/COM anterior preservados; não declara fase8 inteira encerrada nem altera ciclos da9.

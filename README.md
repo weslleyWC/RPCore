@@ -1,3 +1,9 @@
+## Atualização0.102.0 — grupo bolsa, rádio e conquistas
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.0.zip) · [Guia do grupo e testes GTA](docs/BOLSA-RADIO-CONQUISTAS-0.102.0.md)
+
+Revisão conjunta de todas as telas/ações dos três sistemas: bolsa com busca/ordenação/carteira/favoritos, quantidade/máximo, funding e confirmação; rádio com estações/pausa/volume/prev-next e ciclo seguro do player; conquistas com filtros/detalhes/progresso salvo antes de anúncio e registros legados preservados.3915 testes aprovados; build sem erros/avisos. App RPCore Bank aprovado permanece incluído; saldos/configs/recursos anteriores preservados. Validação nativa do grupo ainda necessária.
+
 ## Atualização0.101.0 — RPCore Bank no celular
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.101.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.101.0.zip) · [Como usar e testar](docs/RPCORE-BANK-0.101.0.md)

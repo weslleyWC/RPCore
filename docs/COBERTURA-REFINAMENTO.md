@@ -2,13 +2,13 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Aceite mais recente: usuário testou a0.96 e confirmou o funcionamento de lojas e consumíveis, reforçando a revisão de todos os sistemas. Fase8 continua; fase9 cobre todos os trabalhos, missões, gangues e seus ciclos físicos/recompensas.
+Aceite mais recente: usuário confirmou o RPCore Bank0.101 funcionando. Reforçou entrega por grupos completos, sem versões para ajustes isolados.0.96 também foi aprovada anteriormente; não se presume aceite nativo de outros grupos. Fase8 continua; fase9 cobre trabalhos/missões/gangues e ciclos físicos/recompensas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
 | Sistema | Arquivo | Estado do refinamento |
 |---|---|---|
-| AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | Pendente de revisão completa; preservar base existente |
+| AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | 0.102 revisa grupo completo: resumo/filtros/detalhes/legados/extras, persistência antes de anúncio, overflow/IO/listeners e proteção de dados inválidos. Teste GTA pendente. |
 | BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | 0.100: E local, despacho/retorno/seleção, contexto e cancelamento que conserva alterações externas; corte/olhos/taxa existentes mantidos. Câmera dedicada/validação GTA pendentes. |
 | CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.100 impede snapshot de prévias; criação/carregamento/menus ainda pendentes de revisão completa. |
 | CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
@@ -52,12 +52,12 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | PrisonTransportJob | [PrisonTransportJob.cs](../PrisonTransportJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PropPresentation | [PropPresentation.cs](../PropPresentation.cs) | Duplicação de consumíveis corrigida/testada0.96; telefone recebe propriedade/limpeza identificada0.98, aguarda GTA |
 | RadialSystem | [RadialSystem.cs](../RadialSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
-| RadioSystem | [RadioSystem.cs](../RadioSystem.cs) | Pendente de revisão completa; preservar base existente |
+| RadioSystem | [RadioSystem.cs](../RadioSystem.cs) | 0.102 revisa grupo completo: estações/volume/pausa/prev-next/stop/reload XML, contexto/COM próprio e estados/falhas/prefs. Fake player validado; áudio real/GTA pendente. |
 | RoleplayBootstrap | [RoleplayBootstrap.cs](../RoleplayBootstrap.cs) | Pendente de revisão completa; preservar base existente |
 | SeatbeltSystem | [SeatbeltSystem.cs](../SeatbeltSystem.cs) | Pendente de revisão completa; preservar base existente |
 | SettingsSystem | [SettingsSystem.cs](../SettingsSystem.cs) | Grupo0.97 implementado; aguarda teste GTA e não conclui todas as páginas da referência |
 | ShopSystem | [ShopSystem.cs](../ShopSystem.cs) | Conveniências/Grocery0.96 testados pelo usuário; lojas especializadas/venda permanecem abertas |
-| StockMarketSystem | [StockMarketSystem.cs](../StockMarketSystem.cs) | Pendente de revisão completa; preservar base existente |
+| StockMarketSystem | [StockMarketSystem.cs](../StockMarketSystem.cs) | 0.102 revisa grupo completo: resumo/listas/busca/ordenação/custo/resultado, ordens/funding confirmados com rollback e checkpoint Wallet, legado/unknowns e relógio de mercado. Teste GTA pendente; mantém simulação local. |
 | StorageSystem | [StorageSystem.cs](../StorageSystem.cs) | Pendente de revisão completa; preservar base existente |
 | StreamerJob | [StreamerJob.cs](../StreamerJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | StudioHeistSystem | [StudioHeistSystem.cs](../StudioHeistSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
@@ -73,3 +73,5 @@ Componentes fora do registro ISystem também estão no escopo: WorkshopSystem, W
 A sequência continuará por grupos completos: celular/F10 e serviços pessoais; veículos/garagens/oficina; finanças/rádio/conquistas; interfaces de gangues/polícia/atividades/editor/mundo e o restante de inventário/necessidades. Quando a fase8 estiver coberta, revisar os ciclos da9; esta lista não declara todas essas frentes prontas.
 
 Grupo0.99 inclui WorkshopSystem: categorias, navegacao, RGB personalizado e persistencia/rollback existentes; teste nativo GTA pendente. SeatbeltSystem mantem a mecanica atual e recebe acesso direto por radial/menu, sem afirmar revisao fisica integral de cinto/ejeção.
+
+Diretriz de entrega atual: uma publicação por grupo completo de interfaces/sistemas relacionado; correções urgentes de bugs relatados são distintas do avanço normal de refinamento.0.102 concentra bolsa, rádio e conquistas em uma entrega.

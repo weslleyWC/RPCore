@@ -29,6 +29,9 @@
     <Compile Include="../InventoryInteractionData.cs" Link="InventoryInteractionData.cs" />
     <Compile Include="../InventoryReference.cs" Link="InventoryReference.cs" />
     <Compile Include="../InventoryArmoryData.cs" Link="InventoryArmoryData.cs" />
+    <Compile Include="../AchievementData.cs" Link="AchievementData.cs" />
+    <Compile Include="../ExchangeData.cs" Link="ExchangeData.cs" />
+    <Compile Include="../RadioData.cs" Link="RadioData.cs" />
     <Compile Include="../BankTransfer.cs" Link="BankTransfer.cs" />
     <Compile Include="../RoleplayDefaults.cs" Link="RoleplayDefaults.cs" />
     <Compile Include="../PoliceResolutionData.cs" Link="PoliceResolutionData.cs" />

@@ -4,98 +4,125 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using GTA;
-using GTA.UI;
 using LemonUI;
 using LemonUI.Menus;
-
+using Newtonsoft.Json;
 namespace RPCore
 {
-    public class MarketData : ExtensibleData
+    public sealed class StockMarketSystem : ISystem
     {
-        public Dictionary<string, decimal> Prices = new Dictionary<string, decimal> { { "PIZ", 25m }, { "LTD", 50m }, { "AUTO", 100m } };
-    }
-
-    public class StockMarketSystem : ISystem
-    {
-        public string Name { get { return "stockmarket"; } }
-        readonly ObjectPool pool;
-        readonly NativeMenu menu = new NativeMenu("RPCore Exchange", "Local simulation / not BAWSAQ");
-        readonly Random random = new Random();
-        readonly JsonFiles files = new JsonFiles();
-        MarketData market;
-        Portfolio portfolio;
-        int nextPrice;
-        bool dirty;
-        string PathName { get { return Path.Combine(Cfg.Dir, "StockMarket", Profile.SafeId(Profile.Id) + ".portfolio.json"); } }
-
-        public StockMarketSystem(ObjectPool pool) { this.pool = pool; pool.Add(menu); Visuals.Register(menu, "stocks"); Reload(); }
+        public string Name=>"stockmarket";
+        readonly ObjectPool pool;readonly NativeMenu menu=new NativeMenu("RPCore Exchange","BOLSA LOCAL");readonly PersonalServiceMenu ui;
+        readonly Random random=new Random();readonly JsonFiles files=new JsonFiles();ExchangeClock clock=new ExchangeClock();
+        MarketData market;Portfolio P=>Wallet.Exchange;int lastClock,sort;bool descending;string query="";Action refresh;
+        string PathName=>Path.Combine(Cfg.Dir,"StockMarket",Profile.SafeId(Profile.Id)+".portfolio.json");
+        bool Valid=>ExchangeRules.Valid(P) && ExchangeRules.Valid(market);
+        public StockMarketSystem(ObjectPool pool){this.pool=pool;pool.Add(menu);Visuals.Register(menu,"stocks");ui=new PersonalServiceMenu(menu,e=>{Log.Error("exchange action",e);Notify.Show("Operacao nao concluida; confira saldos e RPCore.log.");ui.Close();});Reload();}
+        static Portfolio Copy(Portfolio p)=>JsonConvert.DeserializeObject<Portfolio>(JsonConvert.SerializeObject(p));
+        void Page(string key,Action parent,Action render){ui.Begin(key,parent,!key.Contains("confirm"));refresh=render;menu.Name="Carteira $"+Wallet.Cash+" / bolsa $"+(P?.Cash.ToString("0.00")??"--");}
+        void Row(string title,string desc,Action action,bool enabled=true)=>ui.Add(title,desc,action,enabled);
+        void Root()
+        {
+            Page("root",null,Root);
+            if(!Valid){Row("Dados protegidos / somente leitura","Market ou carteira invalida. Nenhum saldo/campo foi corrigido automaticamente.",()=>{},false);Row("Fechar","Voltar ao jogo.",()=>ui.Close());menu.Visible=true;return;}
+            var value=ExchangeRules.Value(P,market);
+            Row("Patrimonio em acoes: "+(value?.ToString("$0.00")??"sem avaliacao completa"),"Caixa da bolsa $"+P.Cash.ToString("0.00")+". Simulacao local independente de BAWSAQ/Yahoo; cotacoes de jogo ativo.",()=>{},false);
+            Row("Buscar ativo / "+(string.IsNullOrEmpty(query)?"sem filtro":query),"Busca por codigo, preserva todas as posicoes.",Search);
+            Row("Todas as cotacoes","Abra um ativo para quantidade, compra/venda e favoritos.",()=>List("all"));
+            Row("Minha carteira","Inclui ativos sem cotacao; nenhum registro e removido.",()=>List("held"));
+            Row("Favoritos","Lista de acompanhamento do perfil.",()=>List("watch"));
+            Row("Movimentar saldo","Deposito/saque entre carteira e caixa da bolsa. Conta bancaria permanece separada.",Funds);
+            Row("Fechar","Voltar ao jogo.",()=>ui.Close());menu.Visible=true;
+        }
+        void List(string kind)
+        {
+            if(!Valid){Root();return;}Page("list:"+kind,Root,()=>List(kind));
+            IEnumerable<string> symbols=kind=="held"?P.Holdings.Where(h=>h.Value>0).Select(h=>h.Key):kind=="watch"?P.Watchlist:market.Prices.Keys;
+            var entries=ExchangeRules.List(P,market,symbols,query,sort,descending).ToArray();
+            Row("Ordenar: "+(sort==0?"codigo":sort==1?"cotacao":"resultado")+(descending?" / decrescente":" / crescente"),"Ativos sem cotacao/custo ficam ao final.",()=>{sort=(sort+1)%3;List(kind);});
+            Row("Inverter ordem","Muda somente a apresentacao.",()=>{descending=!descending;List(kind);});
+            if(!string.IsNullOrEmpty(query))Row("Limpar busca: "+query,"Nao remove ativos.",()=>{query="";List(kind);});
+            foreach(string entry in entries){string symbol=entry;market.Prices.TryGetValue(symbol,out decimal price);P.Holdings.TryGetValue(symbol,out int held);Row(symbol+" / "+(price>0?"$"+price.ToString("0.00"):"sem cotacao")+" / "+held+" acoes","Detalhes, ordens e favoritos.",()=>Symbol(symbol,kind));}
+            if(entries.Length==0)Row("Nenhum ativo nesta lista","Dados anteriores preservados.",()=>{},false);
+            Row("Voltar","Resumo da bolsa.",Root);menu.Visible=true;
+        }
+        void Search()
+        {
+            int actor=Game.Player.Character.Handle,model=Game.Player.Character.Model.Hash;string profile=Profile.Id;
+            string text=Game.GetUserInput(WindowTitle.EnterMessage60,query,32);
+            if(text==null || !menu.Visible || !LeisureContext.CanOpen || actor!=Game.Player.Character.Handle || model!=Game.Player.Character.Model.Hash || profile!=Profile.Id)return;
+            query=text.Trim();List("all");
+        }
+        void Symbol(string symbol,string kind)
+        {
+            if(!Valid){Root();return;}Page("symbol:"+symbol,()=>List(kind),()=>Symbol(symbol,kind));
+            market.Prices.TryGetValue(symbol,out decimal price);P.Holdings.TryGetValue(symbol,out int held);
+            string avg=P.AvgCost.TryGetValue(symbol,out decimal average)?"$"+average.ToString("0.00"):"nao registrado";
+            Row(symbol+" / "+(price>0?"$"+price.ToString("0.00"):"sem cotacao"),held+" acoes / custo medio "+avg+". Ordens exigem cotacao valida.",()=>{},false);
+            if(price>0 && held>0 && P.AvgCost.ContainsKey(symbol)){
+                string gain=ExchangeRules.Gain(P,market,symbol)?.ToString("$0.00")??"fora da faixa numerica";
+                Row("Resultado nao realizado: "+gain,"Estimativa, sem pagamento automatico.",()=>{},false);
+            }
+            bool basisKnown=held==0 || P.AvgCost.ContainsKey(symbol);
+            Row("Comprar / escolher quantidade",basisKnown?"Disponivel: "+ExchangeRules.Maximum(P,symbol,price,true):"Custo medio antigo nao registrado; compra adicional bloqueada para nao inventar custo.",()=>Order(symbol,true,false,kind),price>0 && basisKnown);
+            Row("Comprar maximo","Prepara ordem completa e mostra custo antes de confirmar.",()=>Order(symbol,true,true,kind),price>0 && basisKnown);
+            Row("Vender / escolher quantidade","Somente posicao propria; sem venda a descoberto.",()=>Order(symbol,false,false,kind),price>0 && held>0);
+            Row("Vender tudo","Prepara venda da posicao disponivel.",()=>Order(symbol,false,true,kind),price>0 && held>0);
+            Row(P.Watchlist.Contains(symbol)?"Remover favorito":"Adicionar favorito","Nao compra nem vende.",()=>{if(Wallet.ExchangeChange(p=>{if(p.Watchlist.Contains(symbol))p.Watchlist.RemoveAll(s=>s==symbol);else p.Watchlist.Add(symbol);return true;}))Export();Symbol(symbol,kind);});
+            Row("Voltar","Lista de ativos.",()=>List(kind));menu.Visible=true;
+        }
+        void Order(string symbol,bool buy,bool all,string kind)
+        {
+            if(!Valid || !market.Prices.TryGetValue(symbol,out decimal price) || price<=0)return;
+            var actor=Game.Player.Character;int model=actor.Model.Hash;string profile=Profile.Id;int amount=ExchangeRules.Maximum(P,symbol,price,buy);
+            if(!all){string input=Game.GetUserInput(WindowTitle.EnterMessage60,"1",10);if(!menu.Visible || !LeisureContext.CanOpen || actor!=Game.Player.Character || model!=actor.Model.Hash || profile!=Profile.Id)return;if(!PhoneViewRules.Amount(input,out amount)){if(!string.IsNullOrWhiteSpace(input))Notify.Show("Quantidade inteira positiva.");return;}}
+            if(amount<=0 || amount>ExchangeRules.Maximum(P,symbol,price,buy)){Notify.Show("Sem saldo/posicao/capacidade para esta quantidade.");return;}
+            decimal total=price*amount;var expected=Copy(P);
+            Page("confirm",()=>Symbol(symbol,kind),null);menu.Name=(buy?"Comprar ":"Vender ")+amount+" "+symbol+" / $"+total.ToString("0.00");
+            Row("Cancelar","Nenhuma ordem executada.",()=>Symbol(symbol,kind));
+            Row("Confirmar "+(buy?"compra":"venda"),"Preco unitario $"+price.ToString("0.00")+". Mudanca de cotacao ou carteira exige nova ordem.",()=>{
+                if(!Valid || !market.Prices.TryGetValue(symbol,out decimal now) || now!=price || !ExchangeRules.Matches(P,expected)){Notify.Show("Cotacao/carteira mudou. Revise uma nova ordem.");Symbol(symbol,kind);return;}
+                bool done=Wallet.ExchangeChange(p=>buy?p.Buy(symbol,amount,price):p.Sell(symbol,amount,price));
+                if(done){Export();Notify.Show("Ordem salva: "+amount+" "+symbol+" / $"+total.ToString("0.00"));}else Notify.Show("Ordem recusada; dados preservados.");Symbol(symbol,kind);
+            });menu.Visible=true;
+        }
+        void Funds()
+        {
+            if(!Valid){Root();return;}Page("funds",Root,Funds);
+            Row("Depositar / escolher valor","Carteira -> caixa da bolsa; valor inteiro.",()=>MoveFunds(true,false));
+            Row("Sacar / escolher valor","Bolsa -> carteira; centavos restantes permanecem na bolsa.",()=>MoveFunds(false,false));
+            Row("Depositar todo disponivel","Sem valores fixos de $100.",()=>MoveFunds(true,true));
+            Row("Sacar todo disponivel","Respeita capacidade da carteira; preserva centavos.",()=>MoveFunds(false,true));
+            Row("Voltar","Resumo.",Root);menu.Visible=true;
+        }
+        void MoveFunds(bool deposit,bool all)
+        {
+            int held=Wallet.Cash;int actor=Game.Player.Character.Handle,model=Game.Player.Character.Model.Hash;string profile=Profile.Id;
+            int amount=deposit?(int)Math.Min(held,decimal.MaxValue-P.Cash):(int)Math.Min(int.MaxValue-held,decimal.Floor(Math.Min(int.MaxValue,P.Cash)));
+            if(!all){string input=Game.GetUserInput(WindowTitle.EnterMessage60,"",32);if(!menu.Visible || !LeisureContext.CanOpen || profile!=Profile.Id || actor!=Game.Player.Character.Handle || model!=Game.Player.Character.Model.Hash)return;if(!PhoneBankRules.Amount(input,out amount)){if(!string.IsNullOrWhiteSpace(input))Notify.Show("Valor inteiro positivo.");return;}}
+            if(amount<=0){Notify.Show("Sem saldo/capacidade disponivel.");return;}var expected=Copy(P);held=Wallet.Cash;
+            Page("funds-confirm",Funds,null);menu.Name=(deposit?"Depositar ":"Sacar ")+PhoneBankRules.Money(amount);
+            Row("Cancelar","Nenhum saldo alterado.",Funds);
+            Row("Confirmar movimentacao","Conta bancaria nao e alterada; usa somente carteira e bolsa.",()=>{if(Wallet.Cash!=held || !ExchangeRules.Matches(P,expected)){Notify.Show("Saldo mudou; revise.");Funds();return;}if(Wallet.ExchangeFunds(amount,deposit)){Export();Notify.Show("Movimentacao salva.");}else Notify.Show("Saldo/capacidade insuficiente.");Funds();});menu.Visible=true;
+        }
+        void Export(){try{files.Write(PathName,P);}catch(Exception e){Log.Error("exchange export after canonical commit",e);Notify.Show("Saldo salvo no Wallet; copia da carteira pendente. Nao repita a operacao.");}}
         public void Reload()
         {
-            menu.Visible = false;
-            market = Store.Load("Market.json", () => new MarketData());
-            if (market.Prices == null) market.Prices = new MarketData().Prices;
-            try { portfolio = Wallet.Exchange ?? files.Read(PathName, () => new Portfolio()); }
-            catch (Exception ex) { Log.Error("portfolio load", ex); throw; }
-            if (portfolio.Holdings == null) portfolio.Holdings = new Dictionary<string, int>();
-            if (portfolio.AvgCost == null) portfolio.AvgCost = new Dictionary<string, decimal>();
-            if (portfolio.Watchlist == null) portfolio.Watchlist = new List<string>();
-            if (portfolio.Cash < 0 || portfolio.Holdings.Any(h => h.Value < 0) || portfolio.AvgCost.Any(h => h.Value < 0))
-            {
-                files.Protect(PathName);
-                throw new InvalidDataException("Invalid negative portfolio balance: original protected.");
-            }
-            Wallet.Exchange = portfolio;
-            nextPrice = Game.GameTime + 60000;
+            ui.Reset();
+            try{market=LeisureContext.LoadProgress("Market.json",()=>new MarketData());}catch(Exception e){market=null;Log.Error("exchange quotes retained",e);}
+            if(Wallet.Exchange==null)try{Wallet.Exchange=files.Read(PathName,()=>new Portfolio());}catch(Exception e){Log.Error("legacy portfolio retained",e);}
+            clock=new ExchangeClock();lastClock=Game.GameTime;refresh=null;query="";sort=0;descending=false;
         }
-
-        void Rebuild()
-        {
-            int selected = menu.SelectedIndex;
-            menu.Clear(); menu.Name = "Cash $" + Wallet.Cash + " / exchange $" + portfolio.Cash.ToString("0.00");
-            Action<string, Action> add = (title, action) => {
-                var row = new NativeItem(title);
-                row.Activated += (s, e) => { action(); Save(); Wallet.Save(); dirty = true; };
-                menu.Add(row);
-            };
-            add("Deposit $100", () => { if (Wallet.Debit(100)) portfolio.Cash += 100; });
-            add("Withdraw $100", () => {
-                if (portfolio.Cash >= 100 && Wallet.Cash <= int.MaxValue - 100) { Wallet.Credit(100); portfolio.Cash -= 100; }
-            });
-            foreach (var quote in market.Prices.Where(q => q.Value > 0).ToList())
-            {
-                string symbol = quote.Key; decimal price = quote.Value;
-                int held; portfolio.Holdings.TryGetValue(symbol, out held);
-                add("Buy " + symbol + " $" + price.ToString("0.00"), () => { if (!portfolio.Buy(symbol, 1, market.Prices[symbol])) Notify.Show("Not enough exchange funds."); });
-                add("Sell " + symbol + " (" + held + " held)", () => { if (!portfolio.Sell(symbol, 1, market.Prices[symbol])) Notify.Show("No shares to sell."); });
-                add((portfolio.Watchlist.Contains(symbol) ? "Unwatch " : "Watch ") + symbol, () => {
-                    if (portfolio.Watchlist.Contains(symbol)) portfolio.Watchlist.Remove(symbol); else portfolio.Watchlist.Add(symbol);
-                });
-            }
-            foreach (var held in portfolio.Holdings.Where(h => !market.Prices.ContainsKey(h.Key))) menu.Add(new NativeItem(held.Key + " x" + held.Value, "No quote available. Holding preserved.") { Enabled = false });
-            menu.SelectedIndex = Math.Max(0, Math.Min(selected, menu.Items.Count - 1)); dirty = false;
-        }
-
         public void Tick()
         {
-            if (unchecked(Game.GameTime - nextPrice) >= 0)
-            {
-                nextPrice = Game.GameTime + 60000;
-                foreach (var symbol in market.Prices.Keys.ToList()) market.Prices[symbol] = Math.Round(Math.Max(1, Math.Min(1000000, market.Prices[symbol] * (1m + (decimal)(random.NextDouble() * .04 - .02)))), 2);
-                dirty = true;
+            ui.Tick(LeisureContext.CanOpen);int now=Game.GameTime,delta=NeedsRules.Delta(now,lastClock,LeisureContext.CanOpen);lastClock=now;
+            if(Valid && clock.Advance(delta,LeisureContext.CanOpen)){
+                foreach(string symbol in market.Prices.Keys.ToArray())market.Prices[symbol]=ExchangeRules.NextPrice(market.Prices[symbol],random.NextDouble()*.04-.02);
+                if(menu.Visible)refresh?.Invoke();
             }
-            if (dirty && menu.Visible) Rebuild();
         }
-        public void OnKey(KeyEventArgs e)
-        {
-            if (e.KeyCode != Cfg.StocksKey) return;
-            if (menu.Visible) menu.Visible = false;
-            else if (!pool.AreAnyVisible) { Rebuild(); menu.Visible = true; }
-        }
-        public void Save()
-        {
-            // The wallet is the canonical checkpoint: MP cash, bank and exchange funds commit in one file.
-            Wallet.Save(); files.Write(PathName, portfolio); Store.Write("Market.json", market);
-        }
-        public void Dispose() { menu.Visible = false; }
+        public void OnKey(KeyEventArgs e){if(e.KeyCode!=Cfg.StocksKey)return;if(menu.Visible)ui.Close();else if(!pool.AreAnyVisible && LeisureContext.CanOpen){Root();menu.Visible=true;}}
+        public void Save(){if(!Valid)return;Wallet.Save();files.Write(PathName,P);Store.Write("Market.json",market);}
+        public void Dispose(){ui.Reset();}
     }
 }

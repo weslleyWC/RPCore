@@ -72,7 +72,11 @@ namespace RPCore
             decimal cost = price * quantity;
             if (held < 0 || held > int.MaxValue - quantity || Cash < cost) return false;
             decimal average; AvgCost.TryGetValue(symbol, out average);
-            AvgCost[symbol] = (average * held + cost) / (held + quantity);
+            if(average<0 || held>0 && !AvgCost.ContainsKey(symbol))return false;
+            decimal nextAverage;
+            try{nextAverage=held==0?price:average+(price-average)*(quantity/(decimal)(held+quantity));}
+            catch(OverflowException){return false;}
+            AvgCost[symbol] = nextAverage;
             Holdings[symbol] = held + quantity; Cash -= cost;
             return true;
         }

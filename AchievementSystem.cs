@@ -10,21 +10,6 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public class AchDef
-    {
-        public string Id;
-        public string Name;
-        public string Desc;
-        public string Stat;   // counter this achievement watches
-        public int Target;
-    }
-
-    public class AchData : ExtensibleData
-    {
-        public Dictionary<string, int> Stats = new Dictionary<string, int>();
-        public List<string> Unlocked = new List<string>();
-    }
-
     public class AchievementSystem : ISystem
     {
         public string Name { get { return "achievements"; } }
@@ -32,7 +17,7 @@ namespace RPCore
         readonly ObjectPool pool;
         readonly NativeMenu menu = new NativeMenu("Achievements", "");
         readonly List<AchDef> defs;
-        AchData d;
+        AchData d;readonly PersonalServiceMenu ui;string filter="all";bool dirty;Action redraw;
         public event Action<string, int> Progress;
 
         static List<AchDef> DefaultDefs()
@@ -97,59 +82,64 @@ namespace RPCore
                 }
                 catch (Exception ex) { Log.Error("legacy achievement definitions", ex); }
             }
-            pool.Add(menu); Visuals.Register(menu, "achievements");
+            defs=defs.GroupBy(a=>a.Id).Select(g=>g.First()).ToList();
+            pool.Add(menu); Visuals.Register(menu, "achievements");ui=new PersonalServiceMenu(menu,e=>{Log.Error("achievements menu",e);ui.Close();});
             Reload();
         }
 
         public void Reload()
         {
-            d = Store.Load("Achievements.json", () => new AchData());
-            if (d.Stats == null) d.Stats = new Dictionary<string, int>();
-            if (d.Unlocked == null) d.Unlocked = new List<string>();
-            menu.Visible = false;
+            try{d=LeisureContext.LoadProgress("Achievements.json",()=>new AchData());}catch(Exception e){d=null;Log.Error("achievement original retained",e);}ui.Reset();filter="all";dirty=false;redraw=null;
+            if(!AchievementRules.Valid(d))Log.Write("Invalid achievement progress retained without automatic repair.");
         }
-
-        int Get(string stat) { int v; return d.Stats.TryGetValue(stat, out v) ? v : 0; }
-
-        public void Bump(string stat, int n = 1)
+        int Get(string stat)=>AchievementRules.Get(d,stat);
+        public void Bump(string stat,int n=1)
         {
-            if (n <= 0) return;
-            d.Stats[stat] = (int)System.Math.Min(int.MaxValue, (long)Get(stat) + n);
-            foreach (AchDef a in defs.Where(x => x.Stat == stat && !d.Unlocked.Contains(x.Id) && Get(stat) >= x.Target))
-            {
-                d.Unlocked.Add(a.Id);
-                Notify.Show("~y~Achievement:~s~ " + a.Name);
-                Sfx.Play("achievement");
-            }
-            Progress?.Invoke(stat, n);
+            if(n<=0 || string.IsNullOrWhiteSpace(stat) || !AchievementRules.Valid(d))return;
+            List<AchDef> newly;
+            try{newly=AchievementRules.Bump(ref d,defs,stat,n,next=>Store.Write("Achievements.json",next));}
+            catch(Exception e){Log.Error("achievement progress save",e);return;}
+            dirty=true;
+            foreach(var a in newly){Notify.Show("~y~Conquista desbloqueada:~s~ "+a.Name);Sfx.Play("achievement");}
+            if(Progress!=null)foreach(Action<string,int> handler in Progress.GetInvocationList())try{handler(stat,n);}catch(Exception e){Log.Error("achievement progress listener",e);}
         }
-
-        void Rebuild()
+        void Root()
         {
-            menu.Clear();
-            menu.Name = d.Unlocked.Count + " / " + defs.Count + " unlocked";
-            foreach (AchDef a in defs)
-            {
-                bool done = d.Unlocked.Contains(a.Id);
-                var item = new NativeItem(a.Name, a.Desc)
-                {
-                    AltTitle = done ? "~g~Done" : string.IsNullOrEmpty(a.Stat) ? "PSRP: not implemented" : System.Math.Min(Get(a.Stat), a.Target) + "/" + a.Target
-                };
-                menu.Add(item);
-            }
+            ui.Begin("root");filter="root";dirty=false;redraw=Root;
+            if(!AchievementRules.Valid(d)){ui.Add("Dados de progresso protegidos","Arquivo invalido conservado; nenhuma redefinicao automatica.",()=>{},false);ui.Add("Fechar","Voltar ao jogo.",()=>ui.Close());menu.Visible=true;return;}
+            int complete=AchievementRules.Completed(defs,d),unknown=d.Unlocked.Distinct().Count(id=>!defs.Any(a=>a.Id==id));
+            menu.Name=complete+" / "+defs.Count+" conquistas / "+unknown+" registros extras";
+            ui.Add("Todas","Definicoes do RPCore e legadas.",()=>List("all"));
+            ui.Add("Em progresso","Somente metas rastreadas ainda nao concluidas.",()=>List("pending"));
+            ui.Add("Concluidas","Desbloqueios preservados do perfil.",()=>List("done"));
+            ui.Add("Registros legados","Metas sem contador atual, sem inventar progresso.",()=>List("legacy"));
+            if(unknown>0)ui.Add("Desbloqueios sem definicao ("+unknown+")","IDs salvos preservados; nao contam como metas novas.",Unknown);
+            ui.Add("Fechar","Retornar ao jogo.",()=>ui.Close());menu.Visible=true;
         }
-
-        public void OnKey(KeyEventArgs e)
+        void List(string kind)
         {
-            if (e.KeyCode != Cfg.AchKey) return;
-            if (menu.Visible) { menu.Visible = false; return; }
-            if (pool.AreAnyVisible) return;
-            Rebuild();
-            menu.Visible = true;
+            if(!AchievementRules.Valid(d)){Root();return;}ui.Begin("list:"+kind,Root);filter=kind;dirty=false;redraw=()=>List(kind);menu.Name="Conquistas / "+AchievementRules.Completed(defs,d)+" concluidas";
+            var entries=AchievementRules.Filter(defs,d,kind).ToArray();
+            foreach(var entry in entries){var a=entry;bool done=d.Unlocked.Contains(a.Id);string progress=done?"Concluida":string.IsNullOrWhiteSpace(a.Stat)?"Registro legado":Math.Min(Get(a.Stat),a.Target)+"/"+a.Target;
+                ui.Add((a.Name??a.Id)+" / "+progress,a.Desc??"",()=>Details(a,kind));}
+            if(entries.Length==0)ui.Add("Nenhum registro nesta categoria","Seu progresso permanece salvo.",()=>{},false);
+            ui.Add("Voltar","Resumo.",Root);menu.Visible=true;
         }
-
-        public void Tick() { }
-        public void Save() { Store.Write("Achievements.json", d); }
-        public void Dispose() { }
+        void Details(AchDef a,string parent)
+        {
+            ui.Begin("detail:"+a.Id,()=>List(parent));filter="detail";dirty=false;redraw=()=>Details(a,parent);menu.Name=a.Name??a.Id;
+            ui.Add(d.Unlocked.Contains(a.Id)?"Concluida":string.IsNullOrWhiteSpace(a.Stat)?"Legada / sem contador atual":"Progresso "+Get(a.Stat)+" / "+a.Target,a.Desc??"",()=>{},false);
+            ui.Add("Voltar","Categoria anterior.",()=>List(parent));menu.Visible=true;
+        }
+        void Unknown()
+        {
+            ui.Begin("unknown",Root);filter="unknown";dirty=false;redraw=Unknown;menu.Name="Desbloqueios preservados";
+            foreach(string id in d.Unlocked.Distinct().Where(id=>!defs.Any(a=>a.Id==id)))ui.Add(id,"Definicao indisponivel; registro salvo mantido.",()=>{},false);
+            ui.Add("Voltar","Resumo.",Root);menu.Visible=true;
+        }
+        public void OnKey(KeyEventArgs e){if(e.KeyCode!=Cfg.AchKey)return;if(menu.Visible)ui.Close();else if(!pool.AreAnyVisible && LeisureContext.CanOpen)Root();}
+        public void Tick(){ui.Tick(LeisureContext.CanOpen);if(dirty && menu.Visible)redraw?.Invoke();}
+        public void Save(){if(AchievementRules.Valid(d))Store.Write("Achievements.json",d);}
+        public void Dispose(){ui.Reset();}
     }
 }

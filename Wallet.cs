@@ -354,6 +354,8 @@ namespace RPCore
             var stats = data.Jobs.Get("pizza"); stats.Deliveries = Math.Max(0, legacy.Deliveries); stats.Earned = Math.Max(0, legacy.Earned);
         }
         public static bool DepositSaved(int amount)=>BankTransfer.Commit(data,()=>Cash,n=>Cash=n,amount,true,Save);
+        public static bool ExchangeChange(Func<Portfolio,bool> change)=>ExchangeTransactions.Commit(data,()=>Cash,n=>Cash=n,0,change,Save);
+        public static bool ExchangeFunds(int amount,bool deposit)=>ExchangeTransactions.Funds(data,()=>Cash,n=>Cash=n,amount,deposit,Save);
         public static bool WithdrawSaved(int amount)=>BankTransfer.Commit(data,()=>Cash,n=>Cash=n,amount,false,Save);
         public static bool Deposit(int amount)
         {
