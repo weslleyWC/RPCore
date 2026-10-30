@@ -1,0 +1,19 @@
+{
+  "hashes": {
+    "Character.json": "4e28cbfa97ac45b4b74fddaa85bcba8a8c916c7dd275937f9d92901e1ec60055",
+    "Wallet.json": "dc82b55fa286be4d2595ebc92eece0c2efac255b08e9496ac8d1efdec5a6b5a7",
+    "RPCore.log": "02a04cf181a5fe773bfd2e45b1b77818084d7325cf1538ae78eb701bc9b6d79e"
+  },
+  "confirmed": [
+    "Character Body null and ApplyPending true; completed body checkpoint absent.",
+    "One structurally valid saved outfit has ten components drawable0/texture0 and five props absent. The described custom kit indices are not present in supplied library.",
+    "Confirmed barber/grooming data exist for the female model.",
+    "User confirms model switching works after requested0.102.2 character rollback."
+  ],
+  "code_findings": [
+    "Post-swap one-frame Safe/menu failure aborted appearance and kept pending.",
+    "Saved body clothing applied before head blend completion.",
+    "No durable equipped outfit checkpoint on wear/finish; library capture only after name input."
+  ],
+  "limits": "No GTA execution, no proof which exact frame aborted, no reconstruction of missing custom indices from zeros. Originals not published, no global character-spawn redesign."
+}

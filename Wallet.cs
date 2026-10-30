@@ -277,7 +277,8 @@ namespace RPCore
         public static BarberData Barber => data.Barber ?? new BarberData();
         public static bool BarberConfirm(BarberLook before,BarberLook after,int price,string id,out bool changed) => BarberTransactions.Confirm(data,before,after,price,id,Save,out changed);
         public static WardrobeData Wardrobe => data.Wardrobe ?? new WardrobeData();
-        public static bool WardrobeSave(WardrobeOptions c,WardrobeOutfit o,bool replace,string id,out bool changed) => WardrobeTransactions.Save(data,c,o,replace,id,Save,out changed);
+        public static bool WardrobeSave(WardrobeOptions c,WardrobeOutfit o,bool replace,string id,out bool changed) => WardrobeTransactions.Save(data,c,o,replace,id,Save,out changed,true);
+        public static bool WardrobeEquip(WardrobeOutfit o,string id,out bool changed)=>WardrobeTransactions.Equip(data,o,id,Save,out changed);
         public static bool WardrobeRename(string outfit,string name,string id,out bool changed) => WardrobeTransactions.Rename(data,outfit,name,id,Save,out changed);
         public static bool WardrobeDelete(string outfit,string id,out bool changed) => WardrobeTransactions.Delete(data,outfit,id,Save,out changed);
         public static HousingData Housing => data.Housing ?? new HousingData();

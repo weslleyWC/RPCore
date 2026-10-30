@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário relatou duplicações e pediu restaurar só personagens para0.102.2.0.104.4 repõe exatamente CharacterSystem e a função de troca daquela base, retirando entrada automática/handoff/helpers, mantendo armazenamento0.104 e todo o restante atual. Rollback e limites registrados; aguarda teste GTA. Fases8/9 continuam abertas.
+Estado atual: usuário confirmou troca0.104.4 e relatou roupa/conjuntos sem persistência. Arquivos mostram Body:null/ApplyPending:true e kit de índices zero.0.104.5 trata conclusão da aparência e checkpoint da roupa; a função de troca permanece0.102.2. Preserva armazenamento e demais sistemas atuais. Validação GTA da roupa pendente; fases8/9 abertas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -10,7 +10,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 |---|---|---|
 | AchievementSystem | [AchievementSystem.cs](../AchievementSystem.cs) | 0.102 revisa grupo completo: resumo/filtros/detalhes/legados/extras, persistência antes de anúncio, overflow/IO/listeners e proteção de dados inválidos. Teste GTA pendente. |
 | BarberSystem | [BarberSystem.cs](../BarberSystem.cs) | 0.100: E local, despacho/retorno/seleção, contexto e cancelamento que conserva alterações externas; corte/olhos/taxa existentes mantidos. Câmera dedicada/validação GTA pendentes. |
-| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.104.4 restaura implementação manual0.102.2 por pedido do usuário; seleção inicial e handoff retirados. Editor completo/câmera e validação GTA pendentes. |
+| CharacterSystem | [CharacterSystem.cs](../CharacterSystem.cs) | 0.104.5 corrige conclusão da aparência/roupa após head blend e revisão de checkpoint; troca de modelo mantém0.102.2, sem menu inicial/handoff. Validação GTA pendente. |
 | CoreMenu | [CoreMenu.cs](../CoreMenu.cs) | Grupo0.98: banco/fluxos/perfis/manutencao revisados; aguarda teste GTA; emprestimos PSRP nao portados |
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
@@ -65,7 +65,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Grupo0.99: menus/acoes/radial revisados; aguarda teste GTA |
 | VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Pendente de revisão completa; preservar base existente |
 | VisualSystem | [VisualSystem.cs](../VisualSystem.cs) | Pendente de revisão completa; preservar base existente |
-| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.100.1 acrescenta portas nas14 entradas, com modelos/alcance/contexto limitados; validação GTA pendente.0.100:14 lojas/ícones/GPS, biblioteca anterior e edição por variações nativas; confirmações/registro atual, cancelamento/preview/save guard. Câmera dedicada e validação GTA pendentes. |
+| WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.104.5 acrescenta confirmação imediata de roupa ao salvar/vestir/concluir, revisão por modelo e guarda da captura no teclado. Mantém lojas/portas/edição da0.100; câmera dedicada/validação GTA pendentes. |
 | WorldSystem | [WorldSystem.cs](../WorldSystem.cs) | Pendente de revisão completa; preservar base existente |
 
 Componentes fora do registro ISystem também estão no escopo: WorkshopSystem, WaypointTeleport, Visuals/menu skins, Wallet/persistência, páginas internas do celular/radial e grades de inventário/depósito/loja. Menus privados/submenus fazem parte da revisão do sistema correspondente.

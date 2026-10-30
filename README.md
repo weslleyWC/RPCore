@@ -1,3 +1,9 @@
+## Atualização0.104.5 — roupas do personagem e conjuntos
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.5.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.5.zip) · [Correção e testes GTA](docs/ROUPAS-0.104.5.md)
+
+Arquivos enviados mostram Body:null/ApplyPending:true e conjunto com índices de peças zerados. Corrige conclusão da aparência e ordem das roupas após rosto, grava roupa confirmada ao salvar/vestir/concluir e evita checkpoint antigo sobre corpo mais recente. Mantém a troca de modelo0.102.2 sem novos peds/menu inicial.3996 testes; build sem erros/avisos. Kit antigo com valores zero precisa ser salvo novamente ou recuperado de backup válido. Validação visual GTA pendente.
+
 ## Atualização0.104.4 — personagens como na0.102.2, restante atual
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.4.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.4.zip) · [Instalação e testes](docs/PERSONAGENS-RESTAURADOS-0.104.4.md)

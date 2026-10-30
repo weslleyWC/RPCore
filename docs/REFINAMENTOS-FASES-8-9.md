@@ -347,3 +347,8 @@ Log0.104.2 identifica falha ao exigir decor antes do CREATE_PED. Caminho substit
 ###0.104.4 — restauração limitada aos personagens
 
 Usuário pediu voltar só personagens à0.102.2 por duplicação de peds, mantendo o restante. CharacterSystem e Main.SwitchCharacter exatamente restaurados; entrada automática/espera/handoff/helpers/testes exclusivos removidos. Armazenamento0.104 e demais sistemas atuais preservados.3974 testes ativos. PERSONAGENS-RESTAURADOS-0.104.4.md orienta fechar totalmente GTA para descarregar duplicatas da sessão e testar manual F10.
+
+
+###0.104.5 — persistência de roupas, mantendo troca confirmada
+
+Troca0.104.4 aprovada; arquivos revelam aparência pendente sem Body e biblioteca com peças zeradas. Ajusta conclusão/ordem da aparência e confirmação durável/revisões da roupa; Main.SwitchCharacter continua0.102.2, sem menu inicial/handoff.3996 testes. ROUPAS-0.104.5.md explica limites do kit recebido e roteiro GTA. Não avança realismo de trabalhos.

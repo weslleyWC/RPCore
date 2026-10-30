@@ -38,32 +38,32 @@ namespace RPCore
         static WardrobeOutfit Capture(Ped p,string id,string name)
         {
             var o = new WardrobeOutfit { Id=id,Name=name,Model=p.Model.Hash };
-            foreach(int slot in WardrobeRules.ComponentSlots) o.Components.Add(new WardrobePiece { Slot=slot,Drawable=Function.Call<int>(Hash.GET_PED_DRAWABLE_VARIATION,p,slot),Texture=Function.Call<int>(Hash.GET_PED_TEXTURE_VARIATION,p,slot),Palette=Function.Call<int>(Hash.GET_PED_PALETTE_VARIATION,p,slot) });
-            foreach(int slot in WardrobeRules.PropSlots) { int draw=Function.Call<int>(Hash.GET_PED_PROP_INDEX,p,slot); o.Props.Add(new WardrobePiece { Slot=slot,Drawable=draw,Texture=draw<0?0:Function.Call<int>(Hash.GET_PED_PROP_TEXTURE_INDEX,p,slot) }); }
+            foreach(int slot in WardrobeRules.ComponentSlots) o.Components.Add(new WardrobePiece { Slot=slot,Drawable=Function.Call<int>(Hash.GET_PED_DRAWABLE_VARIATION,p.Handle,slot),Texture=Function.Call<int>(Hash.GET_PED_TEXTURE_VARIATION,p.Handle,slot),Palette=Function.Call<int>(Hash.GET_PED_PALETTE_VARIATION,p.Handle,slot) });
+            foreach(int slot in WardrobeRules.PropSlots) { int draw=Function.Call<int>(Hash.GET_PED_PROP_INDEX,p.Handle,slot); o.Props.Add(new WardrobePiece { Slot=slot,Drawable=draw,Texture=draw<0?0:Function.Call<int>(Hash.GET_PED_PROP_TEXTURE_INDEX,p.Handle,slot) }); }
             if (!o.Valid) throw new InvalidOperationException("Unsupported clothing snapshot."); return o;
         }
-        static int DrawCount(Ped p,int slot,bool prop) => Function.Call<int>(prop?Hash.GET_NUMBER_OF_PED_PROP_DRAWABLE_VARIATIONS:Hash.GET_NUMBER_OF_PED_DRAWABLE_VARIATIONS,p,slot);
-        static int TextureCount(Ped p,WardrobePiece piece,bool prop) => piece.Drawable<0?0:Function.Call<int>(prop?Hash.GET_NUMBER_OF_PED_PROP_TEXTURE_VARIATIONS:Hash.GET_NUMBER_OF_PED_TEXTURE_VARIATIONS,p,piece.Slot,piece.Drawable);
+        static int DrawCount(Ped p,int slot,bool prop) => Function.Call<int>(prop?Hash.GET_NUMBER_OF_PED_PROP_DRAWABLE_VARIATIONS:Hash.GET_NUMBER_OF_PED_DRAWABLE_VARIATIONS,p.Handle,slot);
+        static int TextureCount(Ped p,WardrobePiece piece,bool prop) => piece.Drawable<0?0:Function.Call<int>(prop?Hash.GET_NUMBER_OF_PED_PROP_TEXTURE_VARIATIONS:Hash.GET_NUMBER_OF_PED_TEXTURE_VARIATIONS,p.Handle,piece.Slot,piece.Drawable);
         static bool Compatible(Ped p,WardrobeOutfit o)
         {
             if (!o.Valid || p.Model.Hash!=o.Model) return false;
-            foreach(var piece in o.Components) if (!WardrobeRules.Available(piece,false,DrawCount(p,piece.Slot,false),TextureCount(p,piece,false))) return false;
-            foreach(var piece in o.Props) if (!WardrobeRules.Available(piece,true,DrawCount(p,piece.Slot,true),TextureCount(p,piece,true))) return false;
+            foreach(var piece in o.Components) if (!WardrobeRules.DrawableAvailable(piece,false,DrawCount(p,piece.Slot,false)) || !WardrobeRules.Available(piece,false,DrawCount(p,piece.Slot,false),TextureCount(p,piece,false))) return false;
+            foreach(var piece in o.Props) if (!WardrobeRules.DrawableAvailable(piece,true,DrawCount(p,piece.Slot,true)) || !WardrobeRules.Available(piece,true,DrawCount(p,piece.Slot,true),TextureCount(p,piece,true))) return false;
             return true;
         }
         static void Write(Ped p,WardrobeOutfit o)
         {
             if (p==null || !p.Exists() || p!=Game.Player.Character || p.Model.Hash!=o.Model) throw new InvalidOperationException("Clothing owner changed.");
-            foreach(var piece in o.Components) Function.Call(Hash.SET_PED_COMPONENT_VARIATION,p,piece.Slot,piece.Drawable,piece.Texture,piece.Palette);
-            foreach(var piece in o.Props) { if(piece.Drawable<0)Function.Call(Hash.CLEAR_PED_PROP,p,piece.Slot); else Function.Call(Hash.SET_PED_PROP_INDEX,p,piece.Slot,piece.Drawable,piece.Texture,true); }
+            foreach(var piece in o.Components) Function.Call(Hash.SET_PED_COMPONENT_VARIATION,p.Handle,piece.Slot,piece.Drawable,piece.Texture,piece.Palette);
+            foreach(var piece in o.Props) { if(piece.Drawable<0)Function.Call(Hash.CLEAR_PED_PROP,p.Handle,piece.Slot); else Function.Call(Hash.SET_PED_PROP_INDEX,p.Handle,piece.Slot,piece.Drawable,piece.Texture,true); }
             var actual=Capture(p,"verify","Verificacao");
             if (o.Components.Any(v=>!actual.Components.Any(a=>a.Slot==v.Slot && a.Drawable==v.Drawable && a.Texture==v.Texture && a.Palette==v.Palette)) || o.Props.Any(v=>!actual.Props.Any(a=>a.Slot==v.Slot && a.Drawable==v.Drawable && a.Texture==v.Texture))) throw new InvalidOperationException("Clothing variation did not apply.");
         }
-        static void ApplyChecked(Ped p,WardrobeOutfit outfit)
+        internal static bool ApplyChecked(Ped p,WardrobeOutfit outfit)
         {
-            if (!Compatible(p,outfit)) { Notify.Show("Conjunto incompativel com o ped atual ou roupas/DLC disponiveis. Nada alterado."); return; }
+            if (!Compatible(p,outfit)) { Notify.Show("Conjunto incompativel com o ped atual ou roupas/DLC disponiveis. Nada alterado."); return false; }
             var old=Capture(p,"rollback","Anterior");
-            try { Write(p,outfit); } catch { Write(p,old); throw; }
+            try { Write(p,outfit);return true; } catch { Write(p,old); throw; }
         }
         bool Idle() { if(gate.Owner==null || gate.Owner==Name)return true; Notify.Show("Encerre a atividade de "+gate.Owner+".");return false; }
         public void OpenMenu()
@@ -80,7 +80,14 @@ namespace RPCore
         void OpenOutfit(string id)
         {
             var o=Wallet.Wardrobe.Outfits.Find(v=>v.Id==id);if(o==null)return;ui.Begin("outfit:"+id,OpenMenu);menu.Name=o.Name;
-            Add("Vestir conjunto","Valida todas as pecas antes de mudar. Incompativel nao altera nada.",()=>{if(!Idle() || !gate.Acquire(Name))return;try{var current=Wallet.Wardrobe.Outfits.Find(v=>v.Id==id);if(current!=null)ApplyChecked(Game.Player.Character,current);}finally{gate.Release(Name);}});
+            Add("Vestir conjunto","Valida todas as pecas antes de mudar. Incompativel nao altera nada.",()=>{if(!Idle() || !gate.Acquire(Name))return;try{
+                var current=Wallet.Wardrobe.Outfits.Find(v=>v.Id==id);if(current==null)return;var ped=Game.Player.Character;var before=Capture(ped,"rollback","Anterior");
+                if(!ApplyChecked(ped,current))return;
+                try{if(!Wallet.WardrobeEquip(current,Guid.NewGuid().ToString("N"),out _))throw new InvalidOperationException("Outfit checkpoint refused.");}
+                catch{Write(ped,before);throw;}
+                Log.Write("wardrobe equipped / model "+current.Model+" / "+string.Join(",",current.Components.Select(p=>p.Slot+":"+p.Drawable+":"+p.Texture)));
+                Notify.Show("Conjunto vestido e salvo para este personagem.");
+            }finally{gate.Release(Name);}});
             Add("Substituir pela roupa atual","Substituicao explicita deste conjunto, preservando nome/id. Requer mesmo modelo.",()=>ConfirmReplace(id));
             Add("Renomear","Nao muda a roupa vestida.",()=>Rename(id));
             Add("Excluir da biblioteca","Abre confirmacao; nao remove a roupa do personagem.",()=>ConfirmDelete(id));
@@ -93,11 +100,14 @@ namespace RPCore
             var old=replaceId==null?null:Wallet.Wardrobe.Outfits.Find(o=>o.Id==replaceId);
             var expected=old==null?null:JsonConvert.DeserializeObject<WardrobeOutfit>(JsonConvert.SerializeObject(old));
             if(replaceId!=null && (old==null || old.Model!=model)){Notify.Show("Substituicao requer conjunto do mesmo modelo.");return;}
+            var beforeName=Capture(ped,"naming","Atual");
             string name=old?.Name ?? Game.GetUserInput(WindowTitle.EnterMessage60,"Roupa "+(Wallet.Wardrobe.Outfits.Count+1),32)?.Trim();
             if(!Access || profile!=Profile.Id || ped!=Game.Player.Character || model!=ped.Model.Hash || !WardrobeRules.ValidName(name))return;
             if(replaceId!=null && !PersonalServiceRules.Matches(Wallet.Wardrobe.Outfits.Find(o=>o.Id==replaceId),expected)){Notify.Show("Conjunto mudou; reabra a biblioteca.");return;}
             var outfit=Capture(ped,replaceId??Guid.NewGuid().ToString("N"),name);
+            if(!PersonalServiceRules.SameClothes(beforeName,outfit)){Notify.Show("A roupa mudou durante a entrada do nome. Nada substituido; confira a roupa e salve novamente.");return;}
             if(!Wallet.WardrobeSave(options,outfit,replaceId!=null,Guid.NewGuid().ToString("N"),out _)){Notify.Show("Confira nome duplicado, limite ou dados. Biblioteca nao alterada.");return;}
+            Log.Write("wardrobe saved / model "+outfit.Model+" / "+string.Join(",",outfit.Components.Select(p=>p.Slot+":"+p.Drawable+":"+p.Texture)));
             FinishPreview();Notify.Show("Roupa salva.");OpenMenu();
         }
         void Rename(string id)
@@ -135,7 +145,7 @@ namespace RPCore
             foreach(int s in WardrobeRules.ComponentSlots){int slot=s;if(DrawCount(actor,slot,false)<=0)continue;Add(ComponentName(slot),"Mudar peca/textura do ped atual.",()=>OpenPiece(slot,false));}
             foreach(int s in WardrobeRules.PropSlots){int slot=s;if(DrawCount(actor,slot,true)<=0)continue;Add(PropName(slot),"Inclui opcao sem acessorio.",()=>OpenPiece(slot,true));}
             Add("Salvar roupa editada","Salva biblioteca e mantem a previa ao confirmar.",()=>SaveCurrent(null));
-            Add("Concluir edicao","Mantem roupa atual; salvar na biblioteca e uma acao separada.",()=>{FinishPreview();OpenMenu();});
+            Add("Concluir edicao","Mantem roupa atual; salvar na biblioteca e uma acao separada.",()=>{var outfit=Capture(actor,"current-"+actor.Model.Hash,"Roupa atual");if(!Wallet.WardrobeEquip(outfit,Guid.NewGuid().ToString("N"),out _)){Notify.Show("Nao foi possivel gravar a roupa; previa conservada.");return;}FinishPreview();OpenMenu();});
             Add("Cancelar e restaurar","Esc/fechar ou sair do local tambem cancela a previa.",OpenMenu);menu.Visible=true;
         }
         void OpenPiece(int slot,bool prop)

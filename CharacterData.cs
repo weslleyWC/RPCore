@@ -28,7 +28,8 @@ namespace RPCore
         public FaceHeritage BaseFace;
         public CharacterBody Body;
         public bool ApplyPending;
-        [JsonIgnore] public bool Valid=>CharacterRules.ValidId(Id) && CharacterRules.ValidName(Name) && CharacterRules.ModelHash(Model)!=0 && BaseFace!=null && BaseFace.Valid && (Body==null || Body.Valid && Body.Model==CharacterRules.ModelHash(Model));
+        [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public long BodyClothingRevision;
+        [JsonIgnore] public bool Valid=>BodyClothingRevision>=0 && CharacterRules.ValidId(Id) && CharacterRules.ValidName(Name) && CharacterRules.ModelHash(Model)!=0 && BaseFace!=null && BaseFace.Valid && (Body==null || Body.Valid && Body.Model==CharacterRules.ModelHash(Model));
     }
     public sealed class CharacterReturn : ExtensibleData
     {
@@ -46,6 +47,7 @@ namespace RPCore
         public static bool ValidName(string name)=>!string.IsNullOrWhiteSpace(name) && name.Length<=40 && name==name.Trim() && !name.Any(char.IsControl);
         public static bool CanTransition(string profile,int model)=>ProtagonistHash(profile)!=0?ProtagonistHash(profile)==model:ValidId(profile) && (model==ModelHash("mp_m_freemode_01") || model==ModelHash("mp_f_freemode_01"));
         public static bool SameBodyOwner(CharacterCard card,string profile,int model)=>card!=null && card.Valid && card.Id==profile && ModelHash(card.Model)==model;
+        public static bool AppearanceInterrupted(bool swapped,bool same,bool safe,bool visible,bool cancelled,uint elapsed)=>!same || cancelled || !swapped && (!safe || !visible) || elapsed>=10000;
         public static bool CanCapture(CharacterCard card,string profile,int model,bool alive,bool applying)=>SameBodyOwner(card,profile,model) && alive && !applying && !card.ApplyPending;
         public static CharacterBody MergeBody(CharacterBody old,CharacterBody actual)
         {

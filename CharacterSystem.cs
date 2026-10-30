@@ -19,12 +19,13 @@ namespace RPCore
         sealed class Operation
         {
             public string Profile,OriginProfile;public Ped Origin,Actor;public Model Model;public Vector3 Position;public float Heading;public int Started;
-            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;
+            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;public bool Cancelled;
         }
         string ReturnPath=>Path.Combine(Cfg.Dir,"CharacterReturn.json");
         bool Safe=>!Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING) && Game.Player.Wanted.WantedLevel==0 && Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && Game.Player.Character.Speed<.5f;
+        bool ApplySafe=>PersonalServiceMenu.SafeFoot && !InterfaceOptions.ModalOpen && GTA.UI.Screen.IsFadedIn && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING);
         public CharacterSystem(ObjectPool pool,ShiftGate gate,Action<string,int> transition)
-        {this.pool=pool;this.gate=gate;this.transition=transition;files=new CharacterFiles(Cfg.SaveDir);menu=new NativeMenu("Personagens RPCore","CRIAR / CARREGAR / VOLTAR");pool.Add(menu);Visuals.Register(menu,"core");Reload();}
+        {this.pool=pool;this.gate=gate;this.transition=transition;files=new CharacterFiles(Cfg.SaveDir);menu=new NativeMenu("Personagens RPCore","CRIAR / CARREGAR / VOLTAR");pool.Add(menu);Visuals.Register(menu,"core");menu.Closing+=(s,e)=>{if(operation!=null && (Game.IsKeyPressed(Keys.Escape) || Game.IsKeyPressed(Keys.Back) || Game.IsControlJustPressed(GTA.Control.FrontendCancel)))operation.Cancelled=true;};Reload();}
         void Add(string title,string description,Action action)
         {var item=new NativeItem(title,description);item.Activated+=(s,e)=>{try{action();}catch(Exception ex){End();menu.Visible=false;Log.Error("character action",ex);Notify.Show("Operacao nao concluida. Arquivos anteriores preservados; confira personagens/pendencias e log.");}};menu.Add(item);}
         public void OpenMenu()
@@ -79,6 +80,7 @@ namespace RPCore
             GroomingLook look=null;FaceHeritage heritage=null;
             if(card!=null){
                 var wallet=json.Read<WalletData>(Path.Combine(Cfg.SaveDir,card.Id,"Wallet.json"),()=>new WalletData());
+                if(wallet.Wardrobe!=null && !wallet.Wardrobe.Valid)throw new InvalidDataException("Saved wardrobe data invalid.");
                 if(wallet.Barber!=null && !wallet.Barber.Valid)throw new InvalidDataException("Saved barber data invalid.");
                 if(wallet.Grooming!=null && !wallet.Grooming.Valid)throw new InvalidDataException("Saved grooming data invalid.");
                 look=wallet.Grooming?.Looks.Find(l=>l.Model==CharacterRules.ModelHash(card.Model));heritage=look?.Heritage??card.BaseFace;
@@ -104,22 +106,30 @@ namespace RPCore
             switching=true;try{transition(op.Profile,op.Model.Hash);}finally{switching=false;}
             op.Swapped=true;op.Actor=Game.Player.Character;op.Actor.Position=op.Position;op.Actor.Heading=op.Heading;current=op.Card;
             Function.Call(Hash.SET_PED_DEFAULT_COMPONENT_VARIATION,op.Actor);
-            if(op.Body!=null)CharacterBodyRuntime.Apply(op.Actor,op.Body);
-            else{Function.Call(Hash.REMOVE_ALL_PED_WEAPONS,op.Actor,true);op.Actor.MaxHealth=200;op.Actor.Health=200;op.Actor.Armor=0;}
             if(op.Card==null){Complete(op);return;}
             var h=op.Heritage;Function.Call(Hash.SET_PED_HEAD_BLEND_DATA,op.Actor,h.ShapeFirst,h.ShapeSecond,0,h.SkinFirst,h.SkinSecond,0,h.ShapeMix/100f,h.SkinMix/100f,0f,false);
-            op.Started=Game.GameTime;menu.Name="Preparando rosto / ate 10s";
+            op.Started=Game.GameTime;menu.Name="Preparando rosto / ate 10s";menu.Visible=true;
         }
         void Complete(Operation op)
         {
+            // Restore clothing after head blend, which may replace freemode component state.
+            if(op.Body!=null)CharacterBodyRuntime.Apply(op.Actor,op.Body);
+            else{Function.Call(Hash.REMOVE_ALL_PED_WEAPONS,op.Actor,true);op.Actor.MaxHealth=200;op.Actor.Health=200;op.Actor.Armor=0;}
             if(op.Card!=null){
                 for(int i=0;i<20;i++)Function.Call(Hash.SET_PED_MICRO_MORPH,op.Actor,i,0f);
                 for(int i=0;i<=12;i++)Function.Call(Hash.SET_PED_HEAD_OVERLAY,op.Actor,i,255,0f);
                 Function.Call(Hash.SET_PED_HAIR_TINT,op.Actor,0,0);Function.Call(Hash.SET_HEAD_BLEND_EYE_COLOR,op.Actor,0);
                 if(op.Look!=null)GroomingSystem.ApplySurface(op.Look);
                 var wallet=json.Read<WalletData>(Path.Combine(Cfg.SaveDir,op.Card.Id,"Wallet.json"),()=>new WalletData());var barber=wallet.Barber?.Looks.Find(l=>l.Model==op.Model.Hash);
+                if(barber!=null){
+                    int n=Function.Call<int>(Hash.GET_NUMBER_OF_PED_DRAWABLE_VARIATIONS,op.Actor.Handle,2);
+                    var hair=new WardrobePiece{Slot=2,Drawable=barber.Hair,Texture=barber.Texture,Palette=barber.Palette};
+                    if(WardrobeRules.DrawableAvailable(hair,false,n) && WardrobeRules.Available(hair,false,n,Function.Call<int>(Hash.GET_NUMBER_OF_PED_TEXTURE_VARIATIONS,op.Actor.Handle,2,hair.Drawable)))Function.Call(Hash.SET_PED_COMPONENT_VARIATION,op.Actor.Handle,2,hair.Drawable,hair.Texture,hair.Palette);
+                }
+                var equipped=WardrobeTransactions.Equipped(wallet.Wardrobe,op.Model.Hash);
+                if(WardrobeTransactions.PreferEquipped(equipped,op.Card) && !WardrobeSystem.ApplyChecked(op.Actor,equipped))throw new InvalidOperationException("Confirmed outfit resources unavailable; pending preserved.");
                 if(barber!=null && barber.HasEye)Function.Call(Hash.SET_HEAD_BLEND_EYE_COLOR,op.Actor,barber.Eye);
-                var next=CharacterRules.Copy(op.Card);next.Body=CharacterRules.MergeBody(next.Body,CharacterBodyRuntime.Capture(op.Actor));next.ApplyPending=false;files.Write(next);current=next;
+                var next=CharacterRules.Copy(op.Card);next.Body=CharacterRules.MergeBody(next.Body,CharacterBodyRuntime.Capture(op.Actor));next.BodyClothingRevision=equipped?.Revision??0;next.ApplyPending=false;files.Write(next);current=next;Log.Write("character appearance committed / model "+op.Model.Hash);
             }
             if(op.Return!=null){var backup=CharacterRules.Copy(op.Return);backup.ApplyPending=false;json.Write(ReturnPath,backup);}
             End();menu.Visible=false;Notify.Show("Personagem carregado / perfil "+Profile.Id+". F10: roupas, moradia e barbearias.");
@@ -129,9 +139,9 @@ namespace RPCore
             var op=operation;if(op==null)return;
             try{
                 bool same=op.Swapped?op.Actor!=null && op.Actor.Exists() && op.Actor==Game.Player.Character && op.Actor.Model.Hash==op.Model.Hash && Profile.Id==op.Profile:op.Origin!=null && op.Origin.Exists() && op.Origin==Game.Player.Character && Profile.Id==op.OriginProfile;
-                if(!same || !Safe || !menu.Visible || unchecked((uint)(Game.GameTime-op.Started))>=10000 || !op.Swapped && op.Origin.Position.DistanceTo(op.Position)>2){End();menu.Visible=false;Notify.Show("Carregamento interrompido. Perfil preservado; confira a lista de personagens para retomar.");return;}
+                if(CharacterRules.AppearanceInterrupted(op.Swapped,same,Safe,menu.Visible,op.Cancelled,unchecked((uint)(Game.GameTime-op.Started))) || !op.Swapped && op.Origin.Position.DistanceTo(op.Position)>2){Log.Write("character appearance interrupted / swapped="+op.Swapped+" / same="+same+" / cancelled="+op.Cancelled+" / elapsed="+unchecked((uint)(Game.GameTime-op.Started)));End();menu.Visible=false;Notify.Show("Carregamento interrompido. Perfil preservado; confira a lista de personagens para retomar.");return;}
                 if(!op.Swapped){if(op.Model.IsLoaded)Swap(op);return;}
-                if(Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,op.Actor) && unchecked((uint)(Game.GameTime-op.Started))>0)Complete(op);
+                if(ApplySafe && Function.Call<bool>(Hash.HAS_PED_HEAD_BLEND_FINISHED,op.Actor) && unchecked((uint)(Game.GameTime-op.Started))>0)Complete(op);
             }
             catch(Exception ex){End();menu.Visible=false;Log.Error("character load",ex);Notify.Show("Carregamento incompleto. Snapshot preservado; retome pela lista de personagens.");}
         }
@@ -143,7 +153,7 @@ namespace RPCore
             if(current==null || !CharacterRules.CanCapture(current,Profile.Id,Game.Player.Character.Model.Hash,!Game.Player.Character.IsDead,!beforeSwap && operation!=null))return;
             var next=CharacterRules.Copy(current);var snapshot=CharacterBodyRuntime.Capture(Game.Player.Character);
             if(SnapshotFilter!=null)snapshot=SnapshotFilter(snapshot);
-            next.Body=CharacterRules.MergeBody(next.Body,snapshot);files.Write(next);current=next;
+            next.Body=CharacterRules.MergeBody(next.Body,snapshot);next.BodyClothingRevision=WardrobeTransactions.Equipped(Wallet.Wardrobe,snapshot.Model)?.Revision??0;files.Write(next);current=next;
         }
         public void Reload()
         {
