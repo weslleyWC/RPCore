@@ -1,3 +1,9 @@
+## Hotfix0.104.3 — identificação do ped sem decor
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.3.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.3.zip) · [Correção e teste GTA](docs/PERSONAGEM-REGISTRO-0.104.3.md)
+
+O log0.104.2 confirma Candidate ownership tag unavailable antes de criar o ped; esperar não resolvia. Remove essa dependência, usando registro privado de lease/handle/modelo/endereço da entidade, com limpeza que exclui o jogador.4047 testes, build sem erros/avisos; não apaga saves ou reinstala assets. O caminho de transferência ainda precisa do teste GTA e o crash anterior não é declarado resolvido sem ele.
+
 ## Hotfix0.104.2 — alternativa à substituição do ped
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.2.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.2.zip) · [Teste GTA e limites](docs/PERSONAGEM-HANDOFF-0.104.2.md)

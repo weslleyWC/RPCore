@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário confirmou novo crash após espera0.104.1. Log e binário localizam ausência de retorno em SET_PLAYER_MODEL feminino, etapa6020.0.104.2 substitui esse caminho por ped preparado/transferência de controle com propriedade e limpeza restritas; sem concluir causa interna ou resolução antes do teste GTA. Inclui armazenamento0.104. Refinamento normal segue pausado; fases8/9 abertas.
+Estado atual: log0.104.2 confirmou falha Candidate ownership tag unavailable antes de criar o ped.0.104.3 remove a dependência de decor e usa registro de sessão/lease/handle/modelo/endereço, com exclusão do jogador na limpeza. Transferência nativa ainda não testada com sucesso; não declarar crash anterior curado. Refinamento normal segue pausado. Fases8/9 abertas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 

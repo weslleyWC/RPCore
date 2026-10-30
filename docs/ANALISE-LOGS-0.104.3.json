@@ -1,0 +1,20 @@
+{
+  "rpcore_log_sha256": "862e85b4ef4a757c70177473cf391c089c24cd56738005266733c733f1d1def6",
+  "version": "0.104.2",
+  "confirmed_error": "System.InvalidOperationException: Candidate ownership tag unavailable.",
+  "attempt_times": [
+    "18:43:59",
+    "18:44:50",
+    "18:45:17",
+    "18:46:18"
+  ],
+  "stack": [
+    "CharacterHandoffRuntime.Create",
+    "CharacterSystem.Swap",
+    "CharacterSystem.Tick"
+  ],
+  "ordering": "Failed during decor availability check before CREATE_PED; control handoff and appearance not executed.",
+  "not_proven": "Why decor registration failed internally, success of native handoff or resolution of previous SET_PLAYER_MODEL crash.",
+  "fix": "Remove decor dependency from this flow; exact lease reference + handle/model/entity-pool-address in private managed session registry. Keep native current-player exclusion and no old model native fallback. No global registry/memory writes.",
+  "privacy": "Original uploaded log and personal paths not published."
+}

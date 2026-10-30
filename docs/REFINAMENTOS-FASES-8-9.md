@@ -337,3 +337,8 @@ Relato de crash na0.103 interrompe avanço normal. Logs confirmam retorno ao per
 ###0.104.2 — substituição do caminho que travou
 
 Após novo crash, RuntimeState0.104.1/6020 e log sem retorno do SET_PLAYER_MODEL feminino localizam a fronteira nativa. Fluxo próprio com ped preparado/CHANGE_PLAYER_PED, confirmação nativa e descarte apenas de candidato não controlado, preservando saves.4029 testes; PERSONAGEM-HANDOFF-0.104.2.md. Aguardar teste real; não atribuir a falha a roupa/saldo ou afirmar solução definitiva antes dele.
+
+
+###0.104.3 — bloqueio de decor confirmado
+
+Log0.104.2 identifica falha ao exigir decor antes do CREATE_PED. Caminho substitui a exigência por registro de propriedade da sessão e endereço do ped; conserva limpeza restrita, saves e ausência do SET_PLAYER_MODEL.4047 testes. PERSONAGEM-REGISTRO-0.104.3.md orienta validação GTA. Transferência/crash anterior ainda precisam de confirmação; avanço de refinamento normal permanece pausado.
