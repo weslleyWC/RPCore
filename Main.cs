@@ -168,7 +168,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.104.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.104.2 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -311,10 +311,10 @@ namespace RPCore
             }
         }
 
-        void SwitchCharacter(string target,int model)
+        void SwitchCharacter(string target,int model,CharacterHandoffLease candidate)
         {
             if(!CharacterRules.CanTransition(target,model))throw new InvalidOperationException("Invalid character model/profile transition.");
-            if(!CharacterSystem.EngineReady || !new Model(model).IsLoaded)throw new InvalidOperationException("GTA/model is not ready for character transition.");
+            if(candidate==null || candidate.Model!=model || !CharacterHandoffRuntime.Own(candidate) || !CharacterSystem.EngineReady || !new Model(model).IsLoaded)throw new InvalidOperationException("GTA/model is not ready for character transition.");
             var source=Game.Player.Character;int sourceModel=source.Model.Hash;string sourceProfile=Profile.Id;var sourcePosition=source.Position;
             Log.Write("character transition: flush origin");
             // Unlike routine autosave, a failed flush aborts an explicit model/profile transition.
@@ -325,16 +325,17 @@ namespace RPCore
             // Prove the selected profile can be persisted before replacing the player ped.
             if(custom)new JsonFiles().Write(activePath,target);
             try{
-                if(!CharacterSystem.EngineReady || source!=Game.Player.Character || !source.Exists() || source.Model.Hash!=sourceModel || Profile.Id!=sourceProfile || Profile.Detect()!=sourceProfile || source.Position.DistanceTo(sourcePosition)>2 || !new Model(model).IsLoaded)throw new InvalidOperationException("GTA actor changed during origin flush; model replacement cancelled.");
-                Stage(6020);Log.Write("character transition: SET_PLAYER_MODEL "+model);
-                GTA.Native.Function.Call(GTA.Native.Hash.SET_PLAYER_MODEL,Game.Player.Handle,model);
-                Stage(6021);Log.Write("character transition: model returned");
-                if(Game.Player.Character.Model.Hash!=model)throw new InvalidOperationException("Player model did not change.");
+                if(!CharacterSystem.EngineReady || source!=Game.Player.Character || !source.Exists() || source.Model.Hash!=sourceModel || Profile.Id!=sourceProfile || Profile.Detect()!=sourceProfile || source.Position.DistanceTo(sourcePosition)>2 || !new Model(model).IsLoaded || !CharacterHandoffRuntime.Own(candidate))throw new InvalidOperationException("GTA actor changed during origin flush; model replacement cancelled.");
+                Stage(6032);Log.Write("character transition: CHANGE_PLAYER_PED "+model);
+                GTA.Native.Function.Call(GTA.Native.Hash.CHANGE_PLAYER_PED,Game.Player.Handle,candidate.Handle,false,false);
+                Stage(6033);Log.Write("character transition: handoff returned");
+                if(!candidate.Commit(CharacterHandoffRuntime.PlayerHandle,(GTA.Entity.FromHandle(candidate.Handle) as GTA.Ped)?.Model.Hash??0))throw new InvalidOperationException("Player did not assume the prepared ped.");
             }
             catch{
-                if(custom)try{new JsonFiles().Write(activePath,previous);}catch(Exception ex){Log.Error("active character rollback",ex);}
+                if(custom && !candidate.HandedOff)try{new JsonFiles().Write(activePath,previous);}catch(Exception ex){Log.Error("active character rollback",ex);}
                 throw;
             }
+            finally{CharacterHandoffRuntime.ReleaseStagingFlags(candidate);}
             if(custom)Cfg.CustomProfile=target;
             Stage(6022);Profile.Id=target;Wallet.Reload();
             foreach(var system in systems){try{Stage(system,4);system.Reload();}catch(Exception ex){faulted.Add(system);Log.Error(system.Name+".character.reload",ex);}}

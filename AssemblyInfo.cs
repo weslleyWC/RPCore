@@ -1,5 +1,5 @@
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.104.1.0")]
-[assembly: AssemblyFileVersion("0.104.1.0")]
-[assembly: AssemblyInformationalVersion("0.104.1-character-startup-stability-hotfix")]
+[assembly: AssemblyVersion("0.104.2.0")]
+[assembly: AssemblyFileVersion("0.104.2.0")]
+[assembly: AssemblyInformationalVersion("0.104.2-prepared-character-ped-handoff")]

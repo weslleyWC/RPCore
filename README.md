@@ -1,3 +1,9 @@
+## Hotfix0.104.2 — alternativa à substituição do ped
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.2.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.2.zip) · [Teste GTA e limites](docs/PERSONAGEM-HANDOFF-0.104.2.md)
+
+Logs e RuntimeState da0.104.1 param em SET_PLAYER_MODEL do freemode feminino, sem retorno; a espera não resolveu. O carregamento passa a criar um ped identificado e transferir controle com CHANGE_PLAYER_PED, sem chamar novamente aquele native. Conserva personagens/saldos/pendências e só descarta candidato próprio não controlado.4029 testes, build sem erros/avisos; o fluxo alternativo precisa do teste GTA antes de declarar o crash resolvido. Inclui0.104 e0.104.1.
+
 ## Hotfix0.104.1 — entrada e troca de personagem
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.104.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.104.1.zip) · [Teste e coleta GTA](docs/PERSONAGEM-ESTABILIDADE-0.104.1.md)

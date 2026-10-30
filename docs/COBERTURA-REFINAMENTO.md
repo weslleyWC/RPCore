@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário relatou crash na troca de personagem da0.103; logs confirmam mudança a Franklin na entrada, sem stacktrace fatal.0.104.1 acrescenta estabilidade da entrada/manual, aplicação diferida e diagnóstico por fase. Inclui o grupo armazenamento0.104, ainda sem teste GTA confirmado. Refinamento normal pausado para testar este caso. Fases8/9 continuam abertas.
+Estado atual: usuário confirmou novo crash após espera0.104.1. Log e binário localizam ausência de retorno em SET_PLAYER_MODEL feminino, etapa6020.0.104.2 substitui esse caminho por ped preparado/transferência de controle com propriedade e limpeza restritas; sem concluir causa interna ou resolução antes do teste GTA. Inclui armazenamento0.104. Refinamento normal segue pausado; fases8/9 abertas.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 

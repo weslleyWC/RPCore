@@ -51,6 +51,7 @@
     <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmRentalData.cs" Link="PdmRentalData.cs" />
     <Compile Include="../PdmShowroomData.cs" Link="PdmShowroomData.cs" />
+    <Compile Include="../CharacterHandoffData.cs" Link="CharacterHandoffData.cs" />
     <Compile Include="../CharacterEntryData.cs" Link="CharacterEntryData.cs" />
     <Compile Include="../CharacterData.cs" Link="CharacterData.cs" />
     <Compile Include="../FaceData.cs" Link="FaceData.cs" />

@@ -18,7 +18,7 @@ namespace RPCore.Tests
   [Theory][InlineData(float.NaN)][InlineData(float.PositiveInfinity)] public void InvalidPositionNeverSettles(float x){var s=new CharacterStartupStability();Step(s,60,x:x);Assert.False(s.Ready);}
   [Fact] public void PausedClockDoesNotSatisfyStartupDelay(){var s=new CharacterStartupStability();for(int i=0;i<100;i++)s.Observe(0,true,1,2,"Franklin",0,0,0);Assert.False(s.Ready);}
   [Fact] public void EntryOnceGateWaitsForStabilityInsteadOfConsumingDuringLoad(){var s=new CharacterStartupStability();var entry=new CharacterEntryGate();for(int i=0;i<29;i++){Step(s);Assert.False(entry.Advance(1000,s.Ready));}Step(s);Assert.True(entry.Advance(1000,s.Ready));Assert.False(entry.Advance(1000,true));}
-  [Theory][InlineData(6001,"begin")][InlineData(6005,"wait-actor")][InlineData(6009,"capture-commit")][InlineData(6020,"set-player-model")][InlineData(6022,"wallet-reload")]
+  [Theory][InlineData(6001,"begin")][InlineData(6005,"wait-actor")][InlineData(6009,"capture-commit")][InlineData(6020,"set-player-model")][InlineData(6022,"wallet-reload")][InlineData(6030,"create-ped")][InlineData(6031,"stage-ped")][InlineData(6032,"change-player-ped")][InlineData(6033,"handoff-returned")]
   public void PreviousSessionResolvesDetailedCharacterStages(int code,string name){string dir=Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString("N"));try{using(var trace=new RuntimeTrace(dir,"v",new[]{"characters"})){trace.Mark(code);}using(var next=new RuntimeTrace(dir,"new",new[]{"characters"})){Assert.Equal("character:"+name,next.Previous.Stage);Assert.False(next.Previous.AbortedHookReached);}}finally{Directory.Delete(dir,true);}}
  }
 }

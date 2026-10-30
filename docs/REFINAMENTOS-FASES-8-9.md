@@ -332,3 +332,8 @@ Retomada autorizada pelo usuário. Referência NewStorageSystem/NewInventorySyst
 ###0.104.1 — correção prioritária da entrada/troca
 
 Relato de crash na0.103 interrompe avanço normal. Logs confirmam retorno ao perfil Franklin logo após entrada; causa fatal não consta e RuntimeLastSession é da0.102.2 anterior. Proteções da entrada/manual, espera no novo ped e diagnóstico por fase implementados.4011 testes; aguarda teste GTA conforme PERSONAGEM-ESTABILIDADE-0.104.1.md. Não conclui causalidade nativa nem altera o escopo da fase9.
+
+
+###0.104.2 — substituição do caminho que travou
+
+Após novo crash, RuntimeState0.104.1/6020 e log sem retorno do SET_PLAYER_MODEL feminino localizam a fronteira nativa. Fluxo próprio com ped preparado/CHANGE_PLAYER_PED, confirmação nativa e descarte apenas de candidato não controlado, preservando saves.4029 testes; PERSONAGEM-HANDOFF-0.104.2.md. Aguardar teste real; não atribuir a falha a roupa/saldo ou afirmar solução definitiva antes dele.

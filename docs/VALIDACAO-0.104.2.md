@@ -1,0 +1,11 @@
+# Validação0.104.2 — ped preparado e transferência de controle
+
+4029 testes aprovados (4011 anteriores +18), nenhum falhou/ignorado. Release net48 sem erros/avisos. DataTests-0.104.2.trx. Novos casos cobrem ownership/handle/model/token, exclusão proibida do jogador atual, commit único, recusa de controle/modelo divergente, prova inválida, pendência sem mutação e tradução de4etapas no resumo de sessão. São testes gerenciados; não executam natives ou o GTA.
+
+Nova evidência lida do RuntimeState.bin real0.104.1:6020, sem aborted hook; log concorda com última chamada SET_PLAYER_MODEL feminino e ausência de retorno. Fases posteriores de roupas/cabeça/dados não atingidas. Não há dump/stacktrace para causa interna. Hashes/resumo em ANALISE-LOGS-0.104.2.json, sem publicar logs/binário pessoais. Guia PERSONAGEM-HANDOFF-0.104.2.md separa fatos, alternativa e teste necessário.
+
+Revisão/compilação: assinatura do callback de personagens passa candidato identificado; criação local/preparo diferidos, source save e pendência conservados, CHANGE_PLAYER_PED e verificação GET_PLAYER_PED, flags temporárias liberadas, limpeza só de candidato não controlado. Main não contém chamada Hash.SET_PLAYER_MODEL. Declaração pública do native e SDK Enhanced/PSRP conferidos; nenhum wrapper diferente é apresentado como cura automática. Espera0.104.1 mantida como proteção, sem ampliá-la para encobrir falha.
+
+Instalador duas vezes sobre0.104.1: 243 arquivos de dados/configs existentes byte-idênticos, incluindo cartões/pendências/modelo feminino/retorno/ActiveProfile e carteiras/armazenamento. Relatório installer-validation-0.104.2.json. DLL anterior em backup, nova confere; RPF externo de teste intocado.111 payloads JSON/INI e áudio anteriores comparados; manifestos/CRC/fonte/DLL/TRX/audit conferidos na verificação final.
+
+Não há teste GTA aqui. Carregar a personagem, verificar controle/colisão/visibilidade/ausência de freeze ou invulnerabilidade residual, aparência e saldos; cancelar preparação; testar retorno ao protagonista se primeiro carregamento funcionar. Se falhar novamente, uma coleta de RuntimeState.bin/RPCore.log antes de reabrir é suficiente. Não declarar resolvido o crash só por compilar ou pelos testes de ownership.

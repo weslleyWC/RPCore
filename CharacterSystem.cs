@@ -12,7 +12,7 @@ namespace RPCore
     public sealed class CharacterSystem : ISystem
     {
         public string Name=>"characters";
-        readonly ObjectPool pool;readonly ShiftGate gate;readonly Action<string,int> transition;readonly CharacterFiles files;readonly JsonFiles json=new JsonFiles();readonly NativeMenu menu;
+        readonly ObjectPool pool;readonly ShiftGate gate;readonly Action<string,int,CharacterHandoffLease> transition;readonly CharacterFiles files;readonly JsonFiles json=new JsonFiles();readonly NativeMenu menu;
         public Func<CharacterBody,CharacterBody> SnapshotFilter;
         public Action<int> DiagnosticStage;
         readonly CharacterStartupStability startup=new CharacterStartupStability();
@@ -24,7 +24,7 @@ namespace RPCore
         sealed class Operation
         {
             public string Profile,OriginProfile;public Ped Origin,Actor;public Model Model;public Vector3 Position;public float Heading;public int Started;
-            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;public int OriginModel;public bool AppearanceStarted;
+            public CharacterCard Card;public CharacterReturn Return;public CharacterBody Body;public GroomingLook Look;public FaceHeritage Heritage;public bool Swapped;public int OriginModel;public bool AppearanceStarted;public CharacterHandoffLease Candidate;public int CandidateAt;
         }
         string ReturnPath=>Path.Combine(Cfg.Dir,"CharacterReturn.json");
         public static bool EngineReady
@@ -32,7 +32,7 @@ namespace RPCore
             get{var p=Game.Player.Character;return p!=null && p.Exists() && p.IsAlive && Game.Player.CanControlCharacter && GTA.UI.Screen.IsFadedIn && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) && !Function.Call<bool>(Hash.IS_PLAYER_SWITCH_IN_PROGRESS) && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING) && Function.Call<bool>(Hash.HAS_COLLISION_LOADED_AROUND_ENTITY,p) && !Function.Call<bool>(Hash.IS_ENTITY_WAITING_FOR_WORLD_COLLISION,p);}
         }
         bool Safe=>EngineReady && Profile.Detect()==Profile.Id && !InterfaceOptions.ModalOpen && Game.Player.Wanted.WantedLevel==0 && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && Game.Player.Character.Speed<.5f;
-        public CharacterSystem(ObjectPool pool,ShiftGate gate,Action<string,int> transition)
+        public CharacterSystem(ObjectPool pool,ShiftGate gate,Action<string,int,CharacterHandoffLease> transition)
         {this.pool=pool;this.gate=gate;this.transition=transition;files=new CharacterFiles(Cfg.SaveDir);menu=new NativeMenu("Personagens RPCore","CRIAR / CARREGAR / VOLTAR");pool.Add(menu);Visuals.Register(menu,"core");ui=new PersonalServiceMenu(menu,ex=>{End();ui.Close();Log.Error("character action",ex);Notify.Show("Operacao nao concluida. Seus personagens foram preservados; confira o log.");});entryClock=Game.GameTime;engineProbe=entryClock;Reload();}
         void Add(string title,string description,Action action)
         {ui.Add(title,description,action);}
@@ -131,6 +131,12 @@ namespace RPCore
         void Swap(Operation op)
         {
             if(!startup.Ready || !Safe || op.Origin!=Game.Player.Character || op.Origin.Model.Hash!=op.OriginModel || Profile.Id!=op.OriginProfile)throw new InvalidOperationException("Origin changed before model replacement.");
+            if(op.Candidate==null){
+                Phase(6030,"create replacement ped");op.Candidate=CharacterHandoffRuntime.Create(op.Model.Hash,op.Position,op.Heading);op.CandidateAt=Game.GameTime;
+                Phase(6031,"stage replacement ped");LoadingMenu("Preparando novo ped / ate 10s");return;
+            }
+            if(!CharacterHandoffRuntime.Own(op.Candidate))throw new InvalidOperationException("Candidate ped changed before handoff.");
+            if(unchecked((uint)(Game.GameTime-op.CandidateAt))<500)return;
             Phase(6003,"save origin body");SaveBody(true);
             if(op.Card!=null && CharacterRules.ProtagonistHash(Profile.Id)!=0){
                 if(File.Exists(ReturnPath) && ReadReturn().ApplyPending)throw new InvalidOperationException("Finish pending protagonist return first.");
@@ -140,7 +146,7 @@ namespace RPCore
             Phase(6004,"mark appearance pending");
             if(op.Card!=null){var next=CharacterRules.Copy(op.Card);next.ApplyPending=true;files.Write(next);op.Card=next;}
             if(op.Return!=null){var backup=CharacterRules.Copy(op.Return);backup.ApplyPending=true;json.Write(ReturnPath,backup);op.Return=backup;}
-            switching=true;try{transition(op.Profile,op.Model.Hash);}finally{switching=false;}
+            switching=true;try{transition(op.Profile,op.Model.Hash,op.Candidate);}finally{switching=false;}
             op.Swapped=true;op.Actor=Game.Player.Character;current=op.Card;op.Started=Game.GameTime;
             // Let the new ped exist across frames before native appearance/equipment queries.
             Phase(6005,"wait new actor");LoadingMenu("Aguardando personagem / ate 10s");
@@ -176,7 +182,7 @@ namespace RPCore
         {
             ObserveStartup();
             var waiting=operation!=null && operation.Swapped && !operation.AppearanceStarted;
-            // A brief control/collision delay after SET_PLAYER_MODEL is expected; queue cannot dispatch meanwhile.
+            // A brief control/collision delay after the player-ped handoff is expected; queue cannot dispatch meanwhile.
             if(!waiting || Safe)ui.Tick(menu.Visible && Safe);
             try{PollEntry();}catch(Exception ex){entry.Consume();ui.Close();Log.Error("character entry",ex);}
             var op=operation;if(op==null)return;
@@ -189,7 +195,12 @@ namespace RPCore
             }
             catch(Exception ex){End();ui.Close();Log.Error("character load",ex);Notify.Show("Carregamento incompleto. Snapshot preservado; retome pela lista de personagens.");}
         }
-        void End(){var op=operation;operation=null;if(op!=null)op.Model.MarkAsNoLongerNeeded();if(lease)gate.Release(Name);lease=false;}
+        void End()
+        {
+            var op=operation;operation=null;
+            try{if(op!=null){try{CharacterHandoffRuntime.Discard(op.Candidate);}catch(Exception ex){Log.Error("character candidate cleanup",ex);}finally{op.Model.MarkAsNoLongerNeeded();}}}
+            finally{if(lease)gate.Release(Name);lease=false;}
+        }
         public void Save()=>SaveBody(false);
         void SaveBody(bool beforeSwap)
         {

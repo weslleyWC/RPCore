@@ -1,0 +1,19 @@
+{
+  "hashes": {
+    "RPCore.log": "c55bb3352522a5abade65fa320aba0c238a225c24aa7f9e84d147fb1c3c033a5",
+    "RuntimeState.bin": "84c7ccb0c43c06a949f53ddae309f991874a4353790d6ba12b7c7f3007b778cb"
+  },
+  "runtime": {
+    "Version": "0.104.1.0",
+    "Stage": 6020,
+    "StageName": "character:set-player-model",
+    "AbortedHookReached": false,
+    "Sequence": 416738
+  },
+  "log_evidence": "14:12:29 SET_PLAYER_MODEL -1667301416; no model returned or later appearance stage. Earlier request, origin body, pending checkpoint and origin flush reached.",
+  "conclusion": "Native replacement did not return before process termination. Timing-only hotfix did not resolve reported case.",
+  "not_proven": "Internal native crash cause, specific asset/plugin culpability or corrupted character file. Negative signed female model hash is expected.",
+  "implementation": "Replace character-load path with owned prepared CREATE_PED candidate and CHANGE_PLAYER_PED, native GET_PLAYER_PED confirmation, staging flag release and guarded candidate-only cleanup. No fallback SET_PLAYER_MODEL.",
+  "validation_limit": "Pure tests and Release compile only; native gameplay retest required.",
+  "privacy": "Original logs/binary and personal paths not published."
+}
