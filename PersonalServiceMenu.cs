@@ -17,6 +17,7 @@ namespace RPCore
         string page,profile;
         int actor,model,selection;
         Action parent;
+        bool wasVisible;
         public PersonalServiceMenu(NativeMenu menu,Action<Exception> failed)
         {
             this.menu=menu;this.failed=failed;menu.Width=420;
@@ -43,6 +44,8 @@ namespace RPCore
         static bool Pressed=>Game.IsKeyPressed(Keys.Enter) || Game.IsKeyPressed(Keys.LButton) || Game.IsKeyPressed(Keys.Back) || Game.IsKeyPressed(Keys.Escape) || Game.IsControlPressed(GTA.Control.FrontendAccept) || Game.IsControlPressed(GTA.Control.FrontendCancel) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendAccept) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendCancel);
         public void Tick(bool allowed)
         {
+            if(!menu.Visible){if(wasVisible)actions.NewPage();wasVisible=false;return;}
+            wasVisible=true;
             allowed=allowed && !InterfaceOptions.ModalOpen;actions.Release(Pressed);
             if(menu.Visible)Game.DisableControlThisFrame(GTA.Control.Context);
             try{actions.Run(menu.Visible,allowed && Bound,Game.Player.Character.Handle,Game.Player.Character.Model.Hash,Profile.Id,Game.GameTime);}
@@ -51,7 +54,7 @@ namespace RPCore
         }
         // Programmatic closure must not be intercepted as navigation when Escape is held.
         public void Close(){parent=null;actions.NewPage();menu.Visible=false;}
-        public void Reset(){actions.NewPage();parent=null;page=null;actor=0;profile=null;selections.Clear();menu.Visible=false;}
+        public void Reset(){actions.NewPage();parent=null;page=null;actor=0;profile=null;selections.Clear();wasVisible=false;menu.Visible=false;}
         public static bool SafeFoot=>!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && Game.Player.Character.IsAlive && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && Game.Player.Wanted.WantedLevel==0;
     }
 }

@@ -39,7 +39,7 @@ namespace RPCore
         }
         void Rebuild()
         {
-            var selected=All.Select(m=>m.SelectedIndex).ToArray();
+            var selected=All.Select(m=>m.Items.Count==0?0:m.SelectedIndex).ToArray();
             menu.Clear();services.Clear();bank.Clear();profiles.Clear();tools.Clear();imports.Clear();legacyProfiles.Clear();menu.Name="RPCore";bank.Name="Banco / saldo $"+Wallet.Bank;
             menu.AddSubMenu(services);menu.AddSubMenu(bank);menu.AddSubMenu(profiles);menu.AddSubMenu(tools);
             target=services;
@@ -102,7 +102,7 @@ namespace RPCore
                 }
             if(imports.Items.Count==0)imports.Add(new NativeItem("Nenhum save novo disponivel"){Enabled=false});
             if(legacyProfiles.Items.Count==0)legacyProfiles.Add(new NativeItem("Nenhum perfil legado disponivel"){Enabled=false});
-            for(int i=0;i<All.Length;i++)All[i].SelectedIndex=Math.Max(0,Math.Min(selected[i],All[i].Items.Count-1));
+            for(int i=0;i<All.Length;i++)if(All[i].Items.Count>0)All[i].SelectedIndex=Math.Max(0,Math.Min(selected[i],All[i].Items.Count-1));
             dirty = false;
         }
 

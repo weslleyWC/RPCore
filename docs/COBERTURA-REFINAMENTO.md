@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Aceite mais recente: usuário confirmou o grupo0.102 funcionando e relatou duplicação de carteira/banco ao fechar/reabrir o GTA.0.102.1 corrige checkpoint nativo e aguarda teste específico de fechamento completo. Entregas normais continuam agrupadas; hotfix de bug relatado é separado. Fase8 e os ciclos da9 continuam no roteiro.
+Estado atual: usuário aprovou o grupo0.102, relatou banco com duplicação/perda e, antes de testar0.102.1, enviou logs de portas fechadas/F10 e crashes sem causa fatal registrada.0.102.2 corrige falhas confirmadas e registra contexto; validação GTA de banco/portas/estabilidade continua pendente. Refinamento normal permanece pausado até estabilizar. Fase8 e os ciclos da9 seguem no roteiro.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -75,3 +75,5 @@ A sequência continuará por grupos completos: celular/F10 e serviços pessoais;
 Grupo0.99 inclui WorkshopSystem: categorias, navegacao, RGB personalizado e persistencia/rollback existentes; teste nativo GTA pendente. SeatbeltSystem mantem a mecanica atual e recebe acesso direto por radial/menu, sem afirmar revisao fisica integral de cinto/ejeção.
 
 Diretriz de entrega atual: uma publicação por grupo completo de interfaces/sistemas relacionado; correções urgentes de bugs relatados são distintas do avanço normal de refinamento.0.102 concentra bolsa, rádio e conquistas em uma entrega.
+
+0.102.2: falhas de portas/F10 confirmadas por logs foram corrigidas; enumeração de estados veiculares oculta reduzida; cleanup de props usa buffer Enhanced tipado. Registro RuntimeState/RuntimeLastSession coleta contexto sem concluir causa do crash nativo. Não atribuir a0.102.1 ainda não testada.

@@ -1,0 +1,28 @@
+{
+  "reported_versions": "User unsure, possibly0.99 onward;0.102.1 not yet tested. Latest provided RPCore startup0.102.0.",
+  "rpcore_log_sha256": "82cfd032af5bf75c2f823012ccb1ebcb1cd840104c325689636e17c4445da35e",
+  "shvdn_log_sha256": "c43fd3a4083bbe56890ad5d4353f4e62df52926ede05ddc15777c84b76776908",
+  "confirmed": [
+    {
+      "component": "ClothingDoorRuntime",
+      "error": "InvalidCastException: System.Boolean to native value",
+      "times": [
+        "10:55:39",
+        "11:57:05"
+      ],
+      "cause": "Enhanced OutputArgument(object) rejects boxed primitives; constructor used before unlock."
+    },
+    {
+      "component": "CoreMenu.Rebuild",
+      "error": "InvalidOperationException: There are no items in this menu",
+      "times": [
+        "11:39:35",
+        "11:43:44"
+      ],
+      "cause": "SelectedIndex assigned to empty confirmation menu."
+    }
+  ],
+  "native_crash_status": "No fatal native crash stacktrace in these logs; root cause remains unconfirmed. Background vehicle polling reduced; context journal added without attributing causality.",
+  "sdk": "Enhanced3.9.0.6 /1.1.0.6 in user log; installed SDK buffer API/implementation inspected.",
+  "privacy": "Original uploaded logs and personal paths are not included."
+}

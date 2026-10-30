@@ -1,3 +1,9 @@
+## Correção0.102.2 — portas/F10 e estabilidade investigada por logs
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.2.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.2.zip) · [Teste e coleta de diagnóstico](docs/STABILIDADE-0.102.2.md)
+
+Logs confirmaram OutputArgument incompatível nas portas e seleção em menu vazio no F10. Corrige ambos e o mesmo padrão em cleanup de props; controles veiculares deixam de consultar estados de menu fechado. Acrescenta registro leve de etapa da sessão para investigar fechamentos sem stacktrace.3940 testes aprovados, build sem erros/avisos. Já inclui banco0.102.1 e os grupos anteriores. Causa de todos os crashes nativos ainda não confirmada; roteiro GTA e novos arquivos de diagnóstico no guia.
+
 ## Correção0.102.1 — carteira duplicada ou perdida ao reabrir o GTA
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.102.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.102.1.zip) · [Teste de fechamento completo do GTA](docs/BANCO-PERSISTENCIA-0.102.1.md)

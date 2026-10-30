@@ -25,6 +25,7 @@ namespace RPCore
         readonly List<ISystem> systems = new List<ISystem>();
         readonly HashSet<ISystem> faulted = new HashSet<ISystem>();
         int nextSave;
+        RuntimeTrace trace;readonly Dictionary<ISystem,int> traceIds=new Dictionary<ISystem,int>();
         readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
         readonly CoreMenu core;
         readonly PhoneSystem phone;
@@ -162,7 +163,12 @@ namespace RPCore
             KeyUp += (s, e) => heldKeys.Remove(e.KeyCode);
             Aborted += OnAborted;
             nextSave = Game.GameTime + Cfg.AutosaveMs;
-            Log.Write("RPCore 0.102.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            for(int i=0;i<systems.Count;i++)traceIds[systems[i]]=i;
+            try{
+                trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
+                if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
+            }catch(Exception ex){Log.Error("optional runtime trace",ex);}
+            Log.Write("RPCore 0.102.2 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -174,8 +180,14 @@ namespace RPCore
             catch (Exception ex) { Log.Error("system initialization", ex); Notify.Show("A system could not start. See RPCore.log."); }
         }
 
+        void Stage(int code)
+        {
+            try{trace?.Mark(code);}catch(Exception ex){try{trace?.Dispose();}catch{}trace=null;Log.Error("runtime trace disabled",ex);}
+        }
+        void Stage(ISystem system,int group){if(traceIds.TryGetValue(system,out int index))Stage(group*1000+index);}
         void OnTick(object sender, EventArgs e)
         {
+            Stage(1);
             var player = Game.Player.Character;
             if (player == null || !player.Exists()) return;
             if (core.RequestedProfile != null)
@@ -192,45 +204,51 @@ namespace RPCore
                 Wallet.Reload();
                 foreach (ISystem s in systems)
                 {
-                    try { s.Reload(); }
+                    try { Stage(s,4);s.Reload(); }
                     catch (Exception ex) { faulted.Add(s); Log.Error(s.Name + ".reload", ex); }
                 }
                 Notify.Show("Profile: " + pid);
                 Log.Write("profile -> " + pid);
             }
 
-            Wallet.SynchronizeCash();
+            Stage(2);Wallet.SynchronizeCash();Stage(4);
             // World Context is polled by shops before the late radial/phone draw ticks.
             // Publish modal state first so E and controller input cannot open a shop underneath a custom view.
             InterfaceOptions.ModalOpen = inventory.GridVisible || shop.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
+            Stage(3);
             try { pool.Process(); }
             catch (Exception ex) { Log.Error("menu dispatch", ex); pool.HideAll(); }
+            finally{Stage(4);}
 
             foreach (ISystem s in systems)
             {
                 if (faulted.Contains(s)) continue;
-                try { s.Tick(); }
+                try { Stage(s,1);s.Tick(); }
                 catch (Exception ex)
                 {
                     faulted.Add(s); // one bad system doesn't take the script down
-                    try { s.Dispose(); } catch (Exception cleanup) { Log.Error(s.Name + ".cleanup", cleanup); }
+                    try { Stage(s,5);s.Dispose(); } catch (Exception cleanup) { Log.Error(s.Name + ".cleanup", cleanup); }
                     Log.Error(s.Name, ex);
                     Notify.Show("~r~" + s.Name + " crashed, see scripts\\RPCore\\RPCore.log");
                 }
+                finally{Stage(4);}
             }
 
             // Input policy is independent of armory IO, activity gates and inventory faults.
-            try { inventory.EnforceWeaponControls(); } catch (Exception ex) { Log.Error("inventory input policy", ex); }
+            Stage(8);try { inventory.EnforceWeaponControls(); } catch (Exception ex) { Log.Error("inventory input policy", ex); }finally{Stage(4);}
 
             if (unchecked(Game.GameTime - nextSave) >= 0)
             {
                 SaveAll();
                 nextSave = Game.GameTime + Cfg.AutosaveMs;
             }
+            Stage(4);try{trace?.Heartbeat();}catch(Exception ex){Log.Error("runtime trace heartbeat",ex);}
         }
 
-        void OnKeyDown(object sender, KeyEventArgs e)
+        void OnKeyDown(object sender,KeyEventArgs e)
+        {Stage(5);try{HandleKeyDown(sender,e);}finally{Stage(4);}}
+        void HandleKeyDown(object sender, KeyEventArgs e)
         {
             if (!heldKeys.Add(e.KeyCode) || Game.IsPaused) return;
             var character = Game.Player.Character;
@@ -288,8 +306,8 @@ namespace RPCore
             foreach (ISystem s in systems)
             {
                 if (faulted.Contains(s)) continue;
-                try { s.OnKey(e); }
-                catch (Exception ex) { faulted.Add(s); Log.Error(s.Name + ".key", ex); try { s.Dispose(); } catch { } }
+                try { Stage(s,3);s.OnKey(e); }
+                catch (Exception ex) { faulted.Add(s); Log.Error(s.Name + ".key", ex); try { Stage(s,5);s.Dispose(); } catch { } }
             }
         }
 
@@ -322,22 +340,23 @@ namespace RPCore
             foreach (ISystem s in systems)
             {
                 if (faulted.Contains(s)) continue;
-                try { s.Save(); }
+                try { Stage(s,2);s.Save(); }
                 catch (Exception ex) { Log.Error(s.Name + ".save", ex); }
             }
-            try { Wallet.Save(); } catch (Exception ex) { Log.Error("wallet.save", ex); }
+            Stage(6);try { Wallet.Save(); } catch (Exception ex) { Log.Error("wallet.save", ex); }finally{Stage(4);}
         }
 
         void OnAborted(object sender, EventArgs e)
         {
+            try{trace?.Aborted();}catch{}
             InterfaceOptions.ModalOpen = false;
             SaveAll();
             foreach (ISystem s in systems)
             {
-                try { s.Dispose(); }
+                try { Stage(s,5);s.Dispose(); }
                 catch (Exception ex) { Log.Error(s.Name + ".dispose", ex); }
             }
-            Sfx.Dispose();
+            try{Sfx.Dispose();}finally{try{trace?.Aborted();trace?.Dispose();}catch(Exception ex){Log.Error("runtime trace close",ex);}trace=null;}
         }
     }
 }

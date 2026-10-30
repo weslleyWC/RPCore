@@ -22,9 +22,20 @@ namespace RPCore
                 {
                     if(!ClothingDoorRules.Near(entrance,position.X,position.Y,position.Z) || !ClothingDoorRules.Active(entrance,shops))continue;
                     foreach(int model in models)
-                    using(var locked=new OutputArgument(false))
-                    using(var angle=new OutputArgument(0f))
+                    // Enhanced does not accept boxed bool/float in OutputArgument(object).
+                    // Use eight initialized bytes: BOOL natives may write only the low DWORD.
+                    using(var locked=OutputArgument.Init(0UL))
+                    using(var angle=OutputArgument.Init(0UL))
                     {
+                        using(var existing=OutputArgument.Init(0UL))
+                        {
+                            if(Function.Call<bool>(Hash.DOOR_SYSTEM_FIND_EXISTING_DOOR,entrance.X,entrance.Y,entrance.Z,model,existing))
+                            {
+                                int door=existing.GetResult<int>();
+                                if(Function.Call<int>(Hash.DOOR_SYSTEM_GET_DOOR_STATE,door)!=0)
+                                    Function.Call(Hash.DOOR_SYSTEM_SET_DOOR_STATE,door,0,false,true);
+                            }
+                        }
                         Function.Call(Hash.GET_STATE_OF_CLOSEST_DOOR_OF_TYPE,model,entrance.X,entrance.Y,entrance.Z,locked,angle);
                         float current=angle.GetResult<float>();
                         if(locked.GetResult<bool>() && !float.IsNaN(current) && !float.IsInfinity(current))

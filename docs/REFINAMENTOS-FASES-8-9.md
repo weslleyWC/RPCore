@@ -312,3 +312,8 @@ Usuário aprovou RPCore Bank0.101 e reforçou não publicar refinamentos isolado
 ###0.102.1 — hotfix de duplicação relatada no banco
 
 Grupo0.102 aceito pelo usuário; identificado bug de depósito seguido de carteira antiga restaurada pelo save do GTA. Carteira nativa passa a checkpoint Owner/Amount/Version no mesmo Wallet do banco, com sincronização única antes das ações após loading e stats específicos por protagonista, em vez de escolher pelo ator atual. Saves sem marcador preservam carteira atual; MP permanece no Wallet, sem confisco retroativo de valores já duplicados.3933 testes, incluindo18 regressões. Guia BANCO-PERSISTENCIA-0.102.1.md exige fechamento completo do GTA. É correção pontual de bug relatado, não novo passo fragmentado de refinamento.
+
+
+###0.102.2 — estabilização antes de retomar refinamento
+
+Usuário enviou logs que confirmam Bool boxed no OutputArgument das portas e menu vazio no F10; causa do fechamento nativo durante jogo/perseguição não aparece. Corrige essas falhas, handles boxed de cleanup, polling/bind veicular desnecessário e input de menu oculto. Adiciona diagnóstico mapeado de8KB com resumo na sessão seguinte, sem concluir culpado por contexto.3940 testes aprovados, build sem erros/avisos. STABILIDADE-0.102.2.md orienta teste de portas/F10/direção/banco e coleta se cair. Hotfix inclui0.102.1, ainda não testada pelo usuário. Avanço de refinamento pausado para validação de estabilidade.

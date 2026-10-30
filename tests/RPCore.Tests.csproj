@@ -6,6 +6,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ScriptHookVDotNet3"><HintPath>../.deps/ScriptHookVDotNet3.dll</HintPath><Private>true</Private></Reference>
     <EmbeddedResource Include="../config/Services/Taxi.json" LogicalName="RPCore.JobDefaults.Passenger.json" />
     <EmbeddedResource Include="../config/World/Defaults.json" LogicalName="RPCore.JobDefaults.World.json" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
@@ -34,6 +35,7 @@
     <Compile Include="../RadioData.cs" Link="RadioData.cs" />
     <Compile Include="../BankTransfer.cs" Link="BankTransfer.cs" />
     <Compile Include="../CashPersistenceData.cs" Link="CashPersistenceData.cs" />
+    <Compile Include="../RuntimeTrace.cs" Link="RuntimeTrace.cs" />
     <Compile Include="../RoleplayDefaults.cs" Link="RoleplayDefaults.cs" />
     <Compile Include="../PoliceResolutionData.cs" Link="PoliceResolutionData.cs" />
     <Compile Include="../PassengerData.cs" Link="PassengerData.cs" />

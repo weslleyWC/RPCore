@@ -65,7 +65,7 @@ namespace RPCore
                 {
                     var p=retired[i];int h=p.Handle;
                     if(!Function.Call<bool>(Hash.DOES_ENTITY_EXIST,h) || Function.Call<int>(Hash.GET_ENTITY_MODEL,h)!=p.Model || !Function.Call<bool>(Hash.DECOR_EXIST_ON,h,Decor) || Function.Call<int>(Hash.DECOR_GET_INT,h,Decor)!=p.Token){retired.RemoveAt(i);continue;}
-                    Function.Call(Hash.DETACH_ENTITY,h,true,true);Function.Call(Hash.SET_ENTITY_AS_MISSION_ENTITY,h,true,true);var handle=new OutputArgument(h);Function.Call(Hash.DELETE_OBJECT,handle);
+                    Function.Call(Hash.DETACH_ENTITY,h,true,true);Function.Call(Hash.SET_ENTITY_AS_MISSION_ENTITY,h,true,true);using(var handle=OutputArgument.Init((ulong)(uint)h))Function.Call(Hash.DELETE_OBJECT,handle);
                     if(!Function.Call<bool>(Hash.DOES_ENTITY_EXIST,h))retired.RemoveAt(i);
                 }
                 catch(Exception ex){Log.Error("phone owned prop cleanup",ex);}

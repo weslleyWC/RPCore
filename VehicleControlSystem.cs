@@ -119,7 +119,10 @@ namespace RPCore
         {
             if(Game.IsPaused){cruise=false;CloseMenus();return;}
             if(Menus.Any(m=>m.Visible) && !Bound()){Release();return;}
-            if(!Attach()){Release();return;}Refresh();
+            // Bind only on an explicit command/open, not on every entry into a traffic vehicle.
+            if(controlled==null)return;
+            if(!Bound()){Release();return;}
+            if(Menus.Any(m=>m.Visible))Refresh();
             if(engineOff)Function.Call(Hash.SET_VEHICLE_ENGINE_ON,controlled,false,true,true);
             if(!cruise)return;
             if(pool.AreAnyVisible || InterfaceOptions.ModalOpen || !controlled.IsEngineRunning || !hasFuel(controlled) || !controlled.IsOnAllWheels || controlled.HasCollided || controlled.Speed<3 || Game.GetControlValueNormalized(GTA.Control.VehicleBrake)>.05f || Game.GetControlValueNormalized(GTA.Control.VehicleHandbrake)>.05f || Game.GetControlValueNormalized(GTA.Control.VehicleAccelerate)>.1f){CancelCruise();return;}

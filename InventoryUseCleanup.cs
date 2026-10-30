@@ -42,7 +42,7 @@ namespace RPCore
                     if(!Function.Call<bool>(Hash.DOES_ENTITY_EXIST,h) || Function.Call<int>(Hash.GET_ENTITY_MODEL,h)!=lease.Model || !Function.Call<bool>(Hash.DECOR_EXIST_ON,h,UseDecor) || Function.Call<int>(Hash.DECOR_GET_INT,h,UseDecor)!=lease.Token){retiredUseProps.RemoveAt(i);continue;}
                     Function.Call(Hash.DETACH_ENTITY,h,true,true);
                     Function.Call(Hash.SET_ENTITY_AS_MISSION_ENTITY,h,true,true);
-                    var handle=new OutputArgument(h);Function.Call(Hash.DELETE_OBJECT,handle);
+                    using(var handle=OutputArgument.Init((ulong)(uint)h))Function.Call(Hash.DELETE_OBJECT,handle);
                     if(!Function.Call<bool>(Hash.DOES_ENTITY_EXIST,h))retiredUseProps.RemoveAt(i);
                 }
             }
