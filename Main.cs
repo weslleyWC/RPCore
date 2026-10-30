@@ -95,7 +95,7 @@ namespace RPCore
             if (Cfg.EnableVehicleControls) AddOptional(() => { controls = new VehicleControlSystem(pool, v => fuel == null || faulted.Contains(fuel) || fuel.CanStart(v)); return controls; });
             GarageSystem garages=null;
             if (Cfg.EnableGarages) AddOptional(() => {garages=new GarageSystem(pool, ach, shifts);return garages;});
-            if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach));
+            if (Cfg.EnableGarages) AddOptional(() => new DealershipSystem(pool, ach, shifts));
             GangSystem gangs = null;
             if (Cfg.EnableGangs) AddOptional(() => { gangs = new GangSystem(pool, ach, shifts); return gangs; });
             gangs?.ConfigureDealer(dealer);
@@ -168,7 +168,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.105.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.106.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

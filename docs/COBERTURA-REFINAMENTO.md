@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual: usuário pediu o próximo grupo após entrega0.104.5; não confirmou em detalhe a roupa ainda.0.105 refina abastecimento/cinto, preservando personagens/roupas/inventário/trabalhos. Testes nativos pendentes conforme guia. Fase8 segue aberta; realismo dos ciclos de trabalhos permanece na9.
+Estado atual:0.106 revisa concessionária/seguro como grupo. Compra e seguros requerem validação nativa do usuário; não se infere teste detalhado de0.105 por pedir avançar. Personagens/roupas e trabalhos preservados. Fase8 aberta; realismo dos ciclos de trabalhos permanece na9.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -15,7 +15,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | CraftingSystem | [CraftingSystem.cs](../CraftingSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | CustodySystem | [CustodySystem.cs](../CustodySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | DealerJob | [DealerJob.cs](../DealerJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| DealershipSystem | [DealershipSystem.cs](../DealershipSystem.cs) | Pendente de revisão completa; preservar base existente |
+| DealershipSystem | [DealershipSystem.cs](../DealershipSystem.cs) | Grupo0.106: catálogo/busca/ordem/páginas, garagem escolhida, confirmação, preparação cancelável e compra atômica/rollback; entrega nativa GTA pendente. |
 | DeliveryJobSystem | [DeliveryJobSystem.cs](../DeliveryJobSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | DeliveryJobsMenu | [DeliveryJobsMenu.cs](../DeliveryJobsMenu.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | DmvSystem | [DmvSystem.cs](../DmvSystem.cs) | Pendente de revisão completa; preservar base existente |
@@ -63,7 +63,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | StudioHeistSystem | [StudioHeistSystem.cs](../StudioHeistSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | TrafficSystem | [TrafficSystem.cs](../TrafficSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | VehicleControlSystem | [VehicleControlSystem.cs](../VehicleControlSystem.cs) | Grupo0.99: menus/acoes/radial revisados; aguarda teste GTA |
-| VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Pendente de revisão completa; preservar base existente |
+| VehicleInsuranceSystem | [VehicleInsuranceSystem.cs](../VehicleInsuranceSystem.cs) | Grupo0.106: navegação/estado/páginas e confirmações de franquia/estorno/cancelamento; mantém mesmo veículo/retomada/transações. GTA pendente. |
 | VisualSystem | [VisualSystem.cs](../VisualSystem.cs) | Pendente de revisão completa; preservar base existente |
 | WardrobeSystem | [WardrobeSystem.cs](../WardrobeSystem.cs) | 0.104.5 acrescenta confirmação imediata de roupa ao salvar/vestir/concluir, revisão por modelo e guarda da captura no teclado. Mantém lojas/portas/edição da0.100; câmera dedicada/validação GTA pendentes. |
 | WorldSystem | [WorldSystem.cs](../WorldSystem.cs) | Pendente de revisão completa; preservar base existente |

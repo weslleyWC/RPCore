@@ -17,6 +17,7 @@ namespace RPCore
         public static int Bank { get { return data.Bank; } }
         public static Portfolio Exchange { get { return data.Exchange; } set { data.Exchange = value; } }
         internal static TransportData TransportReference=>data.Transport;
+        internal static bool PurchaseVehicle(VehiclePurchase quote,SavedVehicle record,float capacity)=>quote.Commit(data.Transport,record,capacity,()=>Cash,value=>Cash=value,Save);
         internal static bool DeliverFuel(FuelOrder order,FuelTank tank,float step)=>order.Deliver(tank,step,()=>Cash,value=>Cash=value,Save);
         public static TransportData Transport { get { if (data.Transport == null) data.Transport = new TransportData(); data.Transport.Validate(); return data.Transport; } }
         public static void Reload() { data = Store.Load("Wallet.json", () => new WalletData()); data.Cash = Math.Max(0, data.Cash); data.Bank = Math.Max(0, data.Bank);nativeCash=Profile.IsProtagonist(Profile.Id)?new NativeCashSession(data,Profile.Id,ReadNativeCash,WriteNativeCash):null;nextCashSync=Game.GameTime; }

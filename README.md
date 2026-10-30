@@ -1,3 +1,9 @@
+## Atualização0.106.0 — concessionária e seguro veicular
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.106.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.106.0.zip) · [Acessos e testes GTA](docs/CONCESSIONARIA-SEGURO-0.106.0.md)
+
+Catálogo com busca/ordenação/páginas, escolha de garagem, confirmação e entrega cancelável sem bloquear o script; compra salva carteira/registro/tanque juntos com rollback. Seguro com lista/estado e confirmações de franquia/estorno/cancelamento, mantendo retomada sem nova cobrança.4079 testes e build sem erros/avisos; entrega e menus precisam do teste GTA. Personagens/roupas, combustível/cinto e trabalhos preservados.
+
 ## Atualização0.105.0 — grupo abastecimento e cinto
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.105.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.105.0.zip) · [Acessos e testes GTA](docs/ABASTECIMENTO-CINTO-0.105.0.md)

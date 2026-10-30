@@ -357,3 +357,8 @@ Troca0.104.4 aprovada; arquivos revelam aparência pendente sem Body e bibliotec
 ###0.105.0 — abastecimento e cinto
 
 Próximo grupo autorizado: revisão conjunta do menu/pedido/persistência/contexto de combustível e estado/saída/restauração do cinto, baseada em Vehicle_Insurance/DrivingFeatures/UiSystem PSRP.4038 testes, build sem erros/avisos. Personagens/roupas0.104.5 e contratos mantidos; fase9 não iniciada. ABASTECIMENTO-CINTO-0.105.0.md contém roteiro nativo.
+
+
+###0.106.0 — concessionária e seguro
+
+Revisão conjunta de catálogo, seleção de garagem, confirmação, criação/compra/rollback, navegação/apólices/franquia/retomada/estorno. Referência estática Dealerships e Vehicle_Insurance PSRP; não implementa previews/test-drive/catálogo amplo/entrega da seguradora.4079 testes e build net48 limpo. Guia CONCESSIONARIA-SEGURO-0.106.0.md. Personagens/roupas, combustível/cinto e ciclos dos trabalhos preservados; fase9 não iniciada.

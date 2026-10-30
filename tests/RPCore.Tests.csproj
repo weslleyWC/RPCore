@@ -127,6 +127,7 @@
     <Compile Include="../DmvData.cs" Link="DmvData.cs" />
     <Compile Include="../VehicleInsuranceData.cs" Link="VehicleInsuranceData.cs" />
     <Compile Include="../VehicleServiceData.cs" Link="VehicleServiceData.cs" />
+    <Compile Include="../VehiclePurchaseData.cs" Link="VehiclePurchaseData.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />
     <Compile Include="../VisualData.cs" Link="VisualData.cs" />
     <Compile Include="../SleepRecoveryData.cs" Link="SleepRecoveryData.cs" />
