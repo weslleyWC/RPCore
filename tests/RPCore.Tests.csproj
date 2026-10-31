@@ -130,6 +130,7 @@
     <Compile Include="../DmvData.cs" Link="DmvData.cs" />
     <Compile Include="../VehicleInsuranceData.cs" Link="VehicleInsuranceData.cs" />
     <Compile Include="../VehicleServiceData.cs" Link="VehicleServiceData.cs" />
+    <Compile Include="../DealershipPreviewData.cs" Link="DealershipPreviewData.cs" />
     <Compile Include="../DealershipDoorData.cs" Link="DealershipDoorData.cs" />
     <Compile Include="../VehiclePurchaseData.cs" Link="VehiclePurchaseData.cs" />
     <Compile Include="../VehicleData.cs" Link="VehicleData.cs" />

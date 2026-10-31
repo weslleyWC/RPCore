@@ -18,6 +18,7 @@ namespace RPCore
         readonly PersonalServiceMenu ui;
         readonly AchievementSystem ach;
         readonly ShiftGate gate;
+        readonly DealershipPreview preview;
         readonly DealershipDoorRuntime doors=new DealershipDoorRuntime();
         readonly List<VehicleOffer> offers;
         readonly List<GarageDefinition> garages;
@@ -27,6 +28,7 @@ namespace RPCore
         readonly Vector3 entrance=new Vector3(-56.8f,-1096.7f,26.4f),delivery=new Vector3(-28.5f,-1083.5f,26.6f);
         string search="";bool byPrice,lease;
         Purchase pending;
+        VehicleOffer inspectedOffer;int inspectedPage;
         sealed class Delivered {public Vehicle Car;public long Address;public string Key;public int Model;}
         sealed class Purchase
         {
@@ -37,7 +39,7 @@ namespace RPCore
         bool Nearby=>Safe && Game.Player.Character.Position.DistanceTo(entrance)<20;
         public DealershipSystem(ObjectPool pool,AchievementSystem ach,ShiftGate gate)
         {
-            this.pool=pool;this.ach=ach;this.gate=gate;
+            this.pool=pool;this.ach=ach;this.gate=gate;preview=new DealershipPreview(gate);
             offers=Store.LoadDef("Dealership/Vehicles.json",DefaultOffers).Where(o=>o!=null && !string.IsNullOrWhiteSpace(o.Model) && o.Price>0).ToList();
             garages=Store.LoadDef("Garages/Locations.json",GarageSystem.DefaultGarages).Where(GarageSystem.ValidDefinition).GroupBy(g=>g.Id).Select(g=>g.First()).ToList();
             ui=new PersonalServiceMenu(menu,ex=>{CancelPurchase();ui.Close();Log.Error("dealership",ex);Notify.Show("Compra interrompida. Confira carteira e garagem antes de tentar novamente.");});
@@ -52,6 +54,7 @@ namespace RPCore
         void Add(string title,string description,Action action,bool enabled=true)=>ui.Add(title,description,action,enabled);
         void Root()
         {
+            preview.Close();
             ui.Begin("root");menu.Name="Concessionaria / carteira $"+Wallet.Cash;
             Add("GPS: RPCore Motors","Visite a concessionaria para comprar; entrega no patio externo.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,entrance.X,entrance.Y);ui.Close();});
             Add("Catalogo / "+offers.Count+" ofertas","Compra pela carteira. Escolha o modelo e uma garagem propria com vaga.",()=>Catalog(0),Nearby);
@@ -60,6 +63,7 @@ namespace RPCore
         }
         void Catalog(int page)
         {
+            preview.Close();
             if(!Nearby){Root();return;}
             var filtered=offers.Where(o=>(o.Name??o.Model).IndexOf(search,StringComparison.OrdinalIgnoreCase)>=0 || o.Model.IndexOf(search,StringComparison.OrdinalIgnoreCase)>=0);
             var list=(byPrice?filtered.OrderBy(o=>o.Price).ThenBy(o=>o.Name??o.Model):filtered.OrderBy(o=>o.Name??o.Model)).ToList();
@@ -67,19 +71,36 @@ namespace RPCore
             ui.Begin("catalog:"+page,Root);menu.Name="Catalogo "+(page+1)+"/"+pages+" / $"+Wallet.Cash;
             Add("Buscar: "+(search.Length==0?"todos":search),"Buscar por nome ou modelo. Texto vazio remove o filtro.",()=>{string value=Game.GetUserInput(WindowTitle.EnterMessage60,search,40);if(value!=null && Nearby){search=value.Trim();Catalog(0);}});
             Add("Ordenar: "+(byPrice?"menor preco":"nome"),"Alternar ordenacao do catalogo configurado.",()=>{byPrice=!byPrice;Catalog(0);});
-            foreach(var offer in list.Skip(page*10).Take(10)){var o=offer;Add((o.Name??o.Model)+" / $"+o.Price,"Modelo: "+o.Model+". Escolher garagem e revisar antes do pagamento.",()=>Garages(o,selectedPage));}
+            foreach(var offer in list.Skip(page*10).Take(10)){var o=offer;Add((o.Name??o.Model)+" / $"+o.Price,"Modelo: "+o.Model+". Ver o carro no showroom antes de escolher garagem e comprar.",()=>Offer(o,selectedPage));}
             if(list.Count==0)Add("Nenhuma oferta encontrada","Altere o filtro de busca.",()=>{},false);
             if(page>0)Add("Pagina anterior","Ofertas anteriores.",()=>Catalog(selectedPage-1));
             if(page+1<pages)Add("Proxima pagina","Mais ofertas.",()=>Catalog(selectedPage+1));
             Add("Voltar","Concessionaria.",Root);menu.Visible=true;
         }
+        void Offer(VehicleOffer offer,int page)
+        {
+            preview.Close();if(!Nearby){Root();return;}
+            ui.Begin("offer:"+offer.Model,()=>Catalog(page));menu.Name=(offer.Name??offer.Model)+" / $"+offer.Price;
+            Add("Ver veiculo no showroom","Mostra o modelo real, sem comprar. Carregamento ate 10s; demonstracao ate 2 minutos. A vaga deve estar livre.",()=>{
+                if(!Nearby || !preview.Begin(offer))return;
+                inspectedOffer=offer;inspectedPage=page;
+                ui.Begin("preview:"+offer.Model,()=>Offer(offer,page),false);menu.Name=(offer.Name??offer.Model)+" / DEMONSTRACAO";
+                Add("Voltar","Encerra a visualizacao e remove apenas o carro temporario. Nada cobrado.",()=>Offer(offer,page));
+                Add("Girar carro / 45 graus","Aguarde o modelo aparecer. Veja o exterior por outros angulos.",preview.Rotate);
+                Add("Escolher garagem e comprar","Encerra a demonstracao. O pagamento continua exigindo confirmacao.",()=>Garages(offer,page));
+                menu.Visible=true;
+            });
+            Add("Escolher garagem e comprar","Revisar a compra antes de pagar; entrega no patio externo.",()=>Garages(offer,page));
+            Add("Voltar","Catalogo.",()=>Catalog(page));menu.Visible=true;
+        }
         void Garages(VehicleOffer offer,int page)
         {
+            preview.Close();
             if(!Nearby){Root();return;}var data=Wallet.Transport;
-            ui.Begin("garages:"+offer.Model,()=>Catalog(page));menu.Name=(offer.Name??offer.Model)+" / $"+offer.Price;
+            ui.Begin("garages:"+offer.Model,()=>Offer(offer,page));menu.Name=(offer.Name??offer.Model)+" / $"+offer.Price;
             foreach(var g in garages.Where(g=>data.Garages.Contains(g.Id))){var garage=g;int free=Math.Max(0,g.Capacity-data.Vehicles.Count(v=>v.GarageId==g.Id));Add(g.Name+" / "+free+" vagas","Registrar nesta garagem. Veiculo entregue no patio externo da concessionaria.",()=>Confirm(offer,garage,page),free>0);}
             if(!garages.Any(g=>data.Garages.Contains(g.Id)))Add("Compre uma garagem primeiro",Cfg.GarageKey+" abre garagens. Nenhuma cobranca.",()=>{},false);
-            Add("Voltar","Catalogo.",()=>Catalog(page));menu.Visible=true;
+            Add("Voltar","Veiculo.",()=>Offer(offer,page));menu.Visible=true;
         }
         Purchase Make(VehicleOffer offer,GarageDefinition garage)
         {
@@ -146,6 +167,8 @@ namespace RPCore
         {
             doors.Tick();
             ui.Tick(Safe);
+            bool viewing=preview.Active;preview.Tick(menu.Visible,Nearby);
+            if(viewing && !preview.Active && menu.Visible && Nearby && inspectedOffer!=null)Offer(inspectedOffer,inspectedPage);
             try{
                 var p=pending;
                 if(p!=null){
@@ -159,14 +182,14 @@ namespace RPCore
         public void OnKey(KeyEventArgs e)
         {
             if(e.KeyCode!=Cfg.DealerKey || e.Modifiers!=Keys.None)return;
-            if(menu.Visible){CancelPurchase();ui.Close();}else if(!pool.AreAnyVisible && Safe)Root();
+            if(menu.Visible){preview.Close();CancelPurchase();ui.Close();}else if(!pool.AreAnyVisible && Safe)Root();
         }
         void ReleaseCreated()
         {
             foreach(var item in created){var car=item.Car;if(car!=null && car.Exists() && car.MemoryAddress.ToInt64()==item.Address && car.Model.Hash==item.Model && Key(car)==item.Key && car.Occupants.Length==0 && !Function.Call<bool>(Hash.IS_ENTITY_ATTACHED,car))car.MarkAsNoLongerNeeded();}created.Clear();
         }
         static string Key(Vehicle v)=>VehicleIdentity.Key(v.Model.Hash,Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT,v));
-        public void Reload(){CancelPurchase();ui.Reset();ReleaseCreated();doors.Release();search="";}
+        public void Reload(){preview.Close();CancelPurchase();ui.Reset();ReleaseCreated();doors.Release();search="";}
         public void Save(){}
         public void Dispose(){Reload();if(blip!=null && blip.Exists())blip.Delete();}
     }

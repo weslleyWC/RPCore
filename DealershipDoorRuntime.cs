@@ -13,7 +13,7 @@ namespace RPCore
         {
             // Never stream/unlock during a story mission, cutscene or a character handover.
             if(Game.IsPaused)return;
-            if(Game.IsMissionActive || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)){session=false;addedShowroom=hiddenFacade=false;return;}
+            if(Game.IsMissionActive || GameplayContext.SceneBlocking){session=false;addedShowroom=hiddenFacade=false;return;}
             if(!Game.Player.CanControlCharacter || Profile.Detect()!=Profile.Id)return;
             var ped=Game.Player.Character;var pos=ped.Position;
             if(!Cfg.EnableGarages || !DealershipDoorRules.ShowroomRange(pos.X,pos.Y,pos.Z,70)){Release();return;}
@@ -41,7 +41,7 @@ namespace RPCore
                     using(var angle=OutputArgument.Init(0UL)){
                         Function.Call(Hash.GET_STATE_OF_CLOSEST_DOOR_OF_TYPE,door.Model,door.X,door.Y,door.Z,locked,angle);
                         float current=angle.GetResult<float>();
-                        if(locked.GetResult<bool>() && !float.IsNaN(current) && !float.IsInfinity(current))Function.Call(Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE,door.Model,door.X,door.Y,door.Z,false,current,false);
+                        if(!float.IsNaN(current) && !float.IsInfinity(current))Function.Call(Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE,door.Model,door.X,door.Y,door.Z,false,DealershipDoorRules.OpenRatio(door,pos.X,pos.Y,pos.Z,current),false);
                     }
                 }
             }catch(Exception ex){if(!reported){reported=true;Log.Error("dealership door access",ex);}}
@@ -52,7 +52,7 @@ namespace RPCore
             // Story scripts may take ownership of the IPLs while the service is suspended.
             // Do not alter those scripts' current world state on shutdown/profile switch.
             var pos=Game.Player.Character.Position;
-            if(Game.IsMissionActive || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || DealershipDoorRules.ShowroomRange(pos.X,pos.Y,pos.Z,35)){session=false;addedShowroom=hiddenFacade=false;return;}
+            if(Game.IsMissionActive || GameplayContext.SceneBlocking || DealershipDoorRules.ShowroomRange(pos.X,pos.Y,pos.Z,35)){session=false;addedShowroom=hiddenFacade=false;return;}
             try{
                 if(hiddenFacade && !Active("fakeint")){Function.Call(Hash.REQUEST_IPL,"fakeint");hiddenFacade=false;}
                 if(addedShowroom){Function.Call(Hash.REMOVE_IPL,"shr_int");addedShowroom=false;}

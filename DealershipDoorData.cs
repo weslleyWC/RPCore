@@ -23,6 +23,15 @@ namespace RPCore
             double dx=(double)x-door.X,dy=(double)y-door.Y,dz=(double)z-door.Z;
             return Math.Abs(dz)<=3 && dx*dx+dy*dy+dz*dz<=36;
         }
+        public static float OpenRatio(DealershipDoor door,float x,float y,float z,float current)
+        {
+            if(!Finite(current))return 0;
+            if(door!=null && Near(door,x,y,z)){
+                double dx=(double)x-door.X,dy=(double)y-door.Y,dz=(double)z-door.Z;
+                if(dx*dx+dy*dy+dz*dz<=6.25)return 1;
+            }
+            return Math.Max(-1,Math.Min(1,current));
+        }
         public static bool ShowroomRange(float x,float y,float z,float radius)
         {
             if(!Finite(x) || !Finite(y) || !Finite(z) || !Finite(radius) || radius<0 || radius>70)return false;

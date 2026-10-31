@@ -1,3 +1,9 @@
+## Atualização0.107.2 — portas e visualização na Motors
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.2.zip) · [Como visualizar e testes GTA](docs/MOTORS-PORTAS-PREVIA-0.107.2.md)
+
+Portas usam a distinção de cena da interface e abrem na aproximação. Catálogo agora tem Ver veículo no showroom, câmera e giro antes da compra, sem cobrança e sem apagar veículos existentes.4225 testes aprovados; validação dentro do GTA pendente.
+
 ## Atualização0.107.1 — interface perto da Motors
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.1.zip) · [Alterações e testes GTA](docs/PDM-CONTEXT-0.107.1.md)
