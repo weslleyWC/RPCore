@@ -88,8 +88,7 @@ namespace RPCore
             try
             {
                 string id = Guid.NewGuid().ToString("N"); trailer = Spawn(rig.Trailer, rig.TrailerModel, "PRL" + id.Substring(0, 5)); if (!Exists(trailer)) return;
-                double angle = rig.Trailer.Heading * Math.PI / 180;
-                var anchor = new JobPoint { X = trailer.Position.X - (float)Math.Sin(angle) * 19, Y = trailer.Position.Y + (float)Math.Cos(angle) * 19, Z = trailer.Position.Z, Heading = rig.Trailer.Heading };
+                var anchor = PdmSpawnPoints.Tractor(trailer.Position.X,trailer.Position.Y,trailer.Position.Z,rig.Trailer.Heading);
                 truck = Spawn(anchor, rig.TruckModel, "PRT" + id.Substring(0, 5)); if (!Exists(truck)) return;
                 var op = new PdmRepoOperation { Id = id, LoanId = loanId, Location = random.Next(options.Locations.Count), Truck = Ref(truck, rig.TruckModel), Trailer = Ref(trailer, rig.TrailerModel) };
                 if (!Wallet.PdmRepoBegin(company, options, op, out _)) return;

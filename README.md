@@ -1,3 +1,9 @@
+## Atualização0.107.5 — Invalid rig anchor na PDM
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.5.zip) · [Causa confirmada e testes GTA](docs/PDM-ANCHORS-0.107.5.md)
+
+Corrigidos pontos temporários sem Name em retirada, carros do porto, locadora e retomada. Preserva posições, validação, pedidos pagos, finanças e saves.4282 testes; regressão reproduz a exceção na busca real de vagas. Criação/engate no GTA ainda precisam de teste local.
+
 ## Atualização0.107.4 — retirada PDM pelo porto
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.4.zip) · [Como retirar os pedidos existentes](docs/PDM-RETIRADA-PORTO-0.107.4.md)

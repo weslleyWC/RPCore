@@ -98,8 +98,7 @@ namespace RPCore
             try
             {
                 string id = Guid.NewGuid().ToString("N"); trailer = Spawn(rig.Trailer, rig.TrailerModel, "RLL" + id.Substring(0, 5)); if (!Exists(trailer)) return;
-                double angle = rig.Trailer.Heading * Math.PI / 180;
-                var point = new JobPoint { X = trailer.Position.X - (float)Math.Sin(angle) * 19, Y = trailer.Position.Y + (float)Math.Cos(angle) * 19, Z = trailer.Position.Z, Heading = rig.Trailer.Heading };
+                var point = PdmSpawnPoints.Tractor(trailer.Position.X,trailer.Position.Y,trailer.Position.Z,rig.Trailer.Heading);
                 truck = Spawn(point, rig.TruckModel, "RLT" + id.Substring(0, 5)); if (!Exists(truck) || !Wallet.PdmRentalBegin(options, id, ids, Ref(truck, rig.TruckModel), Ref(trailer, rig.TrailerModel), out _)) return;
                 run = new PdmRentalRun(id, options.UnloadSeconds, options.ReturnSeconds); profile = Profile.Id; began = retryAt = Game.GameTime; cancelReason = null; accepted = false;
                 Blip(truck, "RPCore: Packer locadora"); Blip(trailer, "RPCore: TRFlat locadora"); Route(trailer.Position, "RPCore: engate a carreta"); menu.Visible = false; ready = true;

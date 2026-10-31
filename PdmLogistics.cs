@@ -107,7 +107,7 @@ namespace RPCore
                 }
                 trailer=Spawn(trailerPoint,options.TrailerModel,"PHL"+id.Substring(0,5),atPort);
                 if(!Exists(trailer)){ui.Problem("Carreta indisponivel","Modelo/chao/vaga indisponivel para "+options.TrailerModel+". Pedidos preservados; nenhum debito novo. Confira RPCore.log.",null,OpenMenu);return;}
-                if(truckPoint==null){double heading=options.Trailer.Heading*Math.PI/180;truckPoint=new JobPoint{X=trailer.Position.X-(float)Math.Sin(heading)*19,Y=trailer.Position.Y+(float)Math.Cos(heading)*19,Z=trailer.Position.Z,Heading=options.Trailer.Heading};}
+                if(truckPoint==null)truckPoint=PdmSpawnPoints.Tractor(trailer.Position.X,trailer.Position.Y,trailer.Position.Z,options.Trailer.Heading);
                 truck=Spawn(truckPoint,options.TruckModel,"PHT"+id.Substring(0,5),atPort);
                 if (!Exists(truck) || !Wallet.PdmCollect(id, ids, Reference(truck, options.TruckModel), Reference(trailer, options.TrailerModel), out _)) { ui.Problem("Conjunto nao confirmado","Caminhao/vaga indisponivel ou gravacao recusada. Pedidos e caixa preservados; nenhum debito novo. Confira RPCore.log.",null,OpenMenu); return; }
                 run = new PdmHaulRun(id, count, options.UnloadSeconds); ownerProfile = Profile.Id; began = Game.GameTime; retryAt = began+1000; cancelReason = null;worldProblemReported=false;
@@ -134,7 +134,7 @@ namespace RPCore
             foreach (var item in operation.Cargo)
             {
                 if (cargo.ContainsKey(item.StockId) || item.Handle > 0) continue;
-                var stock = Wallet.Pdm.Stock.Find(s => s.Id == item.StockId); var anchor = new JobPoint { X = options.Dock.X, Y = options.Dock.Y + cargo.Count * 8, Z = options.Dock.Z, Heading = options.Dock.Heading };
+                var stock = Wallet.Pdm.Stock.Find(s => s.Id == item.StockId); var anchor = PdmSpawnPoints.Cargo(options.Dock,cargo.Count);
                 var model=new Model(stock.Model);
                 if(!model.IsValid || !model.IsInCdImage || !model.IsCar){ui.Problem("Modelo da encomenda indisponivel","Carro "+stock.Name+" / modelo "+stock.Model+" nao esta disponivel no GTA. Pedido preservado; nenhuma nova cobranca.",null,OpenMenu);break;}
                 if(!PdmStreaming.Ready(model)){Notify.Show("Carregando encomenda: "+stock.Name+". Aguarde a proxima tentativa; nenhum debito novo.");break;}

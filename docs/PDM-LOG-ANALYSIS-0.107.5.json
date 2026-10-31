@@ -1,0 +1,18 @@
+{
+  "log_sha256": "80930167df6cc0974eb3dfeedea75634e50ea4dc7d9e7c3c0fb4d4bc2a613ae7",
+  "confirmed_reference": "a540d1b0",
+  "time_in_log": "14:08:16",
+  "exception": "System.ArgumentException: Invalid rig anchor.",
+  "call_chain": [
+    "RigSpawnSearch.Candidates",
+    "RigSpawn.FindVehicle",
+    "PdmLogistics.Spawn",
+    "PdmLogistics.Begin",
+    "PdmMenuView.Tick"
+  ],
+  "cause": "Computed tractor JobPoint had no Name; JobPoint.Valid rejected it after trailer was created.",
+  "same_omission_fixed_in_port_cargo_rental_repo": true,
+  "later_screenshot_reference": "5e6357d9",
+  "later_reference_present_in_supplied_log": false,
+  "raw_log_published": false
+}
