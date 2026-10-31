@@ -21,7 +21,7 @@ namespace RPCore
         int actorHandle,actorModel;long actorAddress;
         public void OpenMenu()
         {
-            if(!Calm)return;if(Running){OpenClass(category);return;}pool.HideAll();Page("root","DMV / HABILITACOES");
+            var block=MenuBlock;if(block!=DmvAccessBlock.None){Notify.Show("DMV: "+DmvAccessRules.Explain(block));Log.Write("DMV menu blocked: "+block+"; profile "+Profile.Id);return;}if(Running){OpenClass(category);return;}pool.HideAll();Page("root","DMV / HABILITACOES");
             foreach(DmvClass c in Enum.GetValues(typeof(DmvClass))){var chosen=c;var book=ReadBook(c);Add((c==DmvClass.C?"C / carros":c==DmvClass.M1?"M1 / motocicletas":"A / caminhoes e carretas")+" / "+(!DmvBookRules.Matches(book,c)?"dados protegidos":book.Licensed?"emitida":book.Pending!=null?"tentativa pendente":book.TheoryPassed?"pratico liberado":"teoria pendente"),"Abrir documentos, material de estudo, provas, resultados e GPS desta categoria.",()=>OpenClass(chosen));}
             Add("Como funciona","Estude, confirme a taxa bancaria, conclua teoria e pratique. Aprovacao exige voltar ao atendimento para emitir. Suspender conserva o pagamento. Documentos sao separados por perfil e categoria.",OpenHelp);
             Add("Fechar","Voltar ao jogo.",()=>ui.Close());menu.Visible=true;
@@ -56,7 +56,7 @@ namespace RPCore
             if(Book.PracticalReport!=null)Add("Ultimo resultado pratico","Motivo, faltas, pontos e tempo da ultima tentativa encerrada.",OpenLastReport);
             Add("Voltar","Categorias; durante o exame apenas fecha o menu.",Running?(Action)(()=>ui.Close()):OpenMenu);menu.Visible=true;
         }
-        bool CheckDesk(){if(!AtDesk){Notify.Show("Va ao atendimento desta categoria a pe, sem procurado/missao/combate.");return false;}return true;}
+        bool CheckDesk(){if(!AtDesk){Notify.Show("DMV: "+(DmvAccessRules.Explain(MenuBlock)??"Va a pe ao atendimento desta categoria pelo GPS do menu."));return false;}return true;}
         void ConfirmFee(int price,string title,string text,Action action){if(Wallet.Bank<price){Notify.Show("DMV: faltam $"+(price-Wallet.Bank)+" no banco para esta prova.");return;}Confirm(title,text,action);}
         void Confirm(string title,string text,Action action)
         {

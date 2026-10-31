@@ -25,7 +25,7 @@ namespace RPCore
         bool Protection=>Moto?Function.Call<bool>(Hash.IS_PED_WEARING_HELMET,Game.Player.Character):belted();
         float SpeedLimit=>examOptions!=null && drive!=null && drive.Stage==DmvStage.Route?examOptions.SpeedAt(drive.Point):examOptions?.SpeedKmh??options.SpeedKmh;
         static Vector3 Pos(JobPoint p)=>new Vector3(p.X,p.Y,p.Z);
-        bool Calm=>Game.Player.Character.IsHuman && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && GameplayContext.BackgroundReady && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !GameplayContext.SceneBlocking && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0;
+        bool Calm=>MenuBlock==DmvAccessBlock.None;
         bool AtDesk=>Calm && !Game.Player.Character.IsInVehicle() && Game.Player.Character.Position.DistanceTo(Pos(options.Entry))<=3;
         bool Driver=>car!=null && PdmAssets.Valid(car) && car.Driver==Game.Player.Character && Game.Player.Character.IsInVehicle(car);
         bool ExaminerSeated=>examiner!=null && PdmAssets.Valid(examiner) && !examiner.IsDead && examiner.IsInVehicle(car) && car.GetPedOnSeat(VehicleSeat.Passenger)==examiner;
@@ -44,7 +44,8 @@ namespace RPCore
         }
         void Prepare()
         {
-            if(Running || !AtDesk || !Book.Valid || !Book.TheoryPassed || Book.Licensed){Notify.Show("Conclua teoria e contrate a pe no DMV.");return;}
+            if(Running || !Book.Valid || !Book.TheoryPassed || Book.Licensed){Notify.Show("Conclua teoria e contrate a pe no DMV.");return;}
+            if(!PrepareHere())return;
             var p=Book.Pending;if(p!=null && !p.Practical)return;if(p==null && Wallet.Bank<options.PracticalPrice){Notify.Show("Saldo bancario insuficiente.");return;}
             if(!Acquire())return;examOptions=CharacterRules.Copy(p?.Options??options);attempt=p?.Id??Guid.NewGuid().ToString("N");
             carModel=new Model(Truck?"phantom":Moto?"pcj":"asterope");if(Truck)trailerModel=new Model("trailers2");examinerModel=new Model("a_f_y_bevhills_01");
@@ -113,11 +114,12 @@ namespace RPCore
         public void Tick()
         {
             try{
+                SampleLocalTerrain();
                 ui.Tick(Calm);
                 DrawLesson();
                 if(stopTheory){stopTheory=false;SuspendTheory();return;}
                 if(ConsumesKeyboard){var pending=Book.Pending;int answer=answers.Take(pending.Id,pending.Answers.Count,Game.GameTime);if(answer>=0)SubmitAnswer(pending.Id,pending.Answers.Count,answer);DrawTheoryCard();}
-                if(preparing){if(!ActorBound || !AtDesk || unchecked(Game.GameTime-prepareAt)>15000){EndRuntime();Notify.Show("Preparacao interrompida; nenhuma taxa nova.");return;}if(carModel.IsLoaded && examinerModel.IsLoaded && (!Truck || trailerModel.IsLoaded))Spawn();return;}
+                if(preparing){if(!ActorBound || !AtDesk || unchecked(Game.GameTime-prepareAt)>15000){EndRuntime();Notify.Show("Preparacao interrompida; nenhuma taxa nova.");return;}if(localTerrain.Ready && carModel.IsLoaded && examinerModel.IsLoaded && (!Truck || trailerModel.IsLoaded))Spawn();return;}
                 if(drive!=null){DriveTick();return;}
                 if(lease && Book.Pending?.Practical==false && (!menu.Visible || !AtDesk || !ActorBound)){EndRuntime();ui.Close();}
                 if(Calm && !pool.AreAnyVisible){

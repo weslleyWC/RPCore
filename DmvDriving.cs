@@ -16,7 +16,7 @@ namespace RPCore
         {
             if(!ActorBound){EndRuntime();ui.Close();return;}
             if(Game.IsPaused){last=Game.GameTime;return;}
-            if(!GameplayContext.BackgroundReady || GameplayContext.SceneBlocking){Save();EndRuntime();ui.Close();Notify.Show("DMV: exame suspenso durante carregamento/cena. Retome sem nova taxa.");return;}
+            if(!localSurfaceReady || GameplayContext.SceneBlocking){Save();EndRuntime();ui.Close();Notify.Show("DMV: exame suspenso durante carregamento/cena. Retome sem nova taxa.");return;}
             if(Game.IsMissionActive || Game.Player.Wanted.WantedLevel>0 || Game.Player.Character.IsDead || car==null || !PdmAssets.Valid(car) || car.IsDead || examiner==null || !PdmAssets.Valid(examiner) || examiner.IsDead){Fail("exame interrompido/veiculo ou examinadora indisponivel");return;}
             if(Truck && (trailer==null || !PdmAssets.Valid(trailer) || trailer.IsDead || trailer.BodyHealth<500 || JobVehicles.TrailerHasOtherTractor(trailer,car) || Function.Call<bool>(Hash.IS_VEHICLE_ATTACHED_TO_TRAILER,car) && !Towing)){Fail("carreta indisponvel ou engate incorreto");return;}
             float dt=Math.Min(1,Math.Max(0,unchecked(Game.GameTime-last)/1000f));last=Game.GameTime;

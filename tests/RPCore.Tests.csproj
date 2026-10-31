@@ -137,6 +137,7 @@
     <Compile Include="../TruckQuestions.cs" Link="TruckQuestions.cs" />
     <Compile Include="../DmvRigRules.cs" Link="DmvRigRules.cs" />
     <Compile Include="../MotorcycleQuestions.cs" Link="MotorcycleQuestions.cs" />
+    <Compile Include="../DmvAccessData.cs" Link="DmvAccessData.cs" />
     <Compile Include="../DmvRefinementData.cs" Link="DmvRefinementData.cs" />
     <Compile Include="../DmvData.cs" Link="DmvData.cs" />
     <Compile Include="../VehicleInsuranceData.cs" Link="VehicleInsuranceData.cs" />

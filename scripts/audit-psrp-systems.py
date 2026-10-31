@@ -1724,10 +1724,13 @@ if matrix_path.exists() and (repo_root/'PdmEnterpriseSystem.cs').exists():
             report[key]['current_scope']='See pdm_enterprise_01080 and family matrix; native gameplay remains unverified.'
 if (repo_root/'docs/PDM-SALARIOS-0.108.1.md').exists():
     report['pdm_payroll_01081']={'tests_passed':4361,'new_cases':21,'previous_default_seconds':300,'default_seconds':3600,'migration':'Only legacy 300-second employee contracts, scaled elapsed fraction, no cash/wage/debt changes, save rollback. Other custom contract periods retained.','configuration':'Optional PayrollSeconds, existing files without field resolve default in memory; custom PdmStaff PeriodSeconds other than 300 retained.','parking':'Only enabled exterior showroom slot bounds, owned vehicle-scenario block handles, localized generator suppression/restoration; no vehicle deletion or cancellation of existing parking tasks.','guide':'PDM-SALARIOS-0.108.1.md','gta_runtime_tested':False}
-dmv_matrix=repo_root/'docs/DMV-REFERENCE-MATRIX-0.109.0.json'
+dmv_matrix=repo_root/('docs/DMV-REFERENCE-MATRIX-'+matrix_version+'.json')
+if not dmv_matrix.exists():dmv_matrix=repo_root/'docs/DMV-REFERENCE-MATRIX-0.109.0.json'
 if dmv_matrix.exists():
     report['dmv_refinement_01090']={'matrix':dmv_matrix.name,'guide':'DMV-GRUPO-0.109.0.md','reference':'PSRP/TheoryTests.cs / OnLoad / Update','reference_limitations':'C practical activation delegate empty and route logic stops at checkpoint2; M1/A announced for a future update. Complete M1/A cycles and Portuguese questions are RPCore adaptations.','cycle':'Three-category menu, local E, study, quoted fees, durable theory/review, safe practical preparation/own actors, justified incident faults, turn instructions, aligned parking, trailer reverse, suspension and durable issuance/report.','tests_passed':4391,'new_cases':30,'gta_runtime_tested':False,'source_hashes_current':all(digest((repo_root/f).read_bytes())==h for f,h in json.loads(dmv_matrix.read_text())['implementation_sha256'].items())}
     for key in ['dmv','dmv_m1','dmv_a']:
         if key in report:report[key]['current_refinement']='Group 0.109.0: see dmv_refinement_01090; original phase notes above retained as historical scope.'
+if (repo_root/'docs/DMV-ACESSO-0.109.1.md').exists():
+    report['dmv_access_01091']={'cause':'0.109.0 Calm/DriveTick used PDM-only GameplayContext.BackgroundReady; C/M1/A desks all outside 220m PDM area.','fix':'Independent DmvAccessRules and own AreaWarmup/local collision. Menu does not need geography/terrain; physical preparation still checks own desk/terrain. Prepared scene with control allowed. Manual denials display a reason.','tests_passed':4421,'new_cases':30,'transactions_and_configurations_unchanged':True,'gta_runtime_tested':False,'guide':'DMV-ACESSO-0.109.1.md'}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

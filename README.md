@@ -1,3 +1,9 @@
+## Correção 0.109.1 — DMV não abria pelo F10/E
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.109.1.zip) · [Causa e teste](docs/DMV-ACESSO-0.109.1.md)
+
+Removida dependência indevida da área PDM para abrir/usar o DMV. Consulta remota, preparação com piso local e avisos de restrições reais. Preserva provas pagas, licenças, notas, taxas e demais sistemas. 4421 testes aprovados; confirmação F10/E no GTA pendente.
+
 ## Atualização 0.109.0 — conjunto completo autoescola / DMV
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.109.0.zip) · [Recursos, referência e teste das três classes](docs/DMV-GRUPO-0.109.0.md)
