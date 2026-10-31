@@ -64,6 +64,7 @@
     <Compile Include="../PdmSecurityData.cs" Link="PdmSecurityData.cs" />
     <Compile Include="../PdmPremisesData.cs" Link="PdmPremisesData.cs" />
     <Compile Include="../PdmNegotiationData.cs" Link="PdmNegotiationData.cs" />
+    <Compile Include="../GameplayContextData.cs" Link="GameplayContextData.cs" />
     <Compile Include="../PdmRefinementData.cs" Link="PdmRefinementData.cs" />
     <Compile Include="../PdmData.cs" Link="PdmData.cs" />
     <Compile Include="../DragData.cs" Link="DragData.cs" />

@@ -73,7 +73,7 @@ namespace RPCore
         {if(!Cfg.EnableFuel || Game.IsMissionActive || !Supported(v))return true;string key=Key(v);return key==null || !Data.Tanks.TryGetValue(key,out var value) || value.Liters>.001f;}
         public FuelTank ViewTank(Vehicle v)
         {string key=Supported(v)?Key(v):null;return Cfg.EnableFuel && key!=null && Data.Tanks.TryGetValue(key,out var value)?value:null;}
-        bool Safe=>Cfg.EnableFuel && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && Game.Player.Character.IsAlive && Game.Player.Character.IsHuman && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && !Game.Player.Character.IsFalling && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0;
+        bool Safe=>Cfg.EnableFuel && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && Game.Player.Character.IsAlive && Game.Player.Character.IsHuman && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && !Game.Player.Character.IsFalling && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel==0;
         bool AtStation(Vector3 pos)=>stations.Any(s=>pos.DistanceTo(s.Position)<s.Radius) || (editorPoints?.Invoke()??Enumerable.Empty<EditorPoint>()).Any(p=>p.Kind==EditorPointKind.Fuel && pos.DistanceTo(new Vector3(p.Pose.X,p.Pose.Y,p.Pose.Z))<4.5f);
         bool Bound()
         {
@@ -144,7 +144,7 @@ namespace RPCore
                 if(!menu.Visible || !Accessible()){StopPump("Acesso encerrado");return;}
                 ui.Tick(true);if(pumping){if(unchecked(now-nextPump)>=0){nextPump=unchecked(now+1000);Pump();}if(pumping)Draw();}return;
             }
-            if(!Cfg.EnableFuel || Game.IsPaused || Game.IsMissionActive || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id)return;
+            if(!Cfg.EnableFuel || Game.IsPaused || Game.IsMissionActive || GameplayContext.SceneBlocking || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id)return;
             var p=Game.Player.Character;var v=p.IsInVehicle()?p.CurrentVehicle:null;if(!Supported(v) || v.Driver!=p)return;
             Attach(v);if(v.IsEngineRunning)tank.Drive(seconds,v.Speed,Cfg.FuelPer100Km,Cfg.IdleFuelPerHour);v.FuelLevel=tank.Liters;
             if(tank.Liters<=.001f){if(v.IsEngineRunning)Function.Call(Hash.SET_VEHICLE_ENGINE_ON,v,false,true,false);Game.DisableControlThisFrame(GTA.Control.VehicleAccelerate);}

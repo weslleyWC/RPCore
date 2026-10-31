@@ -10,7 +10,7 @@ namespace RPCore
         bool GroundSafe()
         {
             var p=Game.Player.Character;
-            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && p.IsOnFoot && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsFalling && !Function.Call<bool>(Hash.IS_ENTITY_IN_AIR,p) && !p.IsRagdoll && !p.IsSwimming && !p.IsClimbing && !p.IsInCombat && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && !pool.AreAnyVisible && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen;
+            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && p.IsOnFoot && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsFalling && !Function.Call<bool>(Hash.IS_ENTITY_IN_AIR,p) && !p.IsRagdoll && !p.IsSwimming && !p.IsClimbing && !p.IsInCombat && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && !pool.AreAnyVisible && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen;
         }
         internal bool DropOnGround(string id,int quantity)
         {

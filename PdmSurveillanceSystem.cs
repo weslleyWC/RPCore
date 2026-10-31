@@ -61,7 +61,7 @@ namespace RPCore
             }
             finally { PdmStreaming.Release(model); }
         }
-        bool SafeFoot => !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) <= 5;
+        bool SafeFoot => !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) <= 5;
         bool OwnCamera => camera != null && camera.Exists() && ScriptCameraDirector.RenderingCam?.Handle == camera.Handle;
         void Begin(int index)
         {
@@ -118,7 +118,7 @@ namespace RPCore
                     Visuals.Text("PDM / AO VIVO / " + options.Cameras[session.Index].Name, 35, 910, .32f, Color.White);
                     Visuals.Text("Esquerda/Direita: trocar camera   Backspace/Esc: sair", 35, 945, .26f, Color.White);
                 }
-                if (PdmMenuRuntime.WorldAllowed && unchecked(Game.GameTime - nextProps) >= 0) { nextProps = Game.GameTime + 5000; SpawnProps(); }
+                if (GameplayContext.BackgroundReady && PdmMenuRuntime.WorldAllowed && unchecked(Game.GameTime - nextProps) >= 0) { nextProps = Game.GameTime + 5000; SpawnProps(); }
             }
             catch (Exception ex) { Close(); nextProps = Game.GameTime + 5000; Log.Error("pdm surveillance", ex); }
         }

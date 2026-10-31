@@ -82,7 +82,7 @@ namespace RPCore
         }
         void Actors()
         {
-            bool near = Wallet.Pdm.Owned && PdmMenuRuntime.WorldAllowed && Game.Player.Character.Position.DistanceTo(StartPosition) < 180;
+            bool near = Wallet.Pdm.Owned && GameplayContext.BackgroundReady && PdmMenuRuntime.WorldAllowed && Game.Player.Character.Position.DistanceTo(StartPosition) < 180;
             foreach (string role in new[] { "mechanic", "cleaner" })
             {
                 var saved = Wallet.Pdm.Staff.Employees.Find(e => e.Role == role); Employee a; actors.TryGetValue(role, out a);

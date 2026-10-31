@@ -13,7 +13,7 @@ namespace RPCore
         public bool IsBelted=>safety!=null;
         public SeatbeltSystem(AchievementSystem ach){this.ach=ach;}
         static bool HasBelt(Vehicle v)=>v!=null && v.Exists() && !v.IsDead && v.Model.IsCar;
-        bool Safe=>!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;
+        bool Safe=>!Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;
         bool Bound()
         {
             var p=Game.Player.Character;return identity!=null && p!=null && p.Exists() && HasBelt(vehicle) && p.IsInVehicle(vehicle) && identity.Matches(Profile.Id,p.Handle,p.Model.Hash,p.MemoryAddress.ToInt64(),vehicle.Handle,vehicle.Model.Hash,vehicle.MemoryAddress.ToInt64(),null);

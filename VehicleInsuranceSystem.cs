@@ -12,7 +12,7 @@ namespace RPCore
         public string Name=>"vehicleinsurance";
         readonly ObjectPool pool;readonly ShiftGate gate;readonly NativeMenu menu;readonly VehicleInsuranceOptions options;readonly PersonalServiceMenu ui;
         int listPage;
-        bool Safe=>Cfg.EnableGarages && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.Wanted.WantedLevel==0 && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && FuelOrder.ActivityAllows(gate.Owner);
+        bool Safe=>Cfg.EnableGarages && !Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !GameplayContext.SceneBlocking && Game.Player.Wanted.WantedLevel==0 && !Game.Player.Character.IsDead && !Game.Player.Character.IsInCombat && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && FuelOrder.ActivityAllows(gate.Owner);
         public VehicleInsuranceSystem(ObjectPool pool,ShiftGate gate)
         {
             this.pool=pool;this.gate=gate;var defaults=VehicleInsuranceDefaults.Load();options=Store.LoadDef("Jobs/VehicleInsurance.json",()=>defaults);

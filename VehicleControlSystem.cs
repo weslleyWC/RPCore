@@ -47,7 +47,7 @@ namespace RPCore
             row.Activated+=(s,e)=>{if(!Bound()){CloseMenus();return;}try{action();}catch(Exception ex){Log.Error("vehicle action",ex);Notify.Show("Comando nao concluido.");}};
             if(state!=null)refresh.Add(()=>row.AltTitle=state());
         }
-        bool Safe()=>Cfg.EnableVehicleControls && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !Game.Player.Character.IsDead;
+        bool Safe()=>Cfg.EnableVehicleControls && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !Game.Player.Character.IsDead;
         bool Bound()
         {
             var p=Game.Player.Character;return Safe() && p!=null && p.Exists() && controlled!=null && controlled.Exists() && !controlled.IsDead && p.IsInVehicle() && VehicleUiRules.SameOwner(actor?.Handle??0,p.Handle,controlled.Handle,p.CurrentVehicle.Handle,profile,Profile.Id,controlled.Driver==p);

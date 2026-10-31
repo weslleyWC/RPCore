@@ -17,6 +17,7 @@ namespace RPCore
             if(!Game.Player.CanControlCharacter || Profile.Detect()!=Profile.Id)return;
             var ped=Game.Player.Character;var pos=ped.Position;
             if(!Cfg.EnableGarages || !DealershipDoorRules.ShowroomRange(pos.X,pos.Y,pos.Z,70)){Release();return;}
+            if(!GameplayContext.BackgroundReady)return;
             try{
                 if(!session && DealershipDoorRules.ShowroomRange(pos.X,pos.Y,pos.Z,35)){session=true;nextRequest=Game.GameTime;}
                 if(!session)return;

@@ -31,7 +31,7 @@ namespace RPCore
         void ItemUsed(ItemDef item)=>JobActivity("Inventario","Usou "+item.Name);
         bool Safe()
         {
-            var p=Game.Player.Character;return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsRagdoll && !p.IsFalling && !p.IsSwimming && !p.IsClimbing && !p.IsInCombat && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !inventory.UsingItem && (!p.IsInVehicle() || p.CurrentVehicle.Driver==p && p.CurrentVehicle.Speed<=.5f);
+            var p=Game.Player.Character;return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsRagdoll && !p.IsFalling && !p.IsSwimming && !p.IsClimbing && !p.IsInCombat && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !inventory.UsingItem && (!p.IsInVehicle() || p.CurrentVehicle.Driver==p && p.CurrentVehicle.Speed<=.5f);
         }
         void Close(bool cancel=true){bankOperation=null;bankReceipt=null;Visible=false;props?.ClosePhone();page="Home";mouseReady=false;controllerReady=false;pressed=-1;if(cancel)pending=null;}
         void OpenPage(string name){page=name;row=0;detailPage=0;pressed=-1;}

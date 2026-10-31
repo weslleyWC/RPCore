@@ -23,7 +23,7 @@ namespace RPCore
         readonly Dictionary<string, Guard> guards = new Dictionary<string, Guard>();
         readonly Dictionary<string, int> respawn = new Dictionary<string, int>();
         int nextScan, nextSpawn; string profile;
-        bool WorldAllowed => Wallet.Pdm.Valid && Wallet.Pdm.Owned && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) < 180;
+        bool WorldAllowed => GameplayContext.BackgroundReady && Wallet.Pdm.Valid && Wallet.Pdm.Owned && !Game.IsMissionActive && !GameplayContext.SceneBlocking && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) < 180;
         static bool Alive(Ped p) => p != null && PdmAssets.Valid(p) && !p.IsDead;
         static Vector3 Position(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
         public PdmSecuritySystem(ObjectPool pool, PdmSecurityOptions options, Vector3 office, Func<IEnumerable<Ped>> crew, Action syncPayroll, Action staffMenu, Action back)

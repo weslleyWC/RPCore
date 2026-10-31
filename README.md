@@ -1,3 +1,9 @@
+## Atualização0.107.1 — interface perto da Motors
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.1.zip) · [Alterações e testes GTA](docs/PDM-CONTEXT-0.107.1.md)
+
+Ajuste do bloqueio por cena preparada, espera pelo carregamento da área para recursos físicos da empresa e diagnóstico de interface.4189 testes aprovados; confirmação no GTA pendente. O crash posterior ainda precisa dos logs da sessão.
+
 ## Atualização0.107.0 — refinamento do grupo PDM / empresa
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.107.0.zip) · [Acessos, alterações e teste GTA](docs/PDM-EMPRESA-0.107.0.md)

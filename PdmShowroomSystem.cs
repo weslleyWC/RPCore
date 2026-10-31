@@ -132,7 +132,7 @@ namespace RPCore
         }
         void SyncWorld()
         {
-            if (!PdmMenuRuntime.WorldAllowed || !Wallet.Pdm.Valid || Wallet.Pdm.ShowroomSale != null && !Active) return;
+            if (!GameplayContext.BackgroundReady || !PdmMenuRuntime.WorldAllowed || !Wallet.Pdm.Valid || Wallet.Pdm.ShowroomSale != null && !Active) return;
             bool near = Game.Player.Character.Position.DistanceTo(StartPosition) < 180;
             foreach (var entry in Wallet.Pdm.Showroom.ToList())
             {

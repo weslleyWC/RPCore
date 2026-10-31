@@ -87,7 +87,7 @@ namespace RPCore
                 warned = true; Log.Write("VISUAL PSRP still not loaded 10s after an explicit request. Check mounted archive/overrides and run the native texture diagnostic; installation is not inferred from this check.");
                 Notify.Show("PSRP did not stream after a request. F10 > Visual assets: diagnose.");
             }
-            if (!Visuals.Active || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || Function.Call<bool>(Hash.IS_HUD_HIDDEN)) return;
+            if (!Visuals.Active || Game.IsPaused || GameplayContext.SceneBlocking || GameplayContext.HudHidden) return;
             var p = Game.Player.Character; if (p.IsDead) return;
             if (Visuals.WalletHud && Visuals.Has("PSRP", "MoneyIcon"))
             {

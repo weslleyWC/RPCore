@@ -7,8 +7,8 @@ namespace RPCore
 {
     internal static class PdmMenuRuntime
     {
-        public static bool WorldAllowed=>!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Game.Player.Character.IsAlive && Profile.Detect()==Profile.Id;
-        public static bool Allowed=>!Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Game.Player.Character.IsAlive && Profile.Detect()==Profile.Id;
+        public static bool WorldAllowed=>!Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Game.Player.Character.IsAlive && Profile.Detect()==Profile.Id;
+        public static bool Allowed=>!Game.IsPaused && !Game.IsMissionActive && !InterfaceOptions.ModalOpen && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Game.Player.Character.IsAlive && Profile.Detect()==Profile.Id;
         public static bool Pressed(GTA.Control control)=>Game.IsControlJustPressed(control) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED,0,(int)control);
     }
     // Shared navigation/confirmation across the whole business, with the existing per-service input queue.
@@ -76,7 +76,7 @@ namespace RPCore
             var ped=Game.Player.Character;
             if(!menu.Visible || !allowed || Profile.Id!=loadingProfile || ped.Handle!=loadingActor || ped.Model.Hash!=loadingModel || loadingAddress==0 || ped.MemoryAddress.ToInt64()!=loadingAddress || ped.Position.DistanceTo(loadingOrigin)>5 || unchecked((uint)(Game.GameTime-loadingAt))>10000){StopLoading();ui.Close();Notify.Show("Preparacao PDM interrompida; nenhuma operacao iniciada.");return;}
             bool ready=true;foreach(var model in models)if(!PdmStreaming.Ready(model))ready=false;
-            if(!ready)return;var action=loading;loading=null;loadingBack=null;ui.Close();
+            if(!ready || !GameplayContext.TerrainReady)return;var action=loading;loading=null;loadingBack=null;ui.Close();
             try{action();}finally{StopLoading();}
             }catch(Exception ex){StopLoading();ui.Close();failed(ex);}
         }

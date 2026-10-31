@@ -25,7 +25,7 @@ namespace RPCore
         bool CanUseItem()
         {
             var p=Game.Player.Character;
-            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsRagdoll && !p.IsFalling && !p.IsClimbing && !p.IsSwimming && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && (!pool.AreAnyVisible || menu.Visible) && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen && retiredUseProps.Count<16;
+            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !p.IsInVehicle() && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) && !p.IsRagdoll && !p.IsFalling && !p.IsClimbing && !p.IsSwimming && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && armoryGate?.Owner==null && !UsingItem && (!pool.AreAnyVisible || menu.Visible) && (!InterfaceOptions.ModalOpen || grid.Visible) && !grid.StorageOpen && retiredUseProps.Count<16;
         }
         public bool TryQuickUse(KeyEventArgs e)
         {
@@ -66,7 +66,7 @@ namespace RPCore
         void UsingTick()
         {
             if(!UsingItem)return;var p=Game.Player.Character;int now=Game.GameTime,delta=NeedsRules.Delta(now,useLast,!Game.IsPaused);useLast=now;
-            if(p==null || !p.Exists() || p.Handle!=useActor.Handle || useProfile!=Profile.Id || p.IsDead || p.IsInVehicle() || Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) || p.IsRagdoll || p.IsFalling || p.IsClimbing || p.IsSwimming || p.IsInCombat || !Game.IsPaused && !Game.Player.CanControlCharacter || Game.IsMissionActive || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || armoryGate!=null && armoryGate.Owner!="inventory_use"){StopUsing();return;}
+            if(p==null || !p.Exists() || p.Handle!=useActor.Handle || useProfile!=Profile.Id || p.IsDead || p.IsInVehicle() || Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p) || p.IsRagdoll || p.IsFalling || p.IsClimbing || p.IsSwimming || p.IsInCombat || !Game.IsPaused && !Game.Player.CanControlCharacter || Game.IsMissionActive || GameplayContext.SceneBlocking || armoryGate!=null && armoryGate.Owner!="inventory_use"){StopUsing();return;}
             if(Game.IsPaused)return;
             useRemaining=Math.Max(0,useRemaining-delta);if(useRemaining==0){StopUsing(true);return;}
             foreach(var c in new[]{GTA.Control.Attack,GTA.Control.Attack2,GTA.Control.Aim,GTA.Control.SelectWeapon,GTA.Control.NextWeapon,GTA.Control.PrevWeapon})Game.DisableControlThisFrame(c);

@@ -102,7 +102,7 @@ namespace RPCore
         bool Nearby(GarageDefinition garage)
         {
             var p = Game.Player.Character;
-            return Cfg.EnableGarages && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !p.IsDead && p.Position.DistanceTo(garage.Position) < 15;
+            return Cfg.EnableGarages && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && !p.IsDead && p.Position.DistanceTo(garage.Position) < 15;
         }
         void Buy(GarageDefinition garage)
         {
@@ -211,7 +211,7 @@ namespace RPCore
             }
             finally { model.MarkAsNoLongerNeeded(); }
         }
-        bool CustomAccess=>Cfg.EnableGarages && !Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && (customAvailable==null || customAvailable()) && customPoint.HasValue && customProfile==Profile.Id && customActor==Game.Player.Character && customActor!=null && customActor.Exists() && customActor.IsAlive && customCar!=null && customCar.Exists() && customCar.Driver==customActor && customActor.CurrentVehicle==customCar && (customCar.Model.IsCar || customCar.Model.IsBike && !customCar.Model.IsBicycle) && customCar.Speed<.5f && customCar.Position.DistanceTo(customPoint.Value)<=4.5f && !JobVehicles.Contains(customCar) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0;
+        bool CustomAccess=>Cfg.EnableGarages && !Game.IsPaused && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && (customAvailable==null || customAvailable()) && customPoint.HasValue && customProfile==Profile.Id && customActor==Game.Player.Character && customActor!=null && customActor.Exists() && customActor.IsAlive && customCar!=null && customCar.Exists() && customCar.Driver==customActor && customActor.CurrentVehicle==customCar && (customCar.Model.IsCar || customCar.Model.IsBike && !customCar.Model.IsBicycle) && customCar.Speed<.5f && customCar.Position.DistanceTo(customPoint.Value)<=4.5f && !JobVehicles.Contains(customCar) && !Game.IsMissionActive && Game.Player.Wanted.WantedLevel==0;
         public void OpenCustomWorkshop(JobPoint point,Func<bool> available=null)
         {
             customAvailable=available;customPoint=new Vector3(point.X,point.Y,point.Z);customProfile=Profile.Id;customActor=Game.Player.Character;customCar=customActor.CurrentVehicle;current=null;dirty=false;
@@ -243,7 +243,7 @@ namespace RPCore
         {
             workshop.Tick();
             if (!Cfg.EnableGarages || Game.IsMissionActive) { pending = null; menu.Visible = false; return; }
-            if (Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id){pending=null;menu.Visible=false;return;}
+            if (Game.IsPaused || GameplayContext.SceneBlocking || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id){pending=null;menu.Visible=false;return;}
             if(customPoint.HasValue && menu.Visible && !CustomAccess)menu.Visible=false;
             if (pending != null) FinishStore();
             if (menu.Visible && current != null && !Nearby(current)) menu.Visible = false;
@@ -257,7 +257,7 @@ namespace RPCore
         }
         public void OnKey(KeyEventArgs e)
         {
-            if (e.KeyCode != Cfg.GarageKey || !Cfg.EnableGarages || Game.IsMissionActive || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id) return;
+            if (e.KeyCode != Cfg.GarageKey || !Cfg.EnableGarages || Game.IsMissionActive || Game.IsPaused || GameplayContext.SceneBlocking || !Game.Player.CanControlCharacter || Game.Player.Character.IsDead || Profile.Detect()!=Profile.Id) return;
             if (menu.Visible) menu.Visible = false;
             else if (!pool.AreAnyVisible && pending == null) { Rebuild(); menu.Visible = true; }
         }

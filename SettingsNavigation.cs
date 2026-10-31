@@ -15,7 +15,7 @@ namespace RPCore
         public void ConfigureNavigation(Func<IEnumerable<GpsDestination>> source,ShiftGate gate=null){destinations=source;actionGate=gate;}
         bool CanOpenActions()
         {
-            var p=Game.Player.Character;return p!=null && p.Exists() && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;
+            var p=Game.Player.Character;return p!=null && p.Exists() && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;
         }
         void SavePin()
         {

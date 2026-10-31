@@ -16,7 +16,7 @@ namespace RPCore
                 if(weightWarned){weightWarned=false;if(!p.IsDead && !Game.IsPaused && Profile.Detect()==Profile.Id)Notify.Show("Peso normalizado. Limitacao de carga removida.");}
                 return;
             }
-            if(!InventoryBurdenRules.Safe(p.IsHuman,!p.IsDead,p.IsOnFoot,p.IsInVehicle(),Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p),p.IsSwimming,Function.Call<bool>(Hash.IS_ENTITY_IN_AIR,p) || p.IsFalling,p.IsRagdoll,p.IsClimbing,Game.IsPaused,Game.IsMissionActive,Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE),Game.Player.CanControlCharacter,Profile.Detect()==Profile.Id))return;
+            if(!InventoryBurdenRules.Safe(p.IsHuman,!p.IsDead,p.IsOnFoot,p.IsInVehicle(),Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,p),p.IsSwimming,Function.Call<bool>(Hash.IS_ENTITY_IN_AIR,p) || p.IsFalling,p.IsRagdoll,p.IsClimbing,Game.IsPaused,Game.IsMissionActive,GameplayContext.SceneBlocking,Game.Player.CanControlCharacter,Profile.Detect()==Profile.Id))return;
             if(!weightWarned){weightWarned=true;Notify.Show("Sobrepeso: movimento reduzido, sem sprint/salto. Guarde itens no deposito ou porta-malas.");}
             Game.DisableControlThisFrame(GTA.Control.Sprint);
             Game.DisableControlThisFrame(GTA.Control.Jump);

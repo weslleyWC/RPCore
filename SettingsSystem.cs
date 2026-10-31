@@ -191,7 +191,7 @@ namespace RPCore
             teleport.Tick();
             if(menus.Any(m=>m.Visible)){if(!CanOpenActions()){foreach(var m in menus)m.Visible=false;}else foreach(var refresh in refreshOptions)refresh();}
             var p = Game.Player.Character;
-            bool hideRadar = InterfaceOptions.HideRadarOnFoot && !p.IsInVehicle() && !p.IsDead && !Game.IsMissionActive && !Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
+            bool hideRadar = InterfaceOptions.HideRadarOnFoot && !p.IsInVehicle() && !p.IsDead && !Game.IsMissionActive && !Game.IsPaused && !GameplayContext.SceneBlocking;
             if (hideRadar && !Function.Call<bool>(Hash.IS_RADAR_HIDDEN)) { Function.Call(Hash.DISPLAY_RADAR, false); radarHiddenByUs = true; }
             else if (!hideRadar && radarHiddenByUs) { Function.Call(Hash.DISPLAY_RADAR, true); radarHiddenByUs = false; }
             if (animDict == null) return;

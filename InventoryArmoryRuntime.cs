@@ -49,7 +49,7 @@ namespace RPCore
         bool ArmorySafe()
         {
             var p=Game.Player.Character;
-            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && InventoryArmoryRules.ActivityAllows(armoryGate?.Owner);
+            return p!=null && p.Exists() && p.IsHuman && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && InventoryArmoryRules.ActivityAllows(armoryGate?.Owner);
         }
         bool Managed(string id)=>id!=null && (id.StartsWith("weapon_",StringComparison.Ordinal) || id.StartsWith("ammo_",StringComparison.Ordinal));
         void ReportArmory(Exception ex){if(unchecked(Game.GameTime-armoryError)<0)return;armoryError=Game.GameTime+5000;Log.Error("inventory armory",ex);Notify.Show("Armas: sincronizacao pendente. Confira RPCore.log.");}

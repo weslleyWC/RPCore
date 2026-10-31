@@ -55,6 +55,6 @@ namespace RPCore
         // Programmatic closure must not be intercepted as navigation when Escape is held.
         public void Close(){parent=null;actions.NewPage();menu.Visible=false;}
         public void Reset(){actions.NewPage();parent=null;page=null;actor=0;profile=null;selections.Clear();wasVisible=false;menu.Visible=false;}
-        public static bool SafeFoot=>!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && Game.Player.Character.IsAlive && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && Game.Player.Wanted.WantedLevel==0;
+        public static bool SafeFoot=>!Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id && Game.Player.Character.IsAlive && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsFalling && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsClimbing && !Function.Call<bool>(Hash.IS_PED_GETTING_INTO_A_VEHICLE,Game.Player.Character) && Game.Player.Wanted.WantedLevel==0;
     }
 }

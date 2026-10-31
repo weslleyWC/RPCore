@@ -144,7 +144,7 @@ namespace RPCore
             catch (Exception ex) { Log.Error("PSRP import", ex); Notify.Show("Importacao incompleta ou perfil existente. Originais preservados; confira RPCore.log."); }
         }
         bool Freemode(){int hash=Game.Player.Character.Model.Hash;return hash==CharacterRules.ModelHash("mp_m_freemode_01") || hash==CharacterRules.ModelHash("mp_f_freemode_01");}
-        bool CanAct(){var p=Game.Player.Character;return p!=null && p.Exists() && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;}
+        bool CanAct(){var p=Game.Player.Character;return p!=null && p.Exists() && !p.IsDead && !Game.IsPaused && !Game.IsMissionActive && !GameplayContext.SceneBlocking && Game.Player.CanControlCharacter && Profile.Detect()==Profile.Id;}
         public void OpenBank(){if(!CanAct())return;pool.HideAll();Rebuild();bank.Visible=true;}
         void Confirm(string title,string description,Action action)
         {

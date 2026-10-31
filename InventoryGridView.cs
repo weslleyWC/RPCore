@@ -87,7 +87,7 @@ namespace RPCore
         {
             if(!Visible)return;var p=Game.Player.Character;
             personal.Select(personal.Selected,inventory.Layout.Count);
-            if(p.IsDead || Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || StorageOpen && !access()){Close();return;}
+            if(p.IsDead || Game.IsPaused || GameplayContext.SceneBlocking || StorageOpen && !access()){Close();return;}
             if(StorageOpen)RefreshStorage();
             MouseTick();
             foreach(var c in new[]{GTA.Control.Attack,GTA.Control.Attack2,GTA.Control.Aim,GTA.Control.SelectWeapon,GTA.Control.NextWeapon,GTA.Control.PrevWeapon,GTA.Control.Context,GTA.Control.Phone,GTA.Control.FrontendPause,GTA.Control.FrontendPauseAlternate})Game.DisableControlThisFrame(c);

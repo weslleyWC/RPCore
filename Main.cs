@@ -24,7 +24,8 @@ namespace RPCore
         readonly ObjectPool pool = new ObjectPool();
         readonly List<ISystem> systems = new List<ISystem>();
         readonly HashSet<ISystem> faulted = new HashSet<ISystem>();
-        int nextSave;
+        int nextSave,lastFrameAt,nextContextAt;
+        string lastContext;bool wasNearPdm;readonly GTA.Math.Vector3 pdmOffice;
         RuntimeTrace trace;readonly Dictionary<ISystem,int> traceIds=new Dictionary<ISystem,int>();
         readonly HashSet<Keys> heldKeys = new HashSet<Keys>();
         readonly CoreMenu core;
@@ -70,7 +71,7 @@ namespace RPCore
             var drag = new DragJob(pool, ach, shifts); systems.Add(drag);
             systems.Add(new PdmStreaming());
             Func<bool> riskSynced=()=>true;
-            var pdm = new PdmCompany(pool, ach, shifts); systems.Add(pdm);
+            var pdm = new PdmCompany(pool, ach, shifts); systems.Add(pdm);pdmOffice=pdm.StartPosition;
             var finance = new PdmFinanceSystem(pool, pdm.Financing, ach, pdm.OpenMenu); systems.Add(finance); pdm.OpenFinanceContracts = finance.OpenMenu; pdm.SyncFinance = finance.Flush;
             var staff = new PdmStaffSystem(pool, pdm.OfficeAction, pdm.OpenMenu); systems.Add(staff);
             pdm.OpenStaff = staff.OpenMenu; pdm.SyncStaff = staff.Flush;
@@ -171,7 +172,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.107.0 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.107.1 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -193,6 +194,9 @@ namespace RPCore
             Stage(1);
             var player = Game.Player.Character;
             if (player == null || !player.Exists()) return;
+            lastFrameAt=Game.GameTime;
+            bool nearPdm=player.Position.DistanceTo(pdmOffice)<220 || player.Position.DistanceTo(new GTA.Math.Vector3(-48,-1104,26.4f))<220;
+            try{GameplayContext.Update(player,nearPdm);TraceGameplay("area",false);}catch(Exception ex){Log.Error("gameplay context sample",ex);}
             if (core.RequestedProfile != null)
             {
                 Cfg.CustomProfile = Profile.SafeId(core.RequestedProfile); core.RequestedProfile = null;
@@ -293,6 +297,7 @@ namespace RPCore
                 string s = string.Format(CultureInfo.InvariantCulture, "{0:F2}, {1:F2}, {2:F2}  h={3:F1}",
                     p.Position.X, p.Position.Y, p.Position.Z, p.Heading);
                 Log.Write("POS " + s);
+                TraceGameplay("F9",true);
                 Notify.Show("pos " + s);
                 return;
             }
@@ -303,6 +308,7 @@ namespace RPCore
         void DispatchSystemKey(Keys key)
         {
             var e = new KeyEventArgs(key);
+            if(key==InterfaceOptions.SettingsKey || key==Cfg.CoreKey || key==Visuals.PhoneKey || key==InterfaceOptions.RadialKey)TraceGameplay("key:"+key,true);
             if (key == InterfaceOptions.SettingsKey)
             {
                 if (!faulted.Contains(settings))
@@ -317,6 +323,31 @@ namespace RPCore
             }
         }
 
+        void TraceGameplay(string reason,bool force)
+        {
+            if(!force && unchecked(Game.GameTime-nextContextAt)<0)return;nextContextAt=Game.GameTime+1000;
+            try{
+                var ped=Game.Player.Character;var position=ped.Position;
+                bool near=position.DistanceTo(pdmOffice)<220 || position.DistanceTo(new GTA.Math.Vector3(-48,-1104,26.4f))<220;
+                if(!force && !near && !wasNearPdm)return;
+                string visible=string.Join(" | ",pool.OfType<LemonUI.Menus.NativeMenu>().Where(m=>m.Visible).Select(m=>m.Name));
+                var state=new{
+                    nearPdm=near,mission=Game.IsMissionActive,cutsceneActive=GameplayContext.Active,cutscenePlaying=GameplayContext.Playing,
+                    preparedOnly=GameplayContext.PreparedOnly,sceneBlocking=GameplayContext.SceneBlocking,control=GameplayContext.Control,
+                    hudHidden=GTA.Native.Function.Call<bool>(GTA.Native.Hash.IS_HUD_HIDDEN),paused=Game.IsPaused,
+                    fadedIn=GTA.UI.Screen.IsFadedIn,gameplayCamera=GTA.Native.Function.Call<bool>(GTA.Native.Hash.IS_GAMEPLAY_CAM_RENDERING),
+                    terrainReady=GameplayContext.TerrainReady,frozen=ped.IsPositionFrozen,visibleMenus=visible,
+                    modal=InterfaceOptions.ModalOpen,phone=phone.Visible,radial=radial.Visible,inventory=inventory.GridVisible,
+                    shop=shop.GridVisible,monitor=surveillance.Viewing,editor=editor.Manipulating,sleep=survival.Sleeping,
+                    failed=string.Join(",",faulted.Select(x=>x.Name)),profile=Profile.Id,detected=Profile.Detect()
+                };
+                string key=Newtonsoft.Json.JsonConvert.SerializeObject(state);
+                if(force || key!=lastContext || near!=wasNearPdm){
+                    Log.Write("UI context ["+reason+"] "+key+" / frameAgeMs="+unchecked(Game.GameTime-lastFrameAt)+" / pos="+position.X+","+position.Y+","+position.Z);
+                    lastContext=key;
+                }wasNearPdm=near;
+            }catch(Exception ex){Log.Error("UI context diagnostic",ex);}
+        }
         void SwitchCharacter(string target,int model)
         {
             if(!CharacterRules.CanTransition(target,model))throw new InvalidOperationException("Invalid character model/profile transition.");

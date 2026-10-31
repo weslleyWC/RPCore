@@ -57,9 +57,9 @@ namespace RPCore
         public void Tick()
         {
             int now = Game.GameTime;
-            int delta=NeedsRules.Delta(now,last,!Game.IsPaused && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE));last=now;
+            int delta=NeedsRules.Delta(now,last,!Game.IsPaused && !GameplayContext.SceneBlocking);last=now;
             NativeBedTick(now);
-            if(Game.IsPaused || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))return;
+            if(Game.IsPaused || GameplayContext.SceneBlocking)return;
 
             Ped p = Game.Player.Character;
             if (p==null || !p.Exists()) return;
@@ -101,7 +101,7 @@ namespace RPCore
 
         void DrawHud()
         {
-            if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE) || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) || Function.Call<bool>(Hash.IS_HUD_HIDDEN)) return;
+            if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE) || GameplayContext.SceneBlocking || GameplayContext.HudHidden) return;
             var p = Game.Player.Character;
             if (!Visuals.NeedsHud) return;
             float stamina = p.IsSwimmingUnderWater?Clamp(Game.Player.RemainingUnderwaterTime*4.1f):d.Stamina;
