@@ -13,6 +13,7 @@ namespace RPCore
     public sealed partial class PdmShowroomSystem : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
+        readonly PdmParkingLeases parking=new PdmParkingLeases(new PdmParkingBackend());int nextParking;
         public Func<bool> SyncAccounts;
         sealed class Display { public string StockId, Model, Plate; public Vehicle Car; }
         public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Slots.Where(s=>s.Enabled).Select(s=>PdmLocation.At("showroom:"+s.Id,"Showroom",s.Name,s.Interior?"Vaga interna: precisa de interior/chao carregados; exposicao iniciada no menu.":"Vaga externa: expor um carro pago do estoque no menu.",s.Point));
@@ -271,6 +272,7 @@ namespace RPCore
         }
         void RetireSaleWorld()
         {
+            try{parking.Clear();}catch(Exception ex){Log.Error("PDM parking release",ex);}
             StopPose(); if (buyer != null && PdmAssets.Valid(buyer)) buyer.Delete(); buyer = null;
             if (saleCar != null && Matches(saleCar)) { saleCar.Car.IsPositionFrozen = false; saleCar.Car.IsInvincible = false; if (Empty(saleCar)) Delete(saleCar); else JobVehicles.Retire(saleCar.Car); } saleCar = null;
         }
@@ -293,6 +295,7 @@ namespace RPCore
             ui.Tick(PdmMenuRuntime.Allowed);
             try
             {
+                if(unchecked(Game.GameTime-nextParking)>=0){nextParking=Game.GameTime+1000;bool protect=GameplayContext.BackgroundReady && PdmMenuRuntime.WorldAllowed && Wallet.Pdm.Valid && Wallet.Pdm.Owned && Game.Player.Character.Position.DistanceTo(StartPosition)<180;if(protect)parking.Update(PdmParkingRules.Regions(options,Wallet.Pdm));else parking.Clear();}
                 if (Active) SaleTick();
                 if (unchecked(Game.GameTime - nextWorld) >= 0) { nextWorld = Game.GameTime + 5000; SyncWorld(); }
                 if (Wallet.Pdm.Valid && InputAllowed) PriceCards();
@@ -301,6 +304,7 @@ namespace RPCore
         }
         void ReleaseWorld()
         {
+            try{parking.Clear();}catch(Exception ex){Log.Error("PDM parking release",ex);}
             StopPose(); if (buyer != null && PdmAssets.Valid(buyer)) buyer.Delete(); buyer = null;
             if (run?.Stage == PdmShowroomStage.Complete) { displays.Remove(run.StockId); RetireSaleWorld(); }
             foreach (var d in displays.Values) if (!Delete(d) && Matches(d)) { d.Car.IsPositionFrozen = false; d.Car.IsInvincible = false; JobVehicles.Retire(d.Car); }

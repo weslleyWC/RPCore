@@ -1,3 +1,9 @@
+## Atualização 0.108.1 — salários e vagas externas PDM
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.108.1.zip) · [Salários, compatibilidade e teste](docs/PDM-SALARIOS-0.108.1.md)
+
+Padrão de 5 minutos para 1 hora de jogo ativo. Ajusta contratos padrão já existentes preservando progresso, dívidas e valores; configuração personalizada respeitada. 4361 testes aprovados; GTA pendente. Proteção local das vagas externas sem remover carros existentes. Mantém a PDM e o crédito F11 de $1 milhão da 0.108.0.
+
 ## Atualização 0.108.0 — conjunto PDM e F11 $1 milhão
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.108.0.zip) · [Recursos, controles e teste GTA](docs/PDM-EMPRESA-0.108.0.md)

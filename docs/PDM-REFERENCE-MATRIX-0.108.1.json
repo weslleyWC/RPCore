@@ -1,0 +1,283 @@
+{
+  "version": "0.108.1",
+  "reference_source": "PSRP/PDMCompany.cs",
+  "reference_sha256": "4a69a25b87836b965e3503167bc21f3eeabd91b02550f13fc6eea25785fafb12",
+  "interpretation": "Family mapping from static review, not a claim of binary or visual identity or runtime validation. See guide for behavior differences.",
+  "families": [
+    {
+      "family": "Fornecedor e carrinho",
+      "reference_members": [
+        "GenerateCarsForTheDay",
+        "PopulateVehicleClass",
+        "AddCarToOrder",
+        "RemoveCarFromOrder",
+        "RefreshManageOrderMenu"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseCatalogue.cs",
+        "PdmEnterpriseTransactions.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseCatalogue.cs": "2e4066e44a3f7399918ace07b3784c717353141e5eaccc539719629b795f6f07",
+        "PdmEnterpriseTransactions.cs": "2258f5600d03448c5ba4e3cb6ecfb17813a24aa3df5e0d7684e9aeca408d1e80"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Coletor e frota",
+      "reference_members": [
+        "Update",
+        "TruckUpgrade",
+        "TwoCarTrailerUpgrade",
+        "FiveCarTrailerUpgrade"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseDelivery.cs",
+        "PdmEnterpriseCatalogue.cs",
+        "PdmLogistics.cs",
+        "PdmEnterpriseData.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseDelivery.cs": "c1887dab2eb4f00a8780a41e62a2588f7601d88ac223145ad0cc23beb802ea92",
+        "PdmEnterpriseCatalogue.cs": "2e4066e44a3f7399918ace07b3784c717353141e5eaccc539719629b795f6f07",
+        "PdmLogistics.cs": "7b1d1bacaa2d1ce745dc8dc17914bfed67c80fb6be564c7148806280f9d95d3e",
+        "PdmEnterpriseData.cs": "337a51a877b38fb3c3668fa36b389ed2a86d916c1f71fd22984f82c967e91735"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Inspecao e vendedor",
+      "reference_members": [
+        "GenerateCarSellerEvent",
+        "HandleCarSellerEvent",
+        "CompleteSellerEvent",
+        "CancelSellerEvent"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseSeller.cs",
+        "PdmEnterpriseTransactions.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseSeller.cs": "7e9b74799fa904749e5e03ff8e72d74647f7a401b1a68cd1245c596747846f3b",
+        "PdmEnterpriseTransactions.cs": "2258f5600d03448c5ba4e3cb6ecfb17813a24aa3df5e0d7684e9aeca408d1e80"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Reputacao, propaganda e dias",
+      "reference_members": [
+        "DeliverBusinessCards",
+        "HandleDays",
+        "HandleNewDay",
+        "RegisterWages",
+        "FireAllStaff"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseSystem.cs",
+        "PdmEnterpriseServices.cs",
+        "PdmEnterpriseTransactions.cs",
+        "PdmStaffData.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseSystem.cs": "a851938b6f17220a768aa48807d82821d67e4b94212f0c8147bfcb334c2662b9",
+        "PdmEnterpriseServices.cs": "4d613cceaa2dd6eded1ef129e63f79e01d68dfcc54e0e228d0cfe0c6b5fb19c5",
+        "PdmEnterpriseTransactions.cs": "2258f5600d03448c5ba4e3cb6ecfb17813a24aa3df5e0d7684e9aeca408d1e80",
+        "PdmStaffData.cs": "4e5a61ea40a7c348d6270ef110574b564878b87d42907b6fc5f21e0052d91e76"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Lixo e zeladoria",
+      "reference_members": [
+        "SpawnBinBag",
+        "UpdateMaid",
+        "CreateCleanerSequence"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseWorld.cs",
+        "PdmEnterpriseServices.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634",
+        "PdmEnterpriseServices.cs": "4d613cceaa2dd6eded1ef129e63f79e01d68dfcc54e0e228d0cfe0c6b5fb19c5"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Vidro, luzes, cameras, agua e bomba",
+      "reference_members": [
+        "PurchasePDMGlass",
+        "PurchasePDMLights",
+        "PurchasePDMCamera",
+        "PurchasePDMWasher",
+        "PurchasePDMFuelPump",
+        "CreateHoseWheel",
+        "CreateFuelPump"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseWorld.cs",
+        "PdmEnterpriseServices.cs",
+        "PdmSurveillanceSystem.cs",
+        "config/Jobs/PdmEnterprise.json"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634",
+        "PdmEnterpriseServices.cs": "4d613cceaa2dd6eded1ef129e63f79e01d68dfcc54e0e228d0cfe0c6b5fb19c5",
+        "PdmSurveillanceSystem.cs": "830b53755e46b5721d3b339f1a2910f2fb66cc7fc5a27f0e97ee43eb0f83c458",
+        "config/Jobs/PdmEnterprise.json": "6c770cd21cfc596e3c94f0913689b552c2819bfd9038d807b71add02beeb4cf6"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Vagas, capas e cartoes",
+      "reference_members": [
+        "SpawnVehicleInSlot",
+        "SpawnVehicleInParkingLot",
+        "UpdateShowroomCoverSystem",
+        "DrawVehicleCard3D",
+        "HandleParkingSpots",
+        "DeleteShowRoomGenerators"
+      ],
+      "implementation_files": [
+        "PdmShowroomSystem.cs",
+        "PdmShowroomPlacementRuntime.cs",
+        "PdmEnterpriseWorld.cs",
+        "PdmParkingData.cs",
+        "PdmParkingProtection.cs"
+      ],
+      "implementation_sha256": {
+        "PdmShowroomSystem.cs": "ff9950e1e28eef7d66f01a39e347a85bbff8e28711e8114ff2b2f6aef0ff42a1",
+        "PdmShowroomPlacementRuntime.cs": "c6fac8ea9cb6e82b5c55b950a51add0c76a3bf2d151a18e76dce87ff8ed781a9",
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634",
+        "PdmParkingData.cs": "c5126d863ceec1ae3d0e03caaa16a07e919e2c8cdcb245cc1ddd3f08d894e86c",
+        "PdmParkingProtection.cs": "8fa906bb971c11e1781dbcf69ce55d85db4680e56a9a7a893d47ed5e2e46fd9f"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Vendas e entregas",
+      "reference_members": [
+        "SellRandomPDMVehicle",
+        "SellRandomPDMVehicleOnShowroomFloor",
+        "UpdateDeliveryState"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseWorld.cs",
+        "PdmEnterpriseTransactions.cs",
+        "PdmCompany.cs",
+        "PdmFinanceData.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634",
+        "PdmEnterpriseTransactions.cs": "2258f5600d03448c5ba4e3cb6ecfb17813a24aa3df5e0d7684e9aeca408d1e80",
+        "PdmCompany.cs": "b774d9211f62cdfd1d2efe8ea60a6feea0c139755e7cd8cbf8b8e18cf7ddafd1",
+        "PdmFinanceData.cs": "7c46e201e0d3e3b7183095923ca2ba257e34b46f65f5cc6026eb969eaa3799da"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Retomadas e inadimplencia",
+      "reference_members": [
+        "GenerateCarFinance",
+        "SpawnRepoEventVehicle",
+        "HandleRepoEvent"
+      ],
+      "implementation_files": [
+        "PdmRepoSystem.cs",
+        "PdmRepoData.cs",
+        "PdmFinanceData.cs"
+      ],
+      "implementation_sha256": {
+        "PdmRepoSystem.cs": "05f41fb36d164de0f22542a03a3dca93800db2ca13c484874d801eb33ec9d1ad",
+        "PdmRepoData.cs": "b2150cc9854bc80182c8aa20056335553200c23c698eda948e5d0a95e7c4219b",
+        "PdmFinanceData.cs": "7c46e201e0d3e3b7183095923ca2ba257e34b46f65f5cc6026eb969eaa3799da"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Locadora",
+      "reference_members": [
+        "GenerateRentalOrder",
+        "HandleRentalDelivery"
+      ],
+      "implementation_files": [
+        "PdmRentalData.cs",
+        "PdmRentalSystem.cs",
+        "PdmEnterpriseWorld.cs"
+      ],
+      "implementation_sha256": {
+        "PdmRentalData.cs": "cec811e1d56caa648de816927dcf77f106fc689b10ba0c08dd47ac53cb14955c",
+        "PdmRentalSystem.cs": "349458b2780c420a12a17aca9a54ef042c5aad0209c1d01cce29db8f6ea5e63b",
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Cofre, risco e valores",
+      "reference_members": [
+        "HandleSafeEvent",
+        "CreateSafeProp",
+        "SwapSafeProp",
+        "SwitchInsurance"
+      ],
+      "implementation_files": [
+        "PdmSafeSystem.cs",
+        "PdmRiskSystem.cs",
+        "PdmEnterpriseWorld.cs"
+      ],
+      "implementation_sha256": {
+        "PdmSafeSystem.cs": "740a359ac306819b7b0bdad61cfb4458a55ef8e494df32b5be2fe5686efcf8a3",
+        "PdmRiskSystem.cs": "f7504c824059d2559d561d7a783d839d152e7894aa7673b8b2e71a61c9c69d7b",
+        "PdmEnterpriseWorld.cs": "efff00e2a2b22244c6db10849da60e448215af6e25a4ee64c2b12545ba602634"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Equipe, atendimento, telefone",
+      "reference_members": [
+        "SpawnMechanicPed",
+        "SpawnCleanerPed",
+        "SpawnSecurity1Ped",
+        "SpawnSecurity2Ped",
+        "HandleStaffTalking",
+        "PDMPhoneMenu"
+      ],
+      "implementation_files": [
+        "PdmPremisesSystem.cs",
+        "PdmSecuritySystem.cs",
+        "PdmEnterpriseSystem.cs",
+        "PdmStaffSystem.cs",
+        "PhoneSystem.cs"
+      ],
+      "implementation_sha256": {
+        "PdmPremisesSystem.cs": "6a83e5ac28aca42cf67476e3d8876fac7e83b711fe4e62506da5fde56037527c",
+        "PdmSecuritySystem.cs": "3749613d97a04b1ceb1ac63c35f3ef552fbe475114f0f935aa615e20db0c78fb",
+        "PdmEnterpriseSystem.cs": "a851938b6f17220a768aa48807d82821d67e4b94212f0c8147bfcb334c2662b9",
+        "PdmStaffSystem.cs": "e3b5cd81350650c1d21a8a5771eb9bee4bb18fa86231b8ed34074af9c63b0622",
+        "PhoneSystem.cs": "ed82be7198fdb5d27200e3df2f19fdc3f46176064d2929e7abd668bc17d458d8"
+      },
+      "runtime_gta_verified": false
+    },
+    {
+      "family": "Ferramentas e modificacoes",
+      "reference_members": [
+        "EquipWasher",
+        "UnequipWasher",
+        "UpdateWashers",
+        "ApplyVehicleMods"
+      ],
+      "implementation_files": [
+        "PdmEnterpriseServices.cs",
+        "PdmStockPresentation.cs",
+        "VehicleSnapshot.cs"
+      ],
+      "implementation_sha256": {
+        "PdmEnterpriseServices.cs": "4d613cceaa2dd6eded1ef129e63f79e01d68dfcc54e0e228d0cfe0c6b5fb19c5",
+        "PdmStockPresentation.cs": "92cc7f806ebd7492abcd43142fc9a295e4b82f6d52b155e2cc110c3893d29903",
+        "VehicleSnapshot.cs": "d5820d1e34374e1f3d3f752125bc1916e058d695ddb5f3582d825751098463a9"
+      },
+      "runtime_gta_verified": false
+    }
+  ],
+  "salary_policy": "Legacy five-minute default becomes one active hour. Existing owed balances and elapsed fraction preserved; custom non-default contract periods retained. See PDM-SALARIOS-0.108.1.md."
+}

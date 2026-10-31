@@ -1,4 +1,5 @@
 {
+  "PayrollSeconds": 3600,
   "DaySeconds": 1800,
   "SaleSeconds": 900,
   "SellerSeconds": 1380,

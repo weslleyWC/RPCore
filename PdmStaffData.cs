@@ -27,6 +27,36 @@ namespace RPCore
             using (var r = new System.IO.StreamReader(s)) return JsonConvert.DeserializeObject<PdmStaffOptions>(r.ReadToEnd());
         }
     }
+    public static class PdmPayrollPolicy
+    {
+        public const int LegacySeconds=300;
+        public static PdmStaffOptions Resolve(PdmStaffOptions staff,PdmEnterpriseOptions enterprise)
+        {
+            if(staff?.Valid!=true || enterprise?.Valid!=true)throw new ArgumentException("Invalid payroll configuration.");
+            var copy=JsonConvert.DeserializeObject<PdmStaffOptions>(JsonConvert.SerializeObject(staff));
+            if(copy.PeriodSeconds==LegacySeconds)copy.PeriodSeconds=enterprise.PayrollSeconds;
+            return copy;
+        }
+        public static bool NeedsAlignment(PdmData company,int period)=>company?.Owned==true && company.Staff?.Employees?.Any(e=>e!=null && e.PeriodSeconds==LegacySeconds && e.PeriodSeconds!=period)==true;
+        public static string Duration(int seconds)
+        {
+            if(seconds>=3600 && seconds%3600==0)return seconds/3600+" h";
+            if(seconds>=60 && seconds%60==0)return seconds/60+" min";
+            return seconds/60+" min "+seconds%60+" s";
+        }
+        public static bool Align(WalletData wallet,int period,string receipt,Action save,out bool changed)
+        {
+            changed=false;if(wallet?.Pdm?.Valid!=true || period<60 || period>3600 || save==null)return false;
+            if(!wallet.Pdm.Owned || !NeedsAlignment(wallet.Pdm,period))return true;
+            return PdmTransactions.Apply(wallet,receipt,0,d=>{
+                foreach(var employee in d.Staff.Employees.Where(e=>e.PeriodSeconds==LegacySeconds && e.PeriodSeconds!=period)){
+                    employee.Seconds=(int)((long)employee.Seconds*period/employee.PeriodSeconds);
+                    employee.PeriodSeconds=period;
+                }
+                return true;
+            },save,out changed);
+        }
+    }
     public sealed class PdmEmployee : ExtensibleData
     {
         public string Id, Role, Name;

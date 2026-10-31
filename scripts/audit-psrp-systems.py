@@ -1702,11 +1702,12 @@ report['stability_logs_01022']={
  'validation':'3940 tests,7 new:4 typed buffer cases against actual Enhanced SDK managed allocation API without GTA natives,3 mapped trace lifecycle cases. Release net48 no errors/warnings. Installer twice over0.102.1 preserves229 files. Actual doors/F10/driving/pursuit/native cash and crash origin need user GTA test; see STABILIDADE-0.102.2.md.'}
 # Static enterprise evidence extends the original phase descriptions above.
 repo_root=Path(__file__).resolve().parents[1]
-matrix_path=repo_root/'docs/PDM-REFERENCE-MATRIX-0.108.0.json'
+matrix_version=re.search(r'AssemblyVersion\("(\d+\.\d+\.\d+)\.\d+"\)',(repo_root/'AssemblyInfo.cs').read_text()).group(1)
+matrix_path=repo_root/('docs/PDM-REFERENCE-MATRIX-'+matrix_version+'.json')
 if matrix_path.exists() and (repo_root/'PdmEnterpriseSystem.cs').exists():
     matrix=json.loads(matrix_path.read_text())
     report['pdm_enterprise_01080']={
-        'reference':'PSRP/PDMCompany.cs', 'matrix':'PDM-REFERENCE-MATRIX-0.108.0.json',
+        'reference':'PSRP/PDMCompany.cs', 'matrix':matrix_path.name,
         'family_count':len(matrix['families']),
         'implementation_hashes_current':all(digest((repo_root/f).read_bytes())==h for family in matrix['families'] for f,h in family['implementation_sha256'].items()),
         'cycles':'Daily category/mileage catalogue and atomic cart; paid collector/physical arrival/budget; six-car TR2; private seller; cards/charity/sponsor; trash/cleaner; night covers; facilities/wash/fuel/tune; customer reservations/team sales; daily rentals; parked/driving/disputed repos; staff dialogue/fire-all; phone; Y input; F11 million.',
@@ -1718,5 +1719,7 @@ if matrix_path.exists() and (repo_root/'PdmEnterpriseSystem.cs').exists():
         if key in report:
             report[key]['original_phase_scope_limits']=report[key].pop('scope_limits','')
             report[key]['current_scope']='See pdm_enterprise_01080 and family matrix; native gameplay remains unverified.'
+if (repo_root/'docs/PDM-SALARIOS-0.108.1.md').exists():
+    report['pdm_payroll_01081']={'tests_passed':4361,'new_cases':21,'previous_default_seconds':300,'default_seconds':3600,'migration':'Only legacy 300-second employee contracts, scaled elapsed fraction, no cash/wage/debt changes, save rollback. Other custom contract periods retained.','configuration':'Optional PayrollSeconds, existing files without field resolve default in memory; custom PdmStaff PeriodSeconds other than 300 retained.','parking':'Only enabled exterior showroom slot bounds, owned vehicle-scenario block handles, localized generator suppression/restoration; no vehicle deletion or cancellation of existing parking tasks.','guide':'PDM-SALARIOS-0.108.1.md','gta_runtime_tested':False}
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

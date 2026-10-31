@@ -14,7 +14,7 @@ namespace RPCore
         public PdmSecurityOptions Security { get; }
         public PdmEnterpriseOptions Enterprise {get;}
         public Action OpenServices, OpenSecurity;
-        public bool Synced=>pending<1000;
+        public bool Synced=>pending<1000 && !PdmPayrollPolicy.NeedsAlignment(Wallet.Pdm,options.PeriodSeconds);
         public string Name => "pdmstaff";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly Func<bool> office; readonly Action back;
         readonly PdmStaffOptions options;
@@ -32,7 +32,7 @@ namespace RPCore
             options = PdmSecurityDefaults.Merge(options, Security);
             var enterpriseDefault=PdmEnterpriseDefaults.Load();Enterprise=Store.LoadDef("Jobs/PdmEnterprise.json",()=>enterpriseDefault);
             if(Enterprise?.Valid!=true){Log.Write("Invalid PdmEnterprise.json; original preserved; embedded defaults used.");Enterprise=enterpriseDefault;}
-            options=PdmEnterpriseDefaults.Merge(options,Enterprise);
+            options=PdmPayrollPolicy.Resolve(PdmEnterpriseDefaults.Merge(options,Enterprise),Enterprise);
             menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PdmMenuView(pool,menu,ex=>ui.Problem("Falha na equipe","Confira folha e funcionarios antes de repetir a operacao.",ex,OpenMenu)); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
@@ -45,6 +45,8 @@ namespace RPCore
         {
             Sample();
             if (profile != Profile.Id || !Wallet.Pdm.Valid || Wallet.Pdm.Staff.Employees.Count == 0) return;
+            if(!PdmPayrollPolicy.Align(Wallet.EnterpriseWallet(),options.PeriodSeconds,Guid.NewGuid().ToString("N"),Wallet.Save,out bool aligned))throw new InvalidOperationException("PDM payroll interval checkpoint refused; original preserved.");
+            if(aligned)Log.Write("PDM payroll: legacy 5-minute contracts adjusted to "+options.PeriodSeconds+" active seconds; wages, debt and elapsed fraction preserved.");
             for(int batch=0;pending>=1000 && batch<2;batch++)
             {
                 if (stepId == null) { stepId = Guid.NewGuid().ToString("N"); stepSeconds = (int)Math.Min(60, pending / 1000); }
@@ -77,7 +79,7 @@ namespace RPCore
             menu.Name="Equipe / caixa $"+d.Cash+" / divida $"+PdmBusinessRules.Wages(d);
             if(!d.Owned){Add("Adquira a empresa primeiro","Voltar a gestao.",back);ui.Show();return;}
             foreach(var offer in options.Roles){var role=offer;var employee=d.Staff.Employees.Find(e=>e.Role==role.Id);
-                Add(role.Name+" / "+(employee==null?"nao contratado":employee.Owed>0?"salario pendente $"+employee.Owed:"em dia"),"Salario $"+role.Wage+" por "+options.PeriodSeconds+"s ativos. Selecione para consultar, contratar ou gerir.",()=>Role(role.Id));}
+                Add(role.Name+" / "+(employee==null?"nao contratado":employee.Owed>0?"salario pendente $"+employee.Owed:"em dia"),"Salario $"+role.Wage+" a cada "+PdmPayrollPolicy.Duration(employee?.PeriodSeconds??options.PeriodSeconds)+" de jogo ativo. Selecione para consultar, contratar ou gerir.",()=>Role(role.Id));}
             long debt=PdmBusinessRules.Wages(d);
             ui.AddConfirm("Quitar folha e acertos / $"+debt,"Paga todos os salarios vencidos e ex-funcionarios em uma unica operacao do caixa empresarial.",()=>Change(()=>Wallet.PdmPayAll(Guid.NewGuid().ToString("N"),out _,debt)),debt>0 && debt<=d.Cash);
             ui.AddConfirm("Demitir toda a equipe","Encerra todos os cargos juntos; salarios, proporcionais e rescisao ficam como acerto a pagar, sem perdao de divida.",()=>Change(()=>PdmStaffTransactions.FireAll(Wallet.EnterpriseWallet(),Guid.NewGuid().ToString("N"),Wallet.Save,out _)),d.Staff.Employees.Count>0);
@@ -93,14 +95,14 @@ namespace RPCore
             ui.HideAll();ui.Begin(Name+":"+roleId,OpenMenu,true,()=>Role(roleId));var d=Wallet.Pdm;var e=d.Staff.Employees.Find(x=>x.Role==roleId);
             menu.Name=role.Name;
             if(e==null){
-                ui.Add("Salario $"+role.Wage+" / "+options.PeriodSeconds+"s ativos","Sem cobranca offline. Atraso suspende beneficios; salarios sao pagos pelo caixa.",()=>{},false);
+                ui.Add("Salario $"+role.Wage+" / "+PdmPayrollPolicy.Duration(options.PeriodSeconds)+" de jogo ativo","Sem cobranca offline. Atraso suspende beneficios; salarios sao pagos pelo caixa.",()=>{},false);
                 string required=role.Requires==null?"Sem cargo previo.":"Requer "+options.Roles.Find(r=>r.Id==role.Requires)?.Name+" contratado e em dia.";
                 string refusal=PdmStaffTransactions.HireReason(d,options,roleId);
                 Add("Contratar / $"+role.HiringCost,refusal??(required+" Debita caixa empresarial. Contratacao nao paga salarios futuros."),()=>{
                     Flush();if(!office())return;
                     string reason=PdmStaffTransactions.HireReason(Wallet.Pdm,options,roleId);
                     if(reason!=null){ui.Problem("Contratacao recusada",reason,null,()=>Role(roleId));return;}
-                    ui.Confirm("Contratar "+role.Name,"Custo $"+role.HiringCost+" pelo caixa; salario $"+role.Wage+" por "+options.PeriodSeconds+"s ativos. "+required,()=>{
+                    ui.Confirm("Contratar "+role.Name,"Custo $"+role.HiringCost+" pelo caixa; salario $"+role.Wage+" a cada "+PdmPayrollPolicy.Duration(options.PeriodSeconds)+" de jogo ativo. "+required,()=>{
                         Flush();if(!office())return;var problem=PdmStaffTransactions.HireReason(Wallet.Pdm,options,roleId);
                         if(problem!=null){ui.Problem("Contratacao recusada",problem,null,()=>Role(roleId));return;}
                         if(!Wallet.PdmHire(options,roleId,Guid.NewGuid().ToString("N"),out bool changed)){ui.Problem("Contratacao recusada","Confira caixa, folha e cargo novamente; nenhum funcionario novo confirmado.",null,()=>Role(roleId));return;}
@@ -109,7 +111,7 @@ namespace RPCore
                 });
             }else{
                 string id=e.Id;int due=e.Owed;
-                ui.Add("Salario devido: $"+due,"Proximo vencimento em "+(e.PeriodSeconds-e.Seconds)+"s ativos. Divida de ex-funcionarios: $"+d.Staff.FormerDebt+".",()=>{},false);
+                ui.Add("Salario devido: $"+due,"Proximo vencimento em "+PdmPayrollPolicy.Duration(e.PeriodSeconds-e.Seconds)+" de jogo ativo. Divida de ex-funcionarios: $"+d.Staff.FormerDebt+".",()=>{},false);
                 ui.AddConfirm("Pagar salario / $"+due,"Quita o saldo vencido, sem adiantar ou cobrar outro periodo.",()=>Change(()=>PayExpected(roleId,due)),due>0 && d.Cash>=due);
                 long estimate=(long)e.Owed+((long)e.Seconds*e.Wage+e.PeriodSeconds-1)/e.PeriodSeconds+e.Severance;
                 ui.AddConfirm("Demitir "+e.Name,"Acerto estimado $"+estimate+": salarios vencidos, proporcional ate confirmar e multa de $"+e.Severance+". Vira divida de ex-funcionarios; nao sai dinheiro agora. Marketing: demitir do maior nivel ao menor.",()=>Change(()=>Wallet.PdmFire(id,Guid.NewGuid().ToString("N"),out _)));

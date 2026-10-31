@@ -17,12 +17,13 @@ namespace RPCore
     }
     public sealed class PdmEnterpriseOptions : ExtensibleData
     {
+        public int PayrollSeconds=3600;
         public int DaySeconds=1800,SaleSeconds=900,SellerSeconds=1380,SourceSeconds=1380,CardCount=10,CardCost=100,AutoPickupFee=250;
         public PdmStaffOffer Collector=new PdmStaffOffer{Id="collector",Name="Coletor de veiculos",HiringCost=2300,Wage=2300,SaleBonusPercent=0};
         public List<PdmFacility> Facilities=new List<PdmFacility>();
         public JobPoint ServiceBay,SourceArrival,SellerCar,SellerPed,Dumpster;
         public List<JobPoint> Trash=new List<JobPoint>();
-        [JsonIgnore] public bool Valid=>DaySeconds>=300 && DaySeconds<=86400 && SaleSeconds>=60 && SaleSeconds<=86400 && SellerSeconds>=60 && SellerSeconds<=86400 && SourceSeconds>=60 && SourceSeconds<=86400 && CardCount>=1 && CardCount<=50 && CardCost>=0 && CardCost<=100000 && AutoPickupFee>=0 && AutoPickupFee<=10000 && Collector?.Valid==true && Collector.Id=="collector" && Collector.SaleBonusPercent==0 && new[]{ServiceBay,SourceArrival,SellerCar,SellerPed,Dumpster}.All(p=>p?.Valid==true) && Facilities!=null && Facilities.Count>0 && Facilities.All(p=>p?.Valid==true) && Facilities.Select(p=>p.Id).Distinct().Count()==Facilities.Count && Trash!=null && Trash.Count==4 && Trash.All(p=>p?.Valid==true);
+        [JsonIgnore] public bool Valid=>PayrollSeconds>=60 && PayrollSeconds<=3600 && DaySeconds>=300 && DaySeconds<=86400 && SaleSeconds>=60 && SaleSeconds<=86400 && SellerSeconds>=60 && SellerSeconds<=86400 && SourceSeconds>=60 && SourceSeconds<=86400 && CardCount>=1 && CardCount<=50 && CardCost>=0 && CardCost<=100000 && AutoPickupFee>=0 && AutoPickupFee<=10000 && Collector?.Valid==true && Collector.Id=="collector" && Collector.SaleBonusPercent==0 && new[]{ServiceBay,SourceArrival,SellerCar,SellerPed,Dumpster}.All(p=>p?.Valid==true) && Facilities!=null && Facilities.Count>0 && Facilities.All(p=>p?.Valid==true) && Facilities.Select(p=>p.Id).Distinct().Count()==Facilities.Count && Trash!=null && Trash.Count==4 && Trash.All(p=>p?.Valid==true);
     }
     public static class PdmEnterpriseDefaults
     {
