@@ -68,6 +68,7 @@
     <Compile Include="../GameplayContextData.cs" Link="GameplayContextData.cs" />
     <Compile Include="../PdmNavigationData.cs" Link="PdmNavigationData.cs" />
     <Compile Include="../PdmRefinementData.cs" Link="PdmRefinementData.cs" />
+    <Compile Include="../PdmPickupData.cs" Link="PdmPickupData.cs" />
     <Compile Include="../PdmData.cs" Link="PdmData.cs" />
     <Compile Include="../DragData.cs" Link="DragData.cs" />
     <Compile Include="../StreamerData.cs" Link="StreamerData.cs" />

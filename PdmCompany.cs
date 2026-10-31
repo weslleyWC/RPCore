@@ -46,10 +46,10 @@ namespace RPCore
             if (Financing == null || !Financing.Valid) { Log.Write("Invalid PdmFinance.json; embedded defaults used, original retained."); Financing = financeDefaults; }
             var repoDefaults = PdmRepoDefaults.Load(); Repossession = Store.LoadDef("Jobs/PdmRepo.json", () => repoDefaults);
             if (Repossession == null || !Repossession.Valid) { Log.Write("Invalid PdmRepo.json; embedded defaults used, original retained."); Repossession = repoDefaults; }
-            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, Name);
+            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); ui=new PdmMenuView(pool,menu,ex=>ui.Problem("Falha no atendimento","Confira caixa, estoque e pedidos antes de repetir a operacao.",ex,OpenMenu)); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, Name);
             officeBlip = MapBlips.Create(StartPosition, "RPCore: PDM / empresa", BlipSprite.PersonalVehicleCar, BlipColor.Orange, .8f); Recover();
         }
-        void Add(string title, string text, Action action) { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm action", ex); Notify.Show("Acao PDM nao confirmada. Veja RPCore.log."); } }); }
+        void Add(string title, string text, Action action) { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Problem("Falha no atendimento","Confira caixa, estoque e pedidos antes de repetir a operacao.",ex,OpenMenu); } }); }
         internal bool FlushAccounts()
         {
             SyncStaff?.Invoke();SyncFinance?.Invoke();SyncPremises?.Invoke();SyncRisk?.Invoke();
@@ -176,9 +176,12 @@ namespace RPCore
         {
             Page("catalog","Fornecedor / "+Wallet.Pdm.Stock.Count+"/"+options.Capacity,OpenInventory,OpenCatalog);
             Add("GPS: escritorio / comprar estoque","Encomenda feita aqui no menu, a pe no escritorio; retirada dos pedidos pagos e no porto.",()=>ui.Waypoint(StartPosition,"escritorio / fornecedor PDM"));
-            foreach(var p in options.Catalog){var offer=p;ui.AddConfirm(offer.Name+" / custo "+Money(offer.Cost),"Preco base de venda "+Money(offer.Price)+"; margem bruta "+Money(offer.Price-offer.Cost)+" antes de danos/custos. Pedido aguardara coleta no porto.",()=>{
+            if(OpenCollection!=null)Add("Retirar pedidos / porto","Pedidos pagos nao aparecem so por marcar o GPS. Inicie a retirada no escritorio ou no marcador do porto.",OpenCollection);
+            foreach(var p in options.Catalog){var offer=p;ui.AddConfirm(offer.Name+" / custo "+Money(offer.Cost),"Paga pelo CAIXA DA EMPRESA: "+Money(Wallet.Pdm.Cash)+" -> "+Money(Math.Max(0,Wallet.Pdm.Cash-offer.Cost))+". Banco/carteira pessoal nao mudam. Depois: Retirar pedidos > iniciar retirada no escritorio ou marcador do porto.",()=>{
                 if(!OfficeAction())return;var model=new Model(offer.Model);if(!model.IsValid || !model.IsInCdImage || !model.IsCar){Notify.Show("Modelo indisponivel. Nada comprado.");return;}
-                if(!Wallet.PdmOrder(options,offer.Id,Guid.NewGuid().ToString("N"),Guid.NewGuid().ToString("N"),out _))Notify.Show("Caixa, capacidade ou operacao pendente impedem a compra.");OpenCatalog();
+                int before=Wallet.Pdm.Cash;
+                if(!Wallet.PdmOrder(options,offer.Id,Guid.NewGuid().ToString("N"),Guid.NewGuid().ToString("N"),out bool changed)){ui.Problem("Encomenda recusada","Confira caixa da empresa, capacidade e operacao pendente: "+PdmBusinessRules.Pending(Wallet.Pdm)+". Nenhum pedido novo.",null,OpenCatalog);return;}
+                Notify.Show(changed?"Pedido salvo: "+offer.Name+". Caixa da empresa $"+before+" -> $"+Wallet.Pdm.Cash+". Abra Retirar pedidos e INICIE a retirada no escritorio ou porto.":"Pedido ja registrado; nenhum debito novo.");OpenCatalog();
             },Wallet.Pdm.Cash>=offer.Cost && Wallet.Pdm.Stock.Count<options.Capacity);}
             Add("Voltar","Estoque e fornecedor.",OpenInventory);ui.Show();
         }
@@ -195,7 +198,7 @@ namespace RPCore
             var stock=Wallet.Pdm.Stock.Find(v=>v.Id==id);if(stock==null){OpenStock();return;}
             Page("stock:"+id,stock.Name+" / "+stock.Plate,OpenStock,()=>OpenStockItem(id));
             ui.Add("Custo "+Money(stock.Cost)+" / venda prevista "+Money(PdmStaffTransactions.Quote(Wallet.Pdm,stock,stock.Engine,stock.Body)),"Motor "+stock.Engine+"; carroceria "+stock.Body+"; sujeira "+stock.Dirt+". O valor final da entrega considera a condicao recebida.",()=>{},false);
-            if(stock.AwaitingCollection){if(OpenCollection!=null)Add("Coletar pedido pago","Nao e cobrado novamente no porto.",OpenCollection);}
+            if(stock.AwaitingCollection){if(OpenCollection!=null)Add("Retirar encomenda paga pela empresa","Abra a lista e INICIE a retirada; GPS sozinho nao cria o carro. Pode iniciar no escritorio ou marcador do porto. Sem debito novo.",OpenCollection);}
             else{
                 if(DisplayStock!=null)ui.AddConfirm("Expor em vaga externa","Continua no estoque; nao vende nem transforma em carro pessoal.",()=>ui.Stream(new[]{stock.Model},()=>{if(OfficeAction())DisplayStock(id);OpenStockItem(id);},()=>OpenStockItem(id)));
                 int total=PdmFinanceTransactions.Quote(Wallet.Pdm,Financing,stock,stock.Engine,stock.Body);

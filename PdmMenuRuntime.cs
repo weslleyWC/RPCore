@@ -18,7 +18,7 @@ namespace RPCore
         sealed class Page {public string Key,Name;public Action Back,Refresh;public PdmCommandQuote Quote;public int Index;public bool Remember;public readonly List<Row> Rows=new List<Row>();}
         readonly PdmMenuGroup group;readonly NativeMenu menu;readonly PersonalServiceMenu ui;readonly Action<Exception> failed;readonly Dictionary<string,int> indices=new Dictionary<string,int>();Page page;
         public Action DefaultRefresh;bool preserveLoading;
-        Action loading,loadingBack;string loadingProfile;int loadingActor,loadingModel,loadingAt;long loadingAddress;GTA.Math.Vector3 loadingOrigin;Model[] models;
+        string loadingNames;Func<bool> loadingTerrain;Action loading,loadingBack;string loadingProfile;int loadingActor,loadingModel,loadingAt;long loadingAddress;GTA.Math.Vector3 loadingOrigin;Model[] models;
         public PdmMenuView(LemonUI.ObjectPool pool,NativeMenu menu,Action<Exception> failed){this.menu=menu;this.failed=failed;ui=new PersonalServiceMenu(menu,failed);group=PdmMenuGroup.For(pool);group.Register(this,menu,SuspendPage);ui.CanNavigate=()=>group.Owns(this);}
         public void Begin(string key,Action back=null,bool remember=true,Action refresh=null)
         {if(loading!=null && key!="preparing")StopLoading();preserveLoading=key=="preparing" && loading!=null;try{if(!group.Activate(this))throw new InvalidOperationException("PDM navigation is already changing.");}finally{preserveLoading=false;}int index=remember && indices.TryGetValue(key,out int cached)?cached:0;page=new Page{Key=key,Back=back,Refresh=refresh??DefaultRefresh,Index=index,Remember=remember};ui.Begin(key,back,remember);}
@@ -57,17 +57,28 @@ namespace RPCore
                 if(!quote.Take(Wallet.Pdm,Wallet.Bank,Profile.Id,Game.GameTime)){Notify.Show("Saldo, estoque ou contrato mudou. Confira novamente.");cancel();return;}action();
             });Show();
         }
+        public void Problem(string title,string reason,Exception error=null,Action back=null)
+        {
+            var previous=page;var goBack=back??previous?.Refresh??DefaultRefresh??Close;
+            string reference=Guid.NewGuid().ToString("N").Substring(0,8);
+            if(error!=null)Log.Error("PDM failure ["+reference+"] "+title,error);else Log.Write("PDM refusal ["+reference+"] "+title+" / "+reason);
+            Begin("problem",goBack,false);menu.Name="PDM / "+title;
+            Add("Motivo / "+reference,reason,()=>{},false);
+            if(error!=null)Add("Erro: "+error.GetType().Name,"Referencia "+reference+" no RPCore.log. "+(error.Message??"").Replace("~"," "),()=>{},false);
+            Add("Voltar / conferir dados","Reabrir o atendimento. Operacoes nao sao repetidas automaticamente.",goBack);Show();
+            Notify.Show("PDM: "+title+" / "+reference+". Motivo na tela.");
+        }
         public void AddConfirm(string title,string text,Action action,bool enabled=true)
         {var quote=page.Quote??(page.Quote=new PdmCommandQuote(Wallet.Pdm,Wallet.Bank,Profile.Id,Game.GameTime));Add(title,text,()=>Confirm(title,text,action,null,quote),enabled);}
-        public void Stream(IEnumerable<string> names,Action action,Action back)
+        public void Stream(IEnumerable<string> names,Action action,Action back,Func<bool> terrainReady=null)
         {
-            var list=new List<Model>();foreach(var name in names){var model=new Model(name);if(!model.IsValid || !model.IsInCdImage){Notify.Show("Modelo indisponivel: "+name+". Nenhuma operacao confirmada.");return;}if(!list.Exists(m=>m.Hash==model.Hash))list.Add(model);}
-            models=list.ToArray();loading=action;loadingBack=back;loadingProfile=Profile.Id;var ped=Game.Player.Character;loadingActor=ped.Handle;loadingModel=ped.Model.Hash;loadingAddress=ped.MemoryAddress.ToInt64();loadingOrigin=ped.Position;loadingAt=Game.GameTime;
+            var list=new List<Model>();var labels=new List<string>();foreach(var name in names){var model=new Model(name);if(!model.IsValid || !model.IsInCdImage){Problem("Modelo indisponivel","Recurso "+name+" nao esta instalado/disponivel. Pedidos existentes preservados; nenhuma operacao nova iniciada.",null,back);return;}if(!list.Exists(m=>m.Hash==model.Hash)){list.Add(model);labels.Add(name);}}
+            loadingNames=string.Join(", ",labels);models=list.ToArray();loadingTerrain=terrainReady;loading=action;loadingBack=back;loadingProfile=Profile.Id;var ped=Game.Player.Character;loadingActor=ped.Handle;loadingModel=ped.Model.Hash;loadingAddress=ped.MemoryAddress.ToInt64();loadingOrigin=ped.Position;loadingAt=Game.GameTime;
             Begin("preparing",CancelLoading,false);menu.Name="Preparando recursos PDM";
-            Add("Cancelar","Carregamento sem bloquear o jogo; nenhum contrato ou pagamento foi iniciado.",CancelLoading);Show();
+            Add("Cancelar","Verificando modelos e colisao/chao do local: "+loadingNames+". Pedidos ja pagos continuam salvos. Nenhum contrato ou pagamento novo foi iniciado.",CancelLoading);Show();
         }
         void CancelLoading(){var back=loadingBack;StopLoading();ui.Close();back?.Invoke();}
-        void StopLoading(){if(models!=null)foreach(var model in models)PdmStreaming.Release(model,true);models=null;loading=null;loadingBack=null;}
+        void StopLoading(){if(models!=null)foreach(var model in models)PdmStreaming.Release(model,true);models=null;loadingNames=null;loadingTerrain=null;loading=null;loadingBack=null;}
         public void Tick(bool allowed)
         {
             if(!group.Owns(this)){if(menu.Visible || loading!=null)ClosePage();return;}
@@ -76,9 +87,14 @@ namespace RPCore
             if(loading==null)return;
             try{
             var ped=Game.Player.Character;
-            if(!menu.Visible || !allowed || Profile.Id!=loadingProfile || ped.Handle!=loadingActor || ped.Model.Hash!=loadingModel || loadingAddress==0 || ped.MemoryAddress.ToInt64()!=loadingAddress || ped.Position.DistanceTo(loadingOrigin)>5 || unchecked((uint)(Game.GameTime-loadingAt))>10000){StopLoading();ui.Close();Notify.Show("Preparacao PDM interrompida; nenhuma operacao iniciada.");return;}
+            if(!menu.Visible || !allowed || Profile.Id!=loadingProfile || ped.Handle!=loadingActor || ped.Model.Hash!=loadingModel || loadingAddress==0 || ped.MemoryAddress.ToInt64()!=loadingAddress || ped.Position.DistanceTo(loadingOrigin)>5){StopLoading();ui.Close();Notify.Show("Preparacao PDM interrompida; nenhuma operacao iniciada.");return;}
             bool ready=true;foreach(var model in models)if(!PdmStreaming.Ready(model))ready=false;
-            if(!ready || !GameplayContext.TerrainReady)return;var action=loading;loading=null;loadingBack=null;ui.Close();
+            bool terrain=loadingTerrain?.Invoke()??GameplayContext.TerrainReady;
+            if(unchecked((uint)(Game.GameTime-loadingAt))>10000){
+                var back=loadingBack;string reason=!ready?"Modelos nao carregaram a tempo: "+loadingNames:"Colisao/chao do local ainda nao ficou pronto. Aguarde parado junto ao marcador e tente novamente.";
+                StopLoading();Problem("Preparacao nao concluida",reason+" Pedidos pagos preservados; nenhum debito novo.",null,back);return;
+            }
+            if(!ready || !terrain)return;var action=loading;loading=null;loadingBack=null;ui.Close();
             try{action();}finally{StopLoading();}
             }catch(Exception ex){StopLoading();ui.Close();failed(ex);}
         }

@@ -1,3 +1,9 @@
+## Atualização0.107.4 — retirada PDM pelo porto
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.4.zip) · [Como retirar os pedidos existentes](docs/PDM-RETIRADA-PORTO-0.107.4.md)
+
+Pedidos pagos ganham ícone/marcador no porto: E abre retirada, que pode ser iniciada no local ou no escritório. Conjunto e carros são preparados após confirmação; GPS sozinho não inicia contrato. Telas de falha com motivo/referência. Finanças e pedidos existentes preservados, sem cobrança na coleta.4269 testes; validação nativa no GTA pendente.
+
 ## Atualização0.107.3 — menus e GPS da empresa PDM
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.3.zip) · [Fluxo, destinos e testes GTA](docs/PDM-MENUS-GPS-0.107.3.md)

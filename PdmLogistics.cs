@@ -12,13 +12,13 @@ using LemonUI.Menus;
 namespace RPCore
 {
     // Physical assets are temporary representations of paid company stock, never personal cars.
-    public sealed class PdmLogistics : ISystem, IWorkContract
+    public sealed partial class PdmLogistics : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
         public Action Back;
         public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
-            PdmLocation.At("haul:trailer","Logistica","Retirada do conjunto / carreta","Caminhao e carreta temporarios do contrato, proximos neste patio. Inicie a coleta no escritorio.",options.Trailer),
-            PdmLocation.At("haul:dock","Logistica","Porto / coleta dos pedidos","Pedidos pagos sao criados aqui durante a coleta; nao e o local de compra.",options.Dock),
+            PdmLocation.At("haul:trailer","Logistica","Retirada do conjunto / carreta","Retirada iniciada no escritorio usa este patio. Ao iniciar pelo porto, o conjunto e preparado la.",options.Trailer),
+            PdmLocation.At("haul:dock","Logistica","Porto / coleta dos pedidos","Pressione E no marcador para selecionar pedidos pagos e iniciar a retirada. GPS sozinho nao inicia a coleta.",options.Dock),
             PdmLocation.At("haul:return","Logistica","PDM / recebimento de estoque","Volte com o conjunto carregado para descarregar os pedidos.",options.Return)};
         public string Name => "pdmhaul";
         public string Label => "PDM / coleta no porto";
@@ -43,27 +43,28 @@ namespace RPCore
             this.pool = pool; this.gate = gate; StartPosition = office;
             var defaults = PdmLogisticsDefaults.Load(); options = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmLogistics.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PdmMenuView(pool,menu,ex=>ui.Problem("Falha na retirada","Confira os pedidos e a operacao atual antes de tentar de novo.",ex,OpenMenu)); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
-            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm logistics action", ex); Notify.Show("Operacao pendente; dados preservados. Veja RPCore.log."); } });
+            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Problem("Falha na retirada","Confira os pedidos e a operacao atual antes de tentar de novo.",ex,OpenMenu); } });
         }
         public void OpenMenu()
         {
             ui.HideAll(); ui.Begin(Name,Back,true,OpenMenu);
             Add("GPS: escritorio PDM", "Inicie a pe no escritorio externo da empresa.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
-            Add("GPS: porto / coleta", "Pedidos pagos ficam disponiveis durante o contrato.", () => ui.Waypoint(Pos(options.Dock),"porto / coleta de estoque PDM"));
+            Add("GPS: porto / marcador de retirada", "No porto, pressione E no marcador e inicie a retirada. Apenas marcar GPS nao cria carros.", () => ui.Waypoint(Pos(options.Dock),"porto / coleta de estoque PDM"));
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos, arquivo preservado."); return; }
             var pending=Wallet.Pdm.Stock.Where(v=>v.AwaitingCollection).ToList();selected.RemoveWhere(id=>!pending.Any(v=>v.Id==id));
-            menu.Name="Porto / "+pending.Count+" pedidos / "+selected.Count+" selecionados";
+            menu.Name="RETIRADA / "+pending.Count+" ENCOMENDAS";
+            ui.Add("1. Escolher pedido / 2. Iniciar retirada","Inicie a pe no escritorio ou no marcador do porto. O conjunto e criado no local escolhido; depois engate, carregue os carros e devolva a PDM. Nao existe nova compra na coleta.",()=>{},false);
             foreach(var stock in pending){string id=stock.Id;
-                Add((selected.Contains(id)?"[X] ":"[ ] ")+stock.Name+" / "+stock.Plate,"Pedido ja pago. Motor "+stock.Engine+"; carroceria "+stock.Body+". Selecione uma ou duas unidades.",()=>{
+                Add((selected.Contains(id)?"[X] ":"[ ] ")+stock.Name+" / "+stock.Plate,"Pago pelo caixa da empresa: $"+stock.Cost+". Aguarda retirada; so aparece fisicamente depois de iniciar a coleta. Motor "+stock.Engine+"; carroceria "+stock.Body+". Selecione uma ou duas unidades.",()=>{
                     if(!selected.Remove(id)){if(selected.Count>=2){Notify.Show("A TRFlat transporta ate dois pedidos por coleta.");return;}selected.Add(id);}OpenMenu();
                 });}
             var chosen=pending.Where(v=>selected.Contains(v.Id)).Select(v=>v.Id).ToList();
-            ui.AddConfirm("Coletar selecionados / "+chosen.Count,"Leva as unidades escolhidas, sem cobra-las novamente. Engate Packer/TRFlat e carregue os carros no porto.",()=>ui.Stream(new[]{options.TruckModel,options.TrailerModel},()=>Begin(chosen.Count,chosen),OpenMenu),chosen.Count>=1 && chosen.Count<=2);
-            ui.AddConfirm("Coleta rapida / primeiro pedido","Seleciona a primeira unidade pendente em boas condicoes.",()=>ui.Stream(new[]{options.TruckModel,options.TrailerModel},()=>Begin(1),OpenMenu),pending.Any(v=>v.Engine>=300 && v.Body>=300));
+            ui.AddConfirm("Iniciar retirada dos selecionados / "+chosen.Count,"No escritorio: retire o conjunto na PDM e va ao porto. No porto: o conjunto e preparado no patio local. Depois engate/carregue e devolva os dois. Sem novo debito.",()=>PreparePickup(chosen),chosen.Count>=1 && chosen.Count<=2);
+            ui.AddConfirm("Retirar primeiro pedido","Seleciona a primeira encomenda em boas condicoes e inicia no escritorio ou no porto, conforme onde voce esta. Caixa, banco e carteira nao sao debitados.",()=>PreparePickup(pending.Where(v=>v.Engine>=300 && v.Body>=300).Take(1).Select(v=>v.Id).ToList()),pending.Any(v=>v.Engine>=300 && v.Body>=300));
             if(pending.Count==0)ui.Add("Nenhum pedido aguardando","Encomende uma unidade no fornecedor da PDM.",()=>{},false);
             if (Active) ui.AddConfirm("Encerrar coleta", "Pare e saia dos veiculos. Pedidos pagos continuam no porto, sem pagamento extra.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
             if (Wallet.Pdm.Collection != null && !Active) ui.AddConfirm("Recuperar coleta interrompida", "Pare e saia do conjunto e dos carros. Recebimento ja confirmado e concluido, demais pedidos continuam no porto.", () => { Recover(); OpenMenu(); });
@@ -73,13 +74,13 @@ namespace RPCore
         {
             if (route != null && route.Exists()) route.Delete(); route = World.CreateBlip(p); route.Name = label; route.Color = BlipColor.Yellow; route.ShowRoute = true;
         }
-        static Vehicle Spawn(JobPoint anchor, string modelName, string plate)
+        static Vehicle Spawn(JobPoint anchor, string modelName, string plate,bool exact=false)
         {
             var model = new Model(modelName);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
-                var bay = RigSpawn.FindVehicle(anchor, model, "PDM coleta"); if (bay == null) return null;
+                var bay = exact?anchor:RigSpawn.FindVehicle(anchor, model, "PDM coleta"); if (bay == null) return null;
                 var v = PdmAssets.Track(World.CreateVehicle(model, Pos(bay), bay.Heading)); if (!Exists(v)) return null;
                 v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false;
                 float capacity = v.PetrolTankVolume; v.FuelLevel = capacity > 0 && !float.IsNaN(capacity) && !float.IsInfinity(capacity) ? Math.Min(10000, capacity) : 100;
@@ -88,27 +89,32 @@ namespace RPCore
             finally { PdmStreaming.Release(model); }
         }
         PdmEntityRef Reference(Vehicle v, string model) => new PdmEntityRef { Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim(), Handle = v.Handle };
-        void Begin(int count,List<string> selection=null)
+        void Begin(int count,List<string> selection=null,bool atPort=false)
         {
-            if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
-            { Notify.Show("Inicie a pe na PDM, sem procurado/missao e sem outra entrega/coleta pendente."); return; }
             var ids=selection==null?Wallet.Pdm.Stock.Where(s=>s.AwaitingCollection && s.Engine>=300 && s.Body>=300).Take(count).Select(s=>s.Id).ToList():new List<string>(selection);
-            if (count<1 || count>2 || ids.Count!=count || ids.Distinct().Count()!=count || ids.Any(id=>!Wallet.Pdm.Stock.Any(v=>v.Id==id && v.AwaitingCollection && v.Engine>=300 && v.Body>=300))) { Notify.Show("Nao ha pedidos suficientes em boas condicoes. Compre/repare no estoque PDM."); return; }
+            var plan=PickupPlan(ids);
+            if(Active || !PersonalServiceMenu.SafeFoot || !plan.Allowed || count!=ids.Count || plan.AtPort!=atPort){ui.Problem("Retirada nao iniciada",plan.Reason??"Local ou contexto mudou. Fique a pe no escritorio ou no marcador do porto e confira novamente.",null,OpenMenu);return;}
             if (!ClearDisplay()) return;
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
             bool confirmed = false;
             try
             {
-                string id = Guid.NewGuid().ToString("N"); trailer = Spawn(options.Trailer, options.TrailerModel, "PHL" + id.Substring(0, 5));
-                if (!Exists(trailer)) { Notify.Show("Sem vaga para a carreta. Pedidos preservados."); return; }
-                double heading = options.Trailer.Heading * Math.PI / 180;
-                var anchor = new JobPoint { X = trailer.Position.X - (float)Math.Sin(heading) * 19, Y = trailer.Position.Y + (float)Math.Cos(heading) * 19, Z = trailer.Position.Z, Heading = options.Trailer.Heading };
-                truck = Spawn(anchor, options.TruckModel, "PHT" + id.Substring(0, 5));
-                if (!Exists(truck) || !Wallet.PdmCollect(id, ids, Reference(truck, options.TruckModel), Reference(trailer, options.TrailerModel), out _)) { Notify.Show("Conjunto indisponivel; pedidos e caixa preservados."); return; }
-                run = new PdmHaulRun(id, count, options.UnloadSeconds); ownerProfile = Profile.Id; began = Game.GameTime; retryAt = began; cancelReason = null;
+                string id=Guid.NewGuid().ToString("N");JobPoint trailerPoint=options.Trailer,truckPoint=null;
+                if(atPort){
+                    var pair=RigSpawn.FindForModels(PdmPickupRules.PortRigAnchor(options.Dock),new Model(options.TruckModel),new Model(options.TrailerModel),"PDM porto");
+                    if(pair==null){ui.Problem("Patio do porto ocupado","Nao foi encontrado espaco/chao livre para o Packer e a TRFlat. Afaste seu carro da area de retirada e tente novamente. Os pedidos continuam salvos; nenhum novo debito.",null,OpenMenu);return;}
+                    trailerPoint=pair.Trailer;truckPoint=pair.Truck;
+                }
+                trailer=Spawn(trailerPoint,options.TrailerModel,"PHL"+id.Substring(0,5),atPort);
+                if(!Exists(trailer)){ui.Problem("Carreta indisponivel","Modelo/chao/vaga indisponivel para "+options.TrailerModel+". Pedidos preservados; nenhum debito novo. Confira RPCore.log.",null,OpenMenu);return;}
+                if(truckPoint==null){double heading=options.Trailer.Heading*Math.PI/180;truckPoint=new JobPoint{X=trailer.Position.X-(float)Math.Sin(heading)*19,Y=trailer.Position.Y+(float)Math.Cos(heading)*19,Z=trailer.Position.Z,Heading=options.Trailer.Heading};}
+                truck=Spawn(truckPoint,options.TruckModel,"PHT"+id.Substring(0,5),atPort);
+                if (!Exists(truck) || !Wallet.PdmCollect(id, ids, Reference(truck, options.TruckModel), Reference(trailer, options.TrailerModel), out _)) { ui.Problem("Conjunto nao confirmado","Caminhao/vaga indisponivel ou gravacao recusada. Pedidos e caixa preservados; nenhum debito novo. Confira RPCore.log.",null,OpenMenu); return; }
+                run = new PdmHaulRun(id, count, options.UnloadSeconds); ownerProfile = Profile.Id; began = Game.GameTime; retryAt = began+1000; cancelReason = null;worldProblemReported=false;
                 foreach (var v in new[] { truck, trailer }) { var b = v.AddBlip(); b.Name = v == truck ? "RPCore: Packer PDM" : "RPCore: TRFlat PDM"; b.Color = BlipColor.Blue; cargoBlips.Add(b); }
                 Route(trailer.Position, "RPCore: carreta PDM"); menu.Visible = false; confirmed = true;selected.Clear();removedCargo.Clear();
-                Notify.Show("Entre no Packer e engate a TRFlat. Aproxime a traseira do caminhao da frente da carreta e aperte E.");
+                Log.Write("PDM pickup started / id="+id+" / origin="+(atPort?"port":"office")+" / orders="+string.Join(",",ids)+" / profile="+Profile.Id);
+                Notify.Show("Retirada iniciada. Os carros aparecem em sequencia no porto. Entre no Packer, aproxime a traseira da frente da TRFlat e aperte E para engatar.");
             }
             finally { if (!confirmed) { JobVehicles.RetireRig(truck, trailer); truck = trailer = null; gate.Release(Name); } }
         }
@@ -129,13 +135,16 @@ namespace RPCore
             {
                 if (cargo.ContainsKey(item.StockId) || item.Handle > 0) continue;
                 var stock = Wallet.Pdm.Stock.Find(s => s.Id == item.StockId); var anchor = new JobPoint { X = options.Dock.X, Y = options.Dock.Y + cargo.Count * 8, Z = options.Dock.Z, Heading = options.Dock.Heading };
-                var v = Spawn(anchor, stock.Model, stock.Plate); if (!Exists(v)) { Notify.Show("Vaga de coleta ocupada. Afaste o conjunto; nova tentativa em 5s."); break; }
+                var model=new Model(stock.Model);
+                if(!model.IsValid || !model.IsInCdImage || !model.IsCar){ui.Problem("Modelo da encomenda indisponivel","Carro "+stock.Name+" / modelo "+stock.Model+" nao esta disponivel no GTA. Pedido preservado; nenhuma nova cobranca.",null,OpenMenu);break;}
+                if(!PdmStreaming.Ready(model)){Notify.Show("Carregando encomenda: "+stock.Name+". Aguarde a proxima tentativa; nenhum debito novo.");break;}
+                var v = Spawn(anchor, stock.Model, stock.Plate); if (!Exists(v)) { Notify.Show("Vaga do pedido "+stock.Name+" ocupada/sem chao carregado. Afaste o conjunto do marcador; nova tentativa em 5s."); break; }
                 bool saved = false;
                 try
                 {
                     v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; v.DirtLevel = stock.Dirt;
                     if (!Wallet.PdmCargo(run.Id, stock.Id, v.Handle, out _)) break;
-                    cargo.Add(stock.Id, v); saved = true; var b = v.AddBlip(); b.Name = "RPCore: pedido " + stock.Name; b.Color = BlipColor.Blue; cargoBlips.Add(b);
+                    cargo.Add(stock.Id, v); saved = true; var b = v.AddBlip(); b.Name = "RPCore: pedido " + stock.Name; b.Color = BlipColor.Blue; cargoBlips.Add(b);break;
                 }
                 finally { if (!saved) { v.Delete(); JobVehicles.Release(v); } }
             }
@@ -158,7 +167,7 @@ namespace RPCore
         bool UnloadReady => InputAllowed && Coupled && !Foreign && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(trailer.Position) < 30 && loaded.Count == run.Total && cargo.Values.All(v => Exists(v) && v.Occupants.Length == 0 && v.IsAttachedTo(trailer));
         public void Tick()
         {
-            ui.Tick(PdmMenuRuntime.Allowed);
+            try{PortTick();}catch(Exception ex){if(!portReported){portReported=true;Log.Error("PDM port marker",ex);}}ui.Tick(PdmMenuRuntime.Allowed);
             if (!Active) return;
             try
             {
@@ -167,6 +176,7 @@ namespace RPCore
                 if (Game.Player.Character.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || unchecked(Game.GameTime - began) > options.TimeLimitSeconds * 1000 || !Exists(truck) || !Exists(trailer) || truck.IsDead || trailer.IsDead || cargo.Values.Any(v => !Exists(v) || v.IsDead) || loaded.Any(id => !cargo[id].IsAttachedTo(trailer)))
                 { cancelReason = "Coleta interrompida"; Cancel(); return; }
                 if (!InputAllowed) { run.Interrupt(); return; }
+                if(run.Stage==PdmHaulStage.Coupling)SpawnCargo();
                 if (!Coupled) { run.Interrupt(); Couple(); return; }
                 if (run.Stage == PdmHaulStage.Coupling) { run.Coupled(true); Route(Pos(options.Dock), "RPCore: pedidos no porto"); }
                 if (run.Stage == PdmHaulStage.Loading) { Load(); return; }
@@ -180,7 +190,7 @@ namespace RPCore
                 if (unchecked(Game.GameTime - retryAt) < 0) { if (!UnloadReady) run.Interrupt(); return; }
                 if (run.Arrive(Game.GameTime, UnloadReady, () => Remember() && Wallet.PdmArrive(run.Id, out _))) FinishArrival();
             }
-            catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm logistics checkpoint", ex); Notify.Show("Coleta pendente; pedidos preservados. Nova tentativa em 5s."); }
+            catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm logistics checkpoint", ex); if(!worldProblemReported){worldProblemReported=true;ui.Problem("Coleta pendente","Confira a coleta atual e os pedidos antes de iniciar outra operacao. A gravacao sera tentada novamente; veja o erro abaixo.",ex,OpenMenu);} }
         }
         bool Remember(bool missingIsDamage=true)
         {
@@ -258,7 +268,7 @@ namespace RPCore
             if (safe) DeleteCargo();
             EndSession(safe); if (!ClearDisplay() && Exists(display)) { display.IsPositionFrozen = false; JobVehicles.Retire(display); display = null; }
         }
-        public void Reload() { selected.Clear();ui.Reset(); ReleaseSession(); Recover(); }
-        public void Dispose() { ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm logistics dispose", ex); } finally { ReleaseSession(); } }
+        public void Reload() { ClearPort();selected.Clear();ui.Reset(); ReleaseSession(); Recover(); }
+        public void Dispose() { ClearPort();ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm logistics dispose", ex); } finally { ReleaseSession(); } }
     }
 }
