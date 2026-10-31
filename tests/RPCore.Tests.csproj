@@ -16,6 +16,7 @@
     <EmbeddedResource Include="../config/InventoryRecipes.json" LogicalName="RPCore.Inventory.Recipes" />
     <EmbeddedResource Include="../config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
     <Compile Include="../ConsumptionPresentationData.cs" Link="ConsumptionPresentationData.cs" />
+    <Compile Include="../ExclusiveMenuGroup.cs" Link="ExclusiveMenuGroup.cs" />
     <Compile Include="../PersonalServiceData.cs" Link="PersonalServiceData.cs" />
     <Compile Include="../ClothingDoorData.cs" Link="ClothingDoorData.cs" />
     <Compile Include="../VehicleRefinementData.cs" Link="VehicleRefinementData.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="../PdmPremisesData.cs" Link="PdmPremisesData.cs" />
     <Compile Include="../PdmNegotiationData.cs" Link="PdmNegotiationData.cs" />
     <Compile Include="../GameplayContextData.cs" Link="GameplayContextData.cs" />
+    <Compile Include="../PdmNavigationData.cs" Link="PdmNavigationData.cs" />
     <Compile Include="../PdmRefinementData.cs" Link="PdmRefinementData.cs" />
     <Compile Include="../PdmData.cs" Link="PdmData.cs" />
     <Compile Include="../DragData.cs" Link="DragData.cs" />

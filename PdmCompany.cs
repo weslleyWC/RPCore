@@ -10,10 +10,11 @@ using LemonUI.Menus;
 
 namespace RPCore
 {
-    public sealed class PdmCompany : ISystem, IWorkContract
+    public sealed partial class PdmCompany : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
         public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises, OpenSecurity, OpenSurveillance, OpenRisk, SyncRisk;
+        public Func<System.Collections.Generic.IEnumerable<PdmLocation>> ConnectedLocations;
         public Func<string,bool> PrepareStock;
         public Func<bool> AccountsReady;
         internal PdmOptions CompanyOptions => options;
@@ -45,7 +46,7 @@ namespace RPCore
             if (Financing == null || !Financing.Valid) { Log.Write("Invalid PdmFinance.json; embedded defaults used, original retained."); Financing = financeDefaults; }
             var repoDefaults = PdmRepoDefaults.Load(); Repossession = Store.LoadDef("Jobs/PdmRepo.json", () => repoDefaults);
             if (Repossession == null || !Repossession.Valid) { Log.Write("Invalid PdmRepo.json; embedded defaults used, original retained."); Repossession = repoDefaults; }
-            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, Name);
+            menu = new NativeMenu("PDM / empresa", "CAIXA / ESTOQUE / CLIENTES"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, Name);
             officeBlip = MapBlips.Create(StartPosition, "RPCore: PDM / empresa", BlipSprite.PersonalVehicleCar, BlipColor.Orange, .8f); Recover();
         }
         void Add(string title, string text, Action action) { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm action", ex); Notify.Show("Acao PDM nao confirmada. Veja RPCore.log."); } }); }
@@ -62,26 +63,26 @@ namespace RPCore
         }
         bool DataValid() { if (Wallet.Pdm.Valid) return true; Log.Write("Invalid Wallet.json/Pdm; original retained."); Notify.Show("Dados da empresa invalidos. Arquivo preservado."); return false; }
         void Page(string key,string title,Action back=null,Action refresh=null)
-        {pool.HideAll();ui.Begin("company:"+key,back,true,refresh??OpenMenu);menu.Name=title;}
+        {ui.HideAll();ui.Begin("company:"+key,back,true,refresh??OpenMenu);menu.Name=title;}
         static string Money(decimal value)=>"$"+value.ToString("N0",System.Globalization.CultureInfo.GetCultureInfo("pt-BR"));
         public void OpenMenu()
         {
             if(!PdmMenuRuntime.Allowed){Notify.Show("Feche a outra interface e aguarde controle do personagem.");return;}
             if(!DataValid())return;var d=Wallet.Pdm;
-            Page("root","PDM / "+Money(d.Cash));
+            Page("root","PDM / EMPRESA");
             Add("Resumo da empresa",PdmBusinessRules.Pending(d)+". Caixa, estoque, salarios, contratos e resultado operacional.",OpenOverview);
             if(!d.Owned)ui.AddConfirm("Adquirir empresa / "+Money(options.PurchasePrice),"Debita o banco pessoal. Nao inclui capital, estoque ou carros pessoais.",()=>{
                 if(OfficeAction()){if(!Wallet.PdmPurchase(options,Guid.NewGuid().ToString("N"),out bool changed))Notify.Show("Banco insuficiente ou empresa ja adquirida.");else if(changed)Bump("pdm_owned");OpenMenu();}
             },Wallet.Bank>=options.PurchasePrice);
             else{
                 Add("Financas / caixa / historico","Aportar, sacar, consultar recebiveis e movimentacoes.",OpenFinance);
-                Add("Estoque / compras / recebimento",d.Stock.Count+"/"+options.Capacity+" unidades; "+d.Stock.Count(v=>v.AwaitingCollection)+" no porto.",OpenInventory);
-                if(OpenShowroom!=null)Add("Showroom / atendimento",d.Showroom.Count+" vagas ocupadas. Exposicao e negociacao com compradores.",OpenShowroom);
+                Add("Comprar carros / fornecedor","Compra para a empresa, pelo caixa empresarial. Encomende no escritorio e depois colete no porto.",OpenCatalog);
+                Add("Estoque / showroom / vendas",d.Stock.Count+"/"+options.Capacity+" unidades; "+d.Stock.Count(v=>v.AwaitingCollection)+" no porto. Carros da empresa, separados dos pessoais.",OpenInventory);
                 Add("Equipe / oficina / melhorias","Contratacoes, salarios, manutencao e beneficios.",OpenPeople);
                 Add("Seguranca / cameras / seguro","Postos presenciais, monitoramento e protecao do caixa.",OpenProtection);
                 Add("Trabalhos / contratos / pendencias",PdmBusinessRules.Pending(d)+". Entregas, locadora, retomada e transporte de valores.",OpenWork);
             }
-            Add("GPS: escritorio PDM","Empresa separada da RPCore Motors / carros pessoais.",()=>{Function.Call(Hash.SET_NEW_WAYPOINT,StartPosition.X,StartPosition.Y);ui.Close();});
+            Add("Locais e GPS","Escritorio, compra de estoque, retirada, porto, devolucao, showroom, locadora e equipe.",OpenLocations);
             Add("Fechar","Voltar ao jogo.",ui.Close);ui.Show();
             Log.Write("PDM menu shown: "+menu.Items.Count+" rows, profile "+Profile.Id);
         }
@@ -102,6 +103,7 @@ namespace RPCore
             Page("inventory","PDM / estoque e fornecedor",OpenMenu,OpenInventory);
             Add("Estoque / detalhes / entrega","Condicao, exposicao, reparo e entrega ao cliente.",OpenStock);
             Add("Fornecedor / encomendar","Revise custo e venda prevista antes de pagar com caixa empresarial.",OpenCatalog);
+            if(OpenShowroom!=null)Add("Showroom / atender compradores","Escolher vaga, expor estoque e negociar com o cliente.",OpenShowroom);
             if(OpenCollection!=null)Add("Coleta no porto / selecionar pedidos","Transportar unidades ja pagas para disponibilizar no estoque.",OpenCollection);
             if(ClearDisplay!=null)ui.AddConfirm("Recolher carros expostos","Libera vagas e recolhe apenas veiculos reconhecidos; nao vende nem remove o estoque.",()=>{if(OfficeAction())ClearDisplay();OpenInventory();});
             Add("Voltar","Empresa.",OpenMenu);ui.Show();
@@ -173,6 +175,7 @@ namespace RPCore
         void OpenCatalog()
         {
             Page("catalog","Fornecedor / "+Wallet.Pdm.Stock.Count+"/"+options.Capacity,OpenInventory,OpenCatalog);
+            Add("GPS: escritorio / comprar estoque","Encomenda feita aqui no menu, a pe no escritorio; retirada dos pedidos pagos e no porto.",()=>ui.Waypoint(StartPosition,"escritorio / fornecedor PDM"));
             foreach(var p in options.Catalog){var offer=p;ui.AddConfirm(offer.Name+" / custo "+Money(offer.Cost),"Preco base de venda "+Money(offer.Price)+"; margem bruta "+Money(offer.Price-offer.Cost)+" antes de danos/custos. Pedido aguardara coleta no porto.",()=>{
                 if(!OfficeAction())return;var model=new Model(offer.Model);if(!model.IsValid || !model.IsInCdImage || !model.IsCar){Notify.Show("Modelo indisponivel. Nada comprado.");return;}
                 if(!Wallet.PdmOrder(options,offer.Id,Guid.NewGuid().ToString("N"),Guid.NewGuid().ToString("N"),out _))Notify.Show("Caixa, capacidade ou operacao pendente impedem a compra.");OpenCatalog();

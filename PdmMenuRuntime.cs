@@ -16,12 +16,12 @@ namespace RPCore
     {
         sealed class Row {public string Title,Text;public Action Action;public bool Enabled;}
         sealed class Page {public string Key,Name;public Action Back,Refresh;public PdmCommandQuote Quote;public int Index;public bool Remember;public readonly List<Row> Rows=new List<Row>();}
-        readonly NativeMenu menu;readonly PersonalServiceMenu ui;readonly Action<Exception> failed;readonly Dictionary<string,int> indices=new Dictionary<string,int>();Page page;
-        public Action DefaultRefresh;
+        readonly PdmMenuGroup group;readonly NativeMenu menu;readonly PersonalServiceMenu ui;readonly Action<Exception> failed;readonly Dictionary<string,int> indices=new Dictionary<string,int>();Page page;
+        public Action DefaultRefresh;bool preserveLoading;
         Action loading,loadingBack;string loadingProfile;int loadingActor,loadingModel,loadingAt;long loadingAddress;GTA.Math.Vector3 loadingOrigin;Model[] models;
-        public PdmMenuView(NativeMenu menu,Action<Exception> failed){this.menu=menu;this.failed=failed;ui=new PersonalServiceMenu(menu,failed);}
+        public PdmMenuView(LemonUI.ObjectPool pool,NativeMenu menu,Action<Exception> failed){this.menu=menu;this.failed=failed;ui=new PersonalServiceMenu(menu,failed);group=PdmMenuGroup.For(pool);group.Register(this,menu,SuspendPage);ui.CanNavigate=()=>group.Owns(this);}
         public void Begin(string key,Action back=null,bool remember=true,Action refresh=null)
-        {if(loading!=null && key!="preparing")StopLoading();int index=remember && indices.TryGetValue(key,out int cached)?cached:0;page=new Page{Key=key,Back=back,Refresh=refresh??DefaultRefresh,Index=index,Remember=remember};ui.Begin(key,back,remember);}
+        {if(loading!=null && key!="preparing")StopLoading();preserveLoading=key=="preparing" && loading!=null;try{if(!group.Activate(this))throw new InvalidOperationException("PDM navigation is already changing.");}finally{preserveLoading=false;}int index=remember && indices.TryGetValue(key,out int cached)?cached:0;page=new Page{Key=key,Back=back,Refresh=refresh??DefaultRefresh,Index=index,Remember=remember};ui.Begin(key,back,remember);}
         public void Add(string title,string text,Action action,bool enabled=true)
         {if(page!=null)page.Rows.Add(new Row{Title=title,Text=text,Action=action,Enabled=enabled});}
         public void Show()
@@ -30,7 +30,7 @@ namespace RPCore
         }
         void Render(Page current,int index)
         {
-            page=current;int count=current.Rows.Count;
+            if(!group.Owns(this))return;page=current;int count=current.Rows.Count;
             bool footer=count>0 && (current.Rows[count-1].Title.StartsWith("Voltar") || current.Rows[count-1].Title=="Fechar");
             int content=count-(footer?1:0),pages=Math.Max(1,(content+11)/12);index=Math.Max(0,Math.Min(index,pages-1));current.Index=index;if(indices.Count>128)indices.Clear();indices[current.Key]=index;
             ui.Begin(current.Key+":"+index,current.Back,current.Remember);menu.Name=current.Name+(pages>1?" / "+(index+1)+"/"+pages:"");
@@ -70,7 +70,9 @@ namespace RPCore
         void StopLoading(){if(models!=null)foreach(var model in models)PdmStreaming.Release(model,true);models=null;loading=null;loadingBack=null;}
         public void Tick(bool allowed)
         {
+            if(!group.Owns(this)){if(menu.Visible || loading!=null)ClosePage();return;}
             ui.Tick(allowed);
+            if(!menu.Visible && loading==null){group.Release(this);return;}
             if(loading==null)return;
             try{
             var ped=Game.Player.Character;
@@ -80,7 +82,13 @@ namespace RPCore
             try{action();}finally{StopLoading();}
             }catch(Exception ex){StopLoading();ui.Close();failed(ex);}
         }
-        public void Close(){StopLoading();ui.Close();}
-        public void Reset(){StopLoading();ui.Reset();page=null;indices.Clear();}
+        // Preserve preparation only while this same view builds its preparation page.
+        // Every transfer/escape cancels the old request before another menu receives input.
+        void SuspendPage(){if(!preserveLoading)StopLoading();ui.Close();}
+        void ClosePage(){StopLoading();ui.Close();}
+        public void HideAll(){group.HideAll();}
+        public void Waypoint(GTA.Math.Vector3 destination,string name)=>group.Waypoint(destination,name);
+        public void Close(){ClosePage();group.Release(this);}
+        public void Reset(){Close();ui.Reset();page=null;indices.Clear();}
     }
 }

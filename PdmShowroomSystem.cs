@@ -15,6 +15,7 @@ namespace RPCore
         readonly PdmMenuView ui;
         public Func<bool> SyncAccounts;
         sealed class Display { public string StockId, Model, Plate; public Vehicle Car; }
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Slots.Where(s=>s.Enabled).Select(s=>PdmLocation.At("showroom:"+s.Id,"Showroom",s.Name,s.Interior?"Vaga interna: precisa de interior/chao carregados; exposicao iniciada no menu.":"Vaga externa: expor um carro pago do estoque no menu.",s.Point));
         public string Name => "pdmshowroom";
         public string Label => "PDM / showroom e atendimento";
         public bool Active => run != null;
@@ -34,14 +35,14 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.clearLegacy = clearLegacy; this.achievements = achievements; this.back = back; StartPosition = Pos(point);
             var defaults = PdmShowroomDefaults.Load(); options = Store.LoadDef("Jobs/PdmShowroom.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmShowroom.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / showroom", "VAGAS / ESTOQUE EXPOSTO / ATENDIMENTO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; RecoverIntent();
+            menu = new NativeMenu("PDM / showroom", "VAGAS / ESTOQUE EXPOSTO / ATENDIMENTO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; RecoverIntent();
         }
         void Add(string title, string text, Action action)
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm showroom action", ex); Notify.Show("Showroom: operacao nao confirmada. Dados preservados."); } }); }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Showroom / "+Wallet.Pdm.Showroom.Count+" vagas ocupadas"; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
-            Add("GPS: escritorio / showroom PDM", "Gerencie vagas a pe no escritorio externo. Vagas internas precisam de interior/chao carregados na sua instalacao.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
+            ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Showroom / "+Wallet.Pdm.Showroom.Count+" vagas ocupadas"; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Add("GPS: escritorio / showroom PDM", "Gerencie vagas a pe no escritorio externo. Vagas internas precisam de interior/chao carregados na sua instalacao.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
             foreach (var s in options.Slots)
             {
                 var slot = s; var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slot.Id); var stock = entry == null ? null : Wallet.Pdm.Stock.Find(v => v.Id == entry.StockId);
@@ -54,7 +55,7 @@ namespace RPCore
         }
         void OpenSlot(string slotId)
         {
-            pool.HideAll(); ui.Begin(Name+":"+slotId,OpenMenu,true,()=>OpenSlot(slotId)); var slot = options.Slots.Find(s => s.Id == slotId); var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slotId); menu.Name = slot.Name;
+            ui.HideAll(); ui.Begin(Name+":"+slotId,OpenMenu,true,()=>OpenSlot(slotId)); var slot = options.Slots.Find(s => s.Id == slotId); var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slotId); menu.Name = slot.Name;
             if (entry != null)
             {
                 var id = entry.StockId; var stock = Wallet.Pdm.Stock.Find(s => s.Id == id);
@@ -216,7 +217,7 @@ namespace RPCore
         void OpenNegotiation(string id)
         {
             if(!CanNegotiate(id))return;var offer=Wallet.Pdm.ShowroomSale.Negotiation;if(offer==null || !offer.Inspected || offer.Accepted)return;
-            pool.HideAll();ui.Begin(Name+":offer:"+id,ui.Close,false,()=>OpenNegotiation(id));menu.Name="Cliente / oferta $"+offer.Offer;
+            ui.HideAll();ui.Begin(Name+":offer:"+id,ui.Close,false,()=>OpenNegotiation(id));menu.Name="Cliente / oferta $"+offer.Offer;
             ui.Add("Referencia de venda $"+offer.BasePrice,"A oferta considera a condicao e beneficios atuais. O comprador tem um orcamento; ha uma tentativa de contraproposta, com risco de perder o atendimento.",()=>{},false);
             ui.AddConfirm("Aceitar $"+offer.Offer,"Fixa esse preco. O caixa recebe somente depois de passar as chaves.",()=>{
                 if(!CanNegotiate(id))return;if(Wallet.PdmShowroomAccept(id,out _))Agreement();else Notify.Show("Oferta mudou; confira novamente.");

@@ -16,6 +16,10 @@ namespace RPCore
     {
         readonly PdmMenuView ui;
         public Action Back;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
+            PdmLocation.At("haul:trailer","Logistica","Retirada do conjunto / carreta","Caminhao e carreta temporarios do contrato, proximos neste patio. Inicie a coleta no escritorio.",options.Trailer),
+            PdmLocation.At("haul:dock","Logistica","Porto / coleta dos pedidos","Pedidos pagos sao criados aqui durante a coleta; nao e o local de compra.",options.Dock),
+            PdmLocation.At("haul:return","Logistica","PDM / recebimento de estoque","Volte com o conjunto carregado para descarregar os pedidos.",options.Return)};
         public string Name => "pdmhaul";
         public string Label => "PDM / coleta no porto";
         public bool Active => run != null;
@@ -39,7 +43,7 @@ namespace RPCore
             this.pool = pool; this.gate = gate; StartPosition = office;
             var defaults = PdmLogisticsDefaults.Load(); options = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmLogistics.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
@@ -47,9 +51,9 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin(Name,Back,true,OpenMenu);
-            Add("GPS: escritorio PDM", "Inicie a pe no escritorio externo da empresa.", () => Waypoint(StartPosition));
-            Add("GPS: porto / coleta", "Pedidos pagos ficam disponiveis durante o contrato.", () => Waypoint(Pos(options.Dock)));
+            ui.HideAll(); ui.Begin(Name,Back,true,OpenMenu);
+            Add("GPS: escritorio PDM", "Inicie a pe no escritorio externo da empresa.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
+            Add("GPS: porto / coleta", "Pedidos pagos ficam disponiveis durante o contrato.", () => ui.Waypoint(Pos(options.Dock),"porto / coleta de estoque PDM"));
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos, arquivo preservado."); return; }
             var pending=Wallet.Pdm.Stock.Where(v=>v.AwaitingCollection).ToList();selected.RemoveWhere(id=>!pending.Any(v=>v.Id==id));
             menu.Name="Porto / "+pending.Count+" pedidos / "+selected.Count+" selecionados";
@@ -65,7 +69,6 @@ namespace RPCore
             if (Wallet.Pdm.Collection != null && !Active) ui.AddConfirm("Recuperar coleta interrompida", "Pare e saia do conjunto e dos carros. Recebimento ja confirmado e concluido, demais pedidos continuam no porto.", () => { Recover(); OpenMenu(); });
             if(Back!=null)Add("Voltar","Empresa PDM.",Back);ui.Show();
         }
-        void Waypoint(Vector3 p) { Function.Call(Hash.SET_NEW_WAYPOINT, p.X, p.Y); menu.Visible = false; }
         void Route(Vector3 p, string label)
         {
             if (route != null && route.Exists()) route.Delete(); route = World.CreateBlip(p); route.Name = label; route.Color = BlipColor.Yellow; route.ShowRoute = true;

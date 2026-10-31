@@ -13,6 +13,10 @@ namespace RPCore
     public sealed class PdmSafeSystem : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
+            PdmLocation.At("cash:handover","Contratos","Transporte de valores / entrega","Solicite a coleta no escritorio e entregue a maleta ao seguranca.",options.Handover),
+            PdmLocation.At("cash:parking","Contratos","Transporte de valores / parada","Local em que o carro-forte aguarda. Nao e um caixa eletronico.",options.Parking),
+            PdmLocation.At("cash:bank","Contratos","Transporte de valores / banco","Rota do carro-forte NPC. Compensacao automatica apos a entrega; nao precisa seguir o seguranca.",options.Bank)};
         public string Name => "pdmsafe";
         public string Label => "PDM / coleta de valores";
         public bool Active => run != null || settled;
@@ -33,7 +37,7 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.back = back;
             var defaults = PdmSafeDefaults.Load(); options = Store.LoadDef("Jobs/PdmSafe.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSafe.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
@@ -41,9 +45,9 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin(Name,back,true,OpenMenu); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            ui.HideAll(); ui.Begin(Name,back,true,OpenMenu); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
             menu.Name = "Caixa $" + Wallet.Pdm.Cash + " / em coleta $" + (Wallet.Pdm.SafeTransfer?.Amount ?? 0);
-            Add("GPS: entrega de valores PDM", "Inicie a pe no escritorio externo da empresa.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
+            Add("GPS: entrega de valores PDM", "Inicie a pe no escritorio externo da empresa.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
             if (Wallet.Pdm.SafeTransfer == null && !Active)
             {
                 foreach (int amount in new[] { 1000, 10000, 50000 }) { int selected = amount; ui.AddConfirm("Solicitar coleta: $" + selected, "Reserva do caixa; seguranca chega de Stockade. Passe os valores com E para transferir ao seu banco, sem bonus.", () => ui.Stream(new[]{options.VehicleModel,options.CollectorModel,options.CaseModel},()=>Begin(selected),OpenMenu)); }

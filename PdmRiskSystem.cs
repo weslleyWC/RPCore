@@ -22,7 +22,7 @@ namespace RPCore
             this.pool = pool; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmRiskDefaults.Load(); options = Store.LoadDef("Jobs/PdmRisk.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRisk.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -60,7 +60,7 @@ namespace RPCore
         { Flush(); if (!officeAction()) return; if (!action()) Notify.Show("Confira caixa, apolice, dados atualizados ou operacao pendente."); OpenMenu(); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Protecao / caixa $"+Wallet.Pdm.Cash; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Flush(); ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Protecao / caixa $"+Wallet.Pdm.Cash; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             var d = Wallet.Pdm; var r = d.Risk; var policy = r.Policy;
             ui.AddConfirm(r.SafeOpen ? "Fechar cofre / interromper risco" : "Abrir cofre / habilitar risco ao se afastar", "Abertura VOLUNTARIA: ao ficar a 150m por " + options.ExposureSeconds + "s ativos, com caixa acima de $" + options.MinimumCash + ", pode perder " + options.LossPercent + "%. Usa o caixa existente, sem criar saldo de cofre separado.", () => Change(() => Wallet.PdmSetSafe(!r.SafeOpen, Guid.NewGuid().ToString("N"), out _)));
             Add("Protecao " + PdmRiskTransactions.Security(d) + "/100 / chance " + PdmRiskTransactions.Chance(d, options) + "%", "Cameras: 30; cada seguranca contratado e sem atraso: 35. A chance vale por periodo de exposicao, somente com cofre aberto. Fechado: sem este risco.", () => { });
@@ -76,7 +76,7 @@ namespace RPCore
             }
             Add("Premios $" + r.Premiums + " / perdas $" + r.Stolen + " / restituidos $" + r.Reimbursed, "Historico de ate 20 ocorrencias. Reembolso nunca excede a perda real; nao ha botao de indenizacao livre.", () => { });
             foreach (var incident in r.Incidents.AsEnumerable().Reverse()) Add("Perda $" + incident.Loss + " / seguro $" + incident.Reimbursed, "Protecao no evento " + incident.Security + "/100; apolice " + (incident.PolicyName ?? "nenhuma") + ", limite $" + incident.Limit + ". Cofre fechado automaticamente apos a ocorrencia.", () => { });
-            Add("GPS: escritorio PDM", "Abrir/fechar/contratar apenas no escritorio externo.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, office.X, office.Y); menu.Visible = false; });
+            Add("GPS: escritorio PDM", "Abrir/fechar/contratar apenas no escritorio externo.", () => ui.Waypoint(office,"escritorio PDM"));
             Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
         public void Tick()

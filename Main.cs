@@ -89,6 +89,7 @@ namespace RPCore
             pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
             surveillance = new PdmSurveillanceSystem(pool, shifts, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(surveillance); pdm.OpenSurveillance = surveillance.OpenMenu;
             var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;riskSynced=()=>risk.Synced;showroom.SyncAccounts=pdm.FlushAccounts;premises.SyncAccounts=pdm.FlushAccounts;
+            pdm.ConnectedLocations=()=>haul.Locations.Concat(rental.Locations).Concat(showroom.Locations).Concat(premises.Locations).Concat(security.Locations).Concat(surveillance.Locations).Concat(safe.Locations).Concat(repo.Locations);
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             var storage = new StorageSystem(pool, inv, ach, shifts); systems.Add(storage);
@@ -136,6 +137,8 @@ namespace RPCore
                 .Concat(editor.ServicePoints.Where(p=>p.Kind==EditorPointKind.Grocery || p.Kind==EditorPointKind.Fuel && Cfg.EnableFuel || p.Kind==EditorPointKind.Workshop && Cfg.EnableGarages).Select(p=>new GpsDestination{Name=p.Name,Kind=p.Kind==EditorPointKind.Grocery?"Grocery":p.Kind==EditorPointKind.Fuel?"Fuel":"Workshop",X=p.Pose.X,Y=p.Pose.Y,Z=p.Pose.Z}))
                 .Concat(!faulted.Contains(pdm)?new[]{new GpsDestination{Name="PDM / empresa",Kind="PDM",X=pdm.StartPosition.X,Y=pdm.StartPosition.Y,Z=pdm.StartPosition.Z}}:Enumerable.Empty<GpsDestination>());
             settings.ConfigureNavigation(navPoints,shifts);
+            settings.PdmRequested=()=>OpenPhoneService(pdm,pdm.OpenMenu);
+            settings.PdmGpsRequested=()=>OpenPhoneService(pdm,pdm.OpenLocations);
             settings.GarageRequested=()=>OpenPhoneSystem(garages,Cfg.GarageKey);
             settings.DealerRequested=()=>OpenPhoneSystem(systems.OfType<DealershipSystem>().FirstOrDefault(),Cfg.DealerKey);
             settings.VehicleRequested=()=>OpenPhoneService(controls,()=>controls.OpenMenu());
@@ -172,7 +175,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.107.2 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.107.3 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -224,7 +227,7 @@ namespace RPCore
             InterfaceOptions.ModalOpen = inventory.GridVisible || shop.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             Stage(3);
-            try { pool.Process(); }
+            try { PdmMenuGroup.BeforeProcess(pool);pool.Process(); }
             catch (Exception ex) {
                 Log.Error("menu dispatch", ex);
                 foreach(var item in pool){try{item.Visible=false;}catch(Exception cleanup){Log.Error("menu dispatch close: "+item.GetType().Name,cleanup);}}

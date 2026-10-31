@@ -1,3 +1,9 @@
+## Atualização0.107.3 — menus e GPS da empresa PDM
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.3.zip) · [Fluxo, destinos e testes GTA](docs/PDM-MENUS-GPS-0.107.3.md)
+
+Uma tela PDM por vez, descarte de ações antigas e Esc para fechar o grupo. Menu por tarefa, Locais e GPS com destinos configurados e acesso remoto pelo F11.4245 testes aprovados; GTA pendente. Refere-se aos12sistemas existentes, sem declarar completos todos os extras PSRP listados no guia.
+
 ## Atualização0.107.2 — portas e visualização na Motors
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.2.zip) · [Como visualizar e testes GTA](docs/MOTORS-PORTAS-PREVIA-0.107.2.md)

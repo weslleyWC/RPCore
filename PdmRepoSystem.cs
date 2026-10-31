@@ -13,6 +13,15 @@ namespace RPCore
     {
         readonly PdmMenuView ui;
         public Action Back;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations
+        {
+            get{
+                yield return PdmLocation.At("repo:return","Contratos","Retomada / retorno","Recebimento do patrimonio recuperado. Inicie uma retomada pelo contrato inadimplente.",options.Return);
+                var saved=Wallet.Pdm.Repo;
+                if(saved!=null && saved.Location>=0 && saved.Location<options.Locations.Count)
+                    yield return PdmLocation.At("repo:active","Contrato atual","Retomada / veiculo atual","Destino da retomada ja iniciada; recuperar somente o veiculo identificado pelo contrato.",options.Locations[saved.Location]);
+            }
+        }
         public string Name => "pdmrepo";
         public string Label => "PDM / retomada";
         public bool Active => run != null;
@@ -35,15 +44,15 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.company = company; this.options = options; this.achievements = achievements; StartPosition = Pos(company.Office);
             var defaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for repossession; embedded defaults used, original retained."); rig = defaults; }
-            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm repossession action", ex); Notify.Show("Retomada pendente; dados preservados."); } }); }
         public void OpenForLoan(string id) { focusedLoan = id; OpenMenu(); }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin(Name,Back,true,OpenMenu);menu.Name="Retomadas / "+Wallet.Pdm.Loans.Count(l=>l.Defaulted && !l.Settled)+" em atraso"; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
-            Add("GPS: escritorio PDM", "Comece a pe no escritorio externo. Precisa de uma vaga livre no estoque.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
+            ui.HideAll(); ui.Begin(Name,Back,true,OpenMenu);menu.Name="Retomadas / "+Wallet.Pdm.Loans.Count(l=>l.Defaulted && !l.Settled)+" em atraso"; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            Add("GPS: escritorio PDM", "Comece a pe no escritorio externo. Precisa de uma vaga livre no estoque.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
             foreach (var l in Wallet.Pdm.Loans.Where(l => l.Defaulted && !l.Settled).OrderBy(l => l.Id == focusedLoan ? 0 : 1))
             { var loan = l; ui.AddConfirm("Retomar " + loan.Asset.Name + " / " + loan.Asset.Plate, "Recebido $" + loan.Paid + " / saldo em atraso $" + loan.Receivable + ". Packer/TRFlat: busque o proprio carro, carregue com E, volte e descarregue. Sem bonus por recuperar patrimonio proprio.", () => ui.Stream(new[]{rig.TruckModel,rig.TrailerModel},()=>Begin(loan.Id),OpenMenu)); }
             Add("Recebiveis encerrados: $" + Wallet.Pdm.FinanceWriteOff, "Valor contratual que deixou de ser cobrado apos retomadas; nao e dinheiro pago nem um segundo desconto de caixa.", () => { });

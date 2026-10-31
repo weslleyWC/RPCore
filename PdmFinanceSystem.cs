@@ -18,7 +18,7 @@ namespace RPCore
         public PdmFinanceSystem(ObjectPool pool, PdmFinanceOptions options, AchievementSystem achievements, Action back)
         {
             this.pool = pool; this.options = options; this.achievements = achievements; this.back = back;
-            menu = new NativeMenu("PDM / financiamentos", "ENTRADAS / PARCELAS / CONTRATOS"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / financiamentos", "ENTRADAS / PARCELAS / CONTRATOS"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -50,7 +50,7 @@ namespace RPCore
         public void OpenMenu()
         {
             Flush();if(!Wallet.Pdm.Valid){Notify.Show("Dados PDM invalidos; original preservado.");return;}
-            pool.HideAll();ui.Begin(Name,back,true,OpenMenu);var d=Wallet.Pdm;
+            ui.HideAll();ui.Begin(Name,back,true,OpenMenu);var d=Wallet.Pdm;
             menu.Name="Contratos / a receber $"+PdmBusinessRules.Receivable(d);
             ui.Add("Novos contratos / "+options.DownPercent+"% entrada","Acrescimo "+options.InterestPercent+"%, "+options.Installments+" parcelas a cada "+options.PeriodSeconds+"s ativos. Limite "+options.MaxActive+"; risco por parcela "+NewDefaultPercent+"%. Inicie pelo estoque.",()=>{},false);
             foreach(var loan in d.Loans.AsEnumerable().Reverse()){
@@ -64,7 +64,7 @@ namespace RPCore
         void Details(string id)
         {
             Flush();var loan=Wallet.Pdm.Loans.Find(l=>l.Id==id);if(loan==null){OpenMenu();return;}
-            pool.HideAll();ui.Begin(Name+":"+id,OpenMenu,true,()=>Details(id));menu.Name=loan.Asset.Name+" / "+loan.Asset.Plate;
+            ui.HideAll();ui.Begin(Name+":"+id,OpenMenu,true,()=>Details(id));menu.Name=loan.Asset.Name+" / "+loan.Asset.Plate;
             ui.Add("Total contratado: $"+loan.Total,"Entrada $"+loan.DownPayment+" ("+loan.DownPercent+"%); acrescimo "+loan.InterestPercent+"%; "+loan.Installments+" parcelas.",()=>{},false);
             ui.Add("Recebido: $"+loan.Paid+" / a receber $"+loan.Receivable,"Parcelas pagas "+loan.Payments+"/"+loan.Installments+". Valores recebidos entram no caixa empresarial uma unica vez.",()=>{},false);
             string state=loan.Repossessed?"Retomado / recebivel encerrado":loan.Complete?"Quitado":loan.Defaulted?"Inadimplente / parcelas suspensas":"Ativo / proxima parcela $"+loan.Payment;

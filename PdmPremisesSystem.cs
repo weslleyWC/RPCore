@@ -16,6 +16,9 @@ namespace RPCore
         public Func<bool> SyncAccounts;
         sealed class Employee { public string Id; public Ped Ped; public Blip Blip; }
         public bool Synced=>pending<1000;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
+            PdmLocation.At("staff:mechanic","Equipe e seguranca","Oficina / mecanico PDM","Contrate e mantenha salarios em dia; atende carros expostos da empresa.",options.Mechanic),
+            PdmLocation.At("staff:cleaner","Equipe e seguranca","Zeladoria PDM","Contrate e mantenha salarios em dia; limpeza solicitada no menu de servicos.",options.Cleaner)};
         public string Name => "pdmpremises";
         public string Label => "PDM / equipe presencial e servicos";
         public bool Active => run != null;
@@ -33,7 +36,7 @@ namespace RPCore
         public PdmPremisesSystem(ObjectPool pool, ShiftGate gate, PdmOptions company, PdmPremisesOptions options, Func<bool> office, Func<string, Vehicle> display, Action back)
         {
             this.pool = pool; this.gate = gate; this.company = company; this.options = options; this.office = office; this.display = display; this.back = back; StartPosition = Pos(company.Office);
-            menu = new NativeMenu("PDM / servicos", "MECANICO / ZELADORIA / VITRINE"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; last = Game.GameTime; Recover();
+            menu = new NativeMenu("PDM / servicos", "MECANICO / ZELADORIA / VITRINE"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id; last = Game.GameTime; Recover();
         }
         void Sample()
         {
@@ -55,8 +58,8 @@ namespace RPCore
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm premises action", ex); Notify.Show("Servico nao confirmado; dados preservados."); } }); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Mecanico e zeladoria / caixa $"+Wallet.Pdm.Cash; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
-            Add("GPS: equipe PDM", "Contrate/pague em Equipe / salarios. Servicos presenciais atendem apenas os carros expostos da empresa.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
+            Flush(); ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Mecanico e zeladoria / caixa $"+Wallet.Pdm.Cash; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Add("GPS: equipe PDM", "Contrate/pague em Equipe / salarios. Servicos presenciais atendem apenas os carros expostos da empresa.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
             foreach (var e in Wallet.Pdm.Showroom)
             {
                 var stock = Wallet.Pdm.Stock.Find(s => s.Id == e.StockId); string id = stock.Id;
@@ -68,7 +71,7 @@ namespace RPCore
         }
         void OpenStock(string id)
         {
-            pool.HideAll(); ui.Begin(Name+":"+id,OpenMenu,true,()=>OpenStock(id)); var stock = Wallet.Pdm.Stock.Find(s => s.Id == id); if (stock == null) return;
+            ui.HideAll(); ui.Begin(Name+":"+id,OpenMenu,true,()=>OpenStock(id)); var stock = Wallet.Pdm.Stock.Find(s => s.Id == id); if (stock == null) return;
             menu.Name = stock.Name + " / servicos";
             ui.AddConfirm("Solicitar mecanico: $" + PdmStaffTransactions.RepairPrice(Wallet.Pdm, company.RepairPrice), "Mecanico contratado/sem atraso vai ao carro e repara. Oficina adquirida mantem desconto. Paga so ao concluir, sem recolher a vaga.", () => Begin(id, "repair"));
             ui.AddConfirm("Solicitar zeladoria: sem taxa por servico", "Zeladoria contratada/sem atraso limpa sujeira e recupera cotacao. Salario continua devido pelo tempo trabalhado.", () => Begin(id, "clean"));

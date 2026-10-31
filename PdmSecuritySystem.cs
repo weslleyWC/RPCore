@@ -17,6 +17,7 @@ namespace RPCore
             public string EmployeeId; public Ped Ped, Target; public Blip Blip; public Vector3 Post;
             public bool Paid, Returning; public int EngagedAt, Cooldown, NextWalk;
         }
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Posts.Select(p=>PdmLocation.At("guard:"+p.Offer.Id,"Equipe e seguranca",p.Offer.Name,"Posto do guarda; contratar/pagar em Equipe. Marcar GPS nao contrata funcionario.",p.Point));
         public string Name => "pdmsecurity";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly PdmSecurityOptions options; readonly Vector3 office;
         readonly Func<IEnumerable<Ped>> crew; readonly Action syncPayroll, staffMenu, back;
@@ -29,19 +30,19 @@ namespace RPCore
         public PdmSecuritySystem(ObjectPool pool, PdmSecurityOptions options, Vector3 office, Func<IEnumerable<Ped>> crew, Action syncPayroll, Action staffMenu, Action back)
         {
             this.pool = pool; this.options = options; this.office = office; this.crew = crew; this.syncPayroll = syncPayroll; this.staffMenu = staffMenu; this.back = back;
-            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
         { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm security menu", ex); Notify.Show("Seguranca indisponivel; contratacoes e salarios preservados."); } }); }
         public void OpenMenu()
         {
-            syncPayroll(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Seguranca / postos presenciais";
+            syncPayroll(); ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Seguranca / postos presenciais";
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             foreach (var post in options.Posts)
             {
                 var row = post; var employee = Wallet.Pdm.Staff.Employees.Find(e => e.Role == row.Offer.Id); Guard guard; guards.TryGetValue(row.Offer.Id, out guard);
                 string state = employee == null ? "nao contratado" : !PdmSecurityPolicy.Paid(Wallet.Pdm, row.Offer.Id) ? "suspenso / salario ou acerto pendente" : guard == null ? "aguardando chegada perto da PDM" : guard.Target != null ? "defesa local" : "no posto / retornando";
-                Add(row.Offer.Name + " / " + state, "GPS do posto. Salario devido: $" + (employee?.Owed ?? 0) + ". Defesa apenas contra NPCs atacando voce/equipe na area local.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, row.Point.X, row.Point.Y); menu.Visible = false; });
+                Add(row.Offer.Name + " / " + state, "GPS do posto. Salario devido: $" + (employee?.Owed ?? 0) + ". Defesa apenas contra NPCs atacando voce/equipe na area local.", () => ui.Waypoint(new Vector3(row.Point.X,row.Point.Y,row.Point.Z),row.Offer.Name));
             }
             Add("Contratar / pagar / demitir", "Equipe e salarios da empresa; nao usa banco pessoal automaticamente.", staffMenu);
             ui.AddConfirm("Retornar guardas aos postos", "Interrompe a defesa e ordena retorno a pe, sem teleporte. Aguarda 10s antes de nova resposta.", () => { foreach (var g in guards.Values) Return(g); menu.Visible = false; });

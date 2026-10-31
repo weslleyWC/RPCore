@@ -13,6 +13,7 @@ namespace RPCore
     public sealed class PdmSurveillanceSystem : ISystem
     {
         readonly PdmMenuView ui;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Cameras.Select(p=>PdmLocation.At("camera:"+p.Id,"Equipe e seguranca",p.Name,"Ponto fisico da camera. Contrate o sistema e abra o monitoramento no escritorio.",p.Mount));
         public string Name => "pdmsurveillance";
         public bool Viewing => session != null;
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Vector3 office; readonly Func<bool> officeAction; readonly Action back;
@@ -24,13 +25,13 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmSurveillanceDefaults.Load(); options = Store.LoadDef("Jobs/PdmSurveillance.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSurveillance.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
         { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Close(); Log.Error("pdm surveillance action", ex); Notify.Show("Monitoramento indisponivel; compra/saves preservados."); } }); }
         public void OpenMenu()
         {
-            Close(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Cameras / monitoramento";
+            Close(); ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Cameras / monitoramento";
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             if (!Wallet.Pdm.Surveillance.Purchased)
                 ui.AddConfirm("Instalar cameras: $" + options.Price, "Compra unica pelo caixa empresarial, sem mensalidade. Nao inclui seguro/indenizacao.", () => { if (!officeAction()) return; if (!Wallet.PdmSurveillancePurchase(options, Guid.NewGuid().ToString("N"), out _)) Notify.Show("Confira caixa/empresa/operacao pendente. Nada confirmado."); OpenMenu(); });
@@ -39,7 +40,7 @@ namespace RPCore
                 Add("Equipamentos adquiridos / $" + Wallet.Pdm.Surveillance.Paid, "Tres pontos de referencia; apenas nossos props sao recolhidos. Recursos equivalentes do mapa sao conservados.", () => { });
                 for (int i = 0; i < options.Cameras.Count; i++) { int index = i; Add("Ver: " + options.Cameras[i].Name, "No escritorio, a pe e fora de atividade. Setas esquerda/direita trocam; Backspace/Esc sai. Limite " + options.MaxViewSeconds + "s.", () => ui.Stream(new[]{options.Model},()=>Begin(index),OpenMenu)); }
             }
-            Add("GPS: escritorio PDM", "Monitoramento disponivel apenas junto ao escritorio externo.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, office.X, office.Y); menu.Visible = false; });
+            Add("GPS: escritorio PDM", "Monitoramento disponivel apenas junto ao escritorio externo.", () => ui.Waypoint(office,"escritorio PDM"));
             Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
         bool NearbyEquivalent(PdmCameraPoint point) => World.GetNearbyProps(Pos(point.Mount), .6f, new Model(options.Model)).Any(p => PdmAssets.Valid(p));
@@ -76,7 +77,7 @@ namespace RPCore
                 health = Game.Player.Character.Health; armor = Game.Player.Character.Armor;
                 camera = Camera.Create(ScriptedCameraNameHash.DefaultScriptedCamera, true);
                 if (camera == null || !camera.Exists()) return;
-                Aim(); pool.HideAll(); renderRequested = true; ScriptCameraDirector.StartRendering(); InterfaceOptions.ModalOpen = true; ready = true;
+                Aim(); ui.HideAll(); renderRequested = true; ScriptCameraDirector.StartRendering(); InterfaceOptions.ModalOpen = true; ready = true;
             }
             finally { if (!ready) Close(); }
         }

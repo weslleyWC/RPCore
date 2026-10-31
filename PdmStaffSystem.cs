@@ -29,7 +29,7 @@ namespace RPCore
             var securityDefaults = PdmSecurityDefaults.Load(); Security = Store.LoadDef("Jobs/PdmSecurity.json", () => securityDefaults);
             if (Security == null || !Security.Valid) { Log.Write("Invalid PdmSecurity.json; embedded defaults used, original retained."); Security = securityDefaults; }
             options = PdmSecurityDefaults.Merge(options, Security);
-            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -69,7 +69,7 @@ namespace RPCore
         public void OpenMenu()
         {
             Flush();if(!Wallet.Pdm.Valid){Notify.Show("Dados PDM invalidos; original preservado.");return;}
-            pool.HideAll();ui.Begin(Name,back,true,OpenMenu);var d=Wallet.Pdm;
+            ui.HideAll();ui.Begin(Name,back,true,OpenMenu);var d=Wallet.Pdm;
             menu.Name="Equipe / caixa $"+d.Cash+" / divida $"+PdmBusinessRules.Wages(d);
             if(!d.Owned){Add("Adquira a empresa primeiro","Voltar a gestao.",back);ui.Show();return;}
             foreach(var offer in options.Roles){var role=offer;var employee=d.Staff.Employees.Find(e=>e.Role==role.Id);
@@ -84,7 +84,7 @@ namespace RPCore
         void Role(string roleId)
         {
             Flush();var role=options.Roles.Find(r=>r.Id==roleId);if(role==null){OpenMenu();return;}
-            pool.HideAll();ui.Begin(Name+":"+roleId,OpenMenu,true,()=>Role(roleId));var d=Wallet.Pdm;var e=d.Staff.Employees.Find(x=>x.Role==roleId);
+            ui.HideAll();ui.Begin(Name+":"+roleId,OpenMenu,true,()=>Role(roleId));var d=Wallet.Pdm;var e=d.Staff.Employees.Find(x=>x.Role==roleId);
             menu.Name=role.Name;
             if(e==null){
                 ui.Add("Salario $"+role.Wage+" / "+options.PeriodSeconds+"s ativos","Sem cobranca offline. Atraso suspende beneficios; salarios sao pagos pelo caixa.",()=>{},false);
@@ -102,7 +102,7 @@ namespace RPCore
         }
         void Upgrades()
         {
-            Flush();pool.HideAll();ui.Begin(Name+":upgrades",OpenMenu,true,Upgrades);var d=Wallet.Pdm;var s=d.Staff;menu.Name="Melhorias / caixa $"+d.Cash;
+            Flush();ui.HideAll();ui.Begin(Name+":upgrades",OpenMenu,true,Upgrades);var d=Wallet.Pdm;var s=d.Staff;menu.Name="Melhorias / caixa $"+d.Cash;
             ui.AddConfirm(s.Workshop?"Oficina adquirida":"Oficina / $"+options.WorkshopCost,"Com mecanico em dia, reduz pela metade o reparo do estoque. Compra unica.",()=>Change(()=>Wallet.PdmUpgrade(options,"workshop",Guid.NewGuid().ToString("N"),out _)),!s.Workshop && d.Cash>=options.WorkshopCost);
             ui.AddConfirm(s.Advertising?"Divulgacao adquirida":"Divulgacao / $"+options.AdvertisingCost,"Acrescenta 2% ao bonus de marketing em dia. Compra unica; nao cria venda ou dinheiro automaticamente.",()=>Change(()=>Wallet.PdmUpgrade(options,"advertising",Guid.NewGuid().ToString("N"),out _)),!s.Advertising && d.Cash>=options.AdvertisingCost);
             ui.AddConfirm("Quitar ex-funcionarios / $"+s.FormerDebt,"Acerto pendente bloqueia contratacoes e beneficios ate pagamento integral.",()=>Change(()=>PayExpected("former",s.FormerDebt)),s.FormerDebt>0 && d.Cash>=s.FormerDebt);

@@ -18,11 +18,12 @@ namespace RPCore
         int actor,model,selection;
         Action parent;
         bool wasVisible;
+        public Func<bool> CanNavigate;
         public PersonalServiceMenu(NativeMenu menu,Action<Exception> failed)
         {
             this.menu=menu;this.failed=failed;menu.Width=420;
             menu.Closing+=(s,e)=>{
-                if(parent!=null && Bound && (Game.IsControlJustPressed(GTA.Control.FrontendCancel) || Game.IsControlJustReleased(GTA.Control.FrontendCancel) || Game.IsKeyPressed(Keys.Back) || Game.IsKeyPressed(Keys.Escape))){e.Cancel=true;Queue(parent);}
+                if(parent!=null && (CanNavigate==null || CanNavigate()) && Bound && (Game.IsControlJustPressed(GTA.Control.FrontendCancel) || Game.IsControlJustReleased(GTA.Control.FrontendCancel) || Game.IsKeyPressed(Keys.Back) || Game.IsKeyPressed(Keys.Escape))){e.Cancel=Queue(parent);}
             };
         }
         bool Bound=>actor!=0 && actor==Game.Player.Character.Handle && model==Game.Player.Character.Model.Hash && profile==Profile.Id && Profile.Detect()==profile;
@@ -40,7 +41,7 @@ namespace RPCore
             int revision=actions.Revision;
             row.Activated+=(s,e)=>{if(actions.Revision==revision)Queue(action);};menu.Add(row);menu.SelectedIndex=Math.Max(0,Math.Min(selection,menu.Items.Count-1));
         }
-        void Queue(Action action){if(Bound)actions.Enqueue(action,actor,model,profile,Game.GameTime);}
+        bool Queue(Action action)=>Bound && (CanNavigate==null || CanNavigate()) && actions.Enqueue(action,actor,model,profile,Game.GameTime);
         static bool Pressed=>Game.IsKeyPressed(Keys.Enter) || Game.IsKeyPressed(Keys.LButton) || Game.IsKeyPressed(Keys.Back) || Game.IsKeyPressed(Keys.Escape) || Game.IsControlPressed(GTA.Control.FrontendAccept) || Game.IsControlPressed(GTA.Control.FrontendCancel) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendAccept) || Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED,0,(int)GTA.Control.FrontendCancel);
         public void Tick(bool allowed)
         {

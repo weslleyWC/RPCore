@@ -15,7 +15,7 @@ namespace RPCore
     public sealed partial class SettingsSystem : ISystem
     {
         public string Name { get { return "settings"; } }
-        public Action GarageRequested,DealerRequested,VehicleRequested;
+        public Action GarageRequested,DealerRequested,VehicleRequested,PdmRequested,PdmGpsRequested;
         readonly ObjectPool pool;
         readonly Action<Keys> dispatch;
         readonly NeedsSystem needs;
@@ -118,6 +118,7 @@ namespace RPCore
             if(traffic!=null) Add(game,"Policia / transito e multas","Fiscalizacao opcional, patrulha observadora e autuacoes com pagamento bancario.",()=>{pool.HideAll();traffic();});
             if(world!=null)Add(game,"Mundo / clima e horario","Modos manual/dinamico/real opcionais e relogio.",()=>{pool.HideAll();world();});
             if(passenger!=null)Add(game,"Transporte / taxi e limousine","Contratar motorista como passageiro; reserva bancaria e taximetro.",()=>{pool.HideAll();passenger();});
+            Add(game,"Empresa PDM","Painel empresarial: consultas, estoque, contratos e GPS. Operacoes presenciais exigem estar no escritorio.",()=>{pool.HideAll();PdmRequested?.Invoke();});
             if (jobs != null) Add(game, "Trabalhos / contratos", "Contratos de entregas e motoristas: contratar, GPS e cancelar.", () => { pool.HideAll(); jobs(); });
             Shortcut(game, "Salvar / configurar / diagnosticar", () => Cfg.CoreKey);
             Shortcut(game, "Radio", () => Cfg.RadioKey, () => Cfg.EnableRadio);
@@ -151,7 +152,7 @@ namespace RPCore
             if (jobs != null)
             {
                 Add(gpsJobs, "Trabalhos / contratos", "Gerenciar os contratos de entregas e motoristas.", () => { pool.HideAll(); jobs(); });
-                Add(gpsJobs, "GPS: PDM / empresa", "Escritorio externo: caixa, estoque e entregas.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, pdm.X, pdm.Y); pool.HideAll(); });
+                Add(gpsJobs, "PDM / locais e GPS", "Destinos da empresa e explicacao de compra/coleta. Nao confunde com carros pessoais.", () => {pool.HideAll();if(PdmGpsRequested!=null)PdmGpsRequested();else Function.Call(Hash.SET_NEW_WAYPOINT,pdm.X,pdm.Y);});
                 Add(gpsJobs, "GPS: arrancada / Sandy Shores", "Encontro e inscricao com carro proprio.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, drag.X, drag.Y); pool.HideAll(); });
                 Add(gpsJobs, "GPS: contato / trafico", "Contato externo para comprar estoque da atividade.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, dealer.X, dealer.Y); pool.HideAll(); });
                 Add(gpsJobs, "GPS: bancada / crafting / feira", "Receitas e venda de produtos das bolsas de caca/pesca.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, crafting.X, crafting.Y); pool.HideAll(); });

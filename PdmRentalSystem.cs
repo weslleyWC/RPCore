@@ -13,6 +13,9 @@ namespace RPCore
     public sealed class PdmRentalSystem : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
+        public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
+            PdmLocation.At("rental:delivery","Contratos","Locadora / entrega","Patio externo, fora das pistas do aeroporto. Exige contrato iniciado.",options.Delivery),
+            PdmLocation.At("rental:return","Contratos","Locadora / devolucao do conjunto","Retorno do contrato para receber o pagamento empresarial.",options.Return)}.Concat(options.Pickups.Select((p,i)=>PdmLocation.At("rental:pickup:"+i,"Contratos","Locadora / carregamento "+(i+1),"Retirada das unidades proprias depois de iniciar o contrato de locadora.",p)));
         public string Name => "pdmrental";
         public string Label => "PDM / pedidos da locadora";
         public bool Active => run != null;
@@ -36,15 +39,15 @@ namespace RPCore
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRental.json; embedded defaults used, original retained."); options = defaults; }
             var rigDefaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => rigDefaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for rental order; embedded defaults used, original retained."); rig = rigDefaults; }
-            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm rental action", ex); Notify.Show("Pedido da locadora pendente; dados preservados."); } }); }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Locadora / "+PdmBusinessRules.Pending(Wallet.Pdm); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
-            Add("GPS: escritorio PDM", "Inicie a pe com dois carros prontos do mesmo modelo no estoque.", () => Waypoint(StartPosition));
-            Add("GPS: locadora / patio externo", "Destino da referencia fora das pistas do aeroporto. Nao entre em area restrita.", () => Waypoint(Pos(options.Delivery)));
+            ui.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Locadora / "+PdmBusinessRules.Pending(Wallet.Pdm); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
+            Add("GPS: escritorio PDM", "Inicie a pe com dois carros prontos do mesmo modelo no estoque.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
+            Add("GPS: locadora / patio externo", "Destino da referencia fora das pistas do aeroporto. Nao entre em area restrita.", () => ui.Waypoint(Pos(options.Delivery),"locadora / patio externo"));
             if (Wallet.Pdm.Rental == null && !Active)
             {
                 int offers = 0;
@@ -65,7 +68,6 @@ namespace RPCore
             }
             Add("Voltar / resolver caixa", "Gestao PDM. Se recebimento estiver bloqueado pelo limite do caixa, pode sacar saldo disponivel no escritorio apos entrega aceita.", back); ui.Show();
         }
-        void Waypoint(Vector3 p) { Function.Call(Hash.SET_NEW_WAYPOINT, p.X, p.Y); menu.Visible = false; }
         void Route(Vector3 p, string label) { if (route != null && route.Exists()) route.Delete(); route = World.CreateBlip(p); route.Name = label; route.Color = BlipColor.Yellow; route.ShowRoute = true; }
         void Blip(Vehicle v, string label) { var b = v.AddBlip(); b.Name = label; b.Color = BlipColor.Blue; blips.Add(b); }
         static Vehicle Spawn(JobPoint point, string name, string plate)
