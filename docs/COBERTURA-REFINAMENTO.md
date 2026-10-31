@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual:0.106.1 corrige acesso físico à Motors e riscos de despacho/reentrada nos12menus PDM após relato de HUD/menus pararem. Causa do incidente ainda não reproduzida no cloud; validação GTA/log necessária. Saves e ciclos empresariais preservados; fase9 não iniciada.
+Estado atual:0.107 revisa os12sistemas PDM juntos por autorização explícita para adiantar seu refinamento funcional. Confirmações, navegação, caixa/folha, estoque/inspeção/negociação, contratos, câmera e recursos/entidades foram revistos. GTA pendente; não se infere teste aprovado da0.106.1. Outros trabalhos permanecem no grupo de refinamento correspondente; não se declara paridade integral PSRP.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -35,18 +35,18 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | MapEditorSystem | [MapEditorSystem.cs](../MapEditorSystem.cs) | Pendente de revisão completa; preservar base existente |
 | NeedsSystem | [NeedsSystem.cs](../NeedsSystem.cs) | Revisão0.90–0.93 e correção do sono; continuar validação integrada |
 | PassengerSystem | [PassengerSystem.cs](../PassengerSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmCompany | [PdmCompany.cs](../PdmCompany.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmFinanceSystem | [PdmFinanceSystem.cs](../PdmFinanceSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmLogistics | [PdmLogistics.cs](../PdmLogistics.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmPremisesSystem | [PdmPremisesSystem.cs](../PdmPremisesSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmRentalSystem | [PdmRentalSystem.cs](../PdmRentalSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmRepoSystem | [PdmRepoSystem.cs](../PdmRepoSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmRiskSystem | [PdmRiskSystem.cs](../PdmRiskSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmSafeSystem | [PdmSafeSystem.cs](../PdmSafeSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmSecuritySystem | [PdmSecuritySystem.cs](../PdmSecuritySystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmShowroomSystem | [PdmShowroomSystem.cs](../PdmShowroomSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmStaffSystem | [PdmStaffSystem.cs](../PdmStaffSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
-| PdmSurveillanceSystem | [PdmSurveillanceSystem.cs](../PdmSurveillanceSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
+| PdmCompany | [PdmCompany.cs](../PdmCompany.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmFinanceSystem | [PdmFinanceSystem.cs](../PdmFinanceSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmLogistics | [PdmLogistics.cs](../PdmLogistics.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmPremisesSystem | [PdmPremisesSystem.cs](../PdmPremisesSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmRentalSystem | [PdmRentalSystem.cs](../PdmRentalSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmRepoSystem | [PdmRepoSystem.cs](../PdmRepoSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmRiskSystem | [PdmRiskSystem.cs](../PdmRiskSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmSafeSystem | [PdmSafeSystem.cs](../PdmSafeSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmSecuritySystem | [PdmSecuritySystem.cs](../PdmSecuritySystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmShowroomSystem | [PdmShowroomSystem.cs](../PdmShowroomSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmStaffSystem | [PdmStaffSystem.cs](../PdmStaffSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
+| PdmSurveillanceSystem | [PdmSurveillanceSystem.cs](../PdmSurveillanceSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
 | PhoneSystem | [PhoneSystem.cs](../PhoneSystem.cs) | 0.102.1 corrige persistência nativa compartilhada da carteira/banco; teste GTA de fechamento pendente.0.101 acrescenta RPCore Bank nativo no celular, com quatro operações, cotação de uso único e mesmo Wallet; teste GTA pendente. Grupo0.98: navegacao/mouse/historico/notas/relogio/servicos revisados; aguarda teste GTA; chamadas/SMS externos nao integrados |
 | PilotJob | [PilotJob.cs](../PilotJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
 | PrisonTransportJob | [PrisonTransportJob.cs](../PrisonTransportJob.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |

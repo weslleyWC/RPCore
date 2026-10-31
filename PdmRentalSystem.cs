@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmRentalSystem : ISystem, IWorkContract
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
         public string Name => "pdmrental";
         public string Label => "PDM / pedidos da locadora";
         public bool Active => run != null;
@@ -22,11 +22,11 @@ namespace RPCore
         readonly Dictionary<string, Vehicle> cars = new Dictionary<string, Vehicle>(); readonly HashSet<string> loaded = new HashSet<string>(), removed = new HashSet<string>(); readonly List<Blip> blips = new List<Blip>();
         bool accepted; Vehicle truck, trailer; Ped worker; Blip route; PdmRentalRun run; string profile, cancelReason; int began, retryAt, nextWalk, cancelSince = -1;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
-        static bool Exists(Vehicle v) => v != null && v.Exists();
+        static bool Exists(Vehicle v) => v != null && PdmAssets.Valid(v);
         static bool Empty(Vehicle v) => !Exists(v) || v.Occupants.Length == 0 && v.Speed < .5f;
         static int Health(float n) => float.IsNaN(n) || float.IsInfinity(n) ? 0 : Math.Max(0, Math.Min(1000, (int)n));
         bool Foot => Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat;
-        bool InputAllowed => !Game.IsPaused && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible;
+        bool InputAllowed => PdmMenuRuntime.Allowed && !pool.AreAnyVisible;
         bool Coupled => JobVehicles.Towing(truck, trailer);
         bool Foreign => Exists(truck) && Function.Call<bool>(Hash.IS_VEHICLE_ATTACHED_TO_TRAILER, truck) && !Coupled || JobVehicles.TrailerHasOtherTractor(trailer, truck);
         public PdmRentalSystem(ObjectPool pool, ShiftGate gate, PdmOptions company, Func<bool> clearDisplay, AchievementSystem achievements, Action back)
@@ -36,13 +36,13 @@ namespace RPCore
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRental.json; embedded defaults used, original retained."); options = defaults; }
             var rigDefaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => rigDefaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for rental order; embedded defaults used, original retained."); rig = rigDefaults; }
-            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / locadora", "DOIS CARROS / ENTREGA / RETORNO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm rental action", ex); Notify.Show("Pedido da locadora pendente; dados preservados."); } }); }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
+            pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Locadora / "+PdmBusinessRules.Pending(Wallet.Pdm); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos. Original preservado."); return; }
             Add("GPS: escritorio PDM", "Inicie a pe com dois carros prontos do mesmo modelo no estoque.", () => Waypoint(StartPosition));
             Add("GPS: locadora / patio externo", "Destino da referencia fora das pistas do aeroporto. Nao entre em area restrita.", () => Waypoint(Pos(options.Delivery)));
             if (Wallet.Pdm.Rental == null && !Active)
@@ -52,18 +52,18 @@ namespace RPCore
                 {
                     var stock = Wallet.Pdm.Stock.Where(s => !s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300 && !Wallet.Pdm.Showroom.Any(e => e.StockId == s.Id) && string.Equals(s.Model, model, StringComparison.OrdinalIgnoreCase)).Take(2).ToList(); if (stock.Count != 2) continue;
                     offers++; var ids = stock.Select(s => s.Id).ToList(); int quote = stock.Sum(s => PdmRentalTransactions.Quote(s, options.PricePercent));
-                    Add("Fornecer 2x " + stock[0].Name + " / ate $" + quote, "Estoque proprio ja pago; desconto contratual " + options.PricePercent + "% da cotacao base apos danos. Carregue, entregue a locadora e devolva o conjunto para receber no caixa. Sem bonus de divulgacao.", () => Begin(ids));
+                    ui.AddConfirm("Fornecer 2x " + stock[0].Name + " / ate $" + quote, "Estoque proprio ja pago; desconto contratual " + options.PricePercent + "% da cotacao base apos danos. Carregue, entregue a locadora e devolva o conjunto para receber no caixa. Sem bonus de divulgacao.", () => ui.Stream(new[]{rig.TruckModel,rig.TrailerModel,options.WorkerModel}.Concat(ids.Select(id=>Wallet.Pdm.Stock.Find(s=>s.Id==id).Model)),()=>Begin(ids),OpenMenu));
                 }
                 if (offers == 0) Add("Sem dois carros prontos do mesmo modelo", "Compre/colete/repare duas unidades de um modelo aceito: " + string.Join(", ", options.Models) + ". Nada e criado gratuitamente.", () => { });
             }
             if (Wallet.Pdm.Rental != null)
             {
                 var a = Wallet.Pdm.Rental;
-                Add(a.Delivered ? "Entrega aceita / retorno e recebimento pendentes" : "Pedido reservado / entrega pendente", "Valor previsto/fixado: $" + a.Amount + ". Carros reservados nao podem ser vendidos em outro contrato.", () => { });
-                if (Active) Add(a.Delivered ? "Suspender retorno" : "Encerrar pedido", a.Delivered ? "Mantem obrigacao de recebimento e conjunto para continuar por Recuperar. Pare e saia dos veiculos." : "Antes da entrega, libera as unidades no estoque com danos. Pare e saia dos veiculos.", () => { cancelReason = "Solicitada pelo jogador"; menu.Visible = false; });
-                Add("Recuperar / continuar pedido", "Antes da entrega: devolve reserva ao estoque. Entregue: retoma retorno com conjunto reconhecido; se indisponivel apos interrupcao, recupera recebimento sem duplicar.", () => { if (Active && !a.Delivered) { cancelReason = "Recuperacao solicitada"; menu.Visible = false; } else { Recover(); menu.Visible = false; } });
+                ui.AddConfirm(a.Delivered ? "Entrega aceita / retorno e recebimento pendentes" : "Pedido reservado / entrega pendente", "Valor previsto/fixado: $" + a.Amount + ". Carros reservados nao podem ser vendidos em outro contrato.", () => { });
+                if (Active) ui.AddConfirm(a.Delivered ? "Suspender retorno" : "Encerrar pedido", a.Delivered ? "Mantem obrigacao de recebimento e conjunto para continuar por Recuperar. Pare e saia dos veiculos." : "Antes da entrega, libera as unidades no estoque com danos. Pare e saia dos veiculos.", () => { cancelReason = "Solicitada pelo jogador"; menu.Visible = false; });
+                ui.AddConfirm("Recuperar / continuar pedido", "Antes da entrega: devolve reserva ao estoque. Entregue: retoma retorno com conjunto reconhecido; se indisponivel apos interrupcao, recupera recebimento sem duplicar.", () => { if (Active && !a.Delivered) { cancelReason = "Recuperacao solicitada"; menu.Visible = false; } else { Recover(); menu.Visible = false; } });
             }
-            Add("Voltar / resolver caixa", "Gestao PDM. Se recebimento estiver bloqueado pelo limite do caixa, pode sacar saldo disponivel no escritorio apos entrega aceita.", back); menu.Visible = true;
+            Add("Voltar / resolver caixa", "Gestao PDM. Se recebimento estiver bloqueado pelo limite do caixa, pode sacar saldo disponivel no escritorio apos entrega aceita.", back); ui.Show();
         }
         void Waypoint(Vector3 p) { Function.Call(Hash.SET_NEW_WAYPOINT, p.X, p.Y); menu.Visible = false; }
         void Route(Vector3 p, string label) { if (route != null && route.Exists()) route.Delete(); route = World.CreateBlip(p); route.Name = label; route.Color = BlipColor.Yellow; route.ShowRoute = true; }
@@ -73,18 +73,18 @@ namespace RPCore
             var model = new Model(name);
             try
             {
-                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle) return null;
+                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
                 var bay = RigSpawn.FindVehicle(point, model, "PDM locadora"); if (bay == null) return null;
-                var v = World.CreateVehicle(model, Pos(bay), bay.Heading); if (!Exists(v)) return null;
+                var v = PdmAssets.Track(World.CreateVehicle(model, Pos(bay), bay.Heading)); if (!Exists(v)) return null;
                 v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false;
                 float capacity = v.PetrolTankVolume; v.FuelLevel = capacity > 0 && !float.IsNaN(capacity) && !float.IsInfinity(capacity) ? Math.Min(10000, capacity) : 100;
                 Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, plate); JobVehicles.Reserve(v); return v;
             }
-            finally { model.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(model); }
         }
         static PdmEntityRef Ref(Vehicle v, string model) => new PdmEntityRef { Handle = v.Handle, Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim() };
         static Vehicle Match(int handle, string model, string plate)
-        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? v : null; }
+        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
         void Begin(List<string> ids)
         {
             var d = Wallet.Pdm;
@@ -139,7 +139,7 @@ namespace RPCore
             }
         }
         bool DeliveryReady => InputAllowed && Coupled && !Foreign && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Delivery)) < 24 && truck.Position.DistanceTo(Pos(options.Delivery)) < 24 && Game.Player.Character.Position.DistanceTo(truck.Position) < 15 && cars.Count == 2 && cars.Values.All(v => Exists(v) && !v.IsDead && v.Occupants.Length == 0 && v.EngineHealth >= 100 && v.IsAttachedTo(trailer));
-        bool WorkerReady => worker != null && worker.Exists() && !worker.IsDead && worker.Position.DistanceTo(truck.Position) < 9;
+        bool WorkerReady => worker != null && PdmAssets.Valid(worker) && !worker.IsDead && worker.Position.DistanceTo(truck.Position) < 9;
         bool ReturnReady => InputAllowed && Coupled && !Foreign && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(truck.Position) < 15;
         void SpawnWorker()
         {
@@ -147,12 +147,12 @@ namespace RPCore
             retryAt = Game.GameTime + 5000; var model = new Model(options.WorkerModel);
             try
             {
-                if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !model.Request(2500)) return;
+                if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;
                 var point = JobActors.Sidewalk(Pos(options.Worker)); if (point == Vector3.Zero || !JobActors.Free(point, 2)) return;
-                worker = World.CreatePed(model, point, options.Worker.Heading); if (worker == null || !worker.Exists()) { worker = null; return; }
+                worker = PdmAssets.Track(World.CreatePed(model, point, options.Worker.Heading)); if (worker == null || !PdmAssets.Valid(worker)) { worker = null; return; }
                 worker.IsPersistent = true; worker.BlockPermanentEvents = true; var b = worker.AddBlip(); b.Name = "RPCore: funcionario da locadora"; b.Color = BlipColor.Yellow; blips.Add(b);
             }
-            finally { model.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(model); }
         }
         void CallWorker()
         {
@@ -170,7 +170,7 @@ namespace RPCore
                 if (run.Stage == PdmRentalStage.Paying) { Pay(false); return; }
                 bool delivered = Wallet.Pdm.Rental.Delivered;
                 if (cancelReason != null) { if (delivered) Suspend(); else Cancel(); return; }
-                if (Game.Player.Character.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || unchecked(Game.GameTime - began) > options.TimeLimitSeconds * 1000 || !Exists(truck) || !Exists(trailer) || truck.IsDead || trailer.IsDead || !delivered && (cars.Values.Any(v => !Exists(v) || v.IsDead || v.EngineHealth < 100) || loaded.Any(id => !cars[id].IsAttachedTo(trailer)) || worker != null && (!worker.Exists() || worker.IsDead)))
+                if (Game.Player.Character.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || unchecked(Game.GameTime - began) > options.TimeLimitSeconds * 1000 || !Exists(truck) || !Exists(trailer) || truck.IsDead || trailer.IsDead || !delivered && (cars.Values.Any(v => !Exists(v) || v.IsDead || v.EngineHealth < 100) || loaded.Any(id => !cars[id].IsAttachedTo(trailer)) || worker != null && (!PdmAssets.Valid(worker) || worker.IsDead)))
                 { cancelReason = "Pedido interrompido"; if (delivered) Suspend(); else Cancel(); return; }
                 if (!InputAllowed) { run.Deliver(Game.GameTime, false, () => false); run.Returned(Game.GameTime, false, () => false); return; }
                 if (!Coupled) { run.Deliver(Game.GameTime, false, () => false); run.Returned(Game.GameTime, false, () => false); Couple(); return; }
@@ -179,7 +179,7 @@ namespace RPCore
                 if (run.Stage == PdmRentalStage.Driving)
                 {
                     SpawnWorker(); Status("leve os dois carros ao patio externo / pare e buzine para chamar o funcionario");
-                    if (DeliveryReady && worker != null && worker.Exists() && Game.Player.Character.IsInVehicle(truck) && truck.Driver == Game.Player.Character && Game.IsControlJustPressed(GTA.Control.VehicleHorn)) { run.Call(true); CallWorker(); }
+                    if (DeliveryReady && worker != null && PdmAssets.Valid(worker) && Game.Player.Character.IsInVehicle(truck) && truck.Driver == Game.Player.Character && Game.IsControlJustPressed(GTA.Control.VehicleHorn)) { run.Call(true); CallWorker(); }
                     return;
                 }
                 if (run.Stage == PdmRentalStage.Calling)
@@ -217,7 +217,7 @@ namespace RPCore
         bool DeleteCars()
         {
             if (cars.Values.Any(v => Exists(v) && (v.Occupants.Length > 0 || v.Speed > .5f && !(Exists(trailer) && trailer.Speed < .5f && v.IsAttachedTo(trailer))))) return false;
-            foreach (var c in cars) if (Exists(c.Value)) { c.Value.Detach(); c.Value.IsCollisionEnabled = true; c.Value.Delete(); if (c.Value.Exists()) return false; JobVehicles.Release(c.Value); removed.Add(c.Key); }
+            foreach (var c in cars) if (Exists(c.Value)) { c.Value.Detach(); c.Value.IsCollisionEnabled = true; c.Value.Delete(); if (PdmAssets.Valid(c.Value)) return false; JobVehicles.Release(c.Value); removed.Add(c.Key); }
             return true;
         }
         void BeginReturn()
@@ -225,7 +225,7 @@ namespace RPCore
             accepted = true;
             if (!DeleteCars()) { Status("recebimento: pare e saia dos carros transportados"); return; }
             if (!run.BeginReturn(true)) return;
-            if (worker != null && worker.Exists()) JobActors.Walk(worker, Pos(options.Worker));
+            if (worker != null && PdmAssets.Valid(worker)) JobActors.Walk(worker, Pos(options.Worker));
             Route(Pos(options.Return), "RPCore: devolva o conjunto na PDM"); Notify.Show("Dois carros recebidos pela locadora. Volte a PDM para devolver o conjunto e receber no caixa.");
         }
         void Pay(bool recovery)
@@ -275,7 +275,7 @@ namespace RPCore
         }
         void EndSession(bool retireRig)
         {
-            try { if (retireRig) JobVehicles.RetireRig(truck, trailer); if (worker != null && worker.Exists()) worker.Delete(); foreach (var b in blips) if (b != null && b.Exists()) b.Delete(); if (route != null && route.Exists()) route.Delete(); }
+            try { if (retireRig) JobVehicles.RetireRig(truck, trailer); if (worker != null && PdmAssets.Valid(worker)) worker.Delete(); foreach (var b in blips) if (b != null && b.Exists()) b.Delete(); if (route != null && route.Exists()) route.Delete(); }
             finally { truck = trailer = null; worker = null; route = null; cars.Clear(); loaded.Clear(); removed.Clear(); blips.Clear(); run = null; cancelReason = null; accepted = false; gate.Release(Name); menu.Visible = false; }
         }
         void ReleaseSession()

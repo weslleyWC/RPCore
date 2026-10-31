@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmSurveillanceSystem : ISystem
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
         public string Name => "pdmsurveillance";
         public bool Viewing => session != null;
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Vector3 office; readonly Func<bool> officeAction; readonly Action back;
@@ -24,41 +24,42 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmSurveillanceDefaults.Load(); options = Store.LoadDef("Jobs/PdmSurveillance.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSurveillance.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / cameras", "EQUIPAMENTOS / MONITORAMENTO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
         { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Close(); Log.Error("pdm surveillance action", ex); Notify.Show("Monitoramento indisponivel; compra/saves preservados."); } }); }
         public void OpenMenu()
         {
-            Close(); pool.HideAll(); ui.Begin("pdm",null,false);
+            Close(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Cameras / monitoramento";
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             if (!Wallet.Pdm.Surveillance.Purchased)
-                Add("Instalar cameras: $" + options.Price, "Compra unica pelo caixa empresarial, sem mensalidade. Nao inclui seguro/indenizacao.", () => { if (!officeAction()) return; if (!Wallet.PdmSurveillancePurchase(options, Guid.NewGuid().ToString("N"), out _)) Notify.Show("Confira caixa/empresa/operacao pendente. Nada confirmado."); OpenMenu(); });
+                ui.AddConfirm("Instalar cameras: $" + options.Price, "Compra unica pelo caixa empresarial, sem mensalidade. Nao inclui seguro/indenizacao.", () => { if (!officeAction()) return; if (!Wallet.PdmSurveillancePurchase(options, Guid.NewGuid().ToString("N"), out _)) Notify.Show("Confira caixa/empresa/operacao pendente. Nada confirmado."); OpenMenu(); });
             else
             {
                 Add("Equipamentos adquiridos / $" + Wallet.Pdm.Surveillance.Paid, "Tres pontos de referencia; apenas nossos props sao recolhidos. Recursos equivalentes do mapa sao conservados.", () => { });
-                for (int i = 0; i < options.Cameras.Count; i++) { int index = i; Add("Ver: " + options.Cameras[i].Name, "No escritorio, a pe e fora de atividade. Setas esquerda/direita trocam; Backspace/Esc sai. Limite " + options.MaxViewSeconds + "s.", () => Begin(index)); }
+                for (int i = 0; i < options.Cameras.Count; i++) { int index = i; Add("Ver: " + options.Cameras[i].Name, "No escritorio, a pe e fora de atividade. Setas esquerda/direita trocam; Backspace/Esc sai. Limite " + options.MaxViewSeconds + "s.", () => ui.Stream(new[]{options.Model},()=>Begin(index),OpenMenu)); }
             }
             Add("GPS: escritorio PDM", "Monitoramento disponivel apenas junto ao escritorio externo.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, office.X, office.Y); menu.Visible = false; });
-            Add("Voltar", "Empresa PDM.", back); menu.Visible = true;
+            Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
-        bool NearbyEquivalent(PdmCameraPoint point) => World.GetNearbyProps(Pos(point.Mount), .6f, new Model(options.Model)).Any(p => p.Exists());
-        bool Hardware(PdmCameraPoint point) { Prop p; return props.TryGetValue(point.Id, out p) && p.Exists() || NearbyEquivalent(point); }
-        void SpawnProps()
+        bool NearbyEquivalent(PdmCameraPoint point) => World.GetNearbyProps(Pos(point.Mount), .6f, new Model(options.Model)).Any(p => PdmAssets.Valid(p));
+        bool Hardware(PdmCameraPoint point) { Prop p; return props.TryGetValue(point.Id, out p) && PdmAssets.Valid(p) || NearbyEquivalent(point); }
+        void SpawnProps(int target=-1)
         {
             var model = new Model(options.Model);
             try
             {
-                if (!model.IsValid || !model.IsInCdImage || !model.Request(1500)) return;
-                foreach (var point in options.Cameras)
+                if (!model.IsValid || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;
+                foreach (var point in target>=0?new[]{options.Cameras[target]}:options.Cameras.ToArray())
                 {
-                    Prop old; if (props.TryGetValue(point.Id, out old)) { if (old.Exists()) continue; props.Remove(point.Id); }
+                    Prop old; if (props.TryGetValue(point.Id, out old)) { if (PdmAssets.Valid(old)) continue; props.Remove(point.Id); }
                     if (NearbyEquivalent(point)) continue;
-                    var p = World.CreateProp(model, Pos(point.Mount), false, false); if (p == null || !p.Exists()) continue;
+                    if(target<0 && !PdmStreaming.ClaimSpawn())break;
+                    var p = PdmAssets.Track(World.CreateProp(model, Pos(point.Mount), false, false)); if (p == null || !PdmAssets.Valid(p)) continue;
                     props[point.Id] = p; p.Rotation = new Vector3(0, 0, point.Mount.Heading); p.IsPersistent = true; p.IsPositionFrozen = true; p.IsCollisionEnabled = false;
                 }
             }
-            finally { model.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(model); }
         }
         bool SafeFoot => !Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) <= 5;
         bool OwnCamera => camera != null && camera.Exists() && ScriptCameraDirector.RenderingCam?.Handle == camera.Handle;
@@ -66,7 +67,7 @@ namespace RPCore
         {
             if (!Wallet.Pdm.Valid || !Wallet.Pdm.Surveillance.Purchased || !SafeFoot || !officeAction()) return;
             if (!Function.Call<bool>(Hash.IS_GAMEPLAY_CAM_RENDERING) || InterfaceOptions.ModalOpen) { Notify.Show("Feche a outra camera/interface antes de usar o monitoramento."); return; }
-            SpawnProps(); if (!Hardware(options.Cameras[index])) { Notify.Show("Camera ainda indisponivel; aguarde carregamento do equipamento."); return; }
+            SpawnProps(index); if (!Hardware(options.Cameras[index])) { Notify.Show("Camera ainda indisponivel; aguarde carregamento do equipamento."); return; }
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
             bool ready = false;
             try
@@ -93,7 +94,7 @@ namespace RPCore
                 finally { camera = null; renderRequested = false; session?.Close(); session = null; gate.Release(Name); }
             }
         }
-        void ClearProps() { foreach (var p in props.Values) if (p != null && p.Exists()) p.Delete(); props.Clear(); }
+        void ClearProps() { foreach (var p in props.Values) if (p != null && PdmAssets.Valid(p)) p.Delete(); props.Clear(); }
         public void Tick()
         {
             ui.Tick(PdmMenuRuntime.Allowed);
@@ -103,16 +104,21 @@ namespace RPCore
                 if (!installed || Game.Player.Character.Position.DistanceTo(office) > 180) { Close(); ClearProps(); return; }
                 if (Viewing)
                 {
+                    if(PdmMenuRuntime.Pressed(GTA.Control.FrontendCancel) || PdmMenuRuntime.Pressed(GTA.Control.PhoneCancel)){Close();return;}
+                    int direction=PdmMenuRuntime.Pressed(GTA.Control.FrontendLeft)?-1:PdmMenuRuntime.Pressed(GTA.Control.FrontendRight)?1:0;
+                    if(direction!=0 && session.Switch(direction)){if(!Hardware(options.Cameras[session.Index])){Close();Notify.Show("Camera indisponivel; visao normal restaurada.");return;}Aim();}
+
                     var current = ScriptCameraDirector.RenderingCam;
                     bool rendering = session.Rendering(Game.GameTime, OwnCamera, current != null && current.Handle != camera?.Handle);
                     bool eligible = SafeFoot && rendering && !pool.AreAnyVisible && Hardware(options.Cameras[session.Index]) && Game.Player.Character.Health >= health && Game.Player.Character.Armor >= armor;
                     if (!session.Continue(Game.GameTime, eligible)) { Close(); return; }
                     Function.Call(Hash.DISABLE_ALL_CONTROL_ACTIONS, 0); Function.Call(Hash.ENABLE_CONTROL_ACTION, 0, 199, true); Function.Call(Hash.ENABLE_CONTROL_ACTION, 0, 200, true);
+                    foreach(var control in new[]{GTA.Control.FrontendCancel,GTA.Control.PhoneCancel,GTA.Control.FrontendLeft,GTA.Control.FrontendRight})Function.Call(Hash.ENABLE_CONTROL_ACTION,0,(int)control,true);
                     Visuals.Rect(20, 900, 1050, 80, Color.FromArgb(220, 8, 12, 18));
                     Visuals.Text("PDM / AO VIVO / " + options.Cameras[session.Index].Name, 35, 910, .32f, Color.White);
                     Visuals.Text("Esquerda/Direita: trocar camera   Backspace/Esc: sair", 35, 945, .26f, Color.White);
                 }
-                if (!Game.IsMissionActive && !Game.IsPaused && unchecked(Game.GameTime - nextProps) >= 0) { nextProps = Game.GameTime + 5000; SpawnProps(); }
+                if (PdmMenuRuntime.WorldAllowed && unchecked(Game.GameTime - nextProps) >= 0) { nextProps = Game.GameTime + 5000; SpawnProps(); }
             }
             catch (Exception ex) { Close(); nextProps = Game.GameTime + 5000; Log.Error("pdm surveillance", ex); }
         }

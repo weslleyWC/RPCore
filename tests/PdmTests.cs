@@ -28,7 +28,7 @@ namespace RPCore.Tests
         [Fact] public void TransferReplaySurvivesReloadWithoutDuplication()
         {var w=Funded();PdmTransactions.Transfer(w,1000,false,"t",()=>{},out _);w=JsonConvert.DeserializeObject<WalletData>(JsonConvert.SerializeObject(w));Assert.True(PdmTransactions.Transfer(w,1000,false,"t",()=>throw new Exception(),out bool changed));Assert.False(changed);Assert.Equal(16000,w.Bank);Assert.Equal(9000,w.Pdm.Cash);}
         [Theory] [InlineData(0)] [InlineData(-1)] [InlineData(1000001)]
-        public void InvalidTransfersCannotMoveFunds(int amount)
+        public void NonpositiveOrUnavailableTransfersCannotMoveFunds(int amount)
         {var w=Funded();Assert.False(PdmTransactions.Transfer(w,amount,true,"t",()=>throw new Exception(),out _));Assert.Equal(10000,w.Pdm.Cash);}
         [Fact] public void OwnershipAndAvailableBalancesAreRequiredForTransfer()
         {var w=new WalletData{Bank=50000};Assert.False(PdmTransactions.Transfer(w,1000,true,"t",()=>{},out _));w=Funded();Assert.False(PdmTransactions.Transfer(w,20000,false,"t",()=>{},out _));Assert.False(PdmTransactions.Transfer(w,20000,true,"t",()=>{},out _));}

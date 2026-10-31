@@ -11,7 +11,7 @@ namespace RPCore
 {
     public sealed class PdmSecuritySystem : ISystem
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
         sealed class Guard
         {
             public string EmployeeId; public Ped Ped, Target; public Blip Blip; public Vector3 Post;
@@ -24,18 +24,18 @@ namespace RPCore
         readonly Dictionary<string, int> respawn = new Dictionary<string, int>();
         int nextScan, nextSpawn; string profile;
         bool WorldAllowed => Wallet.Pdm.Valid && Wallet.Pdm.Owned && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && Game.Player.Character.IsHuman && Game.Player.Wanted.WantedLevel == 0 && Game.Player.Character.Position.DistanceTo(office) < 180;
-        static bool Alive(Ped p) => p != null && p.Exists() && !p.IsDead;
+        static bool Alive(Ped p) => p != null && PdmAssets.Valid(p) && !p.IsDead;
         static Vector3 Position(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
         public PdmSecuritySystem(ObjectPool pool, PdmSecurityOptions options, Vector3 office, Func<IEnumerable<Ped>> crew, Action syncPayroll, Action staffMenu, Action back)
         {
             this.pool = pool; this.options = options; this.office = office; this.crew = crew; this.syncPayroll = syncPayroll; this.staffMenu = staffMenu; this.back = back;
-            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
+            menu = new NativeMenu("PDM / seguranca", "POSTOS / DEFESA LOCAL"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); profile = Profile.Id;
         }
         void Add(string title, string description, Action action)
         { ui.Add(title, description, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm security menu", ex); Notify.Show("Seguranca indisponivel; contratacoes e salarios preservados."); } }); }
         public void OpenMenu()
         {
-            syncPayroll(); pool.HideAll(); ui.Begin("pdm",null,false);
+            syncPayroll(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Seguranca / postos presenciais";
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             foreach (var post in options.Posts)
             {
@@ -44,9 +44,9 @@ namespace RPCore
                 Add(row.Offer.Name + " / " + state, "GPS do posto. Salario devido: $" + (employee?.Owed ?? 0) + ". Defesa apenas contra NPCs atacando voce/equipe na area local.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, row.Point.X, row.Point.Y); menu.Visible = false; });
             }
             Add("Contratar / pagar / demitir", "Equipe e salarios da empresa; nao usa banco pessoal automaticamente.", staffMenu);
-            Add("Retornar guardas aos postos", "Interrompe a defesa e ordena retorno a pe, sem teleporte. Aguarda 10s antes de nova resposta.", () => { foreach (var g in guards.Values) Return(g); menu.Visible = false; });
+            ui.AddConfirm("Retornar guardas aos postos", "Interrompe a defesa e ordena retorno a pe, sem teleporte. Aguarda 10s antes de nova resposta.", () => { foreach (var g in guards.Values) Return(g); menu.Visible = false; });
             Add(options.EnableDefense ? "Defesa local: ativa" : "Defesa local: desativada na configuracao", "Raio de " + options.DefenseRadius + "m por posto. Suspende com procurado/missao, divida ou morte. Nao substitui policia nem cancela estrelas.", () => { });
-            Add("Voltar", "Empresa PDM.", back); menu.Visible = true;
+            Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
         Vector3 SpawnPoint(JobPoint point)
         {
@@ -61,9 +61,10 @@ namespace RPCore
             var model = new Model(post.Model); Ped ped = null; Blip blip = null;
             try
             {
-                if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !model.Request(1500)) return;
+                if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;
                 var point = SpawnPoint(post.Point); if (point == Vector3.Zero) return;
-                ped = World.CreatePed(model, point, post.Point.Heading); if (!Alive(ped)) return;
+                if(!PdmStreaming.ClaimSpawn())return;
+                ped = PdmAssets.Track(World.CreatePed(model, point, post.Point.Heading)); if (!Alive(ped)) return;
                 ped.IsPersistent = true; ped.BlockPermanentEvents = true;
                 Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD, ped, false);
                 blip = ped.AddBlip(); blip.Name = "RPCore: " + employee.Name; blip.Color = BlipColor.White;
@@ -71,7 +72,7 @@ namespace RPCore
                 guards.Add(post.Offer.Id, guard); ped = null; blip = null;
                 SetPaid(guard, PdmSecurityPolicy.Paid(Wallet.Pdm, post.Offer.Id), true);
             }
-            finally { if (blip != null && blip.Exists()) blip.Delete(); if (ped != null && ped.Exists()) ped.Delete(); model.MarkAsNoLongerNeeded(); }
+            finally { if (blip != null && blip.Exists()) blip.Delete(); if (ped != null && PdmAssets.Valid(ped)) ped.Delete(); PdmStreaming.Release(model); }
         }
         void SetPaid(Guard g, bool paid, bool initial = false)
         {
@@ -107,7 +108,7 @@ namespace RPCore
             if (target == null) return;
             g.Target = target; g.EngagedAt = now; Function.Call(Hash.TASK_COMBAT_PED, g.Ped, target, 0, 16);
         }
-        static void Delete(Guard g) { if (g.Blip != null && g.Blip.Exists()) g.Blip.Delete(); if (g.Ped != null && g.Ped.Exists()) g.Ped.Delete(); }
+        static void Delete(Guard g) { if (g.Blip != null && g.Blip.Exists()) g.Blip.Delete(); if (g.Ped != null && PdmAssets.Valid(g.Ped)) g.Ped.Delete(); }
         void Clear() { foreach (var g in guards.Values) Delete(g); guards.Clear(); }
         public void Tick()
         {

@@ -367,3 +367,8 @@ Revisão conjunta de catálogo, seleção de garagem, confirmação, criação/c
 ###0.106.1 — correção relatada: portas e menus PDM
 
 Portas/showroom, aviso de acesso e fila dos12menus PDM, com isolamento de falhas de banner/fechamento. Não muda ciclos de trabalhos nem as transações/saves da0.106.0.4105 testes e build limpo; falha de HUD relatada não reproduzida no cloud, teste GTA conforme PORTAS-PDM-MENUS-0.106.1.md e logs se persistir.
+
+
+###0.107.0 — adiantamento específico do grupo PDM
+
+Pedido explícito: refinar a PDM inteira comparando PSRP.dll. Os12sistemas existentes foram revistos juntos, inclusive inspeção/negociação, fluxos de contratos e estabilidade física, sem iniciar a revisão dos demais trabalhos.4162 testes, build net48 limpo; confirmação nativa pendente. Guia PDM-EMPRESA-0.107.0.md, matriz PSRP-PDM-REVIEW-0.107.0.json e escopo PDM-SCOPE-0.107.0.json. Não se declara paridade com reputação/cartões/vendedor particular/6-carros/upgrades visuais PSRP.

@@ -289,6 +289,7 @@ namespace RPCore
         public static PdmData Pdm => data.Pdm ?? new PdmData();
         public static bool PdmHire(PdmStaffOptions c,string role,string id,out bool changed)=>PdmStaffTransactions.Hire(data,c,role,id,Save,out changed);
         public static bool PdmWork(int seconds,string id,out bool changed)=>PdmStaffTransactions.Work(data,seconds,id,Save,out changed);
+        public static bool PdmPayAll(string receipt,out bool changed,long? expected=null)=>PdmStaffTransactions.PayAll(data,receipt,Save,out changed,expected);
         public static bool PdmPay(string role,string id,out bool changed)=>PdmStaffTransactions.Pay(data,role,id,Save,out changed);
         public static bool PdmFire(string employee,string id,out bool changed)=>PdmStaffTransactions.Fire(data,employee,id,Save,out changed);
         public static bool PdmUpgrade(PdmStaffOptions c,string upgrade,string id,out bool changed)=>PdmStaffTransactions.Upgrade(data,c,upgrade,id,Save,out changed);
@@ -316,6 +317,10 @@ namespace RPCore
         public static bool PdmShowroomAssign(PdmShowroomOptions c,string stock,string slot,int handle,out bool changed)=>PdmShowroomTransactions.Assign(data,c,stock,slot,handle,Guid.NewGuid().ToString("N"),Save,out changed);
         public static bool PdmShowroomTrack(string stock,int handle,out bool changed)=>PdmShowroomTransactions.Track(data,stock,handle,Guid.NewGuid().ToString("N"),Save,out changed);
         public static bool PdmShowroomRemove(string stock,out bool changed)=>PdmShowroomTransactions.Remove(data,stock,Guid.NewGuid().ToString("N"),Save,out changed);
+        public static bool PdmShowroomInspect(string id,out bool changed)=>PdmNegotiationTransactions.Inspect(data,id,Save,out changed);
+        public static bool PdmShowroomAccept(string id,out bool changed)=>PdmNegotiationTransactions.Accept(data,id,Save,out changed);
+        public static bool PdmShowroomCounter(string id,int price,out bool changed)=>PdmNegotiationTransactions.CounterOffer(data,id,price,Save,out changed);
+        public static bool PdmShowroomBeginNegotiated(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,true,Save,out changed);
         public static bool PdmShowroomBegin(string stock,string id,out bool changed)=>PdmShowroomTransactions.BeginSale(data,stock,id,Save,out changed);
         public static bool PdmShowroomSell(string id,out bool changed)=>PdmShowroomTransactions.Sell(data,id,Save,out changed);
         public static bool PdmShowroomCancel(string id,out bool changed)=>PdmShowroomTransactions.Cancel(data,id,Save,out changed);

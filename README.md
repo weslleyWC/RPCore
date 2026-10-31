@@ -1,3 +1,9 @@
+## Atualização0.107.0 — refinamento do grupo PDM / empresa
+
+[Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.0.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.107.0.zip) · [Acessos, alterações e teste GTA](docs/PDM-EMPRESA-0.107.0.md)
+
+Revisão conjunta dos12sistemas: painel por assunto, confirmações/paginação, caixa sem teto artificial de1milhão, seleção de pedidos, folha conjunta, inspeção/negociação do comprador, serviços/contratos/câmeras e estabilidade de recursos/entidades. Preserva saves, configuração, personagens e demais trabalhos.4162 testes e build limpo; teste GTA continua necessário. Referência PSRP analisada; diferenças de recursos explicitadas no guia. O ZIP leva testes atuais, sem duplicar todos os relatórios históricos.
+
 ## Atualização0.106.1 — acesso RPCore Motors e menus PDM
 
 [Baixar atualização](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.106.1.zip) · [Código-fonte](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-source-0.106.1.zip) · [Detalhes e teste GTA](docs/PORTAS-PDM-MENUS-0.106.1.md)

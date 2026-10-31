@@ -68,23 +68,26 @@ namespace RPCore
             var dealer = new DealerJob(pool, ach, shifts); systems.Add(dealer);
             var streamer = new StreamerJob(pool, ach, needs, shifts); systems.Add(streamer);
             var drag = new DragJob(pool, ach, shifts); systems.Add(drag);
+            systems.Add(new PdmStreaming());
+            Func<bool> riskSynced=()=>true;
             var pdm = new PdmCompany(pool, ach, shifts); systems.Add(pdm);
             var finance = new PdmFinanceSystem(pool, pdm.Financing, ach, pdm.OpenMenu); systems.Add(finance); pdm.OpenFinanceContracts = finance.OpenMenu; pdm.SyncFinance = finance.Flush;
             var staff = new PdmStaffSystem(pool, pdm.OfficeAction, pdm.OpenMenu); systems.Add(staff);
             pdm.OpenStaff = staff.OpenMenu; pdm.SyncStaff = staff.Flush;
             var haul = new PdmLogistics(pool, shifts, pdm.StartPosition); systems.Add(haul);
-            pdm.OpenCollection = haul.OpenMenu; pdm.DisplayStock = haul.Display; pdm.ClearDisplay = haul.ClearDisplay;
+            haul.Back=pdm.OpenMenu; pdm.OpenCollection = haul.OpenMenu; pdm.DisplayStock = haul.Display; pdm.ClearDisplay = haul.ClearDisplay;
             var safe = new PdmSafeSystem(pool, shifts, pdm.OfficeAction, pdm.OpenMenu); systems.Add(safe); pdm.OpenSafe = safe.OpenMenu;
-            var repo = new PdmRepoSystem(pool, shifts, pdm.CompanyOptions, pdm.Repossession, ach); systems.Add(repo); pdm.OpenRepo = repo.OpenMenu; finance.OpenRepo = repo.OpenForLoan; finance.NewDefaultPercent = pdm.Repossession.DefaultPercent;
+            var repo = new PdmRepoSystem(pool, shifts, pdm.CompanyOptions, pdm.Repossession, ach); systems.Add(repo); repo.Back=pdm.OpenMenu; pdm.OpenRepo = repo.OpenMenu; finance.OpenRepo = repo.OpenForLoan; finance.NewDefaultPercent = pdm.Repossession.DefaultPercent;
             var rental = new PdmRentalSystem(pool, shifts, pdm.CompanyOptions, haul.ClearDisplay, ach, pdm.OpenMenu); systems.Add(rental); pdm.OpenRental = rental.OpenMenu;
             var showroom = new PdmShowroomSystem(pool, shifts, pdm.CompanyOptions.Office, pdm.OfficeAction, haul.ClearDisplay, ach, pdm.OpenMenu); systems.Add(showroom);
             pdm.OpenShowroom = showroom.OpenMenu; pdm.DisplayStock = showroom.DisplayDefault; pdm.PrepareStock = showroom.Prepare; pdm.ClearDisplay = showroom.ClearAll;
             var premises = new PdmPremisesSystem(pool, shifts, pdm.CompanyOptions, staff.Premises, pdm.OfficeAction, showroom.GetDisplayVehicle, pdm.OpenMenu); systems.Add(premises);
+            pdm.AccountsReady=()=>staff.Synced && finance.Synced && premises.Synced && riskSynced();
             pdm.OpenServices = premises.OpenMenu; pdm.SyncPremises = premises.Flush; staff.OpenServices = premises.OpenMenu;
-            var security = new PdmSecuritySystem(pool, staff.Security, pdm.StartPosition, () => premises.StaffPeds, staff.Flush, staff.OpenMenu, pdm.OpenMenu); systems.Add(security);
+            var security = new PdmSecuritySystem(pool, staff.Security, pdm.StartPosition, () => premises.StaffPeds, ()=>{staff.Flush();if(!staff.Synced)throw new InvalidOperationException("Payroll catch-up pending; defense suspended.");}, staff.OpenMenu, pdm.OpenMenu); systems.Add(security);
             pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
             surveillance = new PdmSurveillanceSystem(pool, shifts, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(surveillance); pdm.OpenSurveillance = surveillance.OpenMenu;
-            var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;
+            var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;riskSynced=()=>risk.Synced;showroom.SyncAccounts=pdm.FlushAccounts;premises.SyncAccounts=pdm.FlushAccounts;
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
             var storage = new StorageSystem(pool, inv, ach, shifts); systems.Add(storage);
@@ -168,7 +171,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.106.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.107.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

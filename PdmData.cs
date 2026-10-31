@@ -92,7 +92,7 @@ namespace RPCore
         }
         public static bool Transfer(WalletData w, int amount, bool deposit, string receipt, Action save, out bool changed)
         {
-            changed = false; if (amount < 1 || amount > 1000000) return false;
+            changed = false; if (amount < 1) return false;
             return Apply(w, receipt, deposit ? -amount : amount, d => {
                 if (!d.Owned) return false;
                 if (deposit) { if (d.Cash > int.MaxValue - amount || d.Invested > long.MaxValue - amount) return false; d.Cash += amount; d.Invested += amount; }

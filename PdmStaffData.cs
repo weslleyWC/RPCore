@@ -89,6 +89,15 @@ namespace RPCore
                 PdmTransactions.Entry(d, role == "former" ? "Acerto de ex-funcionarios" : "Salario: " + e.Name, -amount); return true;
             }, save, out changed);
         }
+        public static bool PayAll(WalletData w,string receipt,Action save,out bool changed,long? expected=null)
+        {
+            return PdmTransactions.Apply(w,receipt,0,d=>{
+                if(!Idle(d))return false;long amount=(long)d.Staff.FormerDebt+d.Staff.Employees.Sum(e=>(long)e.Owed);
+                if(amount<=0 || expected.HasValue && amount!=expected.Value || amount>d.Cash || d.Staff.Paid>long.MaxValue-amount)return false;
+                d.Cash-=(int)amount;d.Staff.Paid+=amount;d.Staff.FormerDebt=0;foreach(var e in d.Staff.Employees)e.Owed=0;
+                PdmTransactions.Entry(d,"Folha e acertos quitados",-(int)amount);return true;
+            },save,out changed);
+        }
         public static bool Fire(WalletData w, string employeeId, string receipt, Action save, out bool changed)
         {
             return PdmTransactions.Apply(w, receipt, 0, d => {

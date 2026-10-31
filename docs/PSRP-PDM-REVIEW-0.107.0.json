@@ -1,0 +1,106 @@
+{
+  "version": "0.107.0",
+  "reference_dll_sha256": "21282fd01c4ad631cbd68424e514b9c54db99971df9c900b09cf72dea318f4cc",
+  "method_inventory_source": "PSRP.PDMCompany, 11918 decompiled lines; static review only, DLL not executed",
+  "families": [
+    {
+      "reference": [
+        "CompanyOverviewMenu",
+        "CompanyManagement",
+        "CompanyFinances",
+        "CreatePDMTransaction"
+      ],
+      "rpcore": [
+        "PdmCompany",
+        "PdmBusinessRules"
+      ],
+      "review": "summary, cash/bank separation, grouped navigation, transfers, history, obligations; retained own save format and configured prices"
+    },
+    {
+      "reference": [
+        "StockManagement",
+        "RefreshManageOrderMenu",
+        "SpawnOrderVehicles",
+        "TryAttachVehicle"
+      ],
+      "rpcore": [
+        "PdmCompany",
+        "PdmLogistics"
+      ],
+      "review": "supplier confirmation, individual stock details, selected paid cargo, physical truck/trailer loading, damage and interrupted receipts"
+    },
+    {
+      "reference": [
+        "ShowroomSpots",
+        "LoadShowroomCars",
+        "SpawnVehicleInSlot",
+        "SellRandomPDMVehicleOnShowroomFloor",
+        "HandleCarSellerEvent"
+      ],
+      "rpcore": [
+        "PdmShowroomSystem",
+        "PdmNegotiationTransactions"
+      ],
+      "review": "existing slots, streaming, same displayed car, buyer inspection/offer/one counteroffer/key handover; incoming private seller event not ported"
+    },
+    {
+      "reference": [
+        "StaffManagement",
+        "RegisterWages",
+        "SpawnMechanicPed",
+        "SpawnCleanerPed",
+        "SpawnSecurity1Ped",
+        "SpawnSecurity2Ped"
+      ],
+      "rpcore": [
+        "PdmStaffSystem",
+        "PdmPremisesSystem",
+        "PdmSecuritySystem"
+      ],
+      "review": "per-role management, salary totals, atomic pay-all, firing obligations, upgrades, physical staff and services, localized guard defense"
+    },
+    {
+      "reference": [
+        "GenerateCarFinance",
+        "SpawnRepoEventVehicle",
+        "HandleRepoEvent"
+      ],
+      "rpcore": [
+        "PdmFinanceSystem",
+        "PdmRepoSystem"
+      ],
+      "review": "contract details, installments/defaults/receivables, original asset repossession, stock capacity and no extra bounty"
+    },
+    {
+      "reference": [
+        "GenerateRentalOrder",
+        "HandleRentalDelivery"
+      ],
+      "rpcore": [
+        "PdmRentalSystem"
+      ],
+      "review": "two paid matching units, horn/employee/checking/return/payment, guarded reservation and interrupted settlement"
+    },
+    {
+      "reference": [
+        "HandleSafeEvent",
+        "SafeManagement",
+        "SwitchInsurance",
+        "PurchasePDMCamera"
+      ],
+      "rpcore": [
+        "PdmSafeSystem",
+        "PdmRiskSystem",
+        "PdmSurveillanceSystem"
+      ],
+      "review": "reserved cash versus handed/clearing, refund/settlement, confirmed policy management, own camera rendering and controller exit"
+    }
+  ],
+  "explicit_differences": [
+    "keeps existing/configurable purchase price, supplier list, wages in active seconds and two-car carrier; not all PSRP business assets/upgrades",
+    "no claim of persistent PSRP reputation, business cards, charity/race sponsorship, private seller event, six-car carrier, manual washer/fuel pump, glass/light upgrades",
+    "buyer negotiation is original RPCore implementation; not a decompiled-code port",
+    "no offline salary/revenue, random free sales, global vehicle clearing, scripted player teleports or disabling every control for transitions"
+  ],
+  "coverage": "all twelve currently implemented business systems refined together; this is not full PSRP feature parity"
+}

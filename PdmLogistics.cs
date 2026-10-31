@@ -14,21 +14,23 @@ namespace RPCore
     // Physical assets are temporary representations of paid company stock, never personal cars.
     public sealed class PdmLogistics : ISystem, IWorkContract
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
+        public Action Back;
         public string Name => "pdmhaul";
         public string Label => "PDM / coleta no porto";
         public bool Active => run != null;
         public Vector3 StartPosition { get; }
         readonly ObjectPool pool; readonly ShiftGate gate; readonly PdmLogisticsOptions options; readonly NativeMenu menu;
         readonly Dictionary<string, Vehicle> cargo = new Dictionary<string, Vehicle>();
+        readonly HashSet<string> selected=new HashSet<string>(),removedCargo=new HashSet<string>();
         readonly HashSet<string> loaded = new HashSet<string>(); readonly List<Blip> cargoBlips = new List<Blip>();
         Vehicle truck, trailer, display; Blip route; PdmHaulRun run;
         string ownerProfile, cancelReason; int began, retryAt, cancelSince = -1;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
-        static bool Exists(Vehicle v) => v != null && v.Exists();
+        static bool Exists(Vehicle v) => v != null && PdmAssets.Valid(v);
         static bool Empty(Vehicle v) => !Exists(v) || v.Occupants.Length == 0 && v.Speed < .5f;
         static int Health(float n) => float.IsNaN(n) || float.IsInfinity(n) ? 0 : Math.Max(0, Math.Min(1000, (int)n));
-        bool InputAllowed => !Game.IsPaused && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible;
+        bool InputAllowed => PdmMenuRuntime.Allowed && !pool.AreAnyVisible;
         bool Foot => !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsDead && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat;
         bool Coupled => JobVehicles.Towing(truck, trailer);
         bool Foreign => Exists(truck) && Function.Call<bool>(Hash.IS_VEHICLE_ATTACHED_TO_TRAILER, truck) && !Coupled || JobVehicles.TrailerHasOtherTractor(trailer, truck);
@@ -37,7 +39,7 @@ namespace RPCore
             this.pool = pool; this.gate = gate; StartPosition = office;
             var defaults = PdmLogisticsDefaults.Load(); options = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmLogistics.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / coleta", "PEDIDOS PAGOS / PORTO / RECEBIMENTO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
@@ -45,17 +47,23 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin("pdm",null,false);
+            pool.HideAll(); ui.Begin(Name,Back,true,OpenMenu);
             Add("GPS: escritorio PDM", "Inicie a pe no escritorio externo da empresa.", () => Waypoint(StartPosition));
             Add("GPS: porto / coleta", "Pedidos pagos ficam disponiveis durante o contrato.", () => Waypoint(Pos(options.Dock)));
             if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos, arquivo preservado."); return; }
-            var pending = Wallet.Pdm.Stock.Where(s => s.AwaitingCollection).ToList();
-            Add("Coletar 1 pedido / " + pending.Count + " aguardando", "Use o Packer e engate a TRFlat. Nao cobra os carros novamente.", () => Begin(1));
-            Add("Coletar 2 pedidos", "Seleciona os dois primeiros pedidos pendentes em boas condicoes.", () => Begin(2));
-            foreach (var stock in pending) Add(stock.Name + " / " + stock.Plate, "Pedido pago, aguardando recebimento. Repare no estoque se motor/carroceria estiver abaixo de 300.", () => { });
-            if (Active) Add("Encerrar coleta", "Pare e saia dos veiculos. Pedidos pagos continuam no porto, sem pagamento extra.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
-            if (Wallet.Pdm.Collection != null && !Active) Add("Recuperar coleta interrompida", "Pare e saia do conjunto e dos carros. Recebimento ja confirmado e concluido, demais pedidos continuam no porto.", () => { Recover(); OpenMenu(); });
-            menu.Visible = true;
+            var pending=Wallet.Pdm.Stock.Where(v=>v.AwaitingCollection).ToList();selected.RemoveWhere(id=>!pending.Any(v=>v.Id==id));
+            menu.Name="Porto / "+pending.Count+" pedidos / "+selected.Count+" selecionados";
+            foreach(var stock in pending){string id=stock.Id;
+                Add((selected.Contains(id)?"[X] ":"[ ] ")+stock.Name+" / "+stock.Plate,"Pedido ja pago. Motor "+stock.Engine+"; carroceria "+stock.Body+". Selecione uma ou duas unidades.",()=>{
+                    if(!selected.Remove(id)){if(selected.Count>=2){Notify.Show("A TRFlat transporta ate dois pedidos por coleta.");return;}selected.Add(id);}OpenMenu();
+                });}
+            var chosen=pending.Where(v=>selected.Contains(v.Id)).Select(v=>v.Id).ToList();
+            ui.AddConfirm("Coletar selecionados / "+chosen.Count,"Leva as unidades escolhidas, sem cobra-las novamente. Engate Packer/TRFlat e carregue os carros no porto.",()=>ui.Stream(new[]{options.TruckModel,options.TrailerModel},()=>Begin(chosen.Count,chosen),OpenMenu),chosen.Count>=1 && chosen.Count<=2);
+            ui.AddConfirm("Coleta rapida / primeiro pedido","Seleciona a primeira unidade pendente em boas condicoes.",()=>ui.Stream(new[]{options.TruckModel,options.TrailerModel},()=>Begin(1),OpenMenu),pending.Any(v=>v.Engine>=300 && v.Body>=300));
+            if(pending.Count==0)ui.Add("Nenhum pedido aguardando","Encomende uma unidade no fornecedor da PDM.",()=>{},false);
+            if (Active) ui.AddConfirm("Encerrar coleta", "Pare e saia dos veiculos. Pedidos pagos continuam no porto, sem pagamento extra.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
+            if (Wallet.Pdm.Collection != null && !Active) ui.AddConfirm("Recuperar coleta interrompida", "Pare e saia do conjunto e dos carros. Recebimento ja confirmado e concluido, demais pedidos continuam no porto.", () => { Recover(); OpenMenu(); });
+            if(Back!=null)Add("Voltar","Empresa PDM.",Back);ui.Show();
         }
         void Waypoint(Vector3 p) { Function.Call(Hash.SET_NEW_WAYPOINT, p.X, p.Y); menu.Visible = false; }
         void Route(Vector3 p, string label)
@@ -67,22 +75,22 @@ namespace RPCore
             var model = new Model(modelName);
             try
             {
-                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle) return null;
+                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
                 var bay = RigSpawn.FindVehicle(anchor, model, "PDM coleta"); if (bay == null) return null;
-                var v = World.CreateVehicle(model, Pos(bay), bay.Heading); if (!Exists(v)) return null;
+                var v = PdmAssets.Track(World.CreateVehicle(model, Pos(bay), bay.Heading)); if (!Exists(v)) return null;
                 v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false;
                 float capacity = v.PetrolTankVolume; v.FuelLevel = capacity > 0 && !float.IsNaN(capacity) && !float.IsInfinity(capacity) ? Math.Min(10000, capacity) : 100;
                 Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, plate); JobVehicles.Reserve(v); return v;
             }
-            finally { model.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(model); }
         }
         PdmEntityRef Reference(Vehicle v, string model) => new PdmEntityRef { Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim(), Handle = v.Handle };
-        void Begin(int count)
+        void Begin(int count,List<string> selection=null)
         {
             if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe na PDM, sem procurado/missao e sem outra entrega/coleta pendente."); return; }
-            var ids = Wallet.Pdm.Stock.Where(s => s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300).Take(count).Select(s => s.Id).ToList();
-            if (ids.Count != count) { Notify.Show("Nao ha pedidos suficientes em boas condicoes. Compre/repare no estoque PDM."); return; }
+            var ids=selection==null?Wallet.Pdm.Stock.Where(s=>s.AwaitingCollection && s.Engine>=300 && s.Body>=300).Take(count).Select(s=>s.Id).ToList():new List<string>(selection);
+            if (count<1 || count>2 || ids.Count!=count || ids.Distinct().Count()!=count || ids.Any(id=>!Wallet.Pdm.Stock.Any(v=>v.Id==id && v.AwaitingCollection && v.Engine>=300 && v.Body>=300))) { Notify.Show("Nao ha pedidos suficientes em boas condicoes. Compre/repare no estoque PDM."); return; }
             if (!ClearDisplay()) return;
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
             bool confirmed = false;
@@ -96,7 +104,7 @@ namespace RPCore
                 if (!Exists(truck) || !Wallet.PdmCollect(id, ids, Reference(truck, options.TruckModel), Reference(trailer, options.TrailerModel), out _)) { Notify.Show("Conjunto indisponivel; pedidos e caixa preservados."); return; }
                 run = new PdmHaulRun(id, count, options.UnloadSeconds); ownerProfile = Profile.Id; began = Game.GameTime; retryAt = began; cancelReason = null;
                 foreach (var v in new[] { truck, trailer }) { var b = v.AddBlip(); b.Name = v == truck ? "RPCore: Packer PDM" : "RPCore: TRFlat PDM"; b.Color = BlipColor.Blue; cargoBlips.Add(b); }
-                Route(trailer.Position, "RPCore: carreta PDM"); menu.Visible = false; confirmed = true;
+                Route(trailer.Position, "RPCore: carreta PDM"); menu.Visible = false; confirmed = true;selected.Clear();removedCargo.Clear();
                 Notify.Show("Entre no Packer e engate a TRFlat. Aproxime a traseira do caminhao da frente da carreta e aperte E.");
             }
             finally { if (!confirmed) { JobVehicles.RetireRig(truck, trailer); truck = trailer = null; gate.Release(Name); } }
@@ -171,16 +179,18 @@ namespace RPCore
             }
             catch (Exception ex) { retryAt = Game.GameTime + 5000; Log.Error("pdm logistics checkpoint", ex); Notify.Show("Coleta pendente; pedidos preservados. Nova tentativa em 5s."); }
         }
-        bool Remember()
+        bool Remember(bool missingIsDamage=true)
         {
-            var health = new Dictionary<string, int[]>();
-            foreach (var pair in cargo) if (Exists(pair.Value)) health[pair.Key] = new[] { Health(pair.Value.EngineHealth), Health(pair.Value.BodyHealth) };
-            return Wallet.PdmCargoHealth(Wallet.Pdm.Collection.Id, health, out _);
+            var operation=Wallet.Pdm.Collection;if(operation==null)return false;var health=new Dictionary<string,int[]>();
+            foreach(var item in operation.Cargo){cargo.TryGetValue(item.StockId,out var vehicle);var stock=Wallet.Pdm.Stock.Find(v=>v.Id==item.StockId);
+                bool lost=missingIsDamage && !operation.Arrived && item.Handle>0 && !removedCargo.Contains(item.StockId);
+                health[item.StockId]=Exists(vehicle)?new[]{Health(vehicle.EngineHealth),Health(vehicle.BodyHealth)}:lost?new[]{0,0}:new[]{stock.Engine,stock.Body};
+            }return Wallet.PdmCargoHealth(operation.Id,health,out _);
         }
         bool DeleteCargo()
         {
             if (cargo.Values.Any(v => !Empty(v) && !(Exists(v) && v.IsAttachedTo(trailer) && v.Occupants.Length == 0 && (!Exists(trailer) || trailer.Speed < .5f)))) return false;
-            foreach (var v in cargo.Values) if (Exists(v)) { v.Detach(); v.IsCollisionEnabled = true; v.Delete(); if (v.Exists()) return false; JobVehicles.Release(v); }
+            foreach (var pair in cargo) {var v=pair.Value;if(!Exists(v))continue;v.Detach();v.IsCollisionEnabled=true;v.Delete();if(PdmAssets.Valid(v))return false;JobVehicles.Release(v);removedCargo.Add(pair.Key);}
             return true;
         }
         void FinishArrival()
@@ -200,7 +210,7 @@ namespace RPCore
         static Vehicle Match(int handle, string model, string plate)
         {
             var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null;
-            return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? v : null;
+            return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null;
         }
         void Recover()
         {
@@ -210,7 +220,7 @@ namespace RPCore
                 truck = Match(c.Truck.Handle, c.Truck.Model, c.Truck.Plate); trailer = Match(c.Trailer.Handle, c.Trailer.Model, c.Trailer.Plate); JobVehicles.Reserve(truck); JobVehicles.Reserve(trailer);
                 foreach (var item in c.Cargo) { var s = Wallet.Pdm.Stock.Find(v => v.Id == item.StockId); var v = Match(item.Handle, s.Model, s.Plate); if (Exists(v)) { cargo[item.StockId] = v; JobVehicles.Reserve(v); } }
                 if (!Empty(truck) || !Empty(trailer) || Foreign || cargo.Values.Any(v => v.Occupants.Length > 0 || v.Speed > .5f)) { Notify.Show("Coleta PDM interrompida: pare, saia dos veiculos e use Recuperar no menu."); return; }
-                if (!Remember() || !DeleteCargo()) return;
+                if (!Remember(false) || !DeleteCargo()) return;
                 if (!(c.Arrived ? Wallet.PdmReceive(c.Id, out _) : Wallet.PdmCollectCancel(c.Id, out _))) return;
                 EndSession(); Notify.Show(c.Arrived ? "Recebimento PDM recuperado; estoque pronto." : "Coleta interrompida; pedidos pagos preservados no porto.");
             }
@@ -226,7 +236,7 @@ namespace RPCore
         }
         public bool ClearDisplay()
         {
-            if (Exists(display)) { if (display.Occupants.Length > 0) { Notify.Show("Saia do carro de exposicao antes de recolher."); return false; } display.IsPositionFrozen = false; display.Delete(); if (display.Exists()) return false; JobVehicles.Release(display); }
+            if (Exists(display)) { if (display.Occupants.Length > 0) { Notify.Show("Saia do carro de exposicao antes de recolher."); return false; } display.IsPositionFrozen = false; display.Delete(); if (PdmAssets.Valid(display)) return false; JobVehicles.Release(display); }
             display = null; return true;
         }
         void EndSession(bool retireRig = true)
@@ -245,7 +255,7 @@ namespace RPCore
             if (safe) DeleteCargo();
             EndSession(safe); if (!ClearDisplay() && Exists(display)) { display.IsPositionFrozen = false; JobVehicles.Retire(display); display = null; }
         }
-        public void Reload() { ui.Reset(); ReleaseSession(); Recover(); }
+        public void Reload() { selected.Clear();ui.Reset(); ReleaseSession(); Recover(); }
         public void Dispose() { ui.Reset(); try { Save(); } catch (Exception ex) { Log.Error("pdm logistics dispose", ex); } finally { ReleaseSession(); } }
     }
 }

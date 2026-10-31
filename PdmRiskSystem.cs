@@ -10,7 +10,8 @@ namespace RPCore
 {
     public sealed class PdmRiskSystem : ISystem
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
+        public bool Synced=>pending<1000;
         public string Name => "pdmrisk";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly Vector3 office; readonly Func<bool> officeAction; readonly Action back;
         readonly PdmRiskOptions options;
@@ -21,7 +22,7 @@ namespace RPCore
             this.pool = pool; this.office = office; this.officeAction = officeAction; this.back = back;
             var defaults = PdmRiskDefaults.Load(); options = Store.LoadDef("Jobs/PdmRisk.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmRisk.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            menu = new NativeMenu("PDM / cofre e seguro", "PROTECAO / APOLICE / OCORRENCIAS"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -31,14 +32,15 @@ namespace RPCore
             if (currentAway != away)
             {
                 Drain();
+                if(pending>=1000)throw new InvalidOperationException("PDM risk boundary catch-up pending; time retained.");
                 pending = 0; away = currentAway;
             }
             if (!currentAway && Wallet.Pdm.Risk.ExposedSeconds > 0 && !Wallet.PdmRiskReturn(Guid.NewGuid().ToString("N"), out _)) throw new InvalidOperationException("PDM return checkpoint refused.");
-            if (!Game.IsPaused && !Game.IsMissionActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE) && !Game.Player.Character.IsDead && elapsed > 0) pending += Math.Min(2000, elapsed);
+            if (PdmMenuRuntime.WorldAllowed && elapsed > 0) pending += Math.Min(2000, elapsed);
         }
         void Drain()
         {
-            while (pending >= 1000)
+            for(int batch=0;pending>=1000 && batch<2;batch++)
             {
                 if (!Running) { pending = 0; stepId = null; return; }
                 if (stepId == null) { stepId = Guid.NewGuid().ToString("N"); stepSeconds = Math.Min(60, pending / 1000); stepAway = away; }
@@ -58,24 +60,24 @@ namespace RPCore
         { Flush(); if (!officeAction()) return; if (!action()) Notify.Show("Confira caixa, apolice, dados atualizados ou operacao pendente."); OpenMenu(); }
         public void OpenMenu()
         {
-            Flush(); pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
+            Flush(); pool.HideAll(); ui.Begin(Name,back,true,OpenMenu);menu.Name="Protecao / caixa $"+Wallet.Pdm.Cash; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; original preservado."); return; }
             var d = Wallet.Pdm; var r = d.Risk; var policy = r.Policy;
-            Add(r.SafeOpen ? "Fechar cofre / interromper risco" : "Abrir cofre / habilitar risco ao se afastar", "Abertura VOLUNTARIA: ao ficar a 150m por " + options.ExposureSeconds + "s ativos, com caixa acima de $" + options.MinimumCash + ", pode perder " + options.LossPercent + "%. Usa o caixa existente, sem criar saldo de cofre separado.", () => Change(() => Wallet.PdmSetSafe(!r.SafeOpen, Guid.NewGuid().ToString("N"), out _)));
+            ui.AddConfirm(r.SafeOpen ? "Fechar cofre / interromper risco" : "Abrir cofre / habilitar risco ao se afastar", "Abertura VOLUNTARIA: ao ficar a 150m por " + options.ExposureSeconds + "s ativos, com caixa acima de $" + options.MinimumCash + ", pode perder " + options.LossPercent + "%. Usa o caixa existente, sem criar saldo de cofre separado.", () => Change(() => Wallet.PdmSetSafe(!r.SafeOpen, Guid.NewGuid().ToString("N"), out _)));
             Add("Protecao " + PdmRiskTransactions.Security(d) + "/100 / chance " + PdmRiskTransactions.Chance(d, options) + "%", "Cameras: 30; cada seguranca contratado e sem atraso: 35. A chance vale por periodo de exposicao, somente com cofre aberto. Fechado: sem este risco.", () => { });
             if (policy != null)
             {
                 Add(policy.Name + " / cobertura $" + policy.Limit, "Renova por $" + policy.Premium + " em " + (policy.PeriodSeconds - policy.Seconds) + "s ativos. Caixa insuficiente encerra cobertura. Sem debito no banco pessoal.", () => { });
-                Add("Cancelar seguro / sem estorno", "Encerra cobertura e renovacoes futuras, sem devolver o premio do periodo.", () => Change(() => Wallet.PdmCancelInsurance(Guid.NewGuid().ToString("N"), out _)));
+                ui.AddConfirm("Cancelar seguro / sem estorno", "Encerra cobertura e renovacoes futuras, sem devolver o premio do periodo.", () => Change(() => Wallet.PdmCancelInsurance(Guid.NewGuid().ToString("N"), out _)));
             }
             foreach (var offer in options.Plans)
             {
                 var plan = offer;
-                Add((policy?.PlanId == plan.Id ? "Ativo: " : "Contratar/trocar: ") + plan.Name + " / $" + plan.Premium, "Paga AGORA e renova por esse valor a cada " + options.PeriodSeconds + "s ativos. Cobertura integral somente se a perda nao exceder $" + plan.Limit + "; acima do limite, sem indenizacao parcial. Troca paga premio completo, sem estorno anterior.", () => Change(() => Wallet.PdmInsure(options, plan.Id, Guid.NewGuid().ToString("N"), out _)));
+                ui.AddConfirm((policy?.PlanId == plan.Id ? "Ativo: " : "Contratar/trocar: ") + plan.Name + " / $" + plan.Premium, "Paga AGORA e renova por esse valor a cada " + options.PeriodSeconds + "s ativos. Cobertura integral somente se a perda nao exceder $" + plan.Limit + "; acima do limite, sem indenizacao parcial. Troca paga premio completo, sem estorno anterior.", () => Change(() => Wallet.PdmInsure(options, plan.Id, Guid.NewGuid().ToString("N"), out _)),policy?.PlanId!=plan.Id);
             }
             Add("Premios $" + r.Premiums + " / perdas $" + r.Stolen + " / restituidos $" + r.Reimbursed, "Historico de ate 20 ocorrencias. Reembolso nunca excede a perda real; nao ha botao de indenizacao livre.", () => { });
             foreach (var incident in r.Incidents.AsEnumerable().Reverse()) Add("Perda $" + incident.Loss + " / seguro $" + incident.Reimbursed, "Protecao no evento " + incident.Security + "/100; apolice " + (incident.PolicyName ?? "nenhuma") + ", limite $" + incident.Limit + ". Cofre fechado automaticamente apos a ocorrencia.", () => { });
             Add("GPS: escritorio PDM", "Abrir/fechar/contratar apenas no escritorio externo.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, office.X, office.Y); menu.Visible = false; });
-            Add("Voltar", "Empresa PDM.", back); menu.Visible = true;
+            Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
         public void Tick()
         {

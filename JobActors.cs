@@ -19,7 +19,7 @@ namespace RPCore
             {
                 if(!model.IsValid || !model.IsInCdImage || !model.Request(2500))return null;
                 var p=World.CreatePed(model,position);
-                if(p!=null && p.Exists()){p.IsPersistent=true;p.BlockPermanentEvents=true;}
+                if(p!=null && PdmAssets.Valid(p)){p.IsPersistent=true;p.BlockPermanentEvents=true;}
                 return p;
             }
             finally {model.MarkAsNoLongerNeeded();}
@@ -30,7 +30,7 @@ namespace RPCore
         public static void Drive(Ped p, Vehicle v, Vector3 point) => Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE,p,v,point.X,point.Y,point.Z,8f,786603,4f);
         public static void Retire(Ped p, Vehicle companyCar=null, bool departing=false)
         {
-            if(p==null || !p.Exists() || retired.Any(r=>r.Ped.Handle==p.Handle))return;
+            if(p==null || !PdmAssets.Valid(p) || retired.Any(r=>r.Ped.Handle==p.Handle))return;
             if(!departing && p.IsInVehicle())Leave(p,p.CurrentVehicle);
             retired.Add(new Retired{Ped=p,Car=companyCar,Departing=departing,WanderAt=Game.GameTime+8000,End=Game.GameTime+(departing?45000:12000)});
         }
@@ -39,8 +39,8 @@ namespace RPCore
             for(int i=retired.Count-1;i>=0;i--)
             {
                 var r=retired[i];var p=r.Ped;
-                if(!p.Exists()){retired.RemoveAt(i);continue;}
-                if(r.Departing && !r.Wandering && r.Car!=null && r.Car.Exists() && p.IsInVehicle(r.Car) && r.Car.Driver==p && unchecked(Game.GameTime-r.WanderAt)>=0)
+                if(!PdmAssets.Valid(p)){retired.RemoveAt(i);continue;}
+                if(r.Departing && !r.Wandering && r.Car!=null && PdmAssets.Valid(r.Car) && p.IsInVehicle(r.Car) && r.Car.Driver==p && unchecked(Game.GameTime-r.WanderAt)>=0)
                 {
                     // Continue beyond the reference's departure point so the next customer's spawn remains free.
                     Function.Call(Hash.TASK_VEHICLE_DRIVE_WANDER,p,r.Car,10f,786603);r.Wandering=true;
@@ -50,13 +50,13 @@ namespace RPCore
                 {
                     // Only our NPC is deleted. Company cars are reclaimed by JobVehicles once empty.
                     // A player's car is never registered as CompanyCar.
-                    p.Delete();if(!p.Exists())retired.RemoveAt(i);
+                    p.Delete();if(!PdmAssets.Valid(p))retired.RemoveAt(i);
                 }
             }
         }
         public static void Dispose()
         {
-            foreach(var r in retired)if(r.Ped.Exists())r.Ped.Delete();retired.Clear();
+            foreach(var r in retired)if(PdmAssets.Valid(r.Ped))r.Ped.Delete();retired.Clear();
         }
         public static bool Free(Vector3 point,float radius=4) => World.GetNearbyVehicles(point,radius).Length==0 && World.GetNearbyPeds(point,2).Length==0;
         public static Vector3 Road(JobPoint p)

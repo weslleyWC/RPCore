@@ -144,6 +144,17 @@ namespace RPCore
                     }
                     ApplyBadges(skin); continue;
                 }
+                if(skin.Key=="pdm" && Active && MenuBanners && (Bindings.Banners==null || !Bindings.Banners.TryGetValue("pdm",out var customPdmBanner) || customPdmBanner=="PSRPBANNER2")){
+                    const string brand="shopui_title_premium_deluxe_motorsport";
+                    bool loaded=Function.Call<bool>(Hash.HAS_STREAMED_TEXTURE_DICT_LOADED,brand);
+                    if(!loaded && (!retry.TryGetValue(brand,out int due) || unchecked(Game.GameTime-due)>=0)){
+                        Function.Call(Hash.REQUEST_STREAMED_TEXTURE_DICT,brand,true);requested.Add(brand);retry[brand]=Game.GameTime+1000;
+                    }
+                    if(loaded){
+                        if(!skin.Applied || skin.AppliedTexture!="pdm-brand"){skin.Menu.Banner=new ScaledTexture(PointF.Empty,new SizeF(skin.Menu.Width,skin.Menu.Width/4),brand,brand);skin.Menu.BannerText.Text="";skin.Applied=true;skin.AppliedTexture="pdm-brand";}
+                        ApplyBadges(skin);continue;
+                    }
+                }
                 string texture = skin.Key=="reference-actions" ? ReferenceInterface.SettingsBanner : skin.Key == "reference-settings" ? (animate ? ReferenceInterface.AnimatedSettingsBanner(unchecked(Game.GameTime-bannerStarted)) : ReferenceInterface.SettingsBanner) : null;
                 if (texture == null && Bindings.Banners != null) Bindings.Banners.TryGetValue(skin.Key, out texture);
                 if(texture==null && skin.Key=="insurance" && (Bindings.Banners==null || !Bindings.Banners.ContainsKey("insurance")))texture="InsuranceBanner";

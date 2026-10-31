@@ -11,7 +11,8 @@ namespace RPCore
 {
     public sealed class PdmRepoSystem : ISystem, IWorkContract
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
+        public Action Back;
         public string Name => "pdmrepo";
         public string Label => "PDM / retomada";
         public bool Active => run != null;
@@ -21,11 +22,11 @@ namespace RPCore
         Vehicle truck, trailer, car; Blip route, carBlip, truckBlip, trailerBlip; PdmHaulRun run;
         string profile, cancelReason, focusedLoan; int began, retryAt, cancelSince = -1; bool removed;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
-        static bool Exists(Vehicle v) => v != null && v.Exists();
+        static bool Exists(Vehicle v) => v != null && PdmAssets.Valid(v);
         static bool Empty(Vehicle v) => !Exists(v) || v.Occupants.Length == 0 && v.Speed < .5f;
         static int Health(float n) => float.IsNaN(n) || float.IsInfinity(n) ? 0 : Math.Max(0, Math.Min(1000, (int)n));
         bool Foot => Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat;
-        bool InputAllowed => !Game.IsPaused && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible;
+        bool InputAllowed => PdmMenuRuntime.Allowed && !pool.AreAnyVisible;
         bool Coupled => JobVehicles.Towing(truck, trailer);
         bool Foreign => Exists(truck) && Function.Call<bool>(Hash.IS_VEHICLE_ATTACHED_TO_TRAILER, truck) && !Coupled || JobVehicles.TrailerHasOtherTractor(trailer, truck);
         PdmLoan Loan => Wallet.Pdm.Loans.Find(l => l.Id == Wallet.Pdm.Repo?.LoanId);
@@ -34,39 +35,39 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.company = company; this.options = options; this.achievements = achievements; StartPosition = Pos(company.Office);
             var defaults = PdmLogisticsDefaults.Load(); rig = Store.LoadDef("Jobs/PdmLogistics.json", () => defaults);
             if (rig == null || !rig.Valid) { Log.Write("Invalid PdmLogistics.json for repossession; embedded defaults used, original retained."); rig = defaults; }
-            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / retomada", "CONTRATOS EM ATRASO / RECUPERACAO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         { ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm repossession action", ex); Notify.Show("Retomada pendente; dados preservados."); } }); }
         public void OpenForLoan(string id) { focusedLoan = id; OpenMenu(); }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            pool.HideAll(); ui.Begin(Name,Back,true,OpenMenu);menu.Name="Retomadas / "+Wallet.Pdm.Loans.Count(l=>l.Defaulted && !l.Settled)+" em atraso"; if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
             Add("GPS: escritorio PDM", "Comece a pe no escritorio externo. Precisa de uma vaga livre no estoque.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             foreach (var l in Wallet.Pdm.Loans.Where(l => l.Defaulted && !l.Settled).OrderBy(l => l.Id == focusedLoan ? 0 : 1))
-            { var loan = l; Add("Retomar " + loan.Asset.Name + " / " + loan.Asset.Plate, "Recebido $" + loan.Paid + " / saldo em atraso $" + loan.Receivable + ". Packer/TRFlat: busque o proprio carro, carregue com E, volte e descarregue. Sem bonus por recuperar patrimonio proprio.", () => Begin(loan.Id)); }
+            { var loan = l; ui.AddConfirm("Retomar " + loan.Asset.Name + " / " + loan.Asset.Plate, "Recebido $" + loan.Paid + " / saldo em atraso $" + loan.Receivable + ". Packer/TRFlat: busque o proprio carro, carregue com E, volte e descarregue. Sem bonus por recuperar patrimonio proprio.", () => ui.Stream(new[]{rig.TruckModel,rig.TrailerModel},()=>Begin(loan.Id),OpenMenu)); }
             Add("Recebiveis encerrados: $" + Wallet.Pdm.FinanceWriteOff, "Valor contratual que deixou de ser cobrado apos retomadas; nao e dinheiro pago nem um segundo desconto de caixa.", () => { });
-            if (Active) Add("Encerrar retomada", "Pare e saia dos veiculos. Contrato continua em atraso, com condicao preservada para nova tentativa.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
-            if (Wallet.Pdm.Repo != null && !Active) Add("Recuperar retomada interrompida", "Chegada salva conclui estoque. Antes da chegada, encerra operacao e mantem contrato em atraso. Pare/saia dos veiculos.", () => { Recover(); OpenMenu(); });
-            menu.Visible = true;
+            if (Active) ui.AddConfirm("Encerrar retomada", "Pare e saia dos veiculos. Contrato continua em atraso, com condicao preservada para nova tentativa.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
+            if (Wallet.Pdm.Repo != null && !Active) ui.AddConfirm("Recuperar retomada interrompida", "Chegada salva conclui estoque. Antes da chegada, encerra operacao e mantem contrato em atraso. Pare/saia dos veiculos.", () => { Recover(); OpenMenu(); });
+            if(Back!=null)Add("Voltar","Empresa PDM.",Back);ui.Show();
         }
         static Vehicle Spawn(JobPoint point, string name, string plate)
         {
             var model = new Model(name);
             try
             {
-                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle) return null;
+                if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
                 var bay = RigSpawn.FindVehicle(point, model, "PDM retomada"); if (bay == null) return null;
-                var v = World.CreateVehicle(model, Pos(bay), bay.Heading); if (!Exists(v)) return null;
+                var v = PdmAssets.Track(World.CreateVehicle(model, Pos(bay), bay.Heading)); if (!Exists(v)) return null;
                 v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false;
                 float capacity = v.PetrolTankVolume; v.FuelLevel = capacity > 0 && !float.IsNaN(capacity) && !float.IsInfinity(capacity) ? Math.Min(10000, capacity) : 100;
                 Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, plate); JobVehicles.Reserve(v); return v;
             }
-            finally { model.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(model); }
         }
         static PdmEntityRef Ref(Vehicle v, string model) => new PdmEntityRef { Handle = v.Handle, Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim() };
         static Vehicle Match(int handle, string model, string plate)
-        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? v : null; }
+        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
         void Begin(string loanId)
         {
             if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
@@ -155,7 +156,7 @@ namespace RPCore
             if (Exists(car))
             {
                 if (car.Occupants.Length > 0 || car.Speed > .5f) return false;
-                car.Detach(); car.IsCollisionEnabled = true; car.Delete(); if (car.Exists()) return false; JobVehicles.Release(car);
+                car.Detach(); car.IsCollisionEnabled = true; car.Delete(); if (PdmAssets.Valid(car)) return false; JobVehicles.Release(car);
             }
             removed = true; return true;
         }

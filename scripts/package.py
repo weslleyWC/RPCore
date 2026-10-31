@@ -2,11 +2,15 @@
 from pathlib import Path
 import hashlib
 import json
+import re
 import shutil
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
 dist = root / 'dist'
+version = re.search(r'AssemblyVersion\("(\d+\.\d+\.\d+)\.\d+"\)', (root / 'AssemblyInfo.cs').read_text()).group(1)
+def historical_test_report(name):
+    return name.startswith('DataTests-') and name.endswith('.trx') and name != f'DataTests-{version}.trx'
 stage = dist / 'RPCore-update'
 if stage.exists():
     shutil.rmtree(stage)
@@ -26,7 +30,7 @@ for name in ['Inventory', 'SaveData', 'Storage', 'StockMarket']:
     (data / name).mkdir(exist_ok=True)
 shutil.copy2(root / 'scripts/Install-RPCore.ps1', stage / 'Install-RPCore.ps1')
 shutil.copy2(root / 'README.md', stage / 'README.md')
-shutil.copytree(root / 'docs', stage / 'docs')
+shutil.copytree(root / 'docs', stage / 'docs', ignore=lambda directory,names:[name for name in names if historical_test_report(name)])
 manifest = {str(p.relative_to(stage)).replace('\\', '/'): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(stage.rglob('*')) if p.is_file()}
 (stage / 'SHA256SUMS.json').write_text(json.dumps(manifest, indent=2), encoding='utf-8')
@@ -39,6 +43,8 @@ with zipfile.ZipFile(dist / 'RPCore-source.zip', 'w', zipfile.ZIP_DEFLATED) as a
     for path in sorted(root.rglob('*')):
         relative = path.relative_to(root)
         if not path.is_file() or any(part in {'.git', '.deps', 'bin', 'obj', 'dist', 'downloads', 'visual-assets', 'TestResults', '__pycache__'} for part in relative.parts):
+            continue
+        if relative.parts[0] == "docs" and historical_test_report(path.name):
             continue
         archive.write(path, relative)
 print(dist / 'RPCore-update.zip')

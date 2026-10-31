@@ -12,7 +12,7 @@ namespace RPCore
 {
     public sealed class PdmSafeSystem : ISystem, IWorkContract
     {
-        readonly PersonalServiceMenu ui;
+        readonly PdmMenuView ui;
         public string Name => "pdmsafe";
         public string Label => "PDM / coleta de valores";
         public bool Active => run != null || settled;
@@ -24,8 +24,8 @@ namespace RPCore
         int began, stageAt, retryAt, cancelSince = -1; bool driveStarted, pose, animRequested, settled;
         const string Decor = "RPCoreSafe", Anim = "mp_common";
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
-        static bool Exists(Entity e) => e != null && e.Exists();
-        bool InputAllowed => !Game.IsPaused && !InterfaceOptions.ModalOpen && !pool.AreAnyVisible;
+        static bool Exists(Entity e) => e != null && PdmAssets.Valid(e);
+        bool InputAllowed => PdmMenuRuntime.Allowed && !pool.AreAnyVisible;
         bool SafeFoot => Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsInCombat && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsRagdoll;
         bool HandEligible => InputAllowed && SafeFoot && Game.Player.Character.Weapons.Current.Hash == WeaponHash.Unarmed && Exists(collector) && !collector.IsDead && !collector.IsInVehicle() && !collector.IsInCombat && collector.Position.DistanceTo(StartPosition) < 8 && Game.Player.Character.Position.DistanceTo(collector.Position) < 2.5f && Exists(van) && van.Speed < .5f;
         public PdmSafeSystem(ObjectPool pool, ShiftGate gate, Func<bool> office, Action back)
@@ -33,7 +33,7 @@ namespace RPCore
             this.pool = pool; this.gate = gate; this.office = office; this.back = back;
             var defaults = PdmSafeDefaults.Load(); options = Store.LoadDef("Jobs/PdmSafe.json", () => defaults);
             if (options == null || !options.Valid) { Log.Write("Invalid PdmSafe.json; embedded defaults used, original retained."); options = defaults; }
-            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); ui=new PersonalServiceMenu(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
+            menu = new NativeMenu("PDM / valores", "COLETA / ENTREGA / COMPENSACAO"); ui=new PdmMenuView(menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Recover();
         }
         void Add(string title, string text, Action action)
         {
@@ -41,18 +41,18 @@ namespace RPCore
         }
         public void OpenMenu()
         {
-            pool.HideAll(); ui.Begin("pdm",null,false); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
+            pool.HideAll(); ui.Begin(Name,back,true,OpenMenu); if (!Wallet.Pdm.Valid) { Notify.Show("Dados PDM invalidos; arquivo preservado."); return; }
             menu.Name = "Caixa $" + Wallet.Pdm.Cash + " / em coleta $" + (Wallet.Pdm.SafeTransfer?.Amount ?? 0);
             Add("GPS: entrega de valores PDM", "Inicie a pe no escritorio externo da empresa.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
             if (Wallet.Pdm.SafeTransfer == null && !Active)
             {
-                foreach (int amount in new[] { 1000, 10000, 50000 }) { int selected = amount; Add("Solicitar coleta: $" + selected, "Reserva do caixa; seguranca chega de Stockade. Passe os valores com E para transferir ao seu banco, sem bonus.", () => Begin(selected)); }
+                foreach (int amount in new[] { 1000, 10000, 50000 }) { int selected = amount; ui.AddConfirm("Solicitar coleta: $" + selected, "Reserva do caixa; seguranca chega de Stockade. Passe os valores com E para transferir ao seu banco, sem bonus.", () => ui.Stream(new[]{options.VehicleModel,options.CollectorModel,options.CaseModel},()=>Begin(selected),OpenMenu)); }
                 int total = Math.Min(1000000, Wallet.Pdm.Cash);
-                Add("Coletar saldo: $" + total, "Ate um milhao por coleta; saldo reservado nao pode ser gasto novamente.", () => Begin(total));
+                ui.AddConfirm("Coletar saldo: $" + total, "Ate um milhao por coleta; saldo reservado nao pode ser gasto novamente.", () => ui.Stream(new[]{options.VehicleModel,options.CollectorModel,options.CaseModel},()=>Begin(total),OpenMenu));
             }
-            if (Active && Wallet.Pdm.SafeTransfer?.Handed == false) Add("Cancelar antes da entrega", "Valores reservados voltam ao caixa depois de liberar os recursos proprios.", () => { cancelReason = "Cancelada pelo jogador"; menu.Visible = false; });
-            if (Wallet.Pdm.SafeTransfer != null) Add("Recuperar / concluir coleta pendente", "Antes da entrega: devolve ao caixa. Depois da entrega confirmada: compensa no banco uma unica vez. Pare e saia do carro-forte se estiver nele.", () => { if (Active && Wallet.Pdm.SafeTransfer.Handed == false) { cancelReason = "Recuperacao solicitada"; menu.Visible = false; } else { Recover(); OpenMenu(); } });
-            Add("Voltar", "Gestao PDM.", back); menu.Visible = true;
+            if (Active && Wallet.Pdm.SafeTransfer?.Handed == false) ui.AddConfirm("Cancelar antes da entrega", "Valores reservados voltam ao caixa depois de liberar os recursos proprios.", () => { cancelReason = "Cancelada pelo jogador"; menu.Visible = false; });
+            if (Wallet.Pdm.SafeTransfer != null) ui.AddConfirm("Recuperar / concluir coleta pendente", "Antes da entrega: devolve ao caixa. Depois da entrega confirmada: compensa no banco uma unica vez. Pare e saia do carro-forte se estiver nele.", () => { if (Active && Wallet.Pdm.SafeTransfer.Handed == false) { cancelReason = "Recuperacao solicitada"; menu.Visible = false; } else { Recover(); OpenMenu(); } });
+            Add("Voltar", "Gestao PDM.", back); ui.Show();
         }
         static void Mark(Entity e, int token)
         {
@@ -66,23 +66,23 @@ namespace RPCore
             transfer = null; var vehicleModel = new Model(options.VehicleModel); var pedModel = new Model(options.CollectorModel); var propModel = new Model(options.CaseModel);
             try
             {
-                if (!vehicleModel.IsValid || !vehicleModel.IsInCdImage || !vehicleModel.IsVehicle || !pedModel.IsValid || !pedModel.IsPed || !pedModel.IsInCdImage || !propModel.IsValid || !propModel.IsInCdImage || !pedModel.Request(2500) || !propModel.Request(2500)) return false;
+                if (!vehicleModel.IsValid || !vehicleModel.IsInCdImage || !vehicleModel.IsVehicle || !pedModel.IsValid || !pedModel.IsPed || !pedModel.IsInCdImage || !propModel.IsValid || !propModel.IsInCdImage || !PdmStreaming.Ready(pedModel) || !PdmStreaming.Ready(propModel)) return false;
                 var bay = RigSpawn.FindVehicle(options.Spawn, vehicleModel, "PDM valores"); if (bay == null) return false;
-                van = World.CreateVehicle(vehicleModel, Pos(bay), bay.Heading); if (!Exists(van)) return false;
+                van = PdmAssets.Track(World.CreateVehicle(vehicleModel, Pos(bay), bay.Heading)); if (!Exists(van)) return false;
                 van.IsPersistent = true; van.IsStolen = false; van.NeedsToBeHotwired = false; JobVehicles.Reserve(van);
                 float capacity = van.PetrolTankVolume; van.FuelLevel = capacity > 0 && !float.IsNaN(capacity) && !float.IsInfinity(capacity) ? Math.Min(10000, capacity) : 100;
                 string plate = "PSF" + id.Substring(0, 5).ToUpperInvariant(); Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, van, plate);
                 var sidewalk = JobActors.Sidewalk(van.Position); if (sidewalk == Vector3.Zero) return false;
-                collector = World.CreatePed(pedModel, sidewalk); if (!Exists(collector)) return false;
+                collector = PdmAssets.Track(World.CreatePed(pedModel, sidewalk)); if (!Exists(collector)) return false;
                 collector.IsPersistent = true; collector.BlockPermanentEvents = true; collector.SetIntoVehicle(van, VehicleSeat.Driver);
-                briefcase = World.CreateProp(propModel, sidewalk, false, false); if (!Exists(briefcase)) return false;
+                briefcase = PdmAssets.Track(World.CreateProp(propModel, sidewalk, false, false)); if (!Exists(briefcase)) return false;
                 briefcase.IsPersistent = true; briefcase.IsVisible = false; briefcase.IsCollisionEnabled = false;
                 int token = BitConverter.ToInt32(Guid.Parse(id).ToByteArray(), 0); if (token == 0) token = 1;
                 Mark(collector, token); Mark(briefcase, token);
                 transfer = new PdmSafeTransfer { Id = id, Amount = amount, CollectorHandle = collector.Handle, CollectorModel = options.CollectorModel, CaseHandle = briefcase.Handle, CaseModel = options.CaseModel, Token = token,
                     Van = new PdmEntityRef { Handle = van.Handle, Model = options.VehicleModel, Plate = plate } }; return true;
             }
-            finally { vehicleModel.MarkAsNoLongerNeeded(); pedModel.MarkAsNoLongerNeeded(); propModel.MarkAsNoLongerNeeded(); }
+            finally { PdmStreaming.Release(vehicleModel); PdmStreaming.Release(pedModel); PdmStreaming.Release(propModel); }
         }
         void Begin(int amount)
         {
@@ -140,7 +140,7 @@ namespace RPCore
                 if (run.Stage == PdmSafeStage.Handover)
                 {
                     if (!HandEligible) { StopPose(); run.Hand(Game.GameTime, false, () => false); return; }
-                    if (!pose && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, Anim)) { animPlayer = Game.Player.Character; Play(animPlayer, "givetake1_b"); Play(collector, "givetake1_a"); pose = true; }
+                    if (!pose && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, Anim)) { animPlayer = PdmAssets.Track(Game.Player.Character); Play(animPlayer, "givetake1_b"); Play(collector, "givetake1_a"); pose = true; }
                     Status("passando valores / aguarde confirmacao");
                     if (run.Hand(Game.GameTime, true, () => Wallet.PdmSafeHand(run.Id, out _))) { StopPose(); stageAt = Game.GameTime; JobActors.Enter(collector, van, VehicleSeat.Driver); Notify.Show("Valores entregues. Aguarde saida e compensacao; nao pode mais cancelar esta transferencia."); }
                     return;

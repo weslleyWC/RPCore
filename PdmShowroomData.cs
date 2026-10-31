@@ -32,7 +32,8 @@ namespace RPCore
     {
         public string Id, StockId;
         public int Handle, Price;
-        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(StockId) && Handle > 0 && Price >= 1 && Price <= 3000000;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public PdmNegotiation Negotiation;
+        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(StockId) && Handle > 0 && Price >= 1 && Price <= 3000000 && (Negotiation==null || Negotiation.Valid && (!Negotiation.Accepted || Price==Negotiation.Offer));
     }
     public static class PdmShowroomTransactions
     {
@@ -53,20 +54,21 @@ namespace RPCore
         }
         public static bool Remove(WalletData w, string stockId, string receipt, Action save, out bool changed)
         { return PdmTransactions.Apply(w, receipt, 0, d => { if (!Idle(d) || !d.Showroom.Any(e => e.StockId == stockId)) return false; d.Showroom.RemoveAll(e => e.StockId == stockId); return true; }, save, out changed); }
-        public static bool BeginSale(WalletData w, string stockId, string id, Action save, out bool changed)
+        public static bool BeginSale(WalletData w,string stockId,string id,Action save,out bool changed)=>BeginSale(w,stockId,id,false,save,out changed);
+        public static bool BeginSale(WalletData w, string stockId, string id,bool negotiate, Action save, out bool changed)
         {
             changed = false; if (string.IsNullOrWhiteSpace(id) || id.Length > 100) return false;
             return PdmTransactions.Apply(w, id + ":showroom", 0, d => {
                 var e = d.Showroom.Find(x => x.StockId == stockId); var stock = d.Stock.Find(s => s.Id == stockId);
                 if (!Idle(d) || e == null || e.Handle <= 0 || stock == null || stock.AwaitingCollection || stock.Engine < 300 || stock.Body < 300) return false;
                 int price = PdmStaffTransactions.Quote(d, stock, stock.Engine, stock.Body); if (price < 1) return false;
-                d.ShowroomSale = new PdmShowroomSale { Id = id, StockId = stockId, Handle = e.Handle, Price = price }; return true;
+                d.ShowroomSale = new PdmShowroomSale { Id = id, StockId = stockId, Handle = e.Handle, Price = price, Negotiation=negotiate?PdmNegotiationTransactions.Create(price,id):null }; return true;
             }, save, out changed);
         }
         public static bool Sell(WalletData w, string id, Action save, out bool changed)
         {
             return PdmTransactions.Apply(w, id + ":showroom-sale", 0, d => {
-                var sale = d.ShowroomSale; if (sale == null || sale.Id != id) return false; var stock = d.Stock.Find(s => s.Id == sale.StockId);
+                var sale = d.ShowroomSale; if (sale == null || sale.Id != id || sale.Negotiation!=null && !sale.Negotiation.Accepted) return false; var stock = d.Stock.Find(s => s.Id == sale.StockId);
                 if (stock == null || d.Cash > int.MaxValue - sale.Price || d.Revenue > long.MaxValue - sale.Price || d.SoldCost > long.MaxValue - stock.Cost || d.Sold == int.MaxValue) return false;
                 d.Cash += sale.Price; d.Revenue += sale.Price; d.SoldCost += stock.Cost; d.Sold++;
                 d.Showroom.RemoveAll(e => e.StockId == stock.Id); d.Stock.Remove(stock); d.ShowroomSale = null;
