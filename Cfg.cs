@@ -9,7 +9,7 @@ namespace RPCore
         public static string Dir = Path.Combine("scripts", "RPCore");
         public static string SaveDir { get { return Path.Combine(Dir, "SaveData"); } }
 
-        public static Keys InventoryKey, JobKey, DumpKey, AchKey, SeatbeltKey;
+        public static Keys InventoryKey, JobKey, DumpKey, AchKey, SeatbeltKey, PdmInteractionKey;
         public static Keys CoreKey, StorageKey, StocksKey, GangsKey, RadioKey;
         public static string CustomProfile;
         public static bool EnableGangs, EnableRadio;
@@ -38,6 +38,7 @@ namespace RPCore
             ScriptSettings s = ScriptSettings.Load(path);
 
             InventoryKey = Get(s, "Keys", "Inventory", Keys.I);
+            PdmInteractionKey = Get(s,"Keys","PdmInteraction",Keys.Y);
             JobKey       = Get(s, "Keys", "PizzaShift", Keys.F6);
             DumpKey      = Get(s, "Keys", "DumpPosition", Keys.F9);
             AchKey       = Get(s, "Keys", "Achievements", Keys.F7);

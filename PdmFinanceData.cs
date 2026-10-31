@@ -54,7 +54,7 @@ namespace RPCore
                 while (d.Loans.Count >= 42) { var old = d.Loans.Find(l => l.Settled); if (old == null) return false; d.Loans.Remove(old); }
                 var asset = JsonConvert.DeserializeObject<PdmStock>(JsonConvert.SerializeObject(stock)); asset.Engine = Math.Min(asset.Engine, engine); asset.Body = Math.Min(asset.Body, body);
                 d.Loans.Add(new PdmLoan { Id = id, Asset = asset, Customer = a.Destination, Total = total, DownPayment = entry, Paid = entry, Installments = c.Installments, PeriodSeconds = c.PeriodSeconds, InterestPercent = c.InterestPercent, DownPercent = c.DownPercent, DefaultPercent = defaultPercent, DeliveredHandle = a.VehicleHandle });
-                d.Cash += entry; d.Revenue += entry; d.SoldCost += stock.Cost; d.Sold++; d.Stock.Remove(stock); d.Active = null;
+                d.Cash += entry; d.Revenue += entry; d.SoldCost += stock.Cost; d.Sold++; d.Stock.Remove(stock); d.Enterprise?.CustomerOrders.RemoveAll(o=>o.StockId==stock.Id); d.Active = null;
                 PdmTransactions.Entry(d, "Entrada financiamento: " + stock.Name, entry); return true;
             }, save, out changed);
         }

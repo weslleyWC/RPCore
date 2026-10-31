@@ -1700,5 +1700,23 @@ report['stability_logs_01022']={
  'hardening':'Vehicle state refresh only while its menu visible, command/open binding instead of automatic polling on all traffic cars. Hidden service menus stop polling input/actor proof. Existing engine/cruise/belt and owned resource checks retained. This is not a proven explanation for every native crash.',
  'diagnostic':'Fixed8KB mapped state marks loop/menu/input/save/key/reload/dispose stages; no synchronous per-frame flush/JSON. Next startup records previous stage/map/version/hook state in RuntimeLastSession.json. Context only, not causal attribution. No player saves overwritten by trace; optional failures isolated.',
  'validation':'3940 tests,7 new:4 typed buffer cases against actual Enhanced SDK managed allocation API without GTA natives,3 mapped trace lifecycle cases. Release net48 no errors/warnings. Installer twice over0.102.1 preserves229 files. Actual doors/F10/driving/pursuit/native cash and crash origin need user GTA test; see STABILIDADE-0.102.2.md.'}
+# Static enterprise evidence extends the original phase descriptions above.
+repo_root=Path(__file__).resolve().parents[1]
+matrix_path=repo_root/'docs/PDM-REFERENCE-MATRIX-0.108.0.json'
+if matrix_path.exists() and (repo_root/'PdmEnterpriseSystem.cs').exists():
+    matrix=json.loads(matrix_path.read_text())
+    report['pdm_enterprise_01080']={
+        'reference':'PSRP/PDMCompany.cs', 'matrix':'PDM-REFERENCE-MATRIX-0.108.0.json',
+        'family_count':len(matrix['families']),
+        'implementation_hashes_current':all(digest((repo_root/f).read_bytes())==h for family in matrix['families'] for f,h in family['implementation_sha256'].items()),
+        'cycles':'Daily category/mileage catalogue and atomic cart; paid collector/physical arrival/budget; six-car TR2; private seller; cards/charity/sponsor; trash/cleaner; night covers; facilities/wash/fuel/tune; customer reservations/team sales; daily rentals; parked/driving/disputed repos; staff dialogue/fire-all; phone; Y input; F11 million.',
+        'tests_passed':4340,'new_test_cases':58,'gta_runtime_tested':False,
+        'guide':'PDM-EMPRESA-0.108.0.md',
+        'differences':'Old configured prices/legacy two-car access retained; no gifted capital/global deletion/blocking waits/forced teleports/police suspension. Repo variants share own rig return. Active time, owned entities, atomic saves.',
+        'historical_sections':'Base pdm entries describe original phases; current matrix supersedes omissions covered by the enterprise family mappings.'}
+    for key in ['pdm','pdm_logistics','pdm_showroom','pdm_premises','pdm_repo','pdm_staff']:
+        if key in report:
+            report[key]['original_phase_scope_limits']=report[key].pop('scope_limits','')
+            report[key]['current_scope']='See pdm_enterprise_01080 and family matrix; native gameplay remains unverified.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

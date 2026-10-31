@@ -81,14 +81,18 @@ namespace RPCore
             var repo = new PdmRepoSystem(pool, shifts, pdm.CompanyOptions, pdm.Repossession, ach); systems.Add(repo); repo.Back=pdm.OpenMenu; pdm.OpenRepo = repo.OpenMenu; finance.OpenRepo = repo.OpenForLoan; finance.NewDefaultPercent = pdm.Repossession.DefaultPercent;
             var rental = new PdmRentalSystem(pool, shifts, pdm.CompanyOptions, haul.ClearDisplay, ach, pdm.OpenMenu); systems.Add(rental); pdm.OpenRental = rental.OpenMenu;
             var showroom = new PdmShowroomSystem(pool, shifts, pdm.CompanyOptions.Office, pdm.OfficeAction, haul.ClearDisplay, ach, pdm.OpenMenu); systems.Add(showroom);
-            pdm.OpenShowroom = showroom.OpenMenu; pdm.DisplayStock = showroom.DisplayDefault; pdm.PrepareStock = showroom.Prepare; pdm.ClearDisplay = showroom.ClearAll;
+            pdm.OpenShowroom = showroom.OpenMenu;pdm.CustomerNearby=()=>showroom.CustomerNearby; pdm.DisplayStock = showroom.DisplayDefault; pdm.PrepareStock = showroom.Prepare; pdm.ClearDisplay = showroom.ClearAll;
             var premises = new PdmPremisesSystem(pool, shifts, pdm.CompanyOptions, staff.Premises, pdm.OfficeAction, showroom.GetDisplayVehicle, pdm.OpenMenu); systems.Add(premises);
             pdm.AccountsReady=()=>staff.Synced && finance.Synced && premises.Synced && riskSynced();
             pdm.OpenServices = premises.OpenMenu; pdm.SyncPremises = premises.Flush; staff.OpenServices = premises.OpenMenu;
             var security = new PdmSecuritySystem(pool, staff.Security, pdm.StartPosition, () => premises.StaffPeds, ()=>{staff.Flush();if(!staff.Synced)throw new InvalidOperationException("Payroll catch-up pending; defense suspended.");}, staff.OpenMenu, pdm.OpenMenu); systems.Add(security);
-            pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
+            security.OpenRole=staff.OpenRole;pdm.OpenSecurity = security.OpenMenu; staff.OpenSecurity = security.OpenMenu;
             surveillance = new PdmSurveillanceSystem(pool, shifts, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(surveillance); pdm.OpenSurveillance = surveillance.OpenMenu;
             var risk = new PdmRiskSystem(pool, pdm.StartPosition, pdm.OfficeAction, pdm.OpenMenu); systems.Add(risk); pdm.OpenRisk = risk.OpenMenu; pdm.SyncRisk = risk.Flush;riskSynced=()=>risk.Synced;showroom.SyncAccounts=pdm.FlushAccounts;premises.SyncAccounts=pdm.FlushAccounts;
+            var enterprise=new PdmEnterpriseSystem(pool,shifts,pdm.CompanyOptions,staff.Enterprise,pdm.OfficeAction,pdm.OpenMenu);systems.Add(enterprise);
+            enterprise.StaffRole=staff.OpenRole;enterprise.RolePeds=()=>premises.RolePeds.Concat(security.RolePeds);enterprise.StaffMenu=staff.OpenMenu;enterprise.CollectionMenu=haul.OpenMenu;enterprise.ShowroomMenu=showroom.OpenMenu;enterprise.RentalMenu=rental.OpenMenu;enterprise.RentalModels=()=>rental.RequestModels;
+            enterprise.Displays=()=>showroom.DisplayedVehicles;enterprise.GetDisplay=showroom.GetDisplayVehicle;enterprise.PrepareStock=showroom.Prepare;enterprise.Cleaner=()=>premises.CleanerPed;enterprise.ExteriorStock=showroom.IsExterior;
+            pdm.OpenEnterprise=enterprise.OpenMenu;pdm.CustomerNearby=()=>showroom.CustomerNearby || enterprise.HandlesNearbyInput;
             pdm.ConnectedLocations=()=>haul.Locations.Concat(rental.Locations).Concat(showroom.Locations).Concat(premises.Locations).Concat(security.Locations).Concat(surveillance.Locations).Concat(safe.Locations).Concat(repo.Locations);
             var jobs = new DeliveryJobsMenu(pool, pizza, postOp, uber, valet, supply, tanker, prison, pilot, hunting, fishing, crafting, dealer, streamer, drag, pdm, haul, safe, repo, rental, showroom, premises); systems.Add(jobs);
             var belt = new SeatbeltSystem(ach); systems.Add(belt);
@@ -142,13 +146,14 @@ namespace RPCore
             settings.GarageRequested=()=>OpenPhoneSystem(garages,Cfg.GarageKey);
             settings.DealerRequested=()=>OpenPhoneSystem(systems.OfType<DealershipSystem>().FirstOrDefault(),Cfg.DealerKey);
             settings.VehicleRequested=()=>OpenPhoneService(controls,()=>controls.OpenMenu());
+            phone.CompanyMenu=()=>OpenPhoneService(pdm,pdm.OpenMenu);enterprise.Activity+=phone.CompanyActivity;
             phone.ConfigureServices(new Dictionary<int,Action>{
                 {1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
                 {2,()=>OpenPhoneSystem(garages,Cfg.GarageKey)},
                 {3,()=>OpenPhoneSystem(systems.OfType<StockMarketSystem>().FirstOrDefault(),Cfg.StocksKey)},
                 {4,()=>OpenPhoneSystem(systems.OfType<RadioSystem>().FirstOrDefault(),Cfg.RadioKey)},
                 {5,()=>OpenPhoneSystem(gangs,Cfg.GangsKey)},
-                {6,()=>OpenPhoneSystem(pizza,Cfg.JobKey)},{7,()=>OpenPhoneSystem(settings,InterfaceOptions.SettingsKey)},{8,()=>OpenPhoneService(jobs,jobs.Open)}});
+                {6,()=>OpenPhoneSystem(pizza,Cfg.JobKey)},{7,()=>OpenPhoneSystem(settings,InterfaceOptions.SettingsKey)},{8,()=>OpenPhoneService(jobs,jobs.Open)},{9,()=>OpenPhoneService(pdm,pdm.OpenMenu)}});
             radial = new RadialSystem(pool, slot => {
                 switch (slot)
                 {
@@ -175,7 +180,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.107.5 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.108.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -227,7 +232,7 @@ namespace RPCore
             InterfaceOptions.ModalOpen = inventory.GridVisible || shop.GridVisible || phone.Visible || radial.Visible || surveillance.Viewing || editor.Manipulating;
             if (InterfaceOptions.ModalOpen && pool.AreAnyVisible) pool.HideAll();
             Stage(3);
-            try { PdmMenuGroup.BeforeProcess(pool);pool.Process(); }
+            try { PdmCustomerInput.BeginFrame();if(pool.AreAnyVisible || InterfaceOptions.ModalOpen)PdmCustomerInput.BlockFrame();PdmMenuGroup.BeforeProcess(pool);pool.Process(); }
             catch (Exception ex) {
                 Log.Error("menu dispatch", ex);
                 foreach(var item in pool){try{item.Visible=false;}catch(Exception cleanup){Log.Error("menu dispatch close: "+item.GetType().Name,cleanup);}}

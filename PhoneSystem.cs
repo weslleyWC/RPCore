@@ -10,10 +10,12 @@ namespace RPCore
 {
     public sealed partial class PhoneSystem : ISystem
     {
+        public Action CompanyMenu;
+        public void CompanyActivity(string title,string body)=>JobActivity(title,body);
         public string Name=>"phone";
         readonly ObjectPool pool;readonly Action<Keys> dispatch;readonly PropPresentation props;readonly InventorySystem inventory;readonly NeedsSystem needs;
         readonly Action jobs,studio,passenger;readonly UberJob uber;readonly StreamerJob streamer;
-        readonly string[] shortcuts={"RPCore Bank","Inventario","Garagens","Bolsa de valores","Radio","Gangues","Turno de pizza","Configuracoes F11","Trabalhos / contratos"};
+        readonly string[] shortcuts={"RPCore Bank","Inventario","Garagens","Bolsa de valores","Radio","Gangues","Turno de pizza","Configuracoes F11","Trabalhos / contratos","Empresa PDM"};
         Dictionary<int,Action> services=new Dictionary<int,Action>();
         PhoneData data;bool readOnly;
         readonly PhoneClockState clock=new PhoneClockState();
@@ -71,6 +73,7 @@ namespace RPCore
             if(page=="Search"){if(row==0){string text=Input(query,32);if(text!=null)query=text;}else{var matches=Matches();if(row-1<matches.Length)Shortcut(matches[row-1]);}return;}
             if(page=="Contacts")
             {
+                if(CompanyMenu!=null && row==5+(studio==null?0:1)+(passenger==null?0:1)){Queue(CompanyMenu);return;}
                 if(row<5)Shortcut(new[]{0,2,6,5,8}[row]);else if(row==5 && studio!=null)Queue(studio);else if(passenger!=null)Queue(passenger);return;
             }
             if(page=="Notes")
@@ -114,7 +117,7 @@ namespace RPCore
                 case "DeleteNote":return new[]{"Cancelar / manter nota","Confirmar exclusao"};
                 case "Settings":return new[]{"Papel de parede: "+data.Wallpaper}.Concat(shortcuts).ToArray();
                 case "Search":return new[]{"Buscar: "+query}.Concat(Matches().Select(i=>shortcuts[i])).ToArray();
-                case "Contacts":return new[]{"RPCore Bank","Mecanico / garagens","Pizza This / trabalho","Gangue","Trabalhos / contratos"}.Concat(studio==null?Array.Empty<string>():new[]{"Lester / Hollywood Act"}).Concat(passenger==null?Array.Empty<string>():new[]{"Taxi / limousine"}).ToArray();
+                case "Contacts":return new[]{"RPCore Bank","Mecanico / garagens","Pizza This / trabalho","Gangue","Trabalhos / contratos"}.Concat(studio==null?Array.Empty<string>():new[]{"Lester / Hollywood Act"}).Concat(passenger==null?Array.Empty<string>():new[]{"Taxi / limousine"}).Concat(CompanyMenu==null?Array.Empty<string>():new[]{"Empresa PDM"}).ToArray();
                 case "Messages":case "Notifications":return PhoneEdits.History(data,page=="Messages").Select(i=>(data.History[i].Read?"":"* ")+(data.History[i].Title??"RPCore")+": "+(data.History[i].Body??"")).ToArray();
                 case "Clock":return new[]{"Cronometro","Temporizador"};
                 case "Stopwatch":return new[]{clock.StopwatchRunning?"Pausar":"Iniciar / continuar","Zerar","Voltar"};

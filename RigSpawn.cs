@@ -78,8 +78,9 @@ namespace RPCore
             Log.Write(label+" spawn: no bay occupied="+occupied+" ground="+ground+" world="+world);return null;
         }
         // Exact showroom bay: never search into another numbered slot or delete ambient vehicles.
-        public static JobPoint FindDisplayVehicle(JobPoint anchor, Model model, bool interior)
+        public static JobPoint FindDisplayVehicle(JobPoint anchor, Model model, bool interior,float verticalOffset=0)
         {
+            if(float.IsNaN(verticalOffset) || float.IsInfinity(verticalOffset) || Math.Abs(verticalOffset)>1)return null;
             if (!model.Request(2500)) return null;
             var p = new JobPoint { Name = anchor.Name, X = anchor.X, Y = anchor.Y, Z = anchor.Z, Heading = anchor.Heading };
             if (interior)
@@ -92,6 +93,7 @@ namespace RPCore
                 Vector3 min, max; model.GetDimensions(out min, out max); p.Z = hit.HitPosition.Z - min.Z + .06f;
             }
             else if (!Ground(p, model)) return null;
+            p.Z+=verticalOffset;
             var box = Bounds(p, model); var center = new Vector3(p.X, p.Y, p.Z);
             foreach (var v in World.GetNearbyVehicles(center, 30)) if (v.Exists() && box.Overlaps(Bounds(Point(v), v.Model))) return null;
             foreach (var ped in World.GetNearbyPeds(center, 15)) if (ped.Exists() && box.Overlaps(new SpawnBox(Point(ped), -.5, .5, -.5, .5, -1, 1))) return null;

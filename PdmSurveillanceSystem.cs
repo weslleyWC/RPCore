@@ -43,11 +43,11 @@ namespace RPCore
             Add("GPS: escritorio PDM", "Monitoramento disponivel apenas junto ao escritorio externo.", () => ui.Waypoint(office,"escritorio PDM"));
             Add("Voltar", "Empresa PDM.", back); ui.Show();
         }
-        bool NearbyEquivalent(PdmCameraPoint point) => World.GetNearbyProps(Pos(point.Mount), .6f, new Model(options.Model)).Any(p => PdmAssets.Valid(p));
+        bool NearbyEquivalent(PdmCameraPoint point) => World.GetNearbyProps(Pos(point.Mount), .6f, PdmVehicleModel.Resolve(options.Model)).Any(p => PdmAssets.Valid(p));
         bool Hardware(PdmCameraPoint point) { Prop p; return props.TryGetValue(point.Id, out p) && PdmAssets.Valid(p) || NearbyEquivalent(point); }
         void SpawnProps(int target=-1)
         {
-            var model = new Model(options.Model);
+            var model = PdmVehicleModel.Resolve(options.Model);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;

@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using GTA;
@@ -287,6 +288,9 @@ namespace RPCore
         public static HousingData Housing => data.Housing ?? new HousingData();
         public static bool HousingPurchase(HousingOptions c, string id, out bool changed) => HousingTransactions.Purchase(data, c, id, Save, out changed);
         public static PdmData Pdm => data.Pdm ?? new PdmData();
+        internal static WalletData EnterpriseWallet()=>data;
+        public static bool PdmDailyOrder(PdmOptions c,string id,int mileage,string receipt,out bool changed)=>PdmEnterpriseTransactions.Order(data,c,id,mileage,receipt,Save,out changed);
+        internal static void PdmEnterpriseSaleAttempt(string receipt)=>PdmTransactions.Apply(data,receipt,0,d=>{if(!d.Owned)return false;if(d.Enterprise==null)d.Enterprise=new PdmEnterpriseData();d.Enterprise.SaleElapsed=0;return true;},Save,out _);
         public static bool PdmHire(PdmStaffOptions c,string role,string id,out bool changed)=>PdmStaffTransactions.Hire(data,c,role,id,Save,out changed);
         public static bool PdmWork(int seconds,string id,out bool changed)=>PdmStaffTransactions.Work(data,seconds,id,Save,out changed);
         public static bool PdmPayAll(string receipt,out bool changed,long? expected=null)=>PdmStaffTransactions.PayAll(data,receipt,Save,out changed,expected);

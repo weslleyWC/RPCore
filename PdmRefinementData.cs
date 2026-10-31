@@ -32,12 +32,12 @@ namespace RPCore
             long room=deposit?(long)int.MaxValue-d.Cash-(d.SafeTransfer?.Amount??0):(long)int.MaxValue-bank;
             return (int)Math.Max(0,Math.Min(deposit?bank:d.Cash,room));
         }
-        public static decimal Result(PdmData d)=>d==null?0:(decimal)d.Revenue-d.SoldCost-d.Repairs-d.Staff.Paid-d.Staff.HiringSpent-d.Staff.UpgradeSpent-d.Risk.Premiums-d.Risk.Stolen+d.Risk.Reimbursed;
+        public static decimal Result(PdmData d)=>d==null?0:(decimal)d.Revenue-d.SoldCost-d.Repairs-d.Staff.Paid-d.Staff.HiringSpent-d.Staff.UpgradeSpent-d.Risk.Premiums-d.Risk.Stolen+d.Risk.Reimbursed-(d.Enterprise?.Expenses??0);
         public static long Wages(PdmData d)=>d==null?0:(long)d.Staff.FormerDebt+d.Staff.Employees.Sum(e=>(long)e.Owed);
         public static long Receivable(PdmData d)=>d==null?0:d.Loans.Sum(l=>(long)l.Receivable);
         public static string Pending(PdmData d)
         {
-            if(d.Active!=null)return "Entrega a cliente";if(d.Collection!=null)return d.Collection.Arrived?"Recebimento de estoque":"Coleta no porto";
+            if(d.Enterprise?.Auto!=null)return "Coleta automatica / "+(d.Enterprise.Auto.SourcedCar!=null?"veiculo adquirido":"encomendas");if(d.Active!=null)return "Entrega a cliente";if(d.Collection!=null)return d.Collection.Arrived?"Recebimento de estoque":"Coleta no porto";
             if(d.SafeTransfer!=null)return d.SafeTransfer.Handed?"Valores em compensacao":"Coleta de valores";
             if(d.Repo!=null)return "Retomada";if(d.Rental!=null)return d.Rental.Delivered?"Locadora / retorno e recebimento":"Locadora / entrega";
             if(d.ShowroomSale!=null)return "Atendimento no showroom";if(d.PremisesService!=null)return "Servico de manutencao";return "Nenhuma operacao pendente";

@@ -22,7 +22,9 @@ namespace RPCore
         public string Name => "pdmpremises";
         public string Label => "PDM / equipe presencial e servicos";
         public bool Active => run != null;
+        public IEnumerable<KeyValuePair<string,Ped>> RolePeds=>actors.Select(a=>new KeyValuePair<string,Ped>(a.Key,a.Value.Ped));
         public IEnumerable<Ped> StaffPeds => actors.Values.Select(a => a.Ped);
+        public Ped CleanerPed=>actors.TryGetValue("cleaner",out var cleaner)?cleaner.Ped:null;
         public Vector3 StartPosition { get; }
         readonly ObjectPool pool; readonly ShiftGate gate; readonly Func<bool> office; readonly Func<string, Vehicle> display; readonly Action back;
         readonly PdmOptions company; readonly PdmPremisesOptions options; readonly NativeMenu menu;
@@ -96,7 +98,7 @@ namespace RPCore
                     DeleteActor(a); actors.Remove(role); a = null;
                 }
                 int due; if (!near || saved == null || a != null || respawn.TryGetValue(role, out due) && unchecked(Game.GameTime - due) < 0) continue;
-                var model = new Model(role == "mechanic" ? options.MechanicModel : options.CleanerModel);
+                var model = PdmVehicleModel.Resolve(role == "mechanic" ? options.MechanicModel : options.CleanerModel);
                 try
                 {
                     if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !PdmStreaming.Ready(model)) continue;
@@ -137,7 +139,7 @@ namespace RPCore
             if(!requested){Function.Call(Hash.REQUEST_ANIM_DICT,animDict);requested=true;}
             if(!Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED,animDict))return false;
             if(run.Kind=="clean" && !PdmAssets.Valid(sponge)){
-                var model=new Model("prop_sponge_01");
+                var model=PdmVehicleModel.Resolve("prop_sponge_01");
                 try{if(!PdmStreaming.Ready(model))return false;sponge=PdmAssets.Track(World.CreateProp(model,worker.Ped.Position,false,false));
                     if(!PdmAssets.Valid(sponge))return false;sponge.IsCollisionEnabled=false;sponge.AttachTo(worker.Ped.Bones[Bone.SkelRightHand],new Vector3(.05f,0,0),Vector3.Zero);
                 }finally{PdmStreaming.Release(model);}

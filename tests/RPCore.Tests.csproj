@@ -13,6 +13,7 @@
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <EmbeddedResource Include="../config/Jobs/PdmEnterprise.json" LogicalName="RPCore.JobDefaults.PdmEnterprise.json" />
     <EmbeddedResource Include="../config/InventoryRecipes.json" LogicalName="RPCore.Inventory.Recipes" />
     <EmbeddedResource Include="../config/Inventory/ReferenceItems.json" LogicalName="RPCore.Inventory.Items" />
     <Compile Include="../ConsumptionPresentationData.cs" Link="ConsumptionPresentationData.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="../PdmFinanceData.cs" Link="PdmFinanceData.cs" />
     <Compile Include="../PdmRepoData.cs" Link="PdmRepoData.cs" />
     <Compile Include="../PdmRentalData.cs" Link="PdmRentalData.cs" />
+    <Compile Include="../PdmShowroomPlacementData.cs" Link="PdmShowroomPlacementData.cs" />
     <Compile Include="../PdmShowroomData.cs" Link="PdmShowroomData.cs" />
     <Compile Include="../CharacterData.cs" Link="CharacterData.cs" />
     <Compile Include="../FaceData.cs" Link="FaceData.cs" />
@@ -68,8 +70,11 @@
     <Compile Include="../GameplayContextData.cs" Link="GameplayContextData.cs" />
     <Compile Include="../PdmNavigationData.cs" Link="PdmNavigationData.cs" />
     <Compile Include="../PdmRefinementData.cs" Link="PdmRefinementData.cs" />
+    <Compile Include="../PdmCustomerInputData.cs" Link="PdmCustomerInputData.cs" />
     <Compile Include="../PdmSpawnPointData.cs" Link="PdmSpawnPointData.cs" />
     <Compile Include="../PdmPickupData.cs" Link="PdmPickupData.cs" />
+    <Compile Include="../PdmEnterpriseData.cs" Link="PdmEnterpriseData.cs" />
+    <Compile Include="../PdmEnterpriseTransactions.cs" Link="PdmEnterpriseTransactions.cs" />
     <Compile Include="../PdmData.cs" Link="PdmData.cs" />
     <Compile Include="../DragData.cs" Link="DragData.cs" />
     <Compile Include="../StreamerData.cs" Link="StreamerData.cs" />

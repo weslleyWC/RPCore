@@ -32,10 +32,10 @@ namespace RPCore
             try{if(!Ready(model))return null;var ped=PdmAssets.Track(World.CreatePed(model,point));if(ped!=null && ped.Exists()){ped.IsPersistent=true;ped.BlockPermanentEvents=true;}return ped;}
             finally{Release(model);}
         }
-        public void Tick(){foreach(var pair in new List<KeyValuePair<int,int>>(pending))if(unchecked((uint)(Game.GameTime-pair.Value))>10000)Release(new Model(pair.Key),true);}
+        public void Tick(){foreach(var pair in new List<KeyValuePair<int,int>>(pending))if(unchecked((uint)(Game.GameTime-pair.Value))>10000)Release(PdmVehicleModel.Resolve(pair.Key),true);}
         public void Reload(){Dispose();}
         public void Save(){}
         public void OnKey(System.Windows.Forms.KeyEventArgs e){}
-        public void Dispose(){foreach(int hash in new List<int>(pending.Keys))Release(new Model(hash),true);spawnAt=-1;}
+        public void Dispose(){foreach(int hash in new List<int>(pending.Keys))Release(PdmVehicleModel.Resolve(hash),true);spawnAt=-1;}
     }
 }

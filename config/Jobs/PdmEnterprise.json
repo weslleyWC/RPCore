@@ -1,0 +1,292 @@
+{
+  "DaySeconds": 1800,
+  "SaleSeconds": 900,
+  "SellerSeconds": 1380,
+  "SourceSeconds": 1380,
+  "CardCount": 10,
+  "CardCost": 100,
+  "AutoPickupFee": 250,
+  "Collector": {
+    "Id": "collector",
+    "Name": "Coletor de veiculos",
+    "HiringCost": 2300,
+    "Wage": 2300,
+    "SaleBonusPercent": 0
+  },
+  "Facilities": [
+    {
+      "Id": "glass",
+      "Name": "Fachada de vidro",
+      "Model": "pdm_glass",
+      "Price": 4000,
+      "Point": {
+        "Name": "Fachada de vidro",
+        "X": -59.718,
+        "Y": -1098.753,
+        "Z": 25.568,
+        "Heading": 0
+      },
+      "Pitch": 0,
+      "Roll": 0,
+      "Yaw": -58.8844
+    },
+    {
+      "Id": "lights",
+      "Name": "Iluminacao externa",
+      "Model": "v_med_cor_walllight",
+      "Price": 12000,
+      "Point": {
+        "Name": "Luz PDM 1",
+        "X": -52.925,
+        "Y": -1103.711,
+        "Z": 28.0,
+        "Heading": 0
+      },
+      "Pitch": 0.0,
+      "Roll": 0.0,
+      "Yaw": -18.1853,
+      "Parts": [
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 2",
+            "X": -42.425,
+            "Y": -1107.611,
+            "Z": 27.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -18.1853
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 3",
+            "X": -52.925,
+            "Y": -1103.711,
+            "Z": 27.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -18.1853
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 4",
+            "X": -52.925,
+            "Y": -1103.711,
+            "Z": 26.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -18.1853
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 5",
+            "X": -42.425,
+            "Y": -1107.611,
+            "Z": 28.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -18.1853
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 6",
+            "X": -42.425,
+            "Y": -1107.611,
+            "Z": 26.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -18.1853
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 7",
+            "X": -59.6986,
+            "Y": -1091.784,
+            "Z": 27.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 37.9999,
+          "Yaw": -101.9993
+        },
+        {
+          "Model": "v_med_cor_walllight",
+          "Point": {
+            "Name": "Luz PDM 8",
+            "X": -61.1986,
+            "Y": -1095.684,
+            "Z": 27.0,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 37.9999,
+          "Yaw": -101.9993
+        },
+        {
+          "Model": "prop_streetlight_11b",
+          "Point": {
+            "Name": "Luz PDM 9",
+            "X": -42.9968,
+            "Y": -1119.333,
+            "Z": 25.5247,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -86.6027
+        },
+        {
+          "Model": "prop_streetlight_11b",
+          "Point": {
+            "Name": "Luz PDM 10",
+            "X": -49.9968,
+            "Y": -1119.733,
+            "Z": 25.5247,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -86.6027
+        },
+        {
+          "Model": "prop_streetlight_11b",
+          "Point": {
+            "Name": "Luz PDM 11",
+            "X": -56.9968,
+            "Y": -1120.033,
+            "Z": 25.5247,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -86.6027
+        },
+        {
+          "Model": "prop_streetlight_11b",
+          "Point": {
+            "Name": "Luz PDM 12",
+            "X": -64.1968,
+            "Y": -1119.733,
+            "Z": 25.5247,
+            "Heading": 0
+          },
+          "Pitch": 0.0,
+          "Roll": 0.0,
+          "Yaw": -128.0995
+        }
+      ]
+    },
+    {
+      "Id": "washer",
+      "Name": "Lavadora / mangueira",
+      "Model": "prop_fire_hosereel",
+      "Price": 2000,
+      "Point": {
+        "Name": "Lavadora / mangueira",
+        "X": -22.812,
+        "Y": -1086.113,
+        "Z": 26.8158,
+        "Heading": 0
+      },
+      "Pitch": 0,
+      "Roll": 0,
+      "Yaw": 158.3029
+    },
+    {
+      "Id": "pump",
+      "Name": "Bomba de combustivel",
+      "Model": "prop_gas_pump_1a",
+      "Price": 25000,
+      "Point": {
+        "Name": "Bomba de combustivel",
+        "X": -53,
+        "Y": -1082.4,
+        "Z": 25.88,
+        "Heading": 0
+      },
+      "Pitch": 0,
+      "Roll": 0,
+      "Yaw": 161.5
+    }
+  ],
+  "ServiceBay": {
+    "Name": "Oficina / servico PDM",
+    "X": -16.43855,
+    "Y": -1083.543,
+    "Z": 25.99861,
+    "Heading": 70.14865
+  },
+  "SourceArrival": {
+    "Name": "Coletor / chegada",
+    "X": -20.6272,
+    "Y": -1084.351,
+    "Z": 25.5196,
+    "Heading": 69.01015
+  },
+  "SellerCar": {
+    "Name": "Vendedor particular / carro",
+    "X": -62.78664,
+    "Y": -1102.959,
+    "Z": 25.63659,
+    "Heading": 68.48698
+  },
+  "SellerPed": {
+    "Name": "Vendedor particular",
+    "X": -59.93916,
+    "Y": -1100.659,
+    "Z": 25.47345,
+    "Heading": 211.0178
+  },
+  "Dumpster": {
+    "Name": "Cacambas PDM",
+    "X": -4.750285,
+    "Y": -1082.569,
+    "Z": 26.67208,
+    "Heading": 0
+  },
+  "Trash": [
+    {
+      "Name": "Lixo 0",
+      "X": -32.326,
+      "Y": -1097.809,
+      "Z": 25.4515,
+      "Heading": 0
+    },
+    {
+      "Name": "Lixo 1",
+      "X": -33.9336,
+      "Y": -1098.251,
+      "Z": 25.4515,
+      "Heading": 0
+    },
+    {
+      "Name": "Lixo 2",
+      "X": -33.625,
+      "Y": -1098.944,
+      "Z": 25.4515,
+      "Heading": 0
+    },
+    {
+      "Name": "Lixo 3",
+      "X": -33.113,
+      "Y": -1097.923,
+      "Z": 25.4515,
+      "Heading": 0
+    }
+  ]
+}

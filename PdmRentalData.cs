@@ -29,6 +29,7 @@ namespace RPCore
     public sealed class PdmRentalOperation : ExtensibleData
     {
         public string Id;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string RequestId;
         public int PricePercent;
         public PdmEntityRef Truck, Trailer;
         public List<PdmRentalCar> Cars = new List<PdmRentalCar>();
@@ -47,8 +48,8 @@ namespace RPCore
             return PdmTransactions.Apply(w, id + ":rental", 0, d => {
                 if (!d.Owned || d.Active != null || d.Collection != null || d.Repo != null || d.SafeTransfer != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null) return false;
                 var cars = ids.Select(x => d.Stock.Find(s => s.Id == x)).ToList();
-                if (cars.Any(s => s == null || d.Showroom.Any(e => e.StockId == s.Id) || s.AwaitingCollection || s.Engine < 300 || s.Body < 300 || !c.Models.Contains(s.Model, StringComparer.OrdinalIgnoreCase) || Quote(s, c.PricePercent) < 1) || !string.Equals(cars[0].Model, cars[1].Model, StringComparison.OrdinalIgnoreCase)) return false;
-                d.Rental = new PdmRentalOperation { Id = id, PricePercent = c.PricePercent, Truck = truck, Trailer = trailer, Cars = cars.Select(s => new PdmRentalCar { StockId = s.Id, Price = Quote(s, c.PricePercent) }).ToList() };
+                if (cars.Any(s => s == null || PdmEnterpriseRules.Reserved(d,s.Id) || d.Showroom.Any(e => e.StockId == s.Id) || s.AwaitingCollection || s.Engine < 300 || s.Body < 300 || !c.Models.Contains(s.Model, StringComparer.OrdinalIgnoreCase) || Quote(s, c.PricePercent) < 1) || !string.Equals(cars[0].Model, cars[1].Model, StringComparison.OrdinalIgnoreCase)) return false;
+                d.Rental = new PdmRentalOperation { Id = id, PricePercent = c.PricePercent, Truck = truck, Trailer = trailer, Cars = cars.Select(s => new PdmRentalCar { StockId = s.Id, Price = Quote(s, c.PricePercent) }).ToList(), RequestId=d.Enterprise?.RentalOrders.FirstOrDefault(r=>string.Equals(r.Model,cars[0].Model,StringComparison.OrdinalIgnoreCase))?.Id };
                 d.Rental = JsonConvert.DeserializeObject<PdmRentalOperation>(JsonConvert.SerializeObject(d.Rental)); return true;
             }, save, out changed);
         }
@@ -71,7 +72,7 @@ namespace RPCore
             return PdmTransactions.Apply(w, id + ":rental-delivered", 0, d => {
                 var a = d.Rental; if (a == null || a.Id != id || a.Delivered || a.Cars.Any(c => c.Handle <= 0)) return false;
                 foreach (var c in a.Cars) { var stock = d.Stock.Find(s => s.Id == c.StockId); if (stock.Engine < 100) return false; c.Price = Math.Min(c.Price, Quote(stock, a.PricePercent)); if (c.Price < 1) return false; }
-                a.Delivered = true; return true;
+                a.Delivered = true;if(a.RequestId!=null)d.Enterprise?.RentalOrders.RemoveAll(r=>r.Id==a.RequestId); return true;
             }, save, out changed);
         }
         public static bool Return(WalletData w, string id, Action save, out bool changed)

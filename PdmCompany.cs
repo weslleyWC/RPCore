@@ -15,6 +15,8 @@ namespace RPCore
         readonly PdmMenuView ui;
         public Action OpenCollection, OpenStaff, SyncStaff, OpenSafe, OpenFinanceContracts, SyncFinance, OpenRepo, OpenRental, OpenShowroom, OpenServices, SyncPremises, OpenSecurity, OpenSurveillance, OpenRisk, SyncRisk;
         public Func<System.Collections.Generic.IEnumerable<PdmLocation>> ConnectedLocations;
+        public Action OpenEnterprise;
+        public Func<bool> CustomerNearby;
         public Func<string,bool> PrepareStock;
         public Func<bool> AccountsReady;
         internal PdmOptions CompanyOptions => options;
@@ -57,6 +59,7 @@ namespace RPCore
         }
         internal bool OfficeAction()
         {
+            if(gate.Owner=="pdmenterprise"){Notify.Show("Encerre o servico/teste PDM com End antes de iniciar outra operacao.");return false;}
             if(!FlushAccounts()){Notify.Show("Atualizando contas pendentes; aguarde e confira novamente.");return false;}
             if (!SafeFoot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5 || Active || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null)
             { Notify.Show("Va a pe ao escritorio externo PDM, sem procurado/missao/combate. Encerre/recupere a entrega pendente."); return false; } return true;
@@ -82,6 +85,7 @@ namespace RPCore
                 Add("Seguranca / cameras / seguro","Postos presenciais, monitoramento e protecao do caixa.",OpenProtection);
                 Add("Trabalhos / contratos / pendencias",PdmBusinessRules.Pending(d)+". Entregas, locadora, retomada e transporte de valores.",OpenWork);
             }
+            if(OpenEnterprise!=null)Add("Gestao completa / operacao da PDM","Coletor automatico, fornecedor por categoria, equipamentos, reputacao, vendedor particular, limpeza e oficina.",OpenEnterprise);
             Add("Locais e GPS","Escritorio, compra de estoque, retirada, porto, devolucao, showroom, locadora e equipe.",OpenLocations);
             Add("Fechar","Voltar ao jogo.",ui.Close);ui.Show();
             Log.Write("PDM menu shown: "+menu.Items.Count+" rows, profile "+Profile.Id);
@@ -89,6 +93,7 @@ namespace RPCore
         void OpenOverview()
         {
             var d=Wallet.Pdm;if(!DataValid())return;Page("overview","PDM / visao geral",OpenMenu,OpenOverview);
+            ui.Add("Reputacao / humor / limpeza", "Reputacao "+PdmEnterpriseRules.View(d).Reputation+"/100; humor "+PdmEnterpriseRules.View(d).Mood+"/100; limpeza "+PdmEnterpriseRules.View(d).Cleanliness+"/100.",()=>{},false);
             ui.Add("Caixa empresarial: "+Money(d.Cash),"Banco pessoal: "+Money(Wallet.Bank)+". Os saldos sao separados.",()=>{},false);
             ui.Add("Estoque "+d.Stock.Count+"/"+options.Capacity+" / "+d.Showroom.Count+" expostos","Custo em estoque: "+Money(d.Stock.Sum(v=>(long)v.Cost))+". "+d.Stock.Count(v=>v.AwaitingCollection)+" pedidos aguardando coleta.",()=>{},false);
             ui.Add("Resultado operacional: "+Money(PdmBusinessRules.Result(d)),"Receitas menos custo vendido, reparos, equipe, melhorias e perdas liquidas. Aportes/saques nao sao lucro.",()=>{},false);
@@ -128,8 +133,9 @@ namespace RPCore
         {
             Page("work","PDM / contratos",OpenMenu,OpenWork);var d=Wallet.Pdm;
             ui.Add(PdmBusinessRules.Pending(d),"Uma operacao empresarial por vez. Pagamentos entram no caixa; coleta de valores transfere ao banco.",()=>{},false);
+            foreach(var order in PdmEnterpriseRules.View(d).CustomerOrders){var stock=d.Stock.Find(v=>v.Id==order.StockId);var stockId=order.StockId;Add("Pedido / "+stock.Name,"Cliente em "+options.Customers[order.Destination%options.Customers.Count].Name+". Pagamento somente apos entregar as chaves.",()=>OpenStockItem(stockId));}
             Add("Entregas a cliente / financiadas","Selecione uma unidade pronta no estoque.",OpenStock);
-            if(OpenCollection!=null)Add("Coleta de estoque no porto","Escolher uma ou duas unidades pagas.",OpenCollection);
+            if(OpenCollection!=null)Add("Coleta de estoque no porto","Selecionar unidades pagas; lotes de ate seis com Packer e TR2 adquiridos.",OpenCollection);
             if(OpenRental!=null)Add("Locadora / pedido de dois carros","Mesmo modelo, transporte, conferencia e devolucao do conjunto.",OpenRental);
             if(OpenRepo!=null)Add("Retomada / inadimplentes","Recuperar patrimonio proprio; nao paga premio de dinheiro.",OpenRepo);
             if(OpenSafe!=null)Add("Transporte de valores","Reserva caixa, entrega ao seguranca e compensacao no banco.",OpenSafe);
@@ -178,7 +184,7 @@ namespace RPCore
             Add("GPS: escritorio / comprar estoque","Encomenda feita aqui no menu, a pe no escritorio; retirada dos pedidos pagos e no porto.",()=>ui.Waypoint(StartPosition,"escritorio / fornecedor PDM"));
             if(OpenCollection!=null)Add("Retirar pedidos / porto","Pedidos pagos nao aparecem so por marcar o GPS. Inicie a retirada no escritorio ou no marcador do porto.",OpenCollection);
             foreach(var p in options.Catalog){var offer=p;ui.AddConfirm(offer.Name+" / custo "+Money(offer.Cost),"Paga pelo CAIXA DA EMPRESA: "+Money(Wallet.Pdm.Cash)+" -> "+Money(Math.Max(0,Wallet.Pdm.Cash-offer.Cost))+". Banco/carteira pessoal nao mudam. Depois: Retirar pedidos > iniciar retirada no escritorio ou marcador do porto.",()=>{
-                if(!OfficeAction())return;var model=new Model(offer.Model);if(!model.IsValid || !model.IsInCdImage || !model.IsCar){Notify.Show("Modelo indisponivel. Nada comprado.");return;}
+                if(!OfficeAction())return;var model=PdmVehicleModel.Resolve(offer.Model);if(!model.IsValid || !model.IsInCdImage || !model.IsCar){Notify.Show("Modelo indisponivel. Nada comprado.");return;}
                 int before=Wallet.Pdm.Cash;
                 if(!Wallet.PdmOrder(options,offer.Id,Guid.NewGuid().ToString("N"),Guid.NewGuid().ToString("N"),out bool changed)){ui.Problem("Encomenda recusada","Confira caixa da empresa, capacidade e operacao pendente: "+PdmBusinessRules.Pending(Wallet.Pdm)+". Nenhum pedido novo.",null,OpenCatalog);return;}
                 Notify.Show(changed?"Pedido salvo: "+offer.Name+". Caixa da empresa $"+before+" -> $"+Wallet.Pdm.Cash+". Abra Retirar pedidos e INICIE a retirada no escritorio ou porto.":"Pedido ja registrado; nenhum debito novo.");OpenCatalog();
@@ -197,7 +203,7 @@ namespace RPCore
         {
             var stock=Wallet.Pdm.Stock.Find(v=>v.Id==id);if(stock==null){OpenStock();return;}
             Page("stock:"+id,stock.Name+" / "+stock.Plate,OpenStock,()=>OpenStockItem(id));
-            ui.Add("Custo "+Money(stock.Cost)+" / venda prevista "+Money(PdmStaffTransactions.Quote(Wallet.Pdm,stock,stock.Engine,stock.Body)),"Motor "+stock.Engine+"; carroceria "+stock.Body+"; sujeira "+stock.Dirt+". O valor final da entrega considera a condicao recebida.",()=>{},false);
+            ui.Add("Custo "+Money(stock.Cost)+" / venda prevista "+Money(PdmStaffTransactions.Quote(Wallet.Pdm,stock,stock.Engine,stock.Body)),"Quilometragem "+stock.Mileage+" mi; motor "+stock.Engine+"; carroceria "+stock.Body+"; sujeira "+stock.Dirt+". O valor final da entrega considera a condicao recebida.",()=>{},false);
             if(stock.AwaitingCollection){if(OpenCollection!=null)Add("Retirar encomenda paga pela empresa","Abra a lista e INICIE a retirada; GPS sozinho nao cria o carro. Pode iniciar no escritorio ou marcador do porto. Sem debito novo.",OpenCollection);}
             else{
                 if(DisplayStock!=null)ui.AddConfirm("Expor em vaga externa","Continua no estoque; nao vende nem transforma em carro pessoal.",()=>ui.Stream(new[]{stock.Model},()=>{if(OfficeAction())DisplayStock(id);OpenStockItem(id);},()=>OpenStockItem(id)));
@@ -225,14 +231,14 @@ namespace RPCore
             if (!OfficeAction() || (PrepareStock != null ? !PrepareStock(stockId) : ClearDisplay?.Invoke() == false)) return; var stock = Wallet.Pdm.Stock.Find(s => s.Id == stockId); if (stock == null || stock.AwaitingCollection || stock.Engine < 300 || stock.Body < 300) { Notify.Show("Repare o carro no estoque antes da entrega."); return; }
             if (financed && Wallet.Pdm.Loans.Count(l => !l.Settled) >= Financing.MaxActive) { Notify.Show("Limite de financiamentos ativos. Aguarde quitacao antes de outro contrato."); return; }
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + " antes de entregar."); return; }
-            bool ready = false; var model = new Model(stock.Model);
+            bool ready = false; var model = PdmVehicleModel.Resolve(stock.Model);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !model.IsCar || !PdmStreaming.Ready(model)) { Notify.Show("Modelo ainda indisponivel; estoque preservado."); return; }
                 var bay = RigSpawn.FindVehicle(options.Spawn, model, "PDM"); if (bay == null) { Notify.Show("Sem vaga livre para retirada. Estoque e caixa preservados."); return; }
                 car = PdmAssets.Track(World.CreateVehicle(model, Pos(bay), bay.Heading)); if (car == null || !PdmAssets.Valid(car)) return;
-                car.IsPersistent = true; car.EngineHealth = stock.Engine; car.BodyHealth = stock.Body; car.DirtLevel = stock.Dirt; Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, car, stock.Plate); JobVehicles.Reserve(car);
-                int selected = random.Next(options.Customers.Count); string id = Guid.NewGuid().ToString("N");
+                PdmStockPresentation.Apply(car,stock);car.IsPersistent = true; car.EngineHealth = stock.Engine; car.BodyHealth = stock.Body; car.DirtLevel = stock.Dirt; Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, car, stock.Plate); JobVehicles.Reserve(car);
+                int selected = Wallet.Pdm.Enterprise?.CustomerOrders.Find(o=>o.StockId==stockId)?.Destination ?? random.Next(options.Customers.Count);selected%=options.Customers.Count; string id = Guid.NewGuid().ToString("N");
                 if (!(financed ? Wallet.PdmBeginFinanced(options, stockId, id, selected, car.Handle, out _) : Wallet.PdmBegin(options, stockId, id, selected, car.Handle, out _))) { Notify.Show("Entrega nao confirmada. Estoque preservado."); return; }
                 run = new PdmRun(id, stockId, options.HandoverSeconds); ownerProfile = Profile.Id; destination = options.Customers[selected]; cancelReason = null; cancelEngine = cancelBody = -1; began = nextSave = nextBuyer = Game.GameTime;
                 carBlip = World.CreateBlip(car.Position); carBlip.Name = "RPCore: carro da empresa"; carBlip.Color = BlipColor.Blue;
@@ -252,7 +258,7 @@ namespace RPCore
         public void Tick()
         {
             ui.Tick(PdmMenuRuntime.Allowed);
-            if (!Active) { if (InputAllowed && SafeFoot && Game.Player.Character.Position.DistanceTo(StartPosition) < 3) { Prompt.Help("~INPUT_CONTEXT~: PDM / empresa / caixa / estoque"); if (Game.IsControlJustPressed(GTA.Control.Context)) OpenMenu(); } return; }
+            if (!Active) { if (InputAllowed && SafeFoot && CustomerNearby?.Invoke()!=true && Game.Player.Character.Position.DistanceTo(StartPosition) < 3) { Prompt.Help("~INPUT_CONTEXT~: PDM / empresa / caixa / estoque"); if (Game.IsControlJustPressed(GTA.Control.Context)) OpenMenu(); } return; }
             if (run.Stage == PdmStage.Complete) { Depart(); return; }
             if (cancelReason != null) { if (unchecked(Game.GameTime - nextSave) >= 0) CompleteCancel(); return; }
             if (Game.Player.Character.IsDead || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || car == null || !PdmAssets.Valid(car) || car.IsDead || car.EngineHealth < 100 || (buyer != null && (!PdmAssets.Valid(buyer) || buyer.IsDead)) || unchecked(Game.GameTime - began) > options.TimeLimitSeconds * 1000)
@@ -264,8 +270,8 @@ namespace RPCore
             if (buyer == null && Game.Player.Character.Position.DistanceTo(Pos(destination)) < 160 && unchecked(Game.GameTime - nextBuyer) >= 0) { nextBuyer = Game.GameTime + 5000; SpawnBuyer(); }
             if (run.Stage == PdmStage.Drive)
             {
-                Status(buyer == null ? "siga o GPS amarelo ate o cliente" : "pare perto do cliente / saia e E entrega as chaves");
-                if (HandoverEligible) { Prompt.Help("~INPUT_CONTEXT~: passar as chaves"); if (Game.IsControlJustPressed(GTA.Control.Context)) { run.Handover(Game.GameTime, true); Function.Call(Hash.REQUEST_ANIM_DICT, AnimDict); animRequested = true; } } return;
+                Status(buyer == null ? "siga o GPS amarelo ate o cliente" : "pare perto do cliente / saia e "+Cfg.PdmInteractionKey+" entrega as chaves");
+                if (HandoverEligible) { Prompt.Help(PdmCustomerInput.Button+": passar as chaves"); if (PdmCustomerInput.Pressed) { run.Handover(Game.GameTime, true); Function.Call(Hash.REQUEST_ANIM_DICT, AnimDict); animRequested = true; } } return;
             }
             if (!HandoverEligible) { StopPose(); run.Commit(Game.GameTime, false, () => false); return; }
             if (!animStarted && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, AnimDict)) { animOwner = PdmAssets.Track(Game.Player.Character); Function.Call(Hash.TASK_PLAY_ANIM, animOwner, AnimDict, AnimClip, 4f, -4f, -1, 49, 0f, false, false, false); animStarted = true; }
@@ -308,7 +314,7 @@ namespace RPCore
             }
             catch (Exception ex) { nextSave = Game.GameTime + 5000; Log.Error("pdm cancellation checkpoint", ex); Notify.Show("Devolucao pendente; nova tentativa em 5s."); }
         }
-        bool Matches(Vehicle v, PdmStock stock) => v != null && PdmAssets.Valid(v) && v.Model.Hash == new Model(stock.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), stock.Plate, StringComparison.OrdinalIgnoreCase);
+        bool Matches(Vehicle v, PdmStock stock) => v != null && PdmAssets.Valid(v) && v.Model.Hash == PdmVehicleModel.Resolve(stock.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), stock.Plate, StringComparison.OrdinalIgnoreCase);
         void Recover()
         {
             try

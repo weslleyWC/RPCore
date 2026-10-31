@@ -16,6 +16,7 @@ namespace RPCore
         public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>new[]{
             PdmLocation.At("rental:delivery","Contratos","Locadora / entrega","Patio externo, fora das pistas do aeroporto. Exige contrato iniciado.",options.Delivery),
             PdmLocation.At("rental:return","Contratos","Locadora / devolucao do conjunto","Retorno do contrato para receber o pagamento empresarial.",options.Return)}.Concat(options.Pickups.Select((p,i)=>PdmLocation.At("rental:pickup:"+i,"Contratos","Locadora / carregamento "+(i+1),"Retirada das unidades proprias depois de iniciar o contrato de locadora.",p)));
+        public System.Collections.Generic.IEnumerable<string> RequestModels=>options.Models;
         public string Name => "pdmrental";
         public string Label => "PDM / pedidos da locadora";
         public bool Active => run != null;
@@ -72,7 +73,7 @@ namespace RPCore
         void Blip(Vehicle v, string label) { var b = v.AddBlip(); b.Name = label; b.Color = BlipColor.Blue; blips.Add(b); }
         static Vehicle Spawn(JobPoint point, string name, string plate)
         {
-            var model = new Model(name);
+            var model = PdmVehicleModel.Resolve(name);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
@@ -86,7 +87,7 @@ namespace RPCore
         }
         static PdmEntityRef Ref(Vehicle v, string model) => new PdmEntityRef { Handle = v.Handle, Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim() };
         static Vehicle Match(int handle, string model, string plate)
-        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
+        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == PdmVehicleModel.Resolve(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
         void Begin(List<string> ids)
         {
             var d = Wallet.Pdm;
@@ -122,7 +123,7 @@ namespace RPCore
                 var item = a.Cars[i]; if (item.Handle > 0 || cars.ContainsKey(item.StockId)) continue; var stock = Wallet.Pdm.Stock.Find(s => s.Id == item.StockId);
                 var v = Spawn(options.Pickups[i], stock.Model, stock.Plate); if (!Exists(v)) { Notify.Show("Vaga de retirada ocupada. Afaste o conjunto; nova tentativa em 5s."); return; }
                 bool saved = false;
-                try { v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; v.DirtLevel = stock.Dirt; if (!Wallet.PdmRentalCar(run.Id, stock.Id, v.Handle, out _)) return; cars.Add(stock.Id, v); saved = true; Blip(v, "RPCore: carro para locadora"); }
+                try { PdmStockPresentation.Apply(v,stock);v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body; v.DirtLevel = stock.Dirt; if (!Wallet.PdmRentalCar(run.Id, stock.Id, v.Handle, out _)) return; cars.Add(stock.Id, v); saved = true; Blip(v, "RPCore: carro para locadora"); }
                 finally { if (!saved) { v.Delete(); JobVehicles.Release(v); } }
             }
         }
@@ -145,7 +146,7 @@ namespace RPCore
         void SpawnWorker()
         {
             if (worker != null || Game.Player.Character.Position.DistanceTo(Pos(options.Delivery)) > 150 || unchecked(Game.GameTime - retryAt) < 0) return;
-            retryAt = Game.GameTime + 5000; var model = new Model(options.WorkerModel);
+            retryAt = Game.GameTime + 5000; var model = PdmVehicleModel.Resolve(options.WorkerModel);
             try
             {
                 if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;

@@ -44,7 +44,7 @@ namespace RPCore
     }
     public static class PdmRiskTransactions
     {
-        public static int Security(PdmData d) => (d.Surveillance.Purchased ? 30 : 0) + (PdmSecurityPolicy.Paid(d, "security1") ? 35 : 0) + (PdmSecurityPolicy.Paid(d, "security2") ? 35 : 0);
+        public static int Security(PdmData d) => Math.Min(100,(PdmEnterpriseRules.View(d).Upgrades.Contains("glass")?15:0)+(PdmEnterpriseRules.View(d).Upgrades.Contains("lights")?10:0)+(d.Surveillance.Purchased ? 30 : 0) + (PdmSecurityPolicy.Paid(d, "security1") ? 35 : 0) + (PdmSecurityPolicy.Paid(d, "security2") ? 35 : 0));
         public static int Chance(PdmData d, PdmRiskOptions c) => (c.RiskPercent * (100 - Security(d)) + 99) / 100;
         public static int Roll(string receipt) { uint h = 2166136261; foreach (char ch in receipt) h = unchecked((h ^ ch) * 16777619); return (int)(h % 100); }
         public static bool SetSafe(WalletData w, bool open, string receipt, Action save, out bool changed)

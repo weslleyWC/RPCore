@@ -44,7 +44,8 @@ namespace RPCore
         public PdmEntityRef Truck, Trailer;
         public List<PdmCargoRef> Cargo = new List<PdmCargoRef>();
         public bool Arrived;
-        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && StockIds != null && StockIds.Count >= 1 && StockIds.Count <= 2 && StockIds.All(s => !string.IsNullOrWhiteSpace(s)) && StockIds.Distinct().Count() == StockIds.Count
+        public int Capacity=2;
+        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && StockIds != null && StockIds.Count >= 1 && StockIds.Count <= Capacity && (Capacity==2 || Capacity==6) && StockIds.All(s => !string.IsNullOrWhiteSpace(s)) && StockIds.Distinct().Count() == StockIds.Count
             && Truck != null && Truck.Valid && Trailer != null && Trailer.Valid && Truck.Handle != Trailer.Handle && Cargo != null && Cargo.Count == StockIds.Count && Cargo.All(c => c != null && c.Valid && StockIds.Contains(c.StockId)) && Cargo.Select(c => c.StockId).Distinct().Count() == Cargo.Count && Cargo.Where(c => c.Handle > 0).Select(c => c.Handle).Distinct().Count() == Cargo.Count(c => c.Handle > 0) && Cargo.All(c => c.Handle == 0 || c.Handle != Truck.Handle && c.Handle != Trailer.Handle) && (!Arrived || Cargo.All(c => c.Handle > 0));
     }
     public static class PdmCollectionTransactions
@@ -52,10 +53,10 @@ namespace RPCore
         public static bool Begin(WalletData w, string id, List<string> stockIds, PdmEntityRef truck, PdmEntityRef trailer, Action save, out bool changed)
         {
             changed = false;
-            if (string.IsNullOrWhiteSpace(id) || id.Length > 100 || stockIds == null || stockIds.Count < 1 || stockIds.Count > 2 || stockIds.Distinct().Count() != stockIds.Count || truck == null || !truck.Valid || trailer == null || !trailer.Valid || truck.Handle == trailer.Handle) return false;
+            if (string.IsNullOrWhiteSpace(id) || id.Length > 100 || stockIds == null || stockIds.Count < 1 || stockIds.Count > (w?.Pdm==null?2:PdmEnterpriseRules.Capacity(w.Pdm)) || stockIds.Distinct().Count() != stockIds.Count || truck == null || !truck.Valid || trailer == null || !trailer.Valid || truck.Handle == trailer.Handle) return false;
             return PdmTransactions.Apply(w, id + ":collection", 0, d => {
                 if (!d.Owned || d.Active != null || d.Collection != null || d.SafeTransfer != null || d.Repo != null || d.Rental != null || d.ShowroomSale != null || d.PremisesService != null || stockIds.Any(s => !d.Stock.Any(v => v.Id == s && v.AwaitingCollection && v.Engine >= 300 && v.Body >= 300))) return false;
-                d.Collection = new PdmCollection { Id = id, StockIds = new List<string>(stockIds), Truck = truck, Trailer = trailer, Cargo = stockIds.Select(s => new PdmCargoRef { StockId = s }).ToList() }; return true;
+                d.Collection = new PdmCollection { Id = id, StockIds = new List<string>(stockIds), Truck = truck, Trailer = trailer, Cargo = stockIds.Select(s => new PdmCargoRef { StockId = s }).ToList(), Capacity=stockIds.Count>2?6:2 }; return true;
             }, save, out changed);
         }
         public static bool Register(WalletData w, string id, string stockId, int handle, Action save, out bool changed)
@@ -95,7 +96,7 @@ namespace RPCore
         public int Loaded { get; private set; }
         public PdmHaulStage Stage { get; private set; } = PdmHaulStage.Coupling;
         readonly int duration; int began;
-        public PdmHaulRun(string id, int total, int seconds) { if (string.IsNullOrWhiteSpace(id) || total < 1 || total > 2 || seconds < 2 || seconds > 15) throw new ArgumentException(); Id = id; Total = total; duration = seconds * 1000; }
+        public PdmHaulRun(string id, int total, int seconds) { if (string.IsNullOrWhiteSpace(id) || total < 1 || total > 6 || seconds < 2 || seconds > 15) throw new ArgumentException(); Id = id; Total = total; duration = seconds * 1000; }
         public void Coupled(bool coupled) { if (Stage == PdmHaulStage.Coupling && coupled) Stage = PdmHaulStage.Loading; }
         public bool Load(bool eligible, Func<bool> attach) { if (Stage != PdmHaulStage.Loading || !eligible || !attach()) return false; Loaded++; if (Loaded == Total) Stage = PdmHaulStage.Returning; return true; }
         public bool Unload(int now, bool eligible) { if (Stage != PdmHaulStage.Returning || !eligible) return false; began = now; Stage = PdmHaulStage.Unloading; return true; }

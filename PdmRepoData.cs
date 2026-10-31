@@ -20,9 +20,10 @@ namespace RPCore
     {
         public string Id, LoanId;
         public int Location, VehicleHandle;
+        public int Variant; // 0 parked, 1 driving, 2 disputed
         public PdmEntityRef Truck, Trailer;
         public bool Arrived;
-        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(LoanId) && Location >= 0 && Location < 30 && VehicleHandle >= 0 && Truck != null && Truck.Valid && Trailer != null && Trailer.Valid && Truck.Handle != Trailer.Handle && VehicleHandle != Truck.Handle && VehicleHandle != Trailer.Handle && (!Arrived || VehicleHandle > 0);
+        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(Id) && Id.Length <= 100 && !string.IsNullOrWhiteSpace(LoanId) && Variant>=0 && Variant<=2 && Location >= 0 && Location < 30 && VehicleHandle >= 0 && Truck != null && Truck.Valid && Trailer != null && Trailer.Valid && Truck.Handle != Trailer.Handle && VehicleHandle != Truck.Handle && VehicleHandle != Trailer.Handle && (!Arrived || VehicleHandle > 0);
     }
     public static class PdmRepoTransactions
     {

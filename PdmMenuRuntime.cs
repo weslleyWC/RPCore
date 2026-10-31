@@ -72,7 +72,7 @@ namespace RPCore
         {var quote=page.Quote??(page.Quote=new PdmCommandQuote(Wallet.Pdm,Wallet.Bank,Profile.Id,Game.GameTime));Add(title,text,()=>Confirm(title,text,action,null,quote),enabled);}
         public void Stream(IEnumerable<string> names,Action action,Action back,Func<bool> terrainReady=null)
         {
-            var list=new List<Model>();var labels=new List<string>();foreach(var name in names){var model=new Model(name);if(!model.IsValid || !model.IsInCdImage){Problem("Modelo indisponivel","Recurso "+name+" nao esta instalado/disponivel. Pedidos existentes preservados; nenhuma operacao nova iniciada.",null,back);return;}if(!list.Exists(m=>m.Hash==model.Hash)){list.Add(model);labels.Add(name);}}
+            var list=new List<Model>();var labels=new List<string>();foreach(var name in names){var model=PdmVehicleModel.Resolve(name);if(!model.IsValid || !model.IsInCdImage){Problem("Modelo indisponivel","Recurso "+name+" nao esta instalado/disponivel. Pedidos existentes preservados; nenhuma operacao nova iniciada.",null,back);return;}if(!list.Exists(m=>m.Hash==model.Hash)){list.Add(model);labels.Add(name);}}
             loadingNames=string.Join(", ",labels);models=list.ToArray();loadingTerrain=terrainReady;loading=action;loadingBack=back;loadingProfile=Profile.Id;var ped=Game.Player.Character;loadingActor=ped.Handle;loadingModel=ped.Model.Hash;loadingAddress=ped.MemoryAddress.ToInt64();loadingOrigin=ped.Position;loadingAt=Game.GameTime;
             Begin("preparing",CancelLoading,false);menu.Name="Preparando recursos PDM";
             Add("Cancelar","Verificando modelos e colisao/chao do local: "+loadingNames+". Pedidos ja pagos continuam salvos. Nenhum contrato ou pagamento novo foi iniciado.",CancelLoading);Show();

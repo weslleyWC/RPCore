@@ -10,12 +10,15 @@ using LemonUI;
 using LemonUI.Menus;
 namespace RPCore
 {
-    public sealed class PdmShowroomSystem : ISystem, IWorkContract
+    public sealed partial class PdmShowroomSystem : ISystem, IWorkContract
     {
         readonly PdmMenuView ui;
         public Func<bool> SyncAccounts;
         sealed class Display { public string StockId, Model, Plate; public Vehicle Car; }
         public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Slots.Where(s=>s.Enabled).Select(s=>PdmLocation.At("showroom:"+s.Id,"Showroom",s.Name,s.Interior?"Vaga interna: precisa de interior/chao carregados; exposicao iniciada no menu.":"Vaga externa: expor um carro pago do estoque no menu.",s.Point));
+        public IEnumerable<KeyValuePair<PdmStock,Vehicle>> DisplayedVehicles=>displays.Values.Where(Matches).Select(d=>new KeyValuePair<PdmStock,Vehicle>(Wallet.Pdm.Stock.Find(s=>s.Id==d.StockId),d.Car)).Where(p=>p.Key!=null);
+        public bool IsExterior(string stockId){var entry=Wallet.Pdm.Showroom.Find(e=>e.StockId==stockId);return entry!=null && options.Slots.Any(s=>s.Id==entry.SlotId && !s.Interior);}
+        public bool CustomerNearby=>Active && buyer!=null && PdmAssets.Valid(buyer) && !buyer.IsDead && Game.Player.Character.Position.DistanceTo(buyer.Position)<3;
         public string Name => "pdmshowroom";
         public string Label => "PDM / showroom e atendimento";
         public bool Active => run != null;
@@ -26,7 +29,7 @@ namespace RPCore
         const string Anim = "mp_common";
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
         static bool Exists(Vehicle v) => v != null && PdmAssets.Valid(v);
-        static bool Matches(Display d) => d != null && Exists(d.Car) && d.Car.Model.Hash == new Model(d.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, d.Car)?.Trim(), d.Plate, StringComparison.OrdinalIgnoreCase);
+        static bool Matches(Display d) => d != null && Exists(d.Car) && d.Car.Model.Hash == PdmVehicleModel.Resolve(d.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, d.Car)?.Trim(), d.Plate, StringComparison.OrdinalIgnoreCase);
         static bool Empty(Display d) => !Matches(d) || d.Car.Occupants.Length == 0 && d.Car.Speed < .5f;
         bool InputAllowed => PdmMenuRuntime.Allowed && !pool.AreAnyVisible;
         bool Foot => Game.Player.Character.IsHuman && !Game.Player.Character.IsDead && !Game.Player.Character.IsInVehicle() && !Game.Player.Character.IsSwimming && !Game.Player.Character.IsRagdoll && !Game.Player.Character.IsInCombat;
@@ -58,8 +61,8 @@ namespace RPCore
             ui.HideAll(); ui.Begin(Name+":"+slotId,OpenMenu,true,()=>OpenSlot(slotId)); var slot = options.Slots.Find(s => s.Id == slotId); var entry = Wallet.Pdm.Showroom.Find(e => e.SlotId == slotId); menu.Name = slot.Name;
             if (entry != null)
             {
-                var id = entry.StockId; var stock = Wallet.Pdm.Stock.Find(s => s.Id == id);
-                ui.AddConfirm("Atender comprador / $" + PdmStaffTransactions.Quote(Wallet.Pdm, stock, stock.Engine, stock.Body), "Cliente aguarda no escritorio externo. E passa as chaves; venda usa o proprio carro exposto. Preco fixado ao iniciar atendimento.", () => ui.Stream(new[]{PdmStreaming.BuyerModel(id)},()=>BeginSale(id),()=>OpenSlot(slotId)));
+                var id = entry.StockId;Add("Ajustar posicao do carro","Mover/girar somente o temporario exposto; testa colisao e conserva ajuste ao recarregar.",()=>OpenPlacement(id)); var stock = Wallet.Pdm.Stock.Find(s => s.Id == id);
+                ui.AddConfirm("Atender comprador / $" + PdmStaffTransactions.Quote(Wallet.Pdm, stock, stock.Engine, stock.Body), "Cliente aguarda no escritorio externo. "+Cfg.PdmInteractionKey+" passa as chaves; venda usa o proprio carro exposto. Preco fixado ao iniciar atendimento.", () => ui.Stream(new[]{PdmStreaming.BuyerModel(id)},()=>BeginSale(id),()=>OpenSlot(slotId)));
                 ui.AddConfirm("Recolher " + stock.Name, "Mantem bem no estoque. Veiculo ocupado/andando precisa ficar livre/parado.", () => { if (office()) Prepare(id); OpenSlot(slotId); });
             }
             else foreach (var s in Wallet.Pdm.Stock.Where(s => !s.AwaitingCollection && s.Engine >= 300 && s.Body >= 300 && !Wallet.Pdm.Showroom.Any(e => e.StockId == s.Id)))
@@ -76,14 +79,15 @@ namespace RPCore
         }
         Display Spawn(PdmStock stock, PdmShowroomSlot slot,bool background=false)
         {
-            if (!slot.Enabled) return null; var model = new Model(stock.Model);
+            if (!slot.Enabled) return null; var model = PdmVehicleModel.Resolve(stock.Model);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !model.IsCar || !PdmStreaming.Ready(model)) return null;
                 if(background && !PdmStreaming.ClaimSpawn())return null;
-                var point = RigSpawn.FindDisplayVehicle(slot.Point, model, slot.Interior); if (point == null) return null;
+                var saved=Wallet.Pdm.Showroom.Find(e=>e.StockId==stock.Id);var anchor=saved==null?slot.Point:PdmShowroomPlacement.Point(slot.Point,saved);
+                var point = RigSpawn.FindDisplayVehicle(anchor, model, slot.Interior,saved?.OffsetZ??0); if (point == null) return null;
                 var v = PdmAssets.Track(World.CreateVehicle(model, Pos(point), point.Heading)); if (!Exists(v)) return null;
-                v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false; v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body;
+                PdmStockPresentation.Apply(v,stock);v.IsPersistent = true; v.IsStolen = false; v.NeedsToBeHotwired = false; v.EngineHealth = stock.Engine; v.BodyHealth = stock.Body;
                 Function.Call(Hash.SET_VEHICLE_NUMBER_PLATE_TEXT, v, stock.Plate); v.DirtLevel = stock.Dirt; v.IsPositionFrozen = true; v.IsInvincible = true; Function.Call(Hash.SET_VEHICLE_DOORS_LOCKED, v, 2); JobVehicles.Reserve(v);
                 return new Display { StockId = stock.Id, Model = stock.Model, Plate = stock.Plate, Car = v };
             }
@@ -134,6 +138,7 @@ namespace RPCore
         void SyncWorld()
         {
             if (!GameplayContext.BackgroundReady || !PdmMenuRuntime.WorldAllowed || !Wallet.Pdm.Valid || Wallet.Pdm.ShowroomSale != null && !Active) return;
+            foreach(var orphan in displays.Where(p=>!Wallet.Pdm.Showroom.Any(e=>e.StockId==p.Key)).ToList()){if(Delete(orphan.Value))displays.Remove(orphan.Key);}
             bool near = Game.Player.Character.Position.DistanceTo(StartPosition) < 180;
             foreach (var entry in Wallet.Pdm.Showroom.ToList())
             {
@@ -150,6 +155,7 @@ namespace RPCore
         }
         void BeginSale(string stockId)
         {
+            if(!PdmEnterpriseRules.View(Wallet.Pdm).Open){Notify.Show("Loja fechada para atendimento. Abra a PDM no painel empresarial.");return;}
             if (!office() || Active || !PdmShowroomTransactions.Idle(Wallet.Pdm)) return;
             var d = Find(stockId); if (!Matches(d) || !Empty(d)) { Notify.Show("Carro exposto indisponivel/ocupado; aguarde a vaga carregar e libere o veiculo."); return; }
             if (!gate.Acquire(Name)) { Notify.Show("Encerre a atividade de " + gate.Owner + "."); return; }
@@ -180,8 +186,8 @@ namespace RPCore
             { cancelReason = "Atendimento interrompido"; Cancel(); return; }
             var negotiation=Wallet.Pdm.ShowroomSale?.Negotiation;
             if(negotiation!=null && !negotiation.Accepted){InspectAndOffer(negotiation);return;}
-            Status("preco combinado / a pe e desarmado / E passa as chaves");
-            if (run.Stage == PdmShowroomStage.Waiting) { if (Eligible) { Prompt.Help("~INPUT_CONTEXT~: fechar venda do showroom / passar chaves"); if (Game.IsControlJustPressed(GTA.Control.Context)) { run.Handover(Game.GameTime, true); Function.Call(Hash.REQUEST_ANIM_DICT, Anim); requested = true; } } return; }
+            Status("preco combinado / a pe e desarmado / "+Cfg.PdmInteractionKey+" passa as chaves");
+            if (run.Stage == PdmShowroomStage.Waiting) { if (Eligible) { Prompt.Help(PdmCustomerInput.Button+": fechar venda do showroom / passar chaves"); if (PdmCustomerInput.Pressed) { run.Handover(Game.GameTime, true); Function.Call(Hash.REQUEST_ANIM_DICT, Anim); requested = true; } } return; }
             if (!Eligible) { StopPose(); run.Commit(Game.GameTime, false, () => false); return; }
             if (!pose && Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, Anim)) { animPlayer = PdmAssets.Track(Game.Player.Character); Play(animPlayer, "givetake1_b"); Play(buyer, "givetake1_a"); pose = true; }
             if (unchecked(Game.GameTime - retryAt) < 0) return;
@@ -208,9 +214,9 @@ namespace RPCore
                 if(inspection.Update(Game.GameTime,eligible) && unchecked(Game.GameTime-retryAt)>=0 && !Wallet.PdmShowroomInspect(run.Id,out _))retryAt=Game.GameTime+5000;
                 return;
             }
-            Status("oferta $"+offer.Offer+" / aproxime-se do comprador e E negocia");
+            Status("oferta $"+offer.Offer+" / aproxime-se do comprador e "+Cfg.PdmInteractionKey+" negocia");
             if(InputAllowed && Foot && Game.Player.Character.Weapons.Current.Hash==WeaponHash.Unarmed && Game.Player.Character.Position.DistanceTo(buyer.Position)<3){
-                Prompt.Help("~INPUT_CONTEXT~: conversar sobre a oferta do comprador");if(Game.IsControlJustPressed(GTA.Control.Context))OpenNegotiation(run.Id);
+                Prompt.Help(PdmCustomerInput.Button+": conversar sobre a oferta do comprador");if(PdmCustomerInput.Pressed)OpenNegotiation(run.Id);
             }
         }
         bool CanNegotiate(string id)=>Active && run.Id==id && Wallet.Pdm.ShowroomSale?.Id==id && PdmMenuRuntime.Allowed && Foot && profile==Profile.Id && PdmAssets.Valid(buyer) && !buyer.IsDead && !buyer.IsInCombat && Matches(saleCar) && Empty(saleCar) && Game.Player.Character.Position.DistanceTo(buyer.Position)<3;
@@ -236,7 +242,7 @@ namespace RPCore
         }
         void Agreement()
         {
-            Notify.Show("Preco combinado: $"+Wallet.Pdm.ShowroomSale.Price+". Aguarde o cliente na entrada e E passa as chaves.");
+            Notify.Show("Preco combinado: $"+Wallet.Pdm.ShowroomSale.Price+". Aguarde o cliente na entrada e "+Cfg.PdmInteractionKey+" passa as chaves.");
             inspectionPose=false;buyer.Task.ClearAll();JobActors.Walk(buyer,StartPosition);ui.Close();
         }
         void Depart()
@@ -278,7 +284,7 @@ namespace RPCore
                     var p=d.Car.Position+new Vector3(0,0,1.1f);
                     if(!Function.Call<bool>(Hash.GET_SCREEN_COORD_FROM_WORLD_COORD,p.X,p.Y,p.Z,x,y))continue;
                     int price=Wallet.Pdm.ShowroomSale?.StockId==stock.Id?Wallet.Pdm.ShowroomSale.Price:PdmStaffTransactions.Quote(Wallet.Pdm,stock,stock.Engine,stock.Body);
-                    Visuals.Text(stock.Name+" / $"+price,x.GetResult<float>()*Visuals.Width-80,y.GetResult<float>()*1080,.23f,Color.White);
+                    Visuals.Text(stock.Name+" / $"+price+" / "+stock.Mileage+" mi",x.GetResult<float>()*Visuals.Width-80,y.GetResult<float>()*1080,.23f,Color.White);
                 }
             }
         }

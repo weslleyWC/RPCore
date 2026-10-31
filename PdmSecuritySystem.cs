@@ -18,6 +18,8 @@ namespace RPCore
             public bool Paid, Returning; public int EngagedAt, Cooldown, NextWalk;
         }
         public System.Collections.Generic.IEnumerable<PdmLocation> Locations=>options.Posts.Select(p=>PdmLocation.At("guard:"+p.Offer.Id,"Equipe e seguranca",p.Offer.Name,"Posto do guarda; contratar/pagar em Equipe. Marcar GPS nao contrata funcionario.",p.Point));
+        public Action<string> OpenRole;
+        public IEnumerable<KeyValuePair<string,Ped>> RolePeds=>guards.Select(g=>new KeyValuePair<string,Ped>(g.Key,g.Value.Ped));
         public string Name => "pdmsecurity";
         readonly ObjectPool pool; readonly NativeMenu menu; readonly PdmSecurityOptions options; readonly Vector3 office;
         readonly Func<IEnumerable<Ped>> crew; readonly Action syncPayroll, staffMenu, back;
@@ -42,7 +44,8 @@ namespace RPCore
             {
                 var row = post; var employee = Wallet.Pdm.Staff.Employees.Find(e => e.Role == row.Offer.Id); Guard guard; guards.TryGetValue(row.Offer.Id, out guard);
                 string state = employee == null ? "nao contratado" : !PdmSecurityPolicy.Paid(Wallet.Pdm, row.Offer.Id) ? "suspenso / salario ou acerto pendente" : guard == null ? "aguardando chegada perto da PDM" : guard.Target != null ? "defesa local" : "no posto / retornando";
-                Add(row.Offer.Name + " / " + state, "GPS do posto. Salario devido: $" + (employee?.Owed ?? 0) + ". Defesa apenas contra NPCs atacando voce/equipe na area local.", () => ui.Waypoint(new Vector3(row.Point.X,row.Point.Y,row.Point.Z),row.Offer.Name));
+                Add(row.Offer.Name + " / " + state, "Abrir contratacao/gestao deste guarda. Salario devido: $" + (employee?.Owed ?? 0) + ". Defesa local; pagamento pelo caixa empresarial.", () => {if(OpenRole!=null)OpenRole(row.Offer.Id);else staffMenu();});
+                Add("GPS: "+row.Offer.Name,"Somente marcar o posto; nao contrata funcionario.",()=>ui.Waypoint(new Vector3(row.Point.X,row.Point.Y,row.Point.Z),row.Offer.Name));
             }
             Add("Contratar / pagar / demitir", "Equipe e salarios da empresa; nao usa banco pessoal automaticamente.", staffMenu);
             ui.AddConfirm("Retornar guardas aos postos", "Interrompe a defesa e ordena retorno a pe, sem teleporte. Aguarda 10s antes de nova resposta.", () => { foreach (var g in guards.Values) Return(g); menu.Visible = false; });
@@ -59,7 +62,7 @@ namespace RPCore
         void Spawn(PdmGuardPost post, PdmEmployee employee)
         {
             int now = Game.GameTime, due; if (respawn.TryGetValue(post.Offer.Id, out due) && unchecked(now - due) < 0) return;
-            var model = new Model(post.Model); Ped ped = null; Blip blip = null;
+            var model = PdmVehicleModel.Resolve(post.Model); Ped ped = null; Blip blip = null;
             try
             {
                 if (!model.IsValid || !model.IsPed || !model.IsInCdImage || !PdmStreaming.Ready(model)) return;

@@ -12,6 +12,7 @@ namespace RPCore
         readonly PdmMenuView ui;
         public PdmPremisesOptions Premises { get; }
         public PdmSecurityOptions Security { get; }
+        public PdmEnterpriseOptions Enterprise {get;}
         public Action OpenServices, OpenSecurity;
         public bool Synced=>pending<1000;
         public string Name => "pdmstaff";
@@ -29,7 +30,10 @@ namespace RPCore
             var securityDefaults = PdmSecurityDefaults.Load(); Security = Store.LoadDef("Jobs/PdmSecurity.json", () => securityDefaults);
             if (Security == null || !Security.Valid) { Log.Write("Invalid PdmSecurity.json; embedded defaults used, original retained."); Security = securityDefaults; }
             options = PdmSecurityDefaults.Merge(options, Security);
-            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PdmMenuView(pool,menu,ex=>{ui.Close();Log.Error(Name+" menu dispatch",ex);Notify.Show("Menu PDM interrompido; dados preservados. Tente abrir novamente.");}); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
+            var enterpriseDefault=PdmEnterpriseDefaults.Load();Enterprise=Store.LoadDef("Jobs/PdmEnterprise.json",()=>enterpriseDefault);
+            if(Enterprise?.Valid!=true){Log.Write("Invalid PdmEnterprise.json; original preserved; embedded defaults used.");Enterprise=enterpriseDefault;}
+            options=PdmEnterpriseDefaults.Merge(options,Enterprise);
+            menu = new NativeMenu("PDM / equipe", "SALARIOS / OFICINA / DIVULGACAO"); ui=new PdmMenuView(pool,menu,ex=>ui.Problem("Falha na equipe","Confira folha e funcionarios antes de repetir a operacao.",ex,OpenMenu)); ui.DefaultRefresh=OpenMenu; pool.Add(menu); Visuals.Register(menu, "pdm"); Reload();
         }
         void Sample()
         {
@@ -52,7 +56,7 @@ namespace RPCore
         }
         void Add(string title, string text, Action action)
         {
-            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Close(); Log.Error("pdm staff action", ex); Notify.Show("Operacao de equipe nao confirmada. Dados preservados."); } });
+            ui.Add(title, text, () => { try { action(); } catch (Exception ex) { ui.Problem("Falha na equipe","Confira folha e funcionarios antes de repetir a operacao.",ex,OpenMenu); } });
         }
         void Change(Func<bool> mutation)
         {
@@ -76,11 +80,13 @@ namespace RPCore
                 Add(role.Name+" / "+(employee==null?"nao contratado":employee.Owed>0?"salario pendente $"+employee.Owed:"em dia"),"Salario $"+role.Wage+" por "+options.PeriodSeconds+"s ativos. Selecione para consultar, contratar ou gerir.",()=>Role(role.Id));}
             long debt=PdmBusinessRules.Wages(d);
             ui.AddConfirm("Quitar folha e acertos / $"+debt,"Paga todos os salarios vencidos e ex-funcionarios em uma unica operacao do caixa empresarial.",()=>Change(()=>Wallet.PdmPayAll(Guid.NewGuid().ToString("N"),out _,debt)),debt>0 && debt<=d.Cash);
+            ui.AddConfirm("Demitir toda a equipe","Encerra todos os cargos juntos; salarios, proporcionais e rescisao ficam como acerto a pagar, sem perdao de divida.",()=>Change(()=>PdmStaffTransactions.FireAll(Wallet.EnterpriseWallet(),Guid.NewGuid().ToString("N"),Wallet.Save,out _)),d.Staff.Employees.Count>0);
             Add("Melhorias / oficina e divulgacao","Custos e efeitos, sem cobranca repetida de melhoria adquirida.",Upgrades);
             if(OpenSecurity!=null)Add("Segurancas / postos","Efetivo e defesa local.",OpenSecurity);
             if(OpenServices!=null)Add("Mecanico / zeladoria","Atendimento presencial no showroom.",OpenServices);
             Add("Voltar","Gestao da empresa.",back);ui.Show();
         }
+        public void OpenRole(string roleId)=>Role(roleId);
         void Role(string roleId)
         {
             Flush();var role=options.Roles.Find(r=>r.Id==roleId);if(role==null){OpenMenu();return;}
@@ -89,7 +95,18 @@ namespace RPCore
             if(e==null){
                 ui.Add("Salario $"+role.Wage+" / "+options.PeriodSeconds+"s ativos","Sem cobranca offline. Atraso suspende beneficios; salarios sao pagos pelo caixa.",()=>{},false);
                 string required=role.Requires==null?"Sem cargo previo.":"Requer "+options.Roles.Find(r=>r.Id==role.Requires)?.Name+" contratado e em dia.";
-                ui.AddConfirm("Contratar / $"+role.HiringCost,required+" Bonus de venda "+role.SaleBonusPercent+"%. Contratacao nao paga salarios futuros.",()=>Change(()=>Wallet.PdmHire(options,roleId,Guid.NewGuid().ToString("N"),out _)),d.Cash>=role.HiringCost);
+                string refusal=PdmStaffTransactions.HireReason(d,options,roleId);
+                Add("Contratar / $"+role.HiringCost,refusal??(required+" Debita caixa empresarial. Contratacao nao paga salarios futuros."),()=>{
+                    Flush();if(!office())return;
+                    string reason=PdmStaffTransactions.HireReason(Wallet.Pdm,options,roleId);
+                    if(reason!=null){ui.Problem("Contratacao recusada",reason,null,()=>Role(roleId));return;}
+                    ui.Confirm("Contratar "+role.Name,"Custo $"+role.HiringCost+" pelo caixa; salario $"+role.Wage+" por "+options.PeriodSeconds+"s ativos. "+required,()=>{
+                        Flush();if(!office())return;var problem=PdmStaffTransactions.HireReason(Wallet.Pdm,options,roleId);
+                        if(problem!=null){ui.Problem("Contratacao recusada",problem,null,()=>Role(roleId));return;}
+                        if(!Wallet.PdmHire(options,roleId,Guid.NewGuid().ToString("N"),out bool changed)){ui.Problem("Contratacao recusada","Confira caixa, folha e cargo novamente; nenhum funcionario novo confirmado.",null,()=>Role(roleId));return;}
+                        if(changed)Notify.Show("Contratado: "+role.Name+". O funcionario chega ao posto quando a area estiver carregada.");Role(roleId);
+                    },()=>Role(roleId));
+                });
             }else{
                 string id=e.Id;int due=e.Owed;
                 ui.Add("Salario devido: $"+due,"Proximo vencimento em "+(e.PeriodSeconds-e.Seconds)+"s ativos. Divida de ex-funcionarios: $"+d.Staff.FormerDebt+".",()=>{},false);

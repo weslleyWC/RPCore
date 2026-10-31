@@ -2,7 +2,7 @@
 
 Diretriz permanente confirmada pelo usuário: revisar tudo que foi implementado, incluindo todos os menus e suas ações; consultar a PSRP.dll antes de cada grupo. Base funcional/teste anterior não significam refinamento concluído.
 
-Estado atual:0.107 revisa os12sistemas PDM juntos por autorização explícita para adiantar seu refinamento funcional. Confirmações, navegação, caixa/folha, estoque/inspeção/negociação, contratos, câmera e recursos/entidades foram revistos. GTA pendente; não se infere teste aprovado da0.106.1. Outros trabalhos permanecem no grupo de refinamento correspondente; não se declara paridade integral PSRP.
+Estado atual: 0.108.0 amplia o conjunto PDM com os módulos de fornecedor/coletor, frota de seis, vendedor, campanhas/reputação, manutenção/tuning, lixo/capas e variantes de retomada. Matriz estática: [PDM](PDM-EMPRESA-0.108.0.md). 4340 testes aprovados; GTA pendente. Histórico: 0.107 revisa os12sistemas PDM juntos por autorização explícita para adiantar seu refinamento funcional. Confirmações, navegação, caixa/folha, estoque/inspeção/negociação, contratos, câmera e recursos/entidades foram revistos. GTA pendente; não se infere teste aprovado da0.106.1. Outros trabalhos permanecem no grupo de refinamento correspondente; não se declara paridade integral PSRP.
 
 Este inventário lista os sistemas registrados pelo código e impede tratar só os menus principais como escopo completo. Cada revisão inclui entrada/navegação/saída, ações reais, input/modais, apresentação, persistência, interrupção, recursos instalados e regressão. Tipos de dados/helpers não são declarados sistemas entregues por nome.
 
@@ -35,6 +35,7 @@ Este inventário lista os sistemas registrados pelo código e impede tratar só 
 | MapEditorSystem | [MapEditorSystem.cs](../MapEditorSystem.cs) | Pendente de revisão completa; preservar base existente |
 | NeedsSystem | [NeedsSystem.cs](../NeedsSystem.cs) | Revisão0.90–0.93 e correção do sono; continuar validação integrada |
 | PassengerSystem | [PassengerSystem.cs](../PassengerSystem.cs) | Menus/indicadores na fase8; ciclo completo, variantes e realismo na fase9 |
+| PdmEnterpriseSystem | [PdmEnterpriseSystem.cs](../PdmEnterpriseSystem.cs) | Grupo 0.108.0 integrado à empresa, guia/matriz de referência; teste nativo pendente. |
 | PdmCompany | [PdmCompany.cs](../PdmCompany.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
 | PdmFinanceSystem | [PdmFinanceSystem.cs](../PdmFinanceSystem.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |
 | PdmLogistics | [PdmLogistics.cs](../PdmLogistics.cs) | Grupo0.107: revisão integrada da empresa, menus/ações/contexto/persistência/recuperação e recursos físicos; guia PDM-EMPRESA-0.107.0.md. Native GTA pendente; diferenças PSRP registradas. |

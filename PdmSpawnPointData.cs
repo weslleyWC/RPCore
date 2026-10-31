@@ -11,9 +11,9 @@ namespace RPCore
             if(!p.Valid)throw new ArgumentException("Invalid PDM tractor anchor.");
             return p;
         }
-        public static JobPoint Cargo(JobPoint dock,int index)
+        public static JobPoint Cargo(JobPoint dock,int index,int capacity=2)
         {
-            if(dock==null || !dock.Valid || index<0 || index>1)throw new ArgumentException("Invalid PDM cargo anchor.");
+            if(dock==null || !dock.Valid || index<0 || index>=capacity || capacity!=2 && capacity!=6)throw new ArgumentException("Invalid PDM cargo anchor.");
             var p=new JobPoint{Name="PDM / encomenda "+(index+1),X=dock.X,Y=dock.Y+index*8,Z=dock.Z,Heading=dock.Heading};
             if(!p.Valid)throw new ArgumentException("Invalid PDM cargo anchor.");
             return p;

@@ -25,8 +25,9 @@ namespace RPCore
     public sealed class PdmShowroomEntry : ExtensibleData
     {
         public string SlotId, StockId;
+        public float OffsetX,OffsetY,OffsetZ,OffsetHeading;
         public int Handle;
-        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(SlotId) && SlotId.Length <= 40 && !string.IsNullOrWhiteSpace(StockId) && Handle >= 0;
+        [JsonIgnore] public bool Valid => !string.IsNullOrWhiteSpace(SlotId) && SlotId.Length <= 40 && !string.IsNullOrWhiteSpace(StockId) && Handle >= 0 && PdmShowroomPlacement.Valid(OffsetX,OffsetY,OffsetZ,OffsetHeading);
     }
     public sealed class PdmShowroomSale : ExtensibleData
     {

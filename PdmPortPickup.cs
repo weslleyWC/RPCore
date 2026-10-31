@@ -33,7 +33,7 @@ namespace RPCore
             var plan=PickupPlan(ids);
             if(!plan.Allowed){ui.Problem("Retirada nao iniciada",plan.Reason,null,OpenMenu);return;}
             if(!PersonalServiceMenu.SafeFoot){ui.Problem("Retirada nao iniciada","Fique a pe, sem procurado, combate ou outra atividade, junto ao marcador.",null,OpenMenu);return;}
-            var models=new[]{options.TruckModel,options.TrailerModel}.Concat(plan.StockIds.Select(id=>Wallet.Pdm.Stock.Find(s=>s.Id==id).Model));
+            var models=new[]{options.TruckModel,plan.StockIds.Count>2?"tr2":options.TrailerModel}.Concat(plan.StockIds.Select(id=>Wallet.Pdm.Stock.Find(s=>s.Id==id).Model));
             ui.Stream(models,()=>Begin(plan.StockIds.Count,plan.StockIds,plan.AtPort),OpenMenu,()=>plan.AtPort?portWarmup.Ready:GameplayContext.TerrainReady);
         }
     }

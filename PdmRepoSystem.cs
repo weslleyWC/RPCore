@@ -28,6 +28,7 @@ namespace RPCore
         public Vector3 StartPosition { get; }
         readonly ObjectPool pool; readonly ShiftGate gate; readonly PdmOptions company; readonly PdmRepoOptions options; readonly PdmLogisticsOptions rig;
         readonly AchievementSystem achievements; readonly NativeMenu menu; readonly Random random = new Random();
+        Ped debtor;bool debtorReady,debtorStopped,debtorEngaged;int debtorNext,debtorRoute;
         Vehicle truck, trailer, car; Blip route, carBlip, truckBlip, trailerBlip; PdmHaulRun run;
         string profile, cancelReason, focusedLoan; int began, retryAt, cancelSince = -1; bool removed;
         static Vector3 Pos(JobPoint p) => new Vector3(p.X, p.Y, p.Z);
@@ -55,6 +56,7 @@ namespace RPCore
             Add("GPS: escritorio PDM", "Comece a pe no escritorio externo. Precisa de uma vaga livre no estoque.", () => ui.Waypoint(StartPosition,"escritorio PDM"));
             foreach (var l in Wallet.Pdm.Loans.Where(l => l.Defaulted && !l.Settled).OrderBy(l => l.Id == focusedLoan ? 0 : 1))
             { var loan = l; ui.AddConfirm("Retomar " + loan.Asset.Name + " / " + loan.Asset.Plate, "Recebido $" + loan.Paid + " / saldo em atraso $" + loan.Receivable + ". Packer/TRFlat: busque o proprio carro, carregue com E, volte e descarregue. Sem bonus por recuperar patrimonio proprio.", () => ui.Stream(new[]{rig.TruckModel,rig.TrailerModel},()=>Begin(loan.Id),OpenMenu)); }
+            foreach(var l in Wallet.Pdm.Loans.Where(l=>l.Defaulted && !l.Settled)){var loan=l;foreach(int mode in new[]{1,2}){int chosen=mode;ui.AddConfirm((mode==1?"Interceptar em circulacao / ":"Retomada com resistencia / ")+loan.Asset.Name,"Mesmo patrimonio do contrato. Em circulacao: aproxime e use Y para solicitar parada. Resistencia: o devedor pode reagir ao entrar no carro. Retorne com o conjunto, sem premio adicional.",()=>ui.Stream(new[]{rig.TruckModel,rig.TrailerModel},()=>Begin(loan.Id,chosen),OpenMenu));}}
             Add("Recebiveis encerrados: $" + Wallet.Pdm.FinanceWriteOff, "Valor contratual que deixou de ser cobrado apos retomadas; nao e dinheiro pago nem um segundo desconto de caixa.", () => { });
             if (Active) ui.AddConfirm("Encerrar retomada", "Pare e saia dos veiculos. Contrato continua em atraso, com condicao preservada para nova tentativa.", () => { cancelReason = "Cancelada"; menu.Visible = false; });
             if (Wallet.Pdm.Repo != null && !Active) ui.AddConfirm("Recuperar retomada interrompida", "Chegada salva conclui estoque. Antes da chegada, encerra operacao e mantem contrato em atraso. Pare/saia dos veiculos.", () => { Recover(); OpenMenu(); });
@@ -62,7 +64,7 @@ namespace RPCore
         }
         static Vehicle Spawn(JobPoint point, string name, string plate)
         {
-            var model = new Model(name);
+            var model = PdmVehicleModel.Resolve(name);
             try
             {
                 if (!model.IsValid || !model.IsInCdImage || !model.IsVehicle || !PdmStreaming.Ready(model)) return null;
@@ -76,8 +78,8 @@ namespace RPCore
         }
         static PdmEntityRef Ref(Vehicle v, string model) => new PdmEntityRef { Handle = v.Handle, Model = model, Plate = Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v).Trim() };
         static Vehicle Match(int handle, string model, string plate)
-        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == new Model(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
-        void Begin(string loanId)
+        { var v = handle > 0 ? Entity.FromHandle(handle) as Vehicle : null; return Exists(v) && v.Model.Hash == PdmVehicleModel.Resolve(model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), plate, StringComparison.OrdinalIgnoreCase) ? PdmAssets.Track(v) : null; }
+        void Begin(string loanId,int variant=0)
         {
             if (Active || !Wallet.Pdm.Valid || !Wallet.Pdm.Owned || Wallet.Pdm.Active != null || Wallet.Pdm.Collection != null || Wallet.Pdm.SafeTransfer != null || Wallet.Pdm.Repo != null || Wallet.Pdm.Rental != null || Wallet.Pdm.ShowroomSale != null || Wallet.Pdm.PremisesService != null || !Foot || Game.IsMissionActive || Game.Player.Wanted.WantedLevel > 0 || Game.Player.Character.Position.DistanceTo(StartPosition) > 5)
             { Notify.Show("Inicie a pe no escritorio, sem procurado/missao e sem outra operacao PDM pendente."); return; }
@@ -90,9 +92,9 @@ namespace RPCore
                 string id = Guid.NewGuid().ToString("N"); trailer = Spawn(rig.Trailer, rig.TrailerModel, "PRL" + id.Substring(0, 5)); if (!Exists(trailer)) return;
                 var anchor = PdmSpawnPoints.Tractor(trailer.Position.X,trailer.Position.Y,trailer.Position.Z,rig.Trailer.Heading);
                 truck = Spawn(anchor, rig.TruckModel, "PRT" + id.Substring(0, 5)); if (!Exists(truck)) return;
-                var op = new PdmRepoOperation { Id = id, LoanId = loanId, Location = random.Next(options.Locations.Count), Truck = Ref(truck, rig.TruckModel), Trailer = Ref(trailer, rig.TrailerModel) };
+                var op = new PdmRepoOperation { Id = id, LoanId = loanId, Location = random.Next(options.Locations.Count), Variant=variant, Truck = Ref(truck, rig.TruckModel), Trailer = Ref(trailer, rig.TrailerModel) };
                 if (!Wallet.PdmRepoBegin(company, options, op, out _)) return;
-                run = new PdmHaulRun(id, 1, options.UnloadSeconds); profile = Profile.Id; began = retryAt = Game.GameTime; removed = false; cancelReason = null;
+                run = new PdmHaulRun(id, 1, options.UnloadSeconds); profile = Profile.Id; began = retryAt = Game.GameTime; removed = false; cancelReason = null;debtorReady=debtorStopped=debtorEngaged=false;debtorNext=debtorRoute=0;
                 truckBlip = truck.AddBlip(); truckBlip.Name = "RPCore: Packer retomada"; truckBlip.Color = BlipColor.Blue;
                 trailerBlip = trailer.AddBlip(); trailerBlip.Name = "RPCore: TRFlat retomada"; trailerBlip.Color = BlipColor.Blue;
                 Route(trailer.Position, "RPCore: engate a carreta"); ready = true; menu.Visible = false;
@@ -117,9 +119,38 @@ namespace RPCore
             var point = options.Locations[a.Location]; if (Game.Player.Character.Position.DistanceTo(Pos(point)) > 150 || trailer.Position.DistanceTo(Pos(point)) > 150) return;
             retryAt = Game.GameTime + 5000; var loan = Loan; var v = Spawn(point, loan.Asset.Model, loan.Asset.Plate); if (!Exists(v)) { Notify.Show("Vaga do alvo ocupada. Afaste o conjunto; nova tentativa em 5s."); return; }
             bool saved = false;
-            try { v.EngineHealth = loan.Asset.Engine; v.BodyHealth = loan.Asset.Body; v.DirtLevel = loan.Asset.Dirt; if (!Wallet.PdmRepoCar(run.Id, v.Handle, out _)) return; car = v; saved = true; carBlip = car.AddBlip(); carBlip.Name = "RPCore: alvo da retomada"; carBlip.Color = BlipColor.Blue; }
+            try { PdmStockPresentation.Apply(v,loan.Asset);v.EngineHealth = loan.Asset.Engine; v.BodyHealth = loan.Asset.Body; v.DirtLevel = loan.Asset.Dirt; if (!Wallet.PdmRepoCar(run.Id, v.Handle, out _)) return; car = v; saved = true; carBlip = car.AddBlip(); carBlip.Name = "RPCore: alvo da retomada"; carBlip.Color = BlipColor.Blue; }
             finally { if (!saved) { v.Delete(); JobVehicles.Release(v); } }
         }
+        bool DebtorAlive=>debtor!=null && PdmAssets.Valid(debtor) && !debtor.IsDead;
+        void DebtorTick()
+        {
+            var op=Wallet.Pdm.Repo;if(!Exists(car) || op==null || op.Variant==0 || car.IsAttachedTo(trailer))return;
+            if(!debtorReady){
+                if(Game.GameTime<debtorNext)return;debtorNext=Game.GameTime+1000;
+                var p=JobActors.Sidewalk(car.Position+new Vector3(3,0,0));if(p==Vector3.Zero)return;
+                debtor=PdmStreaming.Buyer(p,op.Id);if(!DebtorAlive)return;debtorReady=true;
+                if(op.Variant==1)JobActors.Enter(debtor,car,VehicleSeat.Driver);return;
+            }
+            if(!DebtorAlive)return;
+            if(op.Variant==1 && !debtorStopped){
+                if(car.Driver==debtor && Game.GameTime>=debtorNext){debtorNext=Game.GameTime+10000;Function.Call(Hash.TASK_VEHICLE_DRIVE_WANDER,debtor,car,15f,786603);}
+                if(Game.GameTime>=debtorRoute){debtorRoute=Game.GameTime+2000;Route(car.Position,"RPCore: retomada em circulacao");}
+                if(Game.Player.Character.Position.DistanceTo(car.Position)<35){Prompt.Help("Retomada: "+PdmCustomerInput.Button+" para solicitar parada do proprio devedor.");if(PdmCustomerInput.Pressed)debtorStopped=true;}
+            }
+            if(op.Variant==1 && debtorStopped)StopDebtor();
+            if(op.Variant==2 && !debtorEngaged && Game.Player.Character.IsInVehicle(car)){
+                debtorEngaged=true;debtor.Task.Combat(Game.Player.Character);Notify.Show("O devedor reagiu a retomada. Proteja-se e preserve o veiculo do contrato.");
+            }
+        }
+        void StopDebtor()
+        {
+            if(!DebtorAlive || !Exists(car) || !debtor.IsInVehicle(car) || car.Driver!=debtor)return;
+            debtorStopped=true;
+            if(car.Speed>.5f)Function.Call(Hash.TASK_VEHICLE_TEMP_ACTION,debtor,car,27,1000);
+            else if(Game.GameTime>=debtorNext){debtorNext=Game.GameTime+3000;Function.Call(Hash.TASK_LEAVE_VEHICLE,debtor,car,0);}
+        }
+        void ReleaseDebtor(){if(debtor!=null && PdmAssets.Valid(debtor))JobActors.Retire(debtor);debtor=null;debtorReady=false;}
         bool UnloadReady => InputAllowed && Coupled && !Foreign && Exists(car) && car.Occupants.Length == 0 && car.IsAttachedTo(trailer) && truck.Speed < .5f && trailer.Speed < .5f && trailer.Position.DistanceTo(Pos(options.Return)) < 24 && Game.Player.Character.Position.DistanceTo(trailer.Position) < 30;
         public void Tick()
         {
@@ -137,7 +168,7 @@ namespace RPCore
                 if (run.Stage == PdmHaulStage.Coupling) { run.Coupled(true); Route(Pos(options.Locations[Wallet.Pdm.Repo.Location]), "RPCore: ultimo local do carro"); }
                 if (run.Stage == PdmHaulStage.Loading)
                 {
-                    SpawnCar(); Status("busque o carro azul / aproxime-o da traseira da carreta / saia e E carrega");
+                    SpawnCar(); DebtorTick(); Status("busque o carro azul / aproxime-o da traseira da carreta / saia e E carrega");
                     if (Exists(car) && Foot && Empty(car) && truck.Speed < .5f && trailer.Speed < .5f && car.Position.DistanceTo(trailer.RearPosition) < 12 && Game.Player.Character.Position.DistanceTo(car.Position) < 5)
                     {
                         Prompt.Help("~INPUT_CONTEXT~: carregar alvo / guincho assistido"); var slot = rig.Slots[0];
@@ -178,6 +209,7 @@ namespace RPCore
         }
         void Cancel()
         {
+            StopDebtor();
             Status("cancelamento: pare e saia do conjunto e do carro alvo");
             if (!Empty(truck) || !Empty(trailer) || !Empty(car) || Foreign || unchecked(Game.GameTime - retryAt) < 0) return;
             if (!Remember() || !DeleteCar() || !Wallet.PdmRepoCancel(run.Id, out _)) { retryAt = Game.GameTime + 5000; return; }
@@ -202,6 +234,7 @@ namespace RPCore
         void Bump(int profit) { try { achievements.Bump("pdm_repossessions"); if (profit > 0) achievements.Bump("cash_earned", profit); achievements.Save(); } catch (Exception ex) { Log.Error("pdm repossession achievement after checkpoint", ex); } }
         void EndSession(bool retireRig = true)
         {
+            ReleaseDebtor();
             if (retireRig) JobVehicles.RetireRig(truck, trailer); truck = trailer = car = null;
             try { foreach (var b in new[] { route, carBlip, truckBlip, trailerBlip }) if (b != null && b.Exists()) b.Delete(); }
             finally { route = carBlip = truckBlip = trailerBlip = null; run = null; cancelReason = null; gate.Release(Name); menu.Visible = false; }

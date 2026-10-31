@@ -1,3 +1,9 @@
+## Atualização 0.108.0 — conjunto PDM e F11 $1 milhão
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.108.0.zip) · [Recursos, controles e teste GTA](docs/PDM-EMPRESA-0.108.0.md)
+
+Fornecedor/carrinho, coletor com entrega, frota de seis carros, vendedor particular, campanhas, manutenção/tuning, lixo/capas, pedidos e variantes de retomada integrados à empresa. Segurança abre contratação e chaves usam Y. F11 → Cheats adiciona $1.000.000 por acionamento. 4340 testes; comportamento nativo ainda precisa de teste no GTA. Saves/configuração anteriores preservados.
+
 ## Atualização0.107.5 — Invalid rig anchor na PDM
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.107.5.zip) · [Causa confirmada e testes GTA](docs/PDM-ANCHORS-0.107.5.md)

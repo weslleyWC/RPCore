@@ -127,7 +127,7 @@ namespace RPCore
             Add(cheats, "Teleportar para o waypoint", "Marque o destino no mapa. A pe ou como motorista em terra, parado. Selecione novamente para cancelar.", () => { pool.HideAll(); teleport.Begin(); });
             Add(cheats, "Recuperar saude", "Altera a saude somente quando solicitado, fora de missao.", () => Cheat(() => Game.Player.Character.Health = Game.Player.Character.MaxHealth));
             Add(cheats, "Colete 100", "Entrega colete quando solicitado, fora de missao.", () => Cheat(() => Game.Player.Character.Armor = 100));
-            Add(cheats, "Adicionar $1000", "Altera a carteira RPCore/nativa do perfil ativo.", () => Cheat(() => { if (Wallet.Cash <= int.MaxValue - 1000) { Wallet.Credit(1000); Wallet.Save(); } }));
+            Add(cheats, "Adicionar $1.000.000", "Credita um milhao na carteira RPCore/nativa do perfil ativo para testes.", () => Cheat(() => { if (Wallet.Cash <= int.MaxValue - 1000000) { Wallet.Credit(1000000); Wallet.Save(); } }));
             var builder = Menu("Map Builder"); Link(root, builder);
             if(editor!=null) Add(builder,"Map Builder / objetos e locais","Criar/editar/salvar/carregar/importar/exportar mapas por perfil.",()=>{pool.HideAll();editor();});
             Add(builder, "Salvar marcador aqui", "Marcador pessoal simples. Objetos e locais estao no editor acima.", SavePin);

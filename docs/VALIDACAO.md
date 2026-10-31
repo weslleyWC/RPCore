@@ -1,9 +1,7 @@
-# Validação0.107.5
+# Validação 0.108.0
 
-4282 testes aprovados, zero falhas/ignorados.13 novos testes reproduzem Invalid rig anchor no consumidor real e validam pontos corrigidos na busca de35vagas/SpawnBox, geometria e rejeição de dados inválidos. Release net48 sem erros/avisos; GTA não executado.
+4340 testes aprovados, zero falhas/ignorados; 58 novos casos. Release net48 sem erros/avisos. Comparação funcional estática com PSRP/PDMCompany.cs, matriz por família e hashes. GTA não executado; controles, NPCs, engate, interiores, animações e efeitos precisam de teste local.
 
-504 arquivos fonte/config fora da alteração idênticos à0.107.4. Carteira/transações/dados PDM, JobPoint.Valid, busca RigSpawn, personagens, Main.SwitchCharacter e demais sistemas preservados. Escopo: PDM-ANCHOR-SCOPE-0.107.5.json.
+478 arquivos de fonte/configuração fora da mudança idênticos à 0.107.5. CharacterSystem e corpo de Main.SwitchCharacter preservados; estado financeiro, inventário e configuração anteriores mantidos. PDM-SCOPE-0.108.0.json e PDM-EMPRESA-0.108.0.md descrevem escopo e diferenças.
 
-Instalador executado duas vezes sobre0.107.4 em GTA simulado: 276 arquivos existentes preservados byte a byte, incluindo saves, pedidos pendentes, configurações, backups e arquivo de outro mod. DLL nova conferida e DLL anterior em backup. Não é teste de gameplay. Relatório: installer-validation-0.107.5.json.
-
-Causa e roteiro: PDM-ANCHORS-0.107.5.md. Log privado resumido sem publicar conteúdo integral: PDM-LOG-ANALYSIS-0.107.5.json.
+Instalador executado duas vezes sobre 0.107.5: 289 arquivos existentes idênticos byte a byte, incluindo estados novos opcionais e configuração personalizada. Backup da DLL anterior, DLL nova correspondente ao build e outro arquivo de mod preservado. Simulação PowerShell/Linux; GTA não executado.

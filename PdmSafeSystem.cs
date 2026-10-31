@@ -67,7 +67,7 @@ namespace RPCore
         static bool Marked(Entity e, int token) => Exists(e) && Function.Call<bool>(Hash.DECOR_EXIST_ON, e, Decor) && Function.Call<int>(Hash.DECOR_GET_INT, e, Decor) == token;
         bool Create(string id, out PdmSafeTransfer transfer, int amount)
         {
-            transfer = null; var vehicleModel = new Model(options.VehicleModel); var pedModel = new Model(options.CollectorModel); var propModel = new Model(options.CaseModel);
+            transfer = null; var vehicleModel = PdmVehicleModel.Resolve(options.VehicleModel); var pedModel = PdmVehicleModel.Resolve(options.CollectorModel); var propModel = PdmVehicleModel.Resolve(options.CaseModel);
             try
             {
                 if (!vehicleModel.IsValid || !vehicleModel.IsInCdImage || !vehicleModel.IsVehicle || !pedModel.IsValid || !pedModel.IsPed || !pedModel.IsInCdImage || !propModel.IsValid || !propModel.IsInCdImage || !PdmStreaming.Ready(pedModel) || !PdmStreaming.Ready(propModel)) return false;
@@ -199,7 +199,7 @@ namespace RPCore
         static Vehicle MatchVan(PdmEntityRef r)
         {
             var v = Entity.FromHandle(r.Handle) as Vehicle;
-            return Exists(v) && v.Model.Hash == new Model(r.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), r.Plate, StringComparison.OrdinalIgnoreCase) ? v : null;
+            return Exists(v) && v.Model.Hash == PdmVehicleModel.Resolve(r.Model).Hash && string.Equals(Function.Call<string>(Hash.GET_VEHICLE_NUMBER_PLATE_TEXT, v)?.Trim(), r.Plate, StringComparison.OrdinalIgnoreCase) ? v : null;
         }
         void Recover()
         {
@@ -208,9 +208,9 @@ namespace RPCore
             {
                 van = MatchVan(t.Van); JobVehicles.Reserve(van);
                 var remembered = Entity.FromHandle(t.CollectorHandle) as Ped;
-                collector = Exists(remembered) && remembered.Handle != Game.Player.Character.Handle && remembered.Model.Hash == new Model(t.CollectorModel).Hash && (Marked(remembered, t.Token) || Exists(van) && remembered.IsInVehicle(van)) ? remembered : null;
+                collector = Exists(remembered) && remembered.Handle != Game.Player.Character.Handle && remembered.Model.Hash == PdmVehicleModel.Resolve(t.CollectorModel).Hash && (Marked(remembered, t.Token) || Exists(van) && remembered.IsInVehicle(van)) ? remembered : null;
                 var prop = Entity.FromHandle(t.CaseHandle) as Prop;
-                briefcase = Exists(prop) && prop.Model.Hash == new Model(t.CaseModel).Hash && (Marked(prop, t.Token) || Exists(collector) && prop.IsAttachedTo(collector)) ? prop : null;
+                briefcase = Exists(prop) && prop.Model.Hash == PdmVehicleModel.Resolve(t.CaseModel).Hash && (Marked(prop, t.Token) || Exists(collector) && prop.IsAttachedTo(collector)) ? prop : null;
                 if (t.Handed)
                 {
                     if (!Wallet.PdmSafeCredit(t.Id, out _)) { Notify.Show("Coleta entregue: compensacao pendente no banco. Use Recuperar depois de liberar saldo/limite."); return; }
