@@ -1,0 +1,13 @@
+{
+  "SpeedGraceSeconds": 3,
+  "ProtectionGraceSeconds": 5,
+  "SafeResetSeconds": 2,
+  "CollisionCooldownSeconds": 2,
+  "CollisionDamage": 25,
+  "StopSeconds": 2,
+  "ParkingSeconds": 3,
+  "ParkingRadius": 3.5,
+  "ParkingHeading": 20,
+  "TurnDegrees": 40,
+  "RouteIndicators": true
+}

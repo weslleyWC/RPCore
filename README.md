@@ -1,3 +1,9 @@
+## Atualização 0.109.0 — conjunto completo autoescola / DMV
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.109.0.zip) · [Recursos, referência e teste das três classes](docs/DMV-GRUPO-0.109.0.md)
+
+C, M1 e A na mesma entrega: menus/estudo, teoria retomável e revisão, taxas confirmadas, preparação, faltas com motivo, conversões, estacionamento, ré da carreta e emissão recuperável. Mantém documentos e tentativas existentes. 4391 testes; validação nativa no GTA pendente. PDM e correções anteriores preservadas.
+
 ## Atualização 0.108.1 — salários e vagas externas PDM
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.108.1.zip) · [Salários, compatibilidade e teste](docs/PDM-SALARIOS-0.108.1.md)

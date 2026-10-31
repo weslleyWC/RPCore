@@ -257,11 +257,12 @@ namespace RPCore
         public static DmvData DmvM1=>data.DmvM1??new DmvData();
         public static DmvData Dmv=>data.Dmv??new DmvData();
         public static bool DmvBegin(DmvOptions c,bool practical,string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Begin(data,c,practical,id,Save,out changed,category);
+        public static bool DmvBeginRefined(DmvOptions c,DmvAssessmentOptions assessment,bool practical,string id,out bool changed,DmvClass category)=>DmvTransactions.Begin(data,c,practical,id,Save,out changed,category,assessment);
         public static bool DmvStart(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Start(data,id,Save,out changed,category);
         public static bool DmvAnswer(string id,int question,int answer,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Answer(data,id,question,answer,Save,out changed,category);
         public static bool DmvProgress(string id,DmvDrive state,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Progress(data,id,state,Save,out changed,category);
         public static bool DmvRestart(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Restart(data,id,Save,out changed,category);
-        public static bool DmvFinish(string id,bool passed,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Finish(data,id,passed,Save,out changed,category);
+        public static bool DmvFinish(string id,bool passed,out bool changed,DmvClass category=DmvClass.C,string reason=null)=>DmvTransactions.Finish(data,id,passed,Save,out changed,category,reason);
         public static bool DmvCancel(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Cancel(data,id,Save,out changed,category);
         public static bool DmvAbandon(string id,out bool changed,DmvClass category=DmvClass.C)=>DmvTransactions.Abandon(data,id,Save,out changed,category);
         public static VehicleInsuranceData VehicleInsurance=>data.VehicleInsurance??new VehicleInsuranceData();

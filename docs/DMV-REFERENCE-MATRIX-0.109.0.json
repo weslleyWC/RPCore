@@ -1,0 +1,47 @@
+{
+  "version": "0.109.0",
+  "reference_source": "PSRP/TheoryTests.cs",
+  "reference_sha256": "9e37e41231e4e6a97f7f2f0be758e72f805b07012505541bbae76309c9be8d75",
+  "reference_dll_sha256": "21282fd01c4ad631cbd68424e514b9c54db99971df9c900b09cf72dea318f4cc",
+  "interpretation": "Static feature-family mapping, not binary equivalence or gameplay proof. M1/A and completed practical route are RPCore adaptations beyond reference stubs.",
+  "implementation_sha256": {
+    "DmvMenus.cs": "a656a3017803a86d6ebffb9e35106c88e70396cbbdd6595a223e17afde3f0557",
+    "DmvDriving.cs": "abc2f5a0e5f7e4dbdca5a7df28153b624158730f5964fa39df1cd7a933f5e8b2",
+    "DmvSystem.cs": "5a43df2534ee043b443c73c014334cd7845f4afa3d73f278e2f81738737f0516",
+    "DmvRefinementData.cs": "c0ddde383f8d881de8c7988afed4d8199b40edc02f0f7b08f865763b82abc670",
+    "DmvData.cs": "c9b769aec19fa2573ecd5ef916e9110b9d215f1be425415e49edb712570841f0",
+    "DmvRigRules.cs": "95c73fd2de39b8c7ce612e2c726c25a9cc06b94aeaef124f7fa3f3b2361d4c1a",
+    "Wallet.cs": "2db4d376aeb835167678c1c443001b34de47678cff239be34d98c11f6bd26c8b",
+    "Main.cs": "b7184049d4e7be84743c8043432de6d4223c2b1ef49fa7418e35030739a234fb",
+    "config/Jobs/DmvRefinement.json": "3a679e8008492f1abb48f3e5963e815e464c7e2caa97a9c92b6e549d7e92cf38"
+  },
+  "families": [
+    {
+      "reference": "OnLoad / DMVMenu / DrivingTheorysMenu / DrivingTestsMenu",
+      "rpcore": "Three-class menu, per-profile documents, local E, GPS, study and confirmations; deferred actor/page-bound dispatch"
+    },
+    {
+      "reference": "StartClassCTest / Update / currentPage / correctAnswers / ScoreTextTheory",
+      "rpcore": "Fifteen own Portuguese questions per class, five logical pages, A-D/menu, durable answers and completed review"
+    },
+    {
+      "reference": "StartClassCPracticalTest / practicalState 1..7 / ClassCPracticalTestPoints",
+      "rpcore": "Prepared own vehicles/examiner, protected identity, signals/protection, full routes, assessment, parking and issue checkpoint"
+    },
+    {
+      "reference": "HasClassCPassCertificate / HasClassM1PassCertificate / HasClassAPassCertificate",
+      "rpcore": "Separate books, theory certificates and practical licenses, fees and recoverable attempts without new license locks on old jobs"
+    },
+    {
+      "reference": "M1/A Coming In Later Update; C practical delegate empty; second checkpoint sets checkpointNumber=2",
+      "rpcore": "Explicitly own completed M1/A and practical continuations; no claim these existed in reference"
+    }
+  ],
+  "reference_checks": {
+    "main_has_onload": true,
+    "main_has_update": true,
+    "empty_c_practical_handler": true,
+    "m1_and_a_future": true
+  },
+  "gta_runtime_tested": false
+}

@@ -37,6 +37,7 @@ namespace RPCore
         readonly InventorySystem inventory;
         readonly ShopSystem shop;
         readonly MapEditorSystem editor;
+        readonly DmvSystem dmv;
 
         public Main()
         {
@@ -126,7 +127,7 @@ namespace RPCore
             var grooming = new GroomingSystem(pool, shifts, () => barber.CanUseService, barber.OpenMenu); systems.Add(grooming); barber.OpenDetails = grooming.OpenMenu;
             var characters = new CharacterSystem(pool, shifts, SwitchCharacter); systems.Add(characters);
             var insurance = new VehicleInsuranceSystem(pool, shifts); systems.Add(insurance);
-            var dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
+            dmv = new DmvSystem(pool, shifts, () => belt.IsBelted); systems.Add(dmv); characters.SnapshotFilter = dmv.FilterCharacterSnapshot;
             var custody = new CustodySystem(pool, shifts, () => gangs==null || !gangs.HasPendingActivity); systems.Add(custody);
             var traffic = new TrafficSystem(pool, shifts, () => belt.IsBelted, () => gangs==null || !gangs.HasPendingActivity, custody.OpenMenu); systems.Add(traffic);
             systems.Add(new RoleplayBootstrap(shifts));
@@ -180,7 +181,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.108.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.109.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}
@@ -273,6 +274,7 @@ namespace RPCore
             if (character == null || !character.Exists() || character.IsDead) return;
             if(Profile.Detect()!=Profile.Id)return;
             if(survival.Sleeping)return;
+            if(dmv!=null && dmv.ConsumesKeyboard && !faulted.Contains(dmv)){dmv.OnKey(e);return;}
             if(editor.Manipulating){editor.OnKey(e);return;}
             if (surveillance.Viewing) { surveillance.OnKey(e); return; }
             if(shop.GridVisible && !faulted.Contains(shop)){try{shop.OnKey(e);}catch(Exception ex){faulted.Add(shop);Log.Error("shop.grid.key",ex);shop.Dispose();}return;}

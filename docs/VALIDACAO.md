@@ -1,7 +1,9 @@
-# Validação 0.108.1
+# Validação 0.109.0
 
-4361 testes aprovados, zero falhas/ignorados; 21 novos casos. Release net48 sem erros/avisos. Intervalo padrão salarial de 5 min para 1 h de jogo ativo; migração proporcional dos contratos padrão existentes, sem alterar dívidas/valores/saldos e com rollback de IO. Configurações/contratos personalizados não padrão mantidos. Menus mostram duração legível. Proteção local das vagas externas contra estacionamento ambiental, com restauração e sem apagar veículos.
+4391 testes aprovados, zero falhas/ignorados, 30 novos casos. Release net48 sem erros/avisos. Grupo completo DMV C/M1/A: menus, estudo, teoria/revisão, confirmação/taxa, preparação física, avaliação/faltas, paradas/setas, estacionamento, suspensão/retomada e emissão/resultado. Dados antigos e metadados preservados; IO com rollback.
 
-519 arquivos de fonte/configuração fora da mudança idênticos à 0.108.0. Personagens, troca de modelo, banco, inventário e demais ciclos PDM preservados. GTA não executado; verificar a contagem no jogo. Guia PDM-SALARIOS-0.108.1.md; escopo PDM-SCOPE-0.108.1.json.
+524 arquivos fonte/configuração fora do grupo idênticos à 0.108.1; PDM/salários/vagas/F11, personagens, roupas, inventário, banco e demais trabalhos preservados. Corpo Main.SwitchCharacter idêntico; Wallet fora dos bindings DMV idêntico. Guia DMV-GRUPO-0.109.0.md e escopo DMV-SCOPE-0.109.0.json.
 
-Instalador executado duas vezes sobre 0.108.0: 289 arquivos existentes idênticos byte a byte, incluindo contratos antigos de 300 segundos, estados novos da empresa e configurações personalizadas. DLL anterior guardada em backup; nova DLL igual ao build. Simulação PowerShell/Linux, sem GTA.
+PSRP/TheoryTests.cs consultada; prático C com handler vazio e rota incompleta, M1/A futuras na referência. Não se afirma equivalência de recursos ausentes. GTA não executado: validar NPC/garupa, piso, percurso, engate, setas, HUD e recuperação no jogo.
+
+Instalador executado duas vezes sobre 0.108.1: 332 arquivos existentes idênticos byte a byte. Inclui licenças emitidas, provas teóricas/práticas pagas/pendentes, progresso, relatórios prontos para emissão, política personalizada, PDM e backups. DLL anterior guardada em backup; nova DLL igual ao build; outro mod preservado. Simulação PowerShell/Linux, sem GTA.

@@ -66,7 +66,8 @@ namespace RPCore
     {
         public DmvStage Stage;public int Point,Faults;public float Seconds;
         public bool Coupled,Reversed,Detached;
-        public bool Valid(DmvOptions c)=>Enum.IsDefined(typeof(DmvStage),Stage) && Point>=0 && Point<=c.Route.Count && Faults>=0 && Faults<=10000 && Finite(Seconds) && Seconds>=0 && Seconds<=86400 && ((int)Stage<(int)DmvStage.Parking || Point==c.Route.Count) && (c.Category==DmvClass.A?(!Coupled || (int)Stage>=(int)DmvStage.Route) && (!Reversed || (int)Stage>=(int)DmvStage.Parking) && ((int)Stage<(int)DmvStage.Parking || Coupled) && (!Reversed || Coupled) && (!Detached || Reversed) && ((int)Stage<(int)DmvStage.Exit || Coupled && Reversed && Detached):!Coupled && !Reversed && !Detached);
+        public List<DmvFaultEvent> Events=new List<DmvFaultEvent>();
+        public bool Valid(DmvOptions c)=>Events!=null && Events.Count<=100 && Events.Count<=Faults && Events.All(e=>e?.Valid==true && e.Point<=Point && e.Seconds<=Seconds) && Enum.IsDefined(typeof(DmvStage),Stage) && Point>=0 && Point<=c.Route.Count && Faults>=0 && Faults<=10000 && Finite(Seconds) && Seconds>=0 && Seconds<=86400 && ((int)Stage<(int)DmvStage.Parking || Point==c.Route.Count) && (c.Category==DmvClass.A?(!Coupled || (int)Stage>=(int)DmvStage.Route) && (!Reversed || (int)Stage>=(int)DmvStage.Parking) && ((int)Stage<(int)DmvStage.Parking || Coupled) && (!Reversed || Coupled) && (!Detached || Reversed) && ((int)Stage<(int)DmvStage.Exit || Coupled && Reversed && Detached):!Coupled && !Reversed && !Detached);
         public static bool Finite(float v)=>!float.IsNaN(v) && !float.IsInfinity(v);
         public bool Failed(DmvOptions c)=>Faults>=c.MaxFaults || Seconds>=c.SecondsLimit;
         public bool Enter(bool driver,bool examiner)=>Move(DmvStage.AwaitDriver,DmvStage.RightSignal,driver && examiner);
@@ -87,14 +88,17 @@ namespace RPCore
     public sealed class DmvAttempt : ExtensibleData
     {
         public string Id;public bool Practical,Started;public int Price,Version=1;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public DmvAssessmentOptions Assessment;
         public DmvOptions Options;public List<int> Answers=new List<int>();public DmvDrive Drive=new DmvDrive();
-        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=100 && Price>=0 && Price<=10000 && Version==1 && Options!=null && Options.Valid && Answers!=null && Answers.Count<15 && Answers.All(a=>a>=0 && a<4) && Drive!=null && Drive.Valid(Options) && (Practical?Answers.Count==0:Drive.Point==0 && Drive.Faults==0 && Drive.Stage==DmvStage.AwaitDriver) && (Started || Answers.Count==0 && Drive.Point==0 && Drive.Faults==0 && Drive.Seconds==0 && Drive.Stage==DmvStage.AwaitDriver);
+        [JsonIgnore] public bool Valid=>!string.IsNullOrWhiteSpace(Id) && Id.Length<=100 && Price>=0 && Price<=10000 && Version==1 && (Assessment==null || Assessment.Valid) && Options!=null && Options.Valid && Answers!=null && Answers.Count<15 && Answers.All(a=>a>=0 && a<4) && Drive!=null && Drive.Valid(Options) && (Practical?Answers.Count==0:Drive.Point==0 && Drive.Faults==0 && Drive.Stage==DmvStage.AwaitDriver) && (Started || Answers.Count==0 && Drive.Point==0 && Drive.Faults==0 && Drive.Seconds==0 && Drive.Stage==DmvStage.AwaitDriver);
     }
     public sealed class DmvData : ExtensibleData
     {
         public bool TheoryPassed,Licensed;public int TheoryAttempts,PracticalAttempts,LastTheoryScore=-1;public string LastResult;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public DmvTheoryReview TheoryReview;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public DmvPracticalReport PracticalReport;
         public long Spent;public DmvAttempt Pending;public List<string> Receipts=new List<string>();
-        [JsonIgnore] public bool Valid=>TheoryAttempts>=0 && PracticalAttempts>=0 && Spent>=0 && LastTheoryScore>=-1 && LastTheoryScore<=15 && (!Licensed || TheoryPassed) && Receipts!=null && Receipts.Count<=256 && Receipts.All(r=>!string.IsNullOrWhiteSpace(r) && r.Length<=120) && Receipts.Distinct().Count()==Receipts.Count && (Pending==null || Pending.Valid && Spent>=Pending.Price && !Licensed && (Pending.Practical?TheoryPassed && PracticalAttempts>0:!TheoryPassed && TheoryAttempts>0));
+        [JsonIgnore] public bool Valid=>(TheoryReview==null || TheoryReview.Valid && TheoryReview.Score==LastTheoryScore && TheoryReview.Passed==TheoryPassed) && (PracticalReport==null || PracticalReport.Valid) && TheoryAttempts>=0 && PracticalAttempts>=0 && Spent>=0 && LastTheoryScore>=-1 && LastTheoryScore<=15 && (!Licensed || TheoryPassed) && Receipts!=null && Receipts.Count<=256 && Receipts.All(r=>!string.IsNullOrWhiteSpace(r) && r.Length<=120) && Receipts.Distinct().Count()==Receipts.Count && (Pending==null || Pending.Valid && Spent>=Pending.Price && !Licensed && (Pending.Practical?TheoryPassed && PracticalAttempts>0:!TheoryPassed && TheoryAttempts>0));
     }
     public static class DmvTransactions
     {
@@ -103,25 +107,26 @@ namespace RPCore
         static T Copy<T>(T value)=>JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(value));
         static bool Apply(WalletData w,string receipt,Func<DmvData,int?> change,Action save,out bool changed,DmvClass category=DmvClass.C)
         {
-            changed=false;if(w==null || w.Bank<0 || save==null || string.IsNullOrWhiteSpace(receipt) || receipt.Length>120 || !Enum.IsDefined(typeof(DmvClass),category) || Read(w,category)!=null && (!Read(w,category).Valid || Read(w,category).Pending!=null && Read(w,category).Pending.Options.Category!=category))return false;
+            changed=false;if(w==null || w.Bank<0 || save==null || string.IsNullOrWhiteSpace(receipt) || receipt.Length>120 || !Enum.IsDefined(typeof(DmvClass),category) || Read(w,category)!=null && !DmvBookRules.Matches(Read(w,category),category))return false;
             var old=Read(w,category);if(old?.Receipts.Contains(receipt)==true)return true;var next=old==null?new DmvData():Copy(old);int? delta=change(next);
             if(delta==null || (long)w.Bank+delta.Value<0 || (long)w.Bank+delta.Value>int.MaxValue || !next.Valid)return false;
             next.Receipts.Add(receipt);if(next.Receipts.Count>256)next.Receipts.RemoveAt(0);int bank=w.Bank;
             try{Set(w,category,next);w.Bank+=delta.Value;save();changed=true;return true;}catch{Set(w,category,old);w.Bank=bank;throw;}
         }
-        public static bool Begin(WalletData w,DmvOptions c,bool practical,string id,Action save,out bool changed,DmvClass category=DmvClass.C)
+        public static bool Begin(WalletData w,DmvOptions c,bool practical,string id,Action save,out bool changed,DmvClass category=DmvClass.C,DmvAssessmentOptions assessment=null)
         {
-            changed=false;if(c==null || !c.Valid || c.Category!=category || string.IsNullOrWhiteSpace(id) || id.Length>100)return false;int price=practical?c.PracticalPrice:c.TheoryPrice;
+            changed=false;if(assessment!=null && !assessment.Valid || c==null || !c.Valid || c.Category!=category || string.IsNullOrWhiteSpace(id) || id.Length>100)return false;int price=practical?c.PracticalPrice:c.TheoryPrice;
             return Apply(w,id+":begin",d=>{if(d.Pending!=null || d.Licensed || practical!=d.TheoryPassed || d.Spent>long.MaxValue-price || (practical?d.PracticalAttempts:d.TheoryAttempts)==int.MaxValue)return null;
-                if(practical)d.PracticalAttempts++;else d.TheoryAttempts++;d.Spent+=price;d.Pending=new DmvAttempt{Id=id,Practical=practical,Price=price,Options=Copy(c)};return -price;},save,out changed,category);
+                if(practical)d.PracticalAttempts++;else d.TheoryAttempts++;d.Spent+=price;d.Pending=new DmvAttempt{Id=id,Practical=practical,Price=price,Options=Copy(c),Assessment=assessment==null?null:Copy(assessment)};return -price;},save,out changed,category);
         }
         public static bool Start(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":start",d=>{if(d.Pending==null || d.Pending.Id!=id)return null;d.Pending.Started=true;return 0;},save,out changed,category);
         public static bool Answer(WalletData w,string id,int question,int answer,Action save,out bool changed,DmvClass category=DmvClass.C)
-        {changed=false;if(question<0 || question>=15 || answer<0 || answer>=4)return false;return Apply(w,id+":answer:"+question,d=>{var p=d.Pending;if(p==null || p.Id!=id || p.Practical || !p.Started || p.Answers.Count!=question)return null;p.Answers.Add(answer);if(p.Answers.Count==15){d.LastTheoryScore=DmvQuestions.Score(p.Answers,category);d.TheoryPassed=d.LastTheoryScore>=p.Options.PassScore;d.LastResult=d.TheoryPassed?"theory_pass":"theory_fail";d.Pending=null;}return 0;},save,out changed,category);}
+        {changed=false;if(question<0 || question>=15 || answer<0 || answer>=4)return false;return Apply(w,id+":answer:"+question,d=>{var p=d.Pending;if(p==null || p.Id!=id || p.Practical || !p.Started || p.Answers.Count!=question)return null;p.Answers.Add(answer);if(p.Answers.Count==15){d.LastTheoryScore=DmvQuestions.Score(p.Answers,category);d.TheoryPassed=d.LastTheoryScore>=p.Options.PassScore;d.LastResult=d.TheoryPassed?"theory_pass":"theory_fail";d.TheoryReview=new DmvTheoryReview{Category=category,Answers=Copy(p.Answers),Score=d.LastTheoryScore,PassScore=p.Options.PassScore,Passed=d.TheoryPassed};d.Pending=null;}return 0;},save,out changed,category);}
         public static bool Progress(WalletData w,string id,DmvDrive progress,Action save,out bool changed,DmvClass category=DmvClass.C)
         {
             return Apply(w,Guid.NewGuid().ToString("N")+":progress",d=>{
                 var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || progress==null || !progress.Valid(p.Options))return null;var old=p.Drive;
+                if(progress.Events.Count<old.Events.Count || !progress.Events.Take(old.Events.Count).Select((e,i)=>e.Kind==old.Events[i].Kind && e.Point==old.Events[i].Point && e.Seconds==old.Events[i].Seconds).All(b=>b))return null;
                 if(progress.Point<old.Point || progress.Point>old.Point+1 || progress.Faults<old.Faults || progress.Seconds<old.Seconds || (int)progress.Stage<(int)old.Stage || (int)progress.Stage>(int)old.Stage+1 || progress.Point>old.Point && old.Stage!=DmvStage.Route)return null;
                 if(old.Stage==DmvStage.Route && progress.Stage==DmvStage.Parking && progress.Point!=p.Options.Route.Count)return null;
                 if(category==DmvClass.A){
@@ -134,7 +139,7 @@ namespace RPCore
             },save,out changed,category);
         }
         public static bool Restart(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,Guid.NewGuid().ToString("N")+":restart",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || p.Drive.Stage==DmvStage.Report)return null;p.Drive.Stage=DmvStage.AwaitDriver;if(category==DmvClass.A)p.Drive.Coupled=p.Drive.Reversed=p.Drive.Detached=false;return 0;},save,out changed,category);
-        public static bool Finish(WalletData w,string id,bool passed,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":finish",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || passed && (p.Drive.Stage!=DmvStage.Report || p.Drive.Point!=p.Options.Route.Count || p.Drive.Failed(p.Options)))return null;d.Licensed=passed;d.LastResult=passed?"practical_pass":"practical_fail";d.Pending=null;return 0;},save,out changed,category);
+        public static bool Finish(WalletData w,string id,bool passed,Action save,out bool changed,DmvClass category=DmvClass.C,string reason=null)=>Apply(w,id+":finish",d=>{var p=d.Pending;if(p==null || p.Id!=id || !p.Practical || !p.Started || passed && (p.Drive.Stage!=DmvStage.Report || p.Drive.Point!=p.Options.Route.Count || p.Drive.Failed(p.Options)))return null;if(reason!=null && reason.Length>160)return null;d.Licensed=passed;d.LastResult=passed?"practical_pass":"practical_fail";d.PracticalReport=new DmvPracticalReport{Id=id,Passed=passed,Reason=reason??(passed?"Concluido":"Reprovado"),Options=Copy(p.Options),Drive=Copy(p.Drive)};d.Pending=null;return 0;},save,out changed,category);
         public static bool Cancel(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":cancel",d=>{var p=d.Pending;if(p==null || p.Id!=id || p.Started)return null;int amount=p.Price;d.Spent-=amount;if(p.Practical)d.PracticalAttempts--;else d.TheoryAttempts--;d.Pending=null;return amount;},save,out changed,category);
         public static bool Abandon(WalletData w,string id,Action save,out bool changed,DmvClass category=DmvClass.C)=>Apply(w,id+":abandon",d=>{if(d.Pending==null || d.Pending.Id!=id || !d.Pending.Started)return null;d.LastResult="abandoned";d.Pending=null;return 0;},save,out changed,category);
     }
