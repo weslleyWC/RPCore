@@ -87,6 +87,7 @@
     <Compile Include="../PrisonData.cs" Link="PrisonData.cs" />
     <Compile Include="../TankerData.cs" Link="TankerData.cs" />
     <Compile Include="../FreightData.cs" Link="FreightData.cs" />
+    <Compile Include="../UrbanDeliveryData.cs" Link="UrbanDeliveryData.cs" />
     <Compile Include="../JobData.cs" Link="JobData.cs" />
     <Compile Include="../GangCrewData.cs" Link="GangCrewData.cs" />
     <Compile Include="../GangLoyaltyData.cs" Link="GangLoyaltyData.cs" />

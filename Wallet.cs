@@ -386,6 +386,9 @@ namespace RPCore
         public static bool HuntHarvest(HuntingOptions c,System.Collections.Generic.Dictionary<string,int> loot,string id,bool complete,out bool changed)=>HuntingTransactions.Harvest(data,c,loot,id,complete,Save,out changed);
         public static bool HuntSell(HuntingOptions c,string id,out bool changed)=>HuntingTransactions.Sell(data,c,id,Save,out changed);
         public static bool PilotQualified => FlightRules.Qualified(data.Jobs);
+        internal static WalletData DeliveryWallet()=>data;
+        internal static bool UrbanDrop(string job,string id,int index,bool skip,out bool changed)=>UrbanDeliveryTransactions.Drop(data,()=>Cash,n=>Cash=n,job,id,index,skip,Save,out changed);
+        internal static bool UrbanReturn(string job,string id,out bool changed,UrbanDeliveryContract next=null)=>UrbanDeliveryTransactions.Return(data,()=>Cash,n=>Cash=n,job,id,Save,out changed,next);
         public static DeliveryProgress JobProgress(string job) { if (data.Jobs == null) data.Jobs = new JobLedger(); return data.Jobs.Get(job); }
         public static bool PayDelivery(string job, string session, int step, int amount, bool bank, bool delivery, bool complete, out bool credited, int rating = 0)
         {

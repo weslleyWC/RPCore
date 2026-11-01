@@ -9,15 +9,18 @@ namespace RPCore
     {
         const string CarryDictionary = "anim@heists@box_carry@";
         const string GiveDictionary = "mp_common";
-        Ped owner;
+        Ped owner;PdmEntityProof ownerProof;
+        bool Bound=>owner!=null && owner.Exists() && ownerProof!=null && ownerProof.Matches(owner.Handle,owner.Model.Hash,owner.MemoryAddress.ToInt64());
         Prop prop;
         Model model;
         bool waiting, carryingAnimation, givingAnimation;
         int timeout;
         public bool Started => owner != null;
+        public bool Failed=>owner!=null && !waiting && Visuals.UseProps && Visuals.Enabled && (prop==null || !PdmAssets.Valid(prop));
+        public bool Ready=>owner!=null && (!Visuals.UseProps || !Visuals.Enabled || prop!=null && PdmAssets.Valid(prop));
         public void Start(Ped player, bool pizza)
         {
-            Stop(); owner = player;
+            Stop(); owner = player;ownerProof=player!=null && player.Exists()?new PdmEntityProof(player.Handle,player.Model.Hash,player.MemoryAddress.ToInt64()):null;
             if (!Visuals.UseProps || !Visuals.Enabled) return;
             model = new Model(pizza ? "prop_pizza_box_02" : "ups_box");
             if (!model.IsValid || !model.IsInCdImage) model = new Model("prop_cs_cardbox_01");
@@ -29,13 +32,13 @@ namespace RPCore
         public void Tick()
         {
             if (owner == null) return;
-            if (!owner.Exists() || owner.IsDead || owner != Game.Player.Character || owner.IsInVehicle()) { Stop(); return; }
+            if (!Bound || owner.IsDead || owner != Game.Player.Character || owner.IsInVehicle()) { Stop(); return; }
             if (!waiting) return;
             if (unchecked(Game.GameTime - timeout) >= 0) { model.MarkAsNoLongerNeeded(); waiting = false; return; }
             if (!model.IsLoaded || !Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, CarryDictionary)) return;
             try
             {
-                prop = World.CreateProp(model, owner.Position, false, false);
+                prop = PdmAssets.Track(World.CreateProp(model, owner.Position, false, false));
                 if (prop != null && prop.Exists())
                 {
                     prop.IsCollisionEnabled = false;
@@ -48,7 +51,7 @@ namespace RPCore
         }
         public void Give()
         {
-            if (owner == null || !owner.Exists()) return;
+            if (!Bound) return;
             StopCarry();
             if (Function.Call<bool>(Hash.HAS_ANIM_DICT_LOADED, GiveDictionary))
             {
@@ -56,19 +59,24 @@ namespace RPCore
                 givingAnimation = true;
             }
         }
+        public Prop PassTo(Ped receiver)
+        {
+            if(receiver==null || !PdmAssets.Valid(receiver) || prop==null || !PdmAssets.Valid(prop)){Stop();return null;}
+            var delivered=prop;prop=null;delivered.Detach();delivered.AttachTo(receiver.Bones[(Bone)28422],new Vector3(0,-.05f,-.12f),Vector3.Zero);Function.Call(Hash.TASK_PLAY_ANIM,receiver,CarryDictionary,"idle",4f,-4f,4000,49,0f,false,false,false);Stop();return delivered;
+        }
         void StopCarry()
         {
-            if (carryingAnimation && owner != null && owner.Exists()) Function.Call(Hash.STOP_ANIM_TASK, owner, CarryDictionary, "idle", 2f);
+            if (carryingAnimation && Bound) Function.Call(Hash.STOP_ANIM_TASK, owner, CarryDictionary, "idle", 2f);
             carryingAnimation = false;
         }
         public void Stop()
         {
-            if (prop != null && prop.Exists()) prop.Delete(); prop = null;
+            if (prop != null && PdmAssets.Valid(prop)) {prop.Detach();prop.Delete();} prop = null;
             StopCarry();
-            if (givingAnimation && owner != null && owner.Exists()) Function.Call(Hash.STOP_ANIM_TASK, owner, GiveDictionary, "givetake1_a", 2f);
+            if (givingAnimation && Bound) Function.Call(Hash.STOP_ANIM_TASK, owner, GiveDictionary, "givetake1_a", 2f);
             if (waiting) model.MarkAsNoLongerNeeded();
             if (owner != null) { Function.Call(Hash.REMOVE_ANIM_DICT, CarryDictionary); Function.Call(Hash.REMOVE_ANIM_DICT, GiveDictionary); }
-            owner = null; waiting = givingAnimation = false;
+            owner = null;ownerProof=null; waiting = givingAnimation = false;
         }
     }
     internal static class JobVehicles

@@ -12,6 +12,7 @@ namespace RPCore
     {
         public Action CompanyMenu;
         public void CompanyActivity(string title,string body)=>JobActivity(title,body);
+        public void DeliveryActivity(string title,string body)=>JobActivity(title,body);
         public string Name=>"phone";
         readonly ObjectPool pool;readonly Action<Keys> dispatch;readonly PropPresentation props;readonly InventorySystem inventory;readonly NeedsSystem needs;
         readonly Action jobs,studio,passenger;readonly UberJob uber;readonly StreamerJob streamer;

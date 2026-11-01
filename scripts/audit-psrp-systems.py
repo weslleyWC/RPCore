@@ -1732,5 +1732,11 @@ if dmv_matrix.exists():
         if key in report:report[key]['current_refinement']='Group 0.109.0: see dmv_refinement_01090; original phase notes above retained as historical scope.'
 if (repo_root/'docs/DMV-ACESSO-0.109.1.md').exists():
     report['dmv_access_01091']={'cause':'0.109.0 Calm/DriveTick used PDM-only GameplayContext.BackgroundReady; C/M1/A desks all outside 220m PDM area.','fix':'Independent DmvAccessRules and own AreaWarmup/local collision. Menu does not need geography/terrain; physical preparation still checks own desk/terrain. Prepared scene with control allowed. Manual denials display a reason.','tests_passed':4421,'new_cases':30,'transactions_and_configurations_unchanged':True,'gta_runtime_tested':False,'guide':'DMV-ACESSO-0.109.1.md'}
+urban_matrix=repo_root/'docs/URBAN-REFERENCE-MATRIX-0.110.0.json'
+if urban_matrix.exists():
+    urban=json.loads(urban_matrix.read_text())
+    report['urban_delivery_01100']={'matrix':urban_matrix.name,'guide':'ENTREGAS-URBANAS-0.110.0.md','families':urban['families'],'tests_passed':urban['tests_passed'],'new_cases':urban['new_cases'],'source_hashes_current':all(digest((repo_root/f).read_bytes())==h for f,h in urban['implementation_sha256'].items()),'gta_runtime_tested':False,'scope':'Pizza/Post OP/store sections reviewed together; existing pricing preserved; durable route and bank receipts. Post OP ComingSoon stubs excluded; prison section outside this group.'}
+    for key in ['pizza','postop','store_delivery']:
+        if key in report:report[key]['current_refinement']='See urban_delivery_01100; original phase descriptions retained as historical scope.'
 a.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
 print(f'{len(files)} reference files indexed; {a.output.name}')

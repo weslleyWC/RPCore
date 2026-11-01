@@ -147,7 +147,7 @@ namespace RPCore
             settings.GarageRequested=()=>OpenPhoneSystem(garages,Cfg.GarageKey);
             settings.DealerRequested=()=>OpenPhoneSystem(systems.OfType<DealershipSystem>().FirstOrDefault(),Cfg.DealerKey);
             settings.VehicleRequested=()=>OpenPhoneService(controls,()=>controls.OpenMenu());
-            phone.CompanyMenu=()=>OpenPhoneService(pdm,pdm.OpenMenu);enterprise.Activity+=phone.CompanyActivity;
+            phone.CompanyMenu=()=>OpenPhoneService(pdm,pdm.OpenMenu);enterprise.Activity+=phone.CompanyActivity;pizza.Activity+=phone.DeliveryActivity;postOp.Activity+=phone.DeliveryActivity;supply.Activity+=phone.DeliveryActivity;
             phone.ConfigureServices(new Dictionary<int,Action>{
                 {1,()=>OpenPhoneSystem(inv,Cfg.InventoryKey)},
                 {2,()=>OpenPhoneSystem(garages,Cfg.GarageKey)},
@@ -181,7 +181,7 @@ namespace RPCore
                 trace=new RuntimeTrace(Cfg.Dir,GetType().Assembly.GetName().Version.ToString(),systems.Select(x=>x.Name).ToArray());
                 if(trace.Previous!=null)Log.Write("Previous runtime stage: "+trace.Previous.Stage+"; OnAborted hook="+trace.Previous.AbortedHookReached+". Context only, not proof of crash cause.");
             }catch(Exception ex){Log.Error("optional runtime trace",ex);}
-            Log.Write("RPCore 0.109.1 up, " + systems.Count + " systems, profile " + Profile.Id);
+            Log.Write("RPCore 0.110.0 up, " + systems.Count + " systems, profile " + Profile.Id);
         }
 
         void OpenPhoneService(ISystem system,Action action){if(system==null || faulted.Contains(system)){Notify.Show("Servico indisponivel. Confira RPCore.log.");return;}action();}

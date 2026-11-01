@@ -88,6 +88,8 @@ namespace RPCore
     }
     public class DeliveryProgress : ExtensibleData
     {
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public UrbanDeliveryContract UrbanContract;
+        [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public UrbanDeliveryReport UrbanReport;
         public int Deliveries, CompletedShifts;
         public long Earned, RatingSum;
         public int RatedTrips;

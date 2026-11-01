@@ -1,3 +1,9 @@
+## 0.110.0 — entregas urbanas: pizza, Post OP e lojas
+
+[Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.110.0.zip) · [Como jogar e diferenças PSRP](docs/ENTREGAS-URBANAS-0.110.0.md)
+
+Grupo completo com carga física, cliente da pizza, lotes/veículo pessoal Post OP, devoluções, qualidade, retorno, comprovantes e retomada salva. Contratos presenciais pagam no banco; F6 rápido preservado. 4449 testes aprovados; validação nativa GTA pendente.
+
 ## Correção 0.109.1 — DMV não abria pelo F10/E
 
 [Baixar update](https://github.com/weslleyWC/RPCore/raw/refs/heads/rpcore-entrega/downloads/RPCore-update-0.109.1.zip) · [Causa e teste](docs/DMV-ACESSO-0.109.1.md)

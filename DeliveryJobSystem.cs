@@ -14,9 +14,11 @@ namespace RPCore
 {
     public abstract class DeliveryJobSystem : ISystem, IWorkContract
     {
+        public event Action<string,string> Activity;
         public string Name => freight ? "supply" : pizza ? "pizza" : "postop";
         public string Label => freight ? "Reposicao" : pizza ? "Pizza" : "Post OP";
-        public bool Active => run != null;
+        public bool Active => run != null || urban?.Active==true;
+        readonly UrbanDeliverySystem urban;
         protected readonly ObjectPool pool;
         readonly bool pizza, freight;
         readonly ShiftGate gate;
@@ -62,6 +64,7 @@ namespace RPCore
             menu = new NativeMenu(Label, "TRABALHO DE ENTREGAS"); pool.Add(menu); Visuals.Register(menu, Name);
             startBlip = MapBlips.Create(StartPosition, "RPCore Job: " + Label, freight ? BlipSprite.Truck : pizza ? BlipSprite.LuckyWheel : BlipSprite.Package, BlipColor.Blue, .8f);
             LoadLegacy();
+            urban=new UrbanDeliverySystem(pool,achievements,gate,Name,options,freightOptions,Point(StartPosition),Point(Depot),()=>Begin(true),()=>run!=null,()=>End("Turno rapido encerrado."),MirrorLegacy);urban.Activity+=(title,body)=>Activity?.Invoke(title,body);
         }
         void LoadLegacy()
         {
@@ -79,24 +82,7 @@ namespace RPCore
             row.Activated += (s, e) => { try { action(); } catch (Exception ex) { Log.Error(Name + " menu", ex); Notify.Show("Nao foi possivel executar. Veja RPCore.log."); } };
             menu.Add(row);
         }
-        public void OpenMenu()
-        {
-            pool.HideAll(); menu.Clear();
-            var progress = Wallet.JobProgress(Name);
-            menu.Name = Label + " / " + progress.Deliveries + " entregas / $" + progress.Earned;
-            Add("GPS: " + Label, "Local de contratacao. Pressione E no marcador.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, StartPosition.X, StartPosition.Y); menu.Visible = false; });
-            if (!Active)
-            {
-                Add("Iniciar contrato", freight ? "Retire o caminhao, carregue na base, reponha as lojas e retorne. Pagamento no banco." : pizza ? "Retire a scooter, leve a pizza a pe e retorne a pizzaria. Pagamento em dinheiro." : "Retire a van, entregue as caixas e retorne a base. Pagamento no banco por entrega.", () => Begin(false));
-                if (pizza) Add("Turno rapido (" + Cfg.JobKey + ")", "Modo anterior: inicia de qualquer lugar e entrega ao parar perto do destino.", () => Begin(true));
-            }
-            else
-            {
-                Add("GPS: objetivo atual", "Entregas: " + run.Delivered + "/" + run.Total + ". Segure End por um segundo para cancelar fora do menu.", () => { Function.Call(Hash.SET_NEW_WAYPOINT, destination.X, destination.Y); menu.Visible = false; });
-                Add("Cancelar turno", "Mantem entregas ja pagas. Nao recebe bonus de retorno. Veiculo pessoal e seus itens sao preservados.", () => End("Turno cancelado."));
-            }
-            menu.Visible = true;
-        }
+        public void OpenMenu()=>urban.OpenMenu();
         bool ReadyToStart(bool rapid)
         {
             var p = Game.Player.Character;
@@ -197,6 +183,7 @@ namespace RPCore
         }
         public void Tick()
         {
+            if(run==null){urban.Tick();return;}
             var p = Game.Player.Character;
             if (!Active)
             {
@@ -333,11 +320,13 @@ namespace RPCore
         public void OnKey(KeyEventArgs e)
         {
             if (!pizza || e.KeyCode != Cfg.JobKey) return;
+            if(urban.Active || urban.HasPending){urban.OpenMenu();return;}
             if (Active) End("Turno de pizza cancelado."); else if (!pool.AreAnyVisible) Begin(true);
         }
         // End is held in Tick through the shared hub; this avoids collisions with existing function keys.
         public void PollCancel()
         {
+            if(urban.Active){urban.PollCancel();return;}
             if (!Active || !InputAllowed || !Game.IsKeyPressed(Keys.End)) { cancelHeldAt = -1; return; }
             if (cancelHeldAt < 0) cancelHeldAt = Game.GameTime;
             if (unchecked(Game.GameTime - cancelHeldAt) >= 1000) End("Turno cancelado. Entregas ja pagas foram mantidas.");
@@ -396,12 +385,14 @@ namespace RPCore
         }
         public void Reload()
         {
+            urban.Reload();
             if (Active) End("Turno encerrado na troca de perfil.");
             menu.Visible = false; LoadLegacy();
         }
-        public void Save() { if (pizza) { MirrorLegacy(); Store.Write("PizzaStats.json", legacy); } }
+        public void Save() { urban.Save();if (pizza) { MirrorLegacy(); Store.Write("PizzaStats.json", legacy); } }
         public void Dispose()
         {
+            urban.Dispose();
             try { Cleanup(); }
             finally { run = null; gate.Release(Name); menu.Visible = false; if (startBlip != null && startBlip.Exists()) startBlip.Delete(); }
         }

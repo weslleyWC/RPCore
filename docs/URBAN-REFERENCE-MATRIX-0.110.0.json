@@ -1,0 +1,29 @@
+{
+  "version": "0.110.0",
+  "reference_dll_sha256": "21282fd01c4ad631cbd68424e514b9c54db99971df9c900b09cf72dea318f4cc",
+  "reference_sha256": {
+    "_JOB__Pizza_Delivery.cs": "5fb5c8b22b9fd8a54b67f0b5cad063ab459ad6403c2a3200381b4e0919190e2f",
+    "_JOB__Post_Op.cs": "5dcf6fa844020bec0669595bd296cfd9b30be846781991f50815d0f3aefeec5d",
+    "JobDeliveryDriver.cs": "6ddaeb50c13c6f015bbbae0e64be39840a98e7265a936bcf136fd09483baeccb"
+  },
+  "implementation_sha256": {
+    "UrbanDeliveryData.cs": "d9a87640ce0dfd3f7444af6daff5c2bcae7aaf122c9c3fab682c4ae5931eb93f",
+    "UrbanDeliveryRuntime.cs": "14f4284810d92889bfcc6967fae072411c3d1b7b9bdaa5c1f91b663032070922",
+    "UrbanDeliverySystem.cs": "048a9f138cbc6192ebaccfd1b3f0dde00f349e08c62bd69d73c34c470ccfde3b",
+    "DeliveryCargo.cs": "7d26cdeb10805e433001d93bb1d44243e30def601688563531dc3c187d3a9f21",
+    "DeliveryJobSystem.cs": "eb009c273f9a7d2847b6e7a35561bf9b62e5768c6af6baf4cc0562894076a0fb",
+    "JobData.cs": "7f776eb7fb9cb791ee43d60d0289ed347308996f1b19f122ecbae678c6a80c11",
+    "Wallet.cs": "78896f8574d1040e13d35f7a89500f53db8def090837b2caaa12ed2d9b50336a",
+    "Main.cs": "1d1def8b65e28ca4c34de084941603af79386971c74f254a0e62ca1fd368cd47",
+    "PhoneSystem.cs": "7e5e38deb8b3c05abf723e19023a920d1f6c7e2672a976fbbfebda12263de386",
+    "tests/UrbanDeliveryTests.cs": "2ab1e67085384f057a600dfa1de2e002cbb28c69cad15fab0af8e661ed2a6c82"
+  },
+  "families": {
+    "pizza": "Physical customer, box handover, batch return/continue; existing configurable count/rates, durable receipts and fallback door.",
+    "postop": "5\u201330 parcels, personal vehicle or company van, rear pickup, return, skip without reward/count; ComingSoon types excluded.",
+    "supply": "Store section only: Mule, rear cargo, ordered shop delivery, return; existing per-stop rates and return bonus retained."
+  },
+  "gta_runtime_tested": false,
+  "tests_passed": 4449,
+  "new_cases": 28
+}
